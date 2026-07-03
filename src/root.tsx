@@ -1,0 +1,50 @@
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from 'react-router'
+import type { ReactNode } from 'react'
+
+import { AppProviders } from '@/app/providers/AppProviders'
+import { BriefProvider } from '@/features/brief/model/BriefContext'
+import { BriefModal } from '@/features/brief/ui/BriefModal'
+import { useScrollEffects } from '@/shared/hooks/useScrollEffects'
+import { SiteFooter } from '@/widgets/site-footer/SiteFooter'
+import { SiteHeader } from '@/widgets/site-header/SiteHeader'
+
+import '@/shared/styles/globals.scss'
+
+export function Layout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="ru">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#161713" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        {children}
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  )
+}
+
+export default function Root() {
+  const { pathname } = useLocation()
+
+  useScrollEffects(pathname)
+
+  return (
+    <AppProviders>
+      <BriefProvider>
+        <div className="site-shell">
+          <div className="scroll-progress" aria-hidden="true" />
+          <SiteHeader />
+          <Outlet />
+          <SiteFooter />
+          <BriefModal />
+        </div>
+      </BriefProvider>
+    </AppProviders>
+  )
+}

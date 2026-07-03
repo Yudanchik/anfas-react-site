@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+  push:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Validate pull request branch
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
+          BASE_BRANCH: ${{ github.base_ref }}
+        run: |
+          allowed='^(dev|(feature|fix|hotfix|chore|docs|refactor|test)/[a-z0-9]+(-[a-z0-9]+)*|dependabot/.+)$'
+
+          if [[ ! "$HEAD_BRANCH" =~ $allowed ]]; then
+            echo "Invalid branch name: $HEAD_BRANCH"
+            echo "Use: feature/*, fix/*, hotfix/*, chore/*, docs/*, refactor/* or test/*."
+            exit 1
+          fi
+
+          if [[ "$BASE_BRANCH" == "main" && ! "$HEAD_BRANCH" =~ ^(dev|hotfix/) ]]; then
+            echo "Pull requests to main are allowed only from dev or hotfix/*."
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+          run_install: false
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript, ESLint and Stylelint
+        run: pnpm check
+
+      - name: Production build
+        run: pnpm build

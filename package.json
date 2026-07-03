@@ -1,0 +1,49 @@
+{
+  "name": "anfas-interior",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=11.0.0"
+  },
+  "scripts": {
+    "dev": "react-router dev --host 127.0.0.1",
+    "build": "react-router typegen && react-router build",
+    "typecheck": "react-router typegen && tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "lint:styles": "stylelint \"src/**/*.{css,scss}\"",
+    "format": "prettier --write .",
+    "check": "pnpm typecheck && pnpm lint && pnpm lint:styles"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
+    "@react-router/node": "7.18.0",
+    "@tanstack/react-query": "^5.101.2",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-hook-form": "^7.80.0",
+    "react-router": "7.18.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@react-router/dev": "7.18.0",
+    "@types/node": "^26.1.0",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "eslint": "^9.39.4",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "prettier": "^3.9.4",
+    "sass": "^1.101.0",
+    "stylelint": "^17.14.0",
+    "stylelint-config-css-modules": "^4.6.0",
+    "stylelint-config-standard-scss": "^17.0.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.62.1",
+    "vite": "^6.0.5",
+    "vite-tsconfig-paths": "^6.1.1"
+  }
+}

@@ -1,0 +1,39 @@
+import { useBrief } from '@/features/brief/model/BriefContext'
+
+import styles from '../_shared/InnerPage.module.scss'
+
+export const meta = () => [
+  { title: 'Контакты — Анфас' },
+  {
+    name: 'description',
+    content: 'Контакты студии дизайна и ремонта «Анфас» в Санкт-Петербурге.',
+  },
+]
+
+export default function ContactsRoute() {
+  const { openBrief } = useBrief()
+
+  return (
+    <main className={styles.page}>
+      <p className={styles.eyebrow}>Контакты</p>
+      <h1 className={styles.title}>
+        Давайте обсудим
+        <br />
+        <em>ваш интерьер.</em>
+      </h1>
+      <div className={styles.content}>
+        <h2>Связаться</h2>
+        <p>
+          +7 (812) 200-80-71
+          <br />
+          anfas-art@mail.ru
+          <br />
+          Санкт-Петербург, наб. Обводного канала, 118АХ
+        </p>
+      </div>
+      <button className={styles.button} type="button" onClick={openBrief}>
+        Заполнить короткий бриф
+      </button>
+    </main>
+  )
+}

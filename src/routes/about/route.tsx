@@ -1,0 +1,29 @@
+import styles from '../_shared/InnerPage.module.scss'
+
+export const meta = () => [
+  { title: 'О компании — Анфас' },
+  {
+    name: 'description',
+    content: 'Команда дизайна и ремонта «Анфас» в Санкт-Петербурге.',
+  },
+]
+
+export default function AboutRoute() {
+  return (
+    <main className={styles.page}>
+      <p className={styles.eyebrow}>О компании</p>
+      <h1 className={styles.title}>
+        Просто, честно,
+        <br />
+        <em>по делу.</em>
+      </h1>
+      <div className={styles.content}>
+        <h2>Кирилл и Антон</h2>
+        <p>
+          Мы берём ответственность за дизайн и ремонт целиком. Клиенту не приходится разбираться в
+          строительных нюансах, координировать подрядчиков и ежедневно ездить на объект.
+        </p>
+      </div>
+    </main>
+  )
+}

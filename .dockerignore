@@ -1,0 +1,11 @@
+.git
+.github
+.idea
+.react-router
+.vscode
+build
+dist
+node_modules
+outputs
+work
+*.log
