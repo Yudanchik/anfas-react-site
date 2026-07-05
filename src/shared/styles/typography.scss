@@ -1,4 +1,19 @@
+@use './themes/default/fonts' as f;
 @import 'https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Prata&display=swap';
+
+:root {
+  --font-body: #{f.$font-body};
+  --font-heading: #{f.$font-heading};
+  --text-12: #{f.px(12)};
+  --text-14: #{f.px(14)};
+  --text-16: #{f.px(16)};
+  --text-18: #{f.px(18)};
+  --text-20: #{f.px(20)};
+  --text-24: #{f.px(24)};
+  --text-32: #{f.px(32)};
+  --text-40: #{f.px(40)};
+  --text-56: #{f.px(56)};
+}
 
 html {
   font-family: var(--font-body);

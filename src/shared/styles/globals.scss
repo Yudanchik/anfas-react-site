@@ -1,6 +1,6 @@
 @use './mixins';
 @use './reset';
-@use './tokens';
+@use './colors';
 @use './typography';
 
 body.menu-open,
@@ -21,36 +21,6 @@ body.modal-open {
   height: 3px;
   background: var(--amber);
   pointer-events: none;
-}
-
-.site-header {
-  position: absolute;
-  z-index: 50;
-  top: 0;
-  left: 0;
-  display: grid;
-  grid-template-columns: 240px 1fr 240px;
-  align-items: center;
-  width: 100%;
-  height: 88px;
-  padding: 0 4.2vw;
-  color: #fff;
-  border-bottom: 1px solid rgb(255 255 255 / 30%);
-}
-
-.site-header.is-inner {
-  position: relative;
-  color: var(--ink);
-  border-bottom-color: var(--line);
-  background: var(--paper);
-}
-
-.site-header.is-inner .menu-button {
-  border-color: var(--line);
-}
-
-.site-header.is-inner .menu-button span {
-  background: var(--ink);
 }
 
 .brand {
@@ -75,134 +45,6 @@ body.modal-open {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border-left: 1px solid currentcolor;
-}
-
-.desktop-nav {
-  display: flex;
-  justify-content: center;
-  gap: clamp(26px, 3.4vw, 58px);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.desktop-nav a {
-  position: relative;
-  padding: 8px 0;
-}
-
-.desktop-nav a::after {
-  position: absolute;
-  right: 0;
-  bottom: 2px;
-  left: 0;
-  height: 1px;
-  content: '';
-  transition: transform 0.35s ease;
-  transform: scaleX(0);
-  transform-origin: right;
-  background: currentcolor;
-}
-
-.desktop-nav a:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
-}
-
-.header-phone {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding: 0;
-  cursor: pointer;
-  color: inherit;
-  font-size: 10px;
-  line-height: 1.5;
-  text-transform: uppercase;
-  border: 0;
-  background: transparent;
-}
-
-.header-phone b {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.menu-button {
-  display: none;
-  width: 46px;
-  height: 46px;
-  padding: 0;
-  border: 1px solid rgb(255 255 255 / 45%);
-  border-radius: 50%;
-  background: transparent;
-}
-
-.menu-button span {
-  display: block;
-  width: 18px;
-  height: 1px;
-  margin: 5px auto;
-  transition: transform 0.3s ease;
-  background: #fff;
-}
-
-.menu-button.is-open span:first-child {
-  transform: translateY(3px) rotate(45deg);
-}
-
-.menu-button.is-open span:last-child {
-  transform: translateY(-3px) rotate(-45deg);
-}
-
-.mobile-menu {
-  position: fixed;
-  z-index: 40;
-  inset: 0;
-  display: flex;
-  visibility: hidden;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 130px 7vw 40px;
-  transition:
-    clip-path 0.6s cubic-bezier(0.77, 0, 0.18, 1),
-    visibility 0.6s;
-  clip-path: circle(0 at calc(100% - 50px) 45px);
-  color: var(--paper);
-  background: var(--ink);
-}
-
-.mobile-menu.is-open {
-  visibility: visible;
-  clip-path: circle(150% at calc(100% - 50px) 45px);
-}
-
-.mobile-menu nav {
-  display: flex;
-  flex-direction: column;
-}
-
-.mobile-menu nav a {
-  display: flex;
-  align-items: baseline;
-  gap: 20px;
-  padding: 18px 0;
-  font-family: var(--font-heading);
-  font-size: clamp(38px, 11vw, 62px);
-  line-height: 1;
-  border-bottom: 1px solid rgb(255 255 255 / 18%);
-}
-
-.mobile-menu nav span {
-  font-family: var(--font-body);
-  font-size: 10px;
-  color: var(--amber);
-}
-
-.mobile-menu-footer {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
 }
 
 .hero {
@@ -1285,63 +1127,6 @@ body.modal-open {
   transform-origin: 0 calc(min(68vw, 820px) / 2 + 5px);
 }
 
-.site-footer {
-  padding: 70px 4.2vw 25px;
-  color: var(--paper);
-  background: var(--ink);
-}
-
-.footer-top {
-  display: grid;
-  grid-template-columns: 1.35fr repeat(3, 1fr);
-  gap: 5vw;
-  padding-bottom: 75px;
-}
-
-.footer-brand {
-  align-self: start;
-}
-
-.footer-top > div:not(.footer-brand) {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.footer-top > div > span {
-  color: rgb(243 240 233 / 45%);
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.footer-top > div a,
-.footer-top > div p {
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: clamp(15px, 1.35vw, 21px);
-  line-height: 1.4;
-}
-
-.footer-bottom {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  padding-top: 24px;
-  color: rgb(243 240 233 / 48%);
-  font-size: 9px;
-  border-top: 1px solid rgb(255 255 255 / 14%);
-}
-
-.footer-bottom > a {
-  text-align: center;
-}
-
-.footer-bottom > div {
-  display: flex;
-  justify-content: flex-end;
-  gap: 22px;
-}
-
 .brief-modal {
   position: fixed;
   z-index: 100;
@@ -1576,14 +1361,6 @@ body.modal-open {
 }
 
 @media (width <= 1100px) {
-  .site-header {
-    grid-template-columns: 200px 1fr 190px;
-  }
-
-  .desktop-nav {
-    gap: 20px;
-  }
-
   .hero-grid {
     grid-template-columns: 1fr 190px;
   }
@@ -1611,22 +1388,6 @@ body.modal-open {
 }
 
 @media (width <= 820px) {
-  .site-header {
-    position: absolute;
-    grid-template-columns: 1fr auto;
-    height: 76px;
-    padding: 0 6vw;
-  }
-
-  .desktop-nav,
-  .header-phone {
-    display: none;
-  }
-
-  .menu-button {
-    display: block;
-  }
-
   .hero {
     min-height: 760px;
   }
@@ -1750,15 +1511,6 @@ body.modal-open {
 
   .quote-card {
     max-width: 520px;
-  }
-
-  .footer-top {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .footer-brand {
-    grid-column: 1 / -1;
-    margin-bottom: 20px;
   }
 }
 
@@ -1922,27 +1674,6 @@ body.modal-open {
 
   .contact-orbit span {
     display: none;
-  }
-
-  .footer-top {
-    display: flex;
-    flex-direction: column;
-    gap: 35px;
-  }
-
-  .footer-bottom {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .footer-bottom > a {
-    text-align: left;
-  }
-
-  .footer-bottom > div {
-    justify-content: flex-start;
   }
 
   .brief-panel {

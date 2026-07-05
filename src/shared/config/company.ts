@@ -6,7 +6,7 @@ export const company = {
   email: 'anfas-art@mail.ru',
   emailHref: 'mailto:anfas-art@mail.ru',
   address: 'Санкт-Петербург, наб. Обводного канала, 118АХ',
-  instagramHref: 'https://vk.com/anfas_remont',
+  vkHref: 'https://vk.com/anfas_remont',
   telegramHref: 'https://t.me/anfas_remont',
   foundedYear: '2012',
 } as const
