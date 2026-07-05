@@ -1,3 +1,5 @@
+import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
+
 import styles from '../_shared/InnerPage.module.scss'
 
 export const meta = () => [
@@ -18,6 +20,8 @@ export default function AboutRoute() {
         <br />
         <em>по делу.</em>
       </h1>
+      <SeoContentBlock {...seoContentPages.about} />
+
       <div className={styles.content}>
         <h2>Кирилл и Антон</h2>
         <p>

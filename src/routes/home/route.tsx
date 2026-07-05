@@ -13,6 +13,7 @@ import { HomeProjects } from '@/widgets/home/projects'
 import { HomeQuote } from '@/widgets/home/quote'
 import { HomeSocials } from '@/widgets/home/socials'
 import { HomeServices } from '@/widgets/home/services'
+import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
 import { HomeTicker } from '@/widgets/home/ticker'
 
 export async function loader() {
@@ -47,6 +48,7 @@ export default function HomeRoute() {
       <HomeFaq openFaq={openFaq} setOpenFaq={setOpenFaq} />
       <HomePartners />
       <HomeSocials />
+      <SeoContentBlock {...seoContentPages.home} />
       <HomeContact onOpenBrief={openBrief} />
     </main>
   )
