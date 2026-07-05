@@ -1,0 +1,177 @@
+@use '../../_common' as home;
+
+.sectionpad {
+  @include home.section-pad;
+}
+
+.sectionkicker {
+  @include home.section-kicker;
+}
+
+.sectionkicker span {
+  @include home.section-kicker-pill;
+}
+
+.sectionkicker p {
+  margin: 0;
+}
+
+.pain {
+  display: grid;
+  grid-template-columns: 0.78fr 1.22fr;
+  gap: 8vw;
+  background: var(--paper);
+}
+
+.paintitle {
+  align-self: start;
+  position: sticky;
+  top: 70px;
+}
+
+.paintitle h2 {
+  margin: 0;
+  font-size: clamp(45px, 5.6vw, 84px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+}
+
+.paintitle h2 em {
+  color: var(--amber);
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+.painlead {
+  max-width: 380px;
+  margin: 28px 0 0;
+  color: rgb(22 23 19 / 70%);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.paincta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(100%, 360px);
+  margin-top: 38px;
+  padding: 16px 0;
+  cursor: pointer;
+  border: 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  background: transparent;
+}
+
+.paincta span {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.paincta svg {
+  width: 19px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+  transition: transform 0.3s ease;
+}
+
+.paincta:hover svg {
+  transform: translateX(8px);
+}
+
+.paingrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.paincolumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 50%);
+  box-shadow: var(--shadow-soft);
+}
+
+.paincolumnsolution {
+  background: rgb(26 26 26 / 3%);
+}
+
+.paincolumnhead {
+  margin: 0;
+  color: rgb(22 23 19 / 65%);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.painlist {
+  display: grid;
+  gap: 16px;
+}
+
+.paincard {
+  padding: 22px;
+  border: 1px solid rgb(26 26 26 / 10%);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+}
+
+.paincolumnsolution .paincard {
+  background: rgb(255 255 255 / 72%);
+}
+
+.paincard h3 {
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+  font-size: clamp(22px, 2vw, 30px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.paincard p {
+  margin: 0;
+  color: rgb(22 23 19 / 72%);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+@media (width <= 1100px) {
+  .pain {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .paintitle {
+    position: static;
+  }
+}
+
+@media (width <= 820px) {
+  .paingrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 580px) {
+  .paincolumn {
+    padding: 22px;
+  }
+
+  .paincard {
+    padding: 20px;
+  }
+}

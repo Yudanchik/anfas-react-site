@@ -10,7 +10,7 @@ export function HomeServices() {
       <div className={styles.sectionhead} data-reveal>
         <div>
           <div className={styles.sectionkicker + ' ' + styles.sectionkickerlight}>
-            <span>02</span>
+            <span>03</span>
             <p>Что мы делаем</p>
           </div>
           <h2>
