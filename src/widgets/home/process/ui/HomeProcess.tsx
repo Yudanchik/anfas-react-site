@@ -7,7 +7,7 @@ export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
     <section id="process" className={styles.process + ' ' + styles.sectionpad}>
       <div className={styles.processintro}>
         <div className={styles.sectionkicker} data-reveal>
-          <span>05</span>
+          <span>04</span>
           <p>Как всё устроено</p>
         </div>
         <h2 data-reveal>

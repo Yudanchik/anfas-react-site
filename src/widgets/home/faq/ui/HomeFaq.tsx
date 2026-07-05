@@ -13,7 +13,7 @@ export function HomeFaq({
     <section className={styles.faq + ' ' + styles.sectionpad}>
       <div className={styles.faqtitle}>
         <div className={styles.sectionkicker} data-reveal>
-          <span>06</span>
+          <span>05</span>
           <p>Частые вопросы</p>
         </div>
         <h2 data-reveal>
