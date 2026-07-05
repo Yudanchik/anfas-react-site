@@ -1,0 +1,153 @@
+@use '../../../../shared/styles/mixins' as mixins;
+@use '../../_common' as home;
+
+
+.sectionpad {
+  @include home.section-pad;
+}
+
+
+.sectionkicker {
+  @include home.section-kicker;
+}
+
+
+.sectionkicker span {
+  @include home.section-kicker-pill;
+}
+
+
+.sectionkicker p {
+  margin: 0;
+}
+
+
+.manifesto {
+  background: var(--paper);
+}
+
+
+.manifestolayout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.55fr) 1.45fr;
+  gap: 8vw;
+}
+
+
+.manifestonote {
+  max-width: 340px;
+  margin: auto 0 12px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+
+.manifesto h2 {
+  max-width: 1040px;
+  margin: 0;
+  font-size: clamp(43px, 5.7vw, 89px);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.055em;
+}
+
+
+.manifesto h2 s {
+  color: #a7a49d;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--amber);
+}
+
+
+.manifesto h2 em {
+  color: var(--amber);
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+
+.statsrow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 120px 0 0 calc(0.55 / 2 * 100%);
+  border-top: 1px solid var(--line);
+}
+
+
+.statsrow > div {
+  display: flex;
+  align-items: flex-end;
+  gap: 22px;
+  padding: 33px 2.5vw 0 0;
+}
+
+
+.statsrow strong {
+  font-family: var(--font-heading);
+  font-size: clamp(46px, 5vw, 76px);
+  font-weight: 400;
+  line-height: 0.8;
+}
+
+
+.statsrow span {
+  font-size: 10px;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+
+@media (width <= 820px) {
+  .manifestolayout {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 45px;
+  }
+
+  .manifestonote {
+    margin-left: 20%;
+  }
+
+  .manifesto h2 {
+    font-size: clamp(41px, 9.5vw, 67px);
+  }
+
+  .statsrow {
+    margin: 80px 0 0;
+  }
+
+  .statsrow > div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+
+@media (width <= 580px) {
+  .sectionkicker {
+    margin-bottom: 40px;
+  }
+
+  .manifestonote {
+    margin-left: 0;
+  }
+
+  .statsrow {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .statsrow > div {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+    gap: 15px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .statsrow strong {
+    font-size: 49px;
+  }
+}

@@ -1,0 +1,88 @@
+.quotesection {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 860px;
+  padding: 6vw;
+  overflow: hidden;
+}
+
+
+.quoteimage {
+  position: absolute;
+  inset: -30px;
+  transition: transform 0.9s ease;
+  background:
+    linear-gradient(0deg, rgb(18 18 15 / 36%), rgb(18 18 15 / 5%)),
+    url('/images/project-grafika.jpeg') center 58% / cover no-repeat;
+}
+
+
+.quotesection:hover .quoteimage {
+  transform: scale(1.025);
+}
+
+
+.quotecard {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+  margin-left: auto;
+  padding: 50px 55px;
+  background: var(--paper);
+}
+
+
+.quotemark {
+  color: var(--amber);
+  font-family: var(--font-heading);
+  font-size: 74px;
+  line-height: 0.75;
+}
+
+
+.quotecard blockquote {
+  margin: 25px 0 45px;
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 2.6vw, 38px);
+  line-height: 1.35;
+}
+
+
+.quotecard footer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 10px;
+}
+
+
+.quotecard footer strong {
+  font-size: 12px;
+}
+
+
+@media (width <= 820px) {
+  .quotesection {
+    min-height: 720px;
+    padding: 6vw;
+  }
+
+  .quotecard {
+    max-width: 520px;
+  }
+}
+
+
+@media (width <= 580px) {
+  .quotesection {
+    min-height: 690px;
+    padding: 0;
+  }
+
+  .quotecard {
+    width: calc(100% - 32px);
+    margin: 0 16px 16px;
+    padding: 35px 28px;
+  }
+}
