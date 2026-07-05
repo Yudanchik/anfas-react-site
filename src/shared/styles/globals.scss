@@ -1,71 +1,11 @@
-@import 'https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Prata&display=swap';
-
-:root {
-  color: #161713;
-  background: #f3f0e9;
-  font-family: Manrope, 'Segoe UI', sans-serif;
-  font-synthesis: none;
-  text-rendering: optimizelegibility;
-
-  --ink: #161713;
-  --paper: #f3f0e9;
-  --paper-deep: #e9e4da;
-  --amber: #edae24;
-  --sage: #b6beaa;
-  --line: rgb(22 23 19 / 18%);
-  --scroll-progress: 0;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 82px;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-  overflow-x: hidden;
-  background: var(--paper);
-  color: var(--ink);
-}
+@use './mixins';
+@use './reset';
+@use './tokens';
+@use './typography';
 
 body.menu-open,
 body.modal-open {
   overflow: hidden;
-}
-
-button,
-input,
-select {
-  font: inherit;
-}
-
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  color: inherit;
-}
-
-img {
-  display: block;
-  max-width: 100%;
-}
-
-::selection {
-  color: var(--ink);
-  background: var(--amber);
 }
 
 .site-shell {
@@ -247,14 +187,14 @@ img {
   align-items: baseline;
   gap: 20px;
   padding: 18px 0;
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-size: clamp(38px, 11vw, 62px);
   line-height: 1;
   border-bottom: 1px solid rgb(255 255 255 / 18%);
 }
 
 .mobile-menu nav span {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-body);
   font-size: 10px;
   color: var(--amber);
 }
@@ -350,7 +290,7 @@ img {
 .faq-title h2 em,
 .contact h2 em,
 .brief-panel h2 em {
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-weight: 400;
   letter-spacing: -0.03em;
 }
@@ -626,7 +566,7 @@ img {
 
 .manifesto h2 em {
   color: var(--amber);
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-weight: 400;
 }
 
@@ -645,7 +585,7 @@ img {
 }
 
 .stats-row strong {
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-size: clamp(46px, 5vw, 76px);
   font-weight: 400;
   line-height: 0.8;
@@ -736,7 +676,7 @@ img {
 
 .service-card h3 {
   margin: 0 0 20px;
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-size: clamp(31px, 3vw, 49px);
   font-weight: 400;
 }
@@ -935,7 +875,7 @@ img {
 
 .project-copy h3 {
   margin: 0;
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-size: clamp(23px, 2.2vw, 34px);
   font-weight: 400;
 }
@@ -1060,7 +1000,7 @@ img {
 
 .process-steps h3 {
   margin: 0 0 22px;
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-size: clamp(29px, 3vw, 46px);
   font-weight: 400;
 }
@@ -1105,14 +1045,14 @@ img {
 
 .quote-mark {
   color: var(--amber);
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-size: 74px;
   line-height: 0.75;
 }
 
 .quote-card blockquote {
   margin: 25px 0 45px;
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-size: clamp(24px, 2.6vw, 38px);
   line-height: 1.35;
 }
@@ -1149,6 +1089,13 @@ img {
   color: var(--amber);
 }
 
+.faq-title > p {
+  max-width: 360px;
+  margin: 28px 0 0;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
 .faq-list {
   border-top: 1px solid var(--line);
 }
@@ -1176,7 +1123,7 @@ img {
 }
 
 .faq-item strong {
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-size: clamp(19px, 2vw, 29px);
   font-weight: 400;
 }
@@ -1371,7 +1318,7 @@ img {
 .footer-top > div a,
 .footer-top > div p {
   margin: 0;
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-size: clamp(15px, 1.35vw, 21px);
   line-height: 1.4;
 }
@@ -1505,7 +1452,7 @@ img {
   width: 100%;
   padding: 14px 0;
   color: var(--ink);
-  font-family: Prata, Georgia, serif;
+  font-family: var(--font-heading);
   font-size: 20px;
   border: 0;
   border-bottom: 1px solid var(--line);
@@ -1792,6 +1739,10 @@ img {
     margin-bottom: 80px;
   }
 
+  .faq-title > p {
+    margin-top: 30px;
+  }
+
   .quote-section {
     min-height: 720px;
     padding: 6vw;
@@ -1945,6 +1896,10 @@ img {
   .faq-item > button {
     grid-template-columns: 30px 1fr 25px;
     gap: 12px;
+  }
+
+  .faq-title > p {
+    max-width: 100%;
   }
 
   .faq-answer p {

@@ -1,0 +1,26 @@
+@import 'https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Prata&display=swap';
+
+html {
+  font-family: var(--font-body);
+  font-synthesis: none;
+  text-rendering: optimizelegibility;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+dl {
+  margin: 0;
+}

@@ -1,0 +1,27 @@
+:root {
+  color: var(--ink);
+  background: var(--paper);
+
+  --font-body: 'Manrope', 'Segoe UI', sans-serif;
+  --font-heading: 'Prata', georgia, serif;
+  --ink: #161713;
+  --paper: #f3f0e9;
+  --paper-deep: #e9e4da;
+  --amber: #edae24;
+  --sage: #b6beaa;
+  --line: rgb(22 23 19 / 18%);
+  --text-12: 12px;
+  --text-14: 14px;
+  --text-16: 16px;
+  --text-18: 18px;
+  --text-20: 20px;
+  --text-24: 24px;
+  --text-32: 32px;
+  --text-40: 40px;
+  --text-56: 56px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --shadow-soft: 0 18px 50px rgb(22 23 19 / 8%);
+  --scroll-progress: 0;
+}

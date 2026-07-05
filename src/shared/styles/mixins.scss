@@ -1,0 +1,22 @@
+@mixin respond-down($width) {
+  @media (width <= $width) {
+    @content;
+  }
+}
+
+@mixin focus-ring {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+@mixin heading-font {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+@mixin surface-card {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  background: var(--paper);
+}

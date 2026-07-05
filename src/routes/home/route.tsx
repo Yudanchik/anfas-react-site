@@ -322,13 +322,17 @@ export default function HomeRoute() {
         <div className="faq-title">
           <div className="section-kicker" data-reveal>
             <span>05</span>
-            <p>Коротко о важном</p>
+            <p>Частые вопросы</p>
           </div>
           <h2 data-reveal>
-            Есть вопрос?
+            Закрываем
             <br />
-            <em>Уже отвечаем.</em>
+            <em>главные страхи.</em>
           </h2>
+          <p data-reveal>
+            Здесь собрали короткие ответы про сроки, бюджет, контроль, удалённый ремонт и выбор
+            между дизайн-проектом и пакетным решением.
+          </p>
         </div>
         <div className="faq-list">
           {faqItems.map((item, index) => (
