@@ -22,7 +22,7 @@ export function HomeProjects({
     <section id="projects" className={styles.projects + ' ' + styles.sectionpad}>
       <div className={styles.projectshead}>
         <div className={styles.sectionkicker + ' ' + styles.sectionkickerlight} data-reveal>
-          <span>04</span>
+          <span>03</span>
           <p>Реализованные проекты</p>
         </div>
         <h2 data-reveal>Говорим работами.</h2>
