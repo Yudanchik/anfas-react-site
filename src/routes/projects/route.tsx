@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from 'react-router'
+﻿import { Link, useLoaderData } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
 import { assetUrl } from '@/shared/lib/asset-url'
@@ -13,10 +13,10 @@ export async function loader() {
 }
 
 export const meta = () => [
-  { title: 'Проекты — Анфас' },
+  { title: 'Проекты ремонта квартир в Санкт-Петербурге | Анфас' },
   {
     name: 'description',
-    content: 'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге.',
+    content: 'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге. Портфолио с примерами работ, площадью и типом объекта.',
   },
 ]
 
