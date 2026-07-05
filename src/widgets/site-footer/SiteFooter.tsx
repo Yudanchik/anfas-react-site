@@ -1,41 +1,112 @@
 import { Link } from 'react-router'
 
+import { services } from '@/entities/service/model/services.data'
 import { company } from '@/shared/config/company'
+import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 
 import styles from './SiteFooter.module.scss'
+
+const footerPages = [
+  { label: '???????', to: '/' },
+  { label: '??????', to: '/services' },
+  { label: '???????', to: '/projects' },
+  { label: '? ???', to: '/about' },
+  { label: '????????', to: '/contacts' },
+  { label: '????????', to: '/privacy' },
+] as const
 
 export function SiteFooter() {
   return (
     <footer className={styles.siteFooter}>
       <div className={styles.footerTop}>
-        <Link className={`brand ${styles.footerBrand}`} to="/">
-          <span className="brand-word">анфас</span>
-          <span className="brand-caption">
-            дизайн
-            <br />и ремонт
-          </span>
-        </Link>
-        <div className={styles.footerItem}>
-          <span className={styles.footerLabel}>Позвонить</span>
-          <a href={company.phoneHref}>{company.phone}</a>
-        </div>
-        <div className={styles.footerItem}>
-          <span className={styles.footerLabel}>Написать</span>
-          <a href={company.emailHref}>{company.email}</a>
-        </div>
-        <div className={styles.footerItem}>
-          <span className={styles.footerLabel}>Приехать</span>
-          <p className={styles.footerText}>
-            Санкт-Петербург,
-            <br />
-            наб. Обводного канала, 118АХ
+        <div className={styles.brandColumn}>
+          <Link className={`brand ${styles.footerBrand}`} to="/">
+            <span className="brand-word">?????</span>
+            <span className="brand-caption">
+              ??????
+              <br />? ??????
+            </span>
+          </Link>
+          <p className={styles.brandLead}>
+            ??????????? ? ????????? ????????? ? ???????? ?????????, ??????????? ??????? ? ?????????? ???????.
           </p>
+          <div className={styles.socials}>
+            <a href={company.vkHref} target="_blank" rel="noreferrer">
+              VK
+            </a>
+            <a href={company.telegramHref} target="_blank" rel="noreferrer">
+              Telegram
+            </a>
+          </div>
+        </div>
+
+        <div className={styles.footerColumn}>
+          <span className={styles.footerTitle}>????</span>
+          <nav className={styles.footerNav} aria-label="????????? ?? ?????">
+            {footerPages.map((page) => (
+              <Link key={page.to} to={page.to}>
+                {page.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div className={styles.footerColumn}>
+          <span className={styles.footerTitle}>??????</span>
+          <nav className={styles.footerNav} aria-label="????????? ?? ???????">
+            {services.slice(0, 5).map((service) => (
+              <Link key={service.id} to={`/services#${service.id}`}>
+                {service.title}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div className={styles.footerColumn}>
+          <span className={styles.footerTitle}>????????</span>
+          <div className={styles.contactCards}>
+            <div>
+              <span>?????????</span>
+              <a href={company.phoneHref}>{company.phone}</a>
+            </div>
+            <div>
+              <span>????????</span>
+              <a href={company.emailHref}>{company.email}</a>
+            </div>
+            <div>
+              <span>????????</span>
+              <p>
+                ?????-?????????,
+                <br />
+                ???. ????????? ??????, 118??
+              </p>
+            </div>
+          </div>
         </div>
       </div>
+
+      <div className={styles.footerBanner}>
+        <div>
+          <span className={styles.footerBannerKicker}>??????????? ? ?????</span>
+          <h3>?????????????? ?? ???? ??????? ? ????????, ??? ????????? ???????.</h3>
+          <p>
+            ?? ??????? ?????????, ????????? ????????? ? ????????? ???????????, ????? ?? ???????? ?????? ? ??????? ??? ??
+            ??????? ??????.
+          </p>
+        </div>
+        <form className={styles.footerSubscribe}>
+          <input type="email" placeholder="???? ?????" aria-label="??? email" />
+          <button type="button">
+            <span>???????????</span>
+            <ArrowIcon />
+          </button>
+        </form>
+      </div>
+
       <div className={styles.footerBottom}>
-        <span className={styles.footerCopyright}>© 2012–2026 «Анфас»</span>
-        <Link to="/privacy">Политика конфиденциальности</Link>
-        <div className={styles.footerSocials}>
+        <span className={styles.footerCopyright}>? 2012?2026 ???????</span>
+        <Link to="/privacy">???????? ??????????????????</Link>
+        <div className={styles.footerBottomSocials}>
           <a href={company.vkHref} target="_blank" rel="noreferrer">
             VK
           </a>
