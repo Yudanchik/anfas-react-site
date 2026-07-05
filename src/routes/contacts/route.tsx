@@ -1,3 +1,4 @@
+import { company } from '@/shared/config/company'
 import { useBrief } from '@/features/brief/model/BriefContext'
 
 import styles from '../_shared/InnerPage.module.scss'
@@ -25,11 +26,11 @@ export default function ContactsRoute() {
       <div className={styles.content}>
         <h2>Связаться</h2>
         <p>
-          +7 (812) 200-80-71
+          {company.phone}
           <br />
-          anfas-art@mail.ru
+          {company.email}
           <br />
-          Санкт-Петербург, наб. Обводного канала, 118АХ
+          {company.address}
         </p>
       </div>
       <button className={styles.button} type="button" onClick={openBrief}>
