@@ -1,3 +1,5 @@
+@use './themes/default/fonts' as f;
+
 @mixin respond-down($width) {
   @media (width <= $width) {
     @content;
@@ -10,9 +12,7 @@
 }
 
 @mixin heading-font {
-  font-family: var(--font-heading);
-  font-weight: 400;
-  letter-spacing: -0.03em;
+  @include f.heading-font;
 }
 
 @mixin surface-card {

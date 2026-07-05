@@ -1,14 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 
+import { company, navigation } from '@/shared/config/company'
 import { useBrief } from '@/features/brief/model/BriefContext'
 
-const navigation = [
-  { label: 'Услуги', to: '/services' },
-  { label: 'Проекты', to: '/projects' },
-  { label: 'О нас', to: '/about' },
-  { label: 'Контакты', to: '/contacts' },
-] as const
+import styles from './SiteHeader.module.scss'
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -24,11 +20,11 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className={`site-header ${isHome ? '' : 'is-inner'}`}>
+      <header className={`${styles.siteHeader} ${isHome ? '' : styles.isInner}`}>
         <Link
           className="brand"
           to="/"
-          aria-label="Анфас — на главную"
+          aria-label={`${company.name} — на главную`}
           onClick={() => setMenuOpen(false)}
         >
           <span className="brand-word">анфас</span>
@@ -38,7 +34,7 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav className="desktop-nav" aria-label="Основная навигация">
+        <nav className={styles.desktopNav} aria-label="Основная навигация">
           {navigation.map((item) => (
             <NavLink key={item.to} to={item.to}>
               {item.label}
@@ -46,13 +42,13 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <button className="header-phone" type="button" onClick={openBrief}>
+        <button className={styles.headerPhone} type="button" onClick={openBrief}>
           <span>Обсудить проект</span>
-          <b>+7 (812) 200-80-71</b>
+          <b>{company.phone}</b>
         </button>
 
         <button
-          className={`menu-button ${menuOpen ? 'is-open' : ''}`}
+          className={`${styles.menuButton} ${menuOpen ? styles.isOpen : ''}`}
           type="button"
           aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
           aria-expanded={menuOpen}
@@ -63,7 +59,7 @@ export function SiteHeader() {
         </button>
       </header>
 
-      <div className={`mobile-menu ${menuOpen ? 'is-open' : ''}`} aria-hidden={!menuOpen}>
+      <div className={`${styles.mobileMenu} ${menuOpen ? styles.isOpen : ''}`} aria-hidden={!menuOpen}>
         <nav>
           {navigation.map((item, index) => (
             <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)}>
@@ -72,9 +68,9 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className="mobile-menu-footer">
-          <a href="tel:+78122008071">+7 (812) 200-80-71</a>
-          <a href="mailto:anfas-art@mail.ru">anfas-art@mail.ru</a>
+        <div className={styles.mobileMenuFooter}>
+          <a href={company.phoneHref}>{company.phone}</a>
+          <a href={company.emailHref}>{company.email}</a>
         </div>
       </div>
     </>
