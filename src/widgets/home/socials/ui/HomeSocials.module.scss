@@ -1,0 +1,252 @@
+@use '../../_common' as home;
+
+.sectionpad {
+  @include home.section-pad;
+}
+
+.sectionkicker {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: max-content;
+  margin-bottom: 54px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sectionkickerlight {
+  margin-bottom: 42px;
+}
+
+.sectionkicker span {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  place-items: center;
+}
+
+.sectionkicker p {
+  margin: 0;
+}
+
+.socials {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.socialslayout {
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: 8vw;
+}
+
+.socialsintro {
+  align-self: start;
+  position: sticky;
+  top: 70px;
+}
+
+.socialsintro h2 {
+  margin: 0;
+  font-size: clamp(45px, 5.8vw, 86px);
+  font-weight: 400;
+  line-height: 0.96;
+  letter-spacing: -0.06em;
+}
+
+.socialsintro h2 em {
+  color: var(--amber);
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+.socialsintro p {
+  max-width: 390px;
+  margin: 28px 0 0;
+  color: rgb(243 240 233 / 72%);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.socialscontent {
+  display: grid;
+  gap: 20px;
+}
+
+.socialsvisual {
+  padding: 28px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at top right, rgb(237 174 36 / 20%), transparent 42%),
+    linear-gradient(145deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 4%));
+  box-shadow: var(--shadow-soft);
+}
+
+.visualframe {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 360px;
+  padding: 24px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: calc(var(--radius-lg) - 4px);
+  background: rgb(13 13 12 / 50%);
+}
+
+.visualkicker {
+  width: max-content;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 10%);
+}
+
+.visualfeed {
+  display: grid;
+  gap: 14px;
+  margin-top: auto;
+}
+
+.visualfeed article {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 20px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 5%);
+}
+
+.visualfeed article span {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 8%);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.visualfeed article p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.sociallinks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.socialcard {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 190px;
+  padding: 24px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: var(--radius-lg);
+  background: rgb(255 255 255 / 5%);
+  box-shadow: var(--shadow-soft);
+  color: inherit;
+  text-decoration: none;
+}
+
+.socialcard strong {
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 2.4vw, 34px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.socialcard p {
+  max-width: 210px;
+  margin: 0;
+  color: rgb(243 240 233 / 72%);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.socialcard svg {
+  width: 20px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+  flex-shrink: 0;
+}
+
+.socialcarddisabled {
+  align-items: flex-start;
+  color: rgb(243 240 233 / 76%);
+}
+
+.socialcarddisabled span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 10%);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (width <= 1100px) {
+  .socialslayout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .socialsintro {
+    position: static;
+  }
+}
+
+@media (width <= 820px) {
+  .sociallinks {
+    grid-template-columns: 1fr;
+  }
+
+  .socialcard {
+    min-height: auto;
+  }
+}
+
+@media (width <= 580px) {
+  .socialsvisual,
+  .socialcard {
+    padding: 20px;
+  }
+
+  .visualframe {
+    min-height: 300px;
+    padding: 18px;
+  }
+
+  .visualfeed article {
+    grid-template-columns: 36px 1fr;
+    gap: 12px;
+    padding: 16px;
+  }
+}

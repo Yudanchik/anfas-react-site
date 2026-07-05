@@ -11,6 +11,7 @@ import { HomePartners } from '@/widgets/home/partners'
 import { HomeProcess } from '@/widgets/home/process'
 import { HomeProjects } from '@/widgets/home/projects'
 import { HomeQuote } from '@/widgets/home/quote'
+import { HomeSocials } from '@/widgets/home/socials'
 import { HomeServices } from '@/widgets/home/services'
 import { HomeTicker } from '@/widgets/home/ticker'
 
@@ -45,6 +46,7 @@ export default function HomeRoute() {
       <HomeQuote />
       <HomeFaq openFaq={openFaq} setOpenFaq={setOpenFaq} />
       <HomePartners />
+      <HomeSocials />
       <HomeContact onOpenBrief={openBrief} />
     </main>
   )
