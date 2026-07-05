@@ -28,7 +28,7 @@
   z-index: 1;
   max-width: 620px;
   margin-left: auto;
-  padding: 50px 55px;
+  padding: 50px 56px;
   background: var(--paper);
 }
 
@@ -42,7 +42,7 @@
 
 
 .quotecard blockquote {
-  margin: 25px 0 45px;
+  margin: 26px 0 46px;
   font-family: var(--font-heading);
   font-size: clamp(24px, 2.6vw, 38px);
   line-height: 1.35;
@@ -52,8 +52,8 @@
 .quotecard footer {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  font-size: 10px;
+  gap: 6px;
+  font-size: 12px;
 }
 
 
@@ -83,6 +83,6 @@
   .quotecard {
     width: calc(100% - 32px);
     margin: 0 16px 16px;
-    padding: 35px 28px;
+    padding: 36px 28px;
   }
 }

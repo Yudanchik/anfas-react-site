@@ -89,16 +89,16 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 27px;
+  gap: 28px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
 
   > span {
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -126,13 +126,13 @@
 
 .error {
   color: #a43c27;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .privacy {
   max-width: 360px;
   color: rgb(22 23 19 / 50%);
-  font-size: 8px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -154,7 +154,7 @@
   }
 
   h2 {
-    margin: 35px 0 20px;
+    margin: 36px 0 20px;
     font-size: clamp(45px, 5vw, 70px);
     font-weight: 400;
   }
@@ -166,7 +166,7 @@
 
   button {
     margin-top: 20px;
-    padding: 14px 25px;
+    padding: 14px 26px;
     cursor: pointer;
     color: var(--paper);
     border: 0;

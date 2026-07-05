@@ -57,7 +57,7 @@
 
 .projectshead > p {
   max-width: 300px;
-  margin: 0 0 7px;
+  margin: 0 0 8px;
   color: rgb(243 240 233 / 65%);
   font-size: 12px;
   line-height: 1.7;
@@ -136,7 +136,7 @@
   display: grid;
   width: 35px;
   height: 35px;
-  font-size: 9px;
+  font-size: 12px;
   border: 1px solid rgb(255 255 255 / 55%);
   border-radius: 50%;
   background: rgb(20 20 17 / 15%);
@@ -182,9 +182,9 @@
 
 
 .projectcopy p {
-  margin: 0 0 9px;
+  margin: 0 0 10px;
   color: rgb(243 240 233 / 55%);
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -214,14 +214,14 @@
 
 .projectcopy dt {
   color: rgb(243 240 233 / 48%);
-  font-size: 8px;
+  font-size: 12px;
   text-transform: uppercase;
 }
 
 
 .projectcopy dd {
   margin: 0;
-  font-size: 10px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
@@ -294,7 +294,7 @@
   .projectcard:nth-child(2),
   .projectcard:nth-child(3),
   .projectcard:nth-child(4) {
-    margin: 0 0 75px;
+    margin: 0 0 76px;
   }
 
   .projectimagewrap,

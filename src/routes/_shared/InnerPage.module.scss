@@ -1,6 +1,6 @@
 .page {
   min-height: 72vh;
-  padding: 95px 4.2vw 130px;
+  padding: 96px 4.2vw 130px;
   background: var(--paper);
 }
 
@@ -9,7 +9,7 @@
   align-items: center;
   gap: 12px;
   margin: 0 0 30px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -39,7 +39,7 @@
 
 .lead {
   max-width: 650px;
-  margin: 35px 0 0;
+  margin: 36px 0 0;
   font-size: 15px;
   line-height: 1.8;
 }
@@ -89,7 +89,7 @@
   }
 
   span {
-    font-size: 10px;
+    font-size: 12px;
     text-transform: uppercase;
   }
 }
@@ -166,8 +166,8 @@
 
 .projectMeta {
   display: flex;
-  gap: 35px;
-  margin-top: 45px;
+  gap: 36px;
+  margin-top: 46px;
 
   div {
     display: flex;
@@ -176,7 +176,7 @@
   }
 
   dt {
-    font-size: 9px;
+    font-size: 12px;
     text-transform: uppercase;
     opacity: 0.65;
   }
@@ -189,7 +189,7 @@
 
 @media (width <= 700px) {
   .page {
-    padding: 75px 6vw 95px;
+    padding: 76px 6vw 96px;
   }
 
   .grid,
@@ -198,7 +198,7 @@
   }
 
   .grid {
-    margin-top: 65px;
+    margin-top: 66px;
   }
 
   .image {
@@ -207,7 +207,7 @@
   }
 
   .projectHero {
-    padding: 75px 6vw 45px;
+    padding: 76px 6vw 46px;
   }
 
   .projectMeta {

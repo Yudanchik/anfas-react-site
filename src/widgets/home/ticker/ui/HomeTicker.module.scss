@@ -1,6 +1,6 @@
 .ticker {
   overflow: hidden;
-  padding: 17px 0;
+  padding: 18px 0;
   color: var(--ink);
   background: var(--amber);
 }
@@ -36,6 +36,6 @@
 
 @media (width <= 580px) {
   .tickergroup span {
-    padding: 0 25px;
+    padding: 0 26px;
   }
 }

@@ -5,7 +5,7 @@ $font-heading: 'Prata', georgia, serif;
   @return $value * 1px;
 }
 
-@mixin body-font($size: 16, $line-height: 1.5, $weight: 400, $letter-spacing: 0) {
+@mixin body-font($size: 16, $line-height: 1.6, $weight: 400, $letter-spacing: 0) {
   font-family: $font-body;
   font-size: px($size);
   line-height: $line-height;
@@ -13,7 +13,7 @@ $font-heading: 'Prata', georgia, serif;
   letter-spacing: $letter-spacing;
 }
 
-@mixin heading-font($size: 18, $line-height: 1, $weight: 400, $letter-spacing: -0.03em) {
+@mixin heading-font($size: 18, $line-height: 0.96, $weight: 400, $letter-spacing: -0.04em) {
   font-family: $font-heading;
   font-size: px($size);
   line-height: $line-height;
@@ -21,8 +21,8 @@ $font-heading: 'Prata', georgia, serif;
   letter-spacing: $letter-spacing;
 }
 
-@mixin uppercase-label($size: 12, $weight: 600, $letter-spacing: 0.08em) {
-  @include body-font($size, 1.2, $weight, $letter-spacing);
+@mixin uppercase-label($size: 12, $weight: 600, $letter-spacing: 0.1em) {
+  @include body-font($size, 1.15, $weight, $letter-spacing);
 
   text-transform: uppercase;
 }
