@@ -1,6 +1,8 @@
 import { services } from '@/entities/service/model/services.data'
 import { useBrief } from '@/features/brief/model/BriefContext'
 
+import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
+
 import styles from '../_shared/InnerPage.module.scss'
 
 export const meta = () => [
@@ -23,6 +25,8 @@ export default function ServicesRoute() {
         <br />
         <em>Весь путь.</em>
       </h1>
+
+      <SeoContentBlock {...seoContentPages.services} />
 
       <div className={styles.grid}>
         {services.map((service) => (

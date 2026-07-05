@@ -2,6 +2,7 @@ import { Link, useLoaderData } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
 import { assetUrl } from '@/shared/lib/asset-url'
+import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
 
 import styles from '../_shared/InnerPage.module.scss'
 
@@ -34,6 +35,8 @@ export default function ProjectsRoute() {
         Реальные квартиры и коммерческие пространства с открытыми сроками, площадью и бюджетом
         работ.
       </p>
+
+      <SeoContentBlock {...seoContentPages.projects} />
 
       <div className={styles.grid}>
         {projects.map((project) => (

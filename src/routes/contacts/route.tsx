@@ -1,6 +1,8 @@
 import { company } from '@/shared/config/company'
 import { useBrief } from '@/features/brief/model/BriefContext'
 
+import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
+
 import styles from '../_shared/InnerPage.module.scss'
 
 export const meta = () => [
@@ -23,6 +25,8 @@ export default function ContactsRoute() {
         <br />
         <em>ваш интерьер.</em>
       </h1>
+      <SeoContentBlock {...seoContentPages.contacts} />
+
       <div className={styles.content}>
         <h2>Связаться</h2>
         <p>
