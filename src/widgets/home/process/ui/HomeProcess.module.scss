@@ -1,0 +1,153 @@
+@use '../../_common' as home;
+
+
+.sectionpad {
+  @include home.section-pad;
+}
+
+
+.sectionkicker {
+  @include home.section-kicker;
+}
+
+
+.sectionkicker span {
+  @include home.section-kicker-pill;
+}
+
+
+.sectionkicker p {
+  margin: 0;
+}
+
+
+.process {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 9vw;
+  background: var(--paper);
+}
+
+
+.processintro {
+  align-self: start;
+  position: sticky;
+  top: 70px;
+}
+
+
+.processintro h2 {
+  margin-bottom: 34px;
+  font-size: clamp(48px, 5.6vw, 84px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+}
+
+
+.processintro h2 em {
+  color: var(--amber);
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+
+.processintro > p {
+  max-width: 410px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+
+.outlinebutton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(100%, 350px);
+  margin-top: 38px;
+  padding: 16px 0;
+  cursor: pointer;
+  font-size: 12px;
+  border: 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  background: transparent;
+}
+
+
+.outlinebutton svg {
+  transition: transform 0.3s ease;
+}
+
+
+.outlinebutton:hover svg {
+  transform: translateX(8px);
+}
+
+
+.processsteps {
+  border-top: 1px solid var(--line);
+}
+
+
+.processsteps article {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 30px;
+  min-height: 230px;
+  padding: 42px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+
+.processsteps article > span {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  font-size: 12px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  place-items: center;
+}
+
+
+.processsteps h3 {
+  margin: 0 0 22px;
+  font-family: var(--font-heading);
+  font-size: clamp(29px, 3vw, 46px);
+  font-weight: 400;
+}
+
+
+.processsteps p {
+  max-width: 560px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+
+@media (width <= 820px) {
+  .process {
+    display: block;
+  }
+
+  .processintro {
+    position: static;
+    margin-bottom: 80px;
+  }
+}
+
+
+@media (width <= 580px) {
+  .processsteps article {
+    grid-template-columns: 46px 1fr;
+    gap: 16px;
+  }
+
+  .processsteps h3 {
+    font-size: 29px;
+  }
+}

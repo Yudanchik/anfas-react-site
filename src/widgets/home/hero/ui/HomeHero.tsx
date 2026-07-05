@@ -2,6 +2,7 @@ import { useRef, type MouseEvent } from 'react'
 import { Link } from 'react-router'
 
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import styles from './HomeHero.module.scss'
 
 export function HomeHero({ onOpenBrief }: { onOpenBrief: () => void }) {
   const heroRef = useRef<HTMLElement>(null)
@@ -22,62 +23,60 @@ export function HomeHero({ onOpenBrief }: { onOpenBrief: () => void }) {
   }
 
   return (
-<section id="top" className="hero" ref={heroRef} onMouseMove={handleHeroMove}>
-        <div className="hero-image" aria-hidden="true" />
-        <div className="hero-wash" aria-hidden="true" />
-        <div className="hero-grid">
-          <div className="hero-copy">
-            <p className="eyebrow hero-eyebrow">
-              <span />
-              Санкт-Петербург · с 2012 года
-            </p>
-            <h1>
-              Интерьер,
-              <br />
-              который <em>выглядит</em>
-              <br />
-              как вы
-            </h1>
-            <p className="hero-lead">
-              Проектируем и реализуем пространства, в которых красиво не только на рендерах, но и
-              каждый день.
-            </p>
-            <button className="primary-button" type="button" onClick={onOpenBrief}>
-              <span>Обсудить проект</span>
-              <i>
-                <ArrowIcon />
-              </i>
-            </button>
-          </div>
-
-          <div className="hero-side">
-            <div className="hero-badge">
-              <span>Дизайн</span>
-              <span>Ремонт</span>
-              <span>Комплектация</span>
-            </div>
-            <Link className="hero-case-link" to="/projects">
-              <span>
-                Смотреть
-                <br />
-                проекты
-              </span>
-              <i>
-                <ArrowIcon />
-              </i>
-            </Link>
-          </div>
+    <section id="top" className={styles.hero} ref={heroRef} onMouseMove={handleHeroMove}>
+      <div className={styles.heroimage} aria-hidden="true" />
+      <div className={styles.herowash} aria-hidden="true" />
+      <div className={styles.herogrid}>
+        <div className={styles.herocopy}>
+          <p className={styles.heroeyebrow}>
+            <span />
+            Санкт-Петербург · с 2012 года
+          </p>
+          <h1>
+            Интерьер,
+            <br />
+            который <em>выглядит</em>
+            <br />
+            как вы
+          </h1>
+          <p className={styles.herolead}>
+            Проектируем и реализуем пространства, в которых красиво не только на рендерах, но и
+            каждый день.
+          </p>
+          <button className={styles.primarybutton} type="button" onClick={onOpenBrief}>
+            <span>Обсудить проект</span>
+            <i>
+              <ArrowIcon />
+            </i>
+          </button>
         </div>
 
-        <div className="hero-meta">
-          <span>59.9343° N</span>
-          <span>30.3351° E</span>
-          <span className="scroll-note">
-            Листайте вниз <i />
-          </span>
+        <div className={styles.heroside}>
+          <div className={styles.herobadge}>
+            <span>Дизайн</span>
+            <span>Ремонт</span>
+            <span>Комплектация</span>
+          </div>
+          <Link className={styles.herocaselink} to="/projects">
+            <span>
+              Смотреть
+              <br />
+              проекты
+            </span>
+            <i>
+              <ArrowIcon />
+            </i>
+          </Link>
         </div>
-      </section>
+      </div>
 
-      
+      <div className={styles.herometa}>
+        <span>59.9343° N</span>
+        <span>30.3351° E</span>
+        <span className={styles.scrollnote}>
+          Листайте вниз <i />
+        </span>
+      </div>
+    </section>
   )
 }

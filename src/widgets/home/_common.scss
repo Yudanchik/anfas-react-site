@@ -1,0 +1,28 @@
+@mixin section-pad {
+  padding: 130px 4.2vw;
+}
+
+@mixin section-kicker {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: max-content;
+  margin-bottom: 54px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@mixin section-kicker-light {
+  margin-bottom: 42px;
+}
+
+@mixin section-kicker-pill {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  place-items: center;
+}

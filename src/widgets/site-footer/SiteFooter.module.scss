@@ -1,7 +1,7 @@
 @use '../../shared/styles/themes/default/fonts' as f;
 
 .siteFooter {
-  padding: 70px 4.2vw 25px;
+  padding: 70px 4.2vw 26px;
   color: var(--paper);
   background: var(--ink);
 }
@@ -10,7 +10,7 @@
   display: grid;
   grid-template-columns: 1.35fr repeat(3, 1fr);
   gap: 5vw;
-  padding-bottom: 75px;
+  padding-bottom: 76px;
 }
 
 .footerBrand {
@@ -82,14 +82,14 @@
   .footerTop {
     display: flex;
     flex-direction: column;
-    gap: 35px;
+    gap: 36px;
   }
 
   .footerBottom {
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    gap: 15px;
+    gap: 16px;
   }
 
   .footerBottom > a {
