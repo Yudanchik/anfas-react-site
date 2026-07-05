@@ -13,6 +13,7 @@ import { HomeProjects } from '@/widgets/home/projects'
 import { HomeQuote } from '@/widgets/home/quote'
 import { HomeSocials } from '@/widgets/home/socials'
 import { HomeServices } from '@/widgets/home/services'
+import { HomeFormatCompare } from '@/widgets/home/format-compare'
 import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
 import { HomeTicker } from '@/widgets/home/ticker'
 
@@ -42,6 +43,7 @@ export default function HomeRoute() {
       <HomeTicker />
       <HomeManifesto />
       <HomeServices />
+      <HomeFormatCompare />
       <HomeProjects projects={projects} />
       <HomeProcess onOpenBrief={openBrief} />
       <HomeQuote />
@@ -53,3 +55,4 @@ export default function HomeRoute() {
     </main>
   )
 }
+
