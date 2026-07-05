@@ -7,6 +7,7 @@ import { HomeContact } from '@/widgets/home/contact'
 import { HomeFaq } from '@/widgets/home/faq'
 import { HomeHero } from '@/widgets/home/hero'
 import { HomeManifesto } from '@/widgets/home/manifesto'
+import { HomePartners } from '@/widgets/home/partners'
 import { HomeProcess } from '@/widgets/home/process'
 import { HomeProjects } from '@/widgets/home/projects'
 import { HomeQuote } from '@/widgets/home/quote'
@@ -43,6 +44,7 @@ export default function HomeRoute() {
       <HomeProcess onOpenBrief={openBrief} />
       <HomeQuote />
       <HomeFaq openFaq={openFaq} setOpenFaq={setOpenFaq} />
+      <HomePartners />
       <HomeContact onOpenBrief={openBrief} />
     </main>
   )
