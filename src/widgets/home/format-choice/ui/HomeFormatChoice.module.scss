@@ -1,5 +1,5 @@
 ﻿.choice {
-  padding: 96px 4.2vw 40px;
+  padding: 112px 4.2vw;
   background: var(--paper);
 }
 
@@ -166,7 +166,7 @@
 
 @media (width <= 700px) {
   .choice {
-    padding: 72px 6vw 28px;
+    padding: 96px 6vw 40px;
   }
 
   .card {
@@ -176,7 +176,7 @@
 
 @media (width <= 420px) {
   .choice {
-    padding: 64px 16px 24px;
+    padding: 80px 16px 28px;
   }
 
   .card {
@@ -192,3 +192,4 @@
     font-size: 13px;
   }
 }
+

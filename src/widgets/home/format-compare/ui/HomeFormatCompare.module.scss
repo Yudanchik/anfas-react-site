@@ -1,7 +1,7 @@
 ﻿.compare {
   position: relative;
-  margin-top: 24px;
-  padding: 96px 4.2vw 40px;
+  margin-top: 0;
+  padding: 112px 4.2vw;
   background: var(--paper);
 }
 
@@ -251,7 +251,7 @@
 
 @media (width <= 700px) {
   .compare {
-    padding: 72px 6vw 28px;
+    padding: 96px 6vw 40px;
   }
 
   .card,
@@ -289,7 +289,7 @@
 
 @media (width <= 420px) {
   .compare {
-    padding: 64px 16px 24px;
+    padding: 80px 16px 28px;
   }
 
   .card {
@@ -317,3 +317,4 @@
     gap: 10px;
   }
 }
+
