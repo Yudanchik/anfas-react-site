@@ -1,6 +1,9 @@
-import styles from '../_shared/InnerPage.module.scss'
+﻿import styles from '../_shared/InnerPage.module.scss'
 
-export const meta = () => [{ title: 'Политика конфиденциальности — Анфас' }]
+export const meta = () => [
+  { title: 'Политика конфиденциальности — Анфас' },
+  { name: 'robots', content: 'noindex, nofollow' },
+]
 
 export default function PrivacyRoute() {
   return (
@@ -17,3 +20,4 @@ export default function PrivacyRoute() {
     </main>
   )
 }
+

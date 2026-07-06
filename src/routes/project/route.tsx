@@ -1,4 +1,4 @@
-import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
+﻿import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
 import { assetUrl } from '@/shared/lib/asset-url'
@@ -16,11 +16,22 @@ export async function loader({ params }: LoaderFunctionArgs) {
 }
 
 export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
-  if (!data) return [{ title: 'Проект не найден — Анфас' }]
+  if (!data) {
+    return [
+      { title: 'Проект не найден — Анфас' },
+      { name: 'robots', content: 'noindex, nofollow' },
+    ]
+  }
 
   return [
     { title: `${data.project.title} — Анфас` },
     { name: 'description', content: data.project.description },
+    {
+      name: 'keywords',
+      content: `${data.project.title}, ремонт квартир спб, дизайн интерьера, портфолио ремонта`,
+    },
+    { property: 'og:title', content: `${data.project.title} — Анфас` },
+    { property: 'og:description', content: data.project.description },
   ]
 }
 
@@ -59,3 +70,4 @@ export default function ProjectRoute() {
     </main>
   )
 }
+

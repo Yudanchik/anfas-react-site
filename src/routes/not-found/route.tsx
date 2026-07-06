@@ -1,8 +1,11 @@
-import { Link } from 'react-router'
+﻿import { Link } from 'react-router'
 
 import styles from '../_shared/InnerPage.module.scss'
 
-export const meta = () => [{ title: 'Страница не найдена — Анфас' }]
+export const meta = () => [
+  { title: 'Страница не найдена — Анфас' },
+  { name: 'robots', content: 'noindex, nofollow' },
+]
 
 export default function NotFoundRoute() {
   return (
@@ -19,3 +22,4 @@ export default function NotFoundRoute() {
     </main>
   )
 }
+

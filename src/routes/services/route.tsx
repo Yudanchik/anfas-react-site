@@ -1,13 +1,27 @@
-import { services } from '@/entities/service/model/services.data'
+﻿import { services } from '@/entities/service/model/services.data'
 import { useBrief } from '@/features/brief/model/BriefContext'
+
+import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
 
 import styles from '../_shared/InnerPage.module.scss'
 
 export const meta = () => [
-  { title: 'Услуги — Анфас' },
+  { title: 'Услуги ремонта квартир под ключ | Анфас' },
   {
     name: 'description',
-    content: 'Дизайн-проект, ремонт под ключ и авторский надзор в Санкт-Петербурге.',
+    content:
+      'Ремонт квартир под ключ, дизайнерский ремонт, пакетные решения и комплексный подход в Санкт-Петербурге. Понятные этапы и прозрачные условия.',
+  },
+  {
+    name: 'keywords',
+    content:
+      'услуги ремонта квартир, ремонт квартир под ключ, дизайнерский ремонт, пакетный ремонт, ремонт квартиры спб, ремонт с фиксированной ценой',
+  },
+  { property: 'og:title', content: 'Услуги ремонта квартир под ключ | Анфас' },
+  {
+    property: 'og:description',
+    content:
+      'Ремонт квартир под ключ, дизайнерский ремонт, пакетные решения и комплексный подход в Санкт-Петербурге. Понятные этапы и прозрачные условия.',
   },
 ]
 
@@ -22,6 +36,8 @@ export default function ServicesRoute() {
         <br />
         <em>Весь путь.</em>
       </h1>
+
+      <SeoContentBlock {...seoContentPages.services} />
 
       <div className={styles.grid}>
         {services.map((service) => (
@@ -41,3 +57,4 @@ export default function ServicesRoute() {
     </main>
   )
 }
+

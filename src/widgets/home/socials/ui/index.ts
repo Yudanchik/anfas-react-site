@@ -1,0 +1,1 @@
+export { HomeSocials } from './HomeSocials'

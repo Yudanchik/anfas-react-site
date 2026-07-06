@@ -1,0 +1,18 @@
+@use './themes/default/colors' as c;
+
+:root {
+  color: var(--ink);
+  background: var(--paper);
+
+  --ink: #{c.$ink};
+  --paper: #{c.$paper};
+  --paper-deep: #{c.$paper-deep};
+  --amber: #{c.$amber};
+  --sage: #{c.$sage};
+  --line: #{c.$line};
+  --shadow-soft: #{c.$shadow-soft};
+  --scroll-progress: 0;
+  --radius-sm: #{c.$radius-sm};
+  --radius-md: #{c.$radius-md};
+  --radius-lg: #{c.$radius-lg};
+}

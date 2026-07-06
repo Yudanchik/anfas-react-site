@@ -1,7 +1,8 @@
-import { Link, useLoaderData } from 'react-router'
+﻿import { Link, useLoaderData } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
 import { assetUrl } from '@/shared/lib/asset-url'
+import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
 
 import styles from '../_shared/InnerPage.module.scss'
 
@@ -12,10 +13,20 @@ export async function loader() {
 }
 
 export const meta = () => [
-  { title: 'Проекты — Анфас' },
+  { title: 'Проекты ремонта квартир в Санкт-Петербурге | Анфас' },
   {
     name: 'description',
-    content: 'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге.',
+    content: 'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге. Портфолио с примерами работ, площадью и типом объекта.',
+  },
+  {
+    name: 'keywords',
+    content:
+      'проекты ремонта квартир, портфолио ремонта, дизайн интерьера спб, реализованные проекты, примеры ремонта квартир',
+  },
+  { property: 'og:title', content: 'Проекты ремонта квартир в Санкт-Петербурге | Анфас' },
+  {
+    property: 'og:description',
+    content: 'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге. Портфолио с примерами работ, площадью и типом объекта.',
   },
 ]
 
@@ -34,6 +45,8 @@ export default function ProjectsRoute() {
         Реальные квартиры и коммерческие пространства с открытыми сроками, площадью и бюджетом
         работ.
       </p>
+
+      <SeoContentBlock {...seoContentPages.projects} />
 
       <div className={styles.grid}>
         {projects.map((project) => (
@@ -54,3 +67,4 @@ export default function ProjectsRoute() {
     </main>
   )
 }
+

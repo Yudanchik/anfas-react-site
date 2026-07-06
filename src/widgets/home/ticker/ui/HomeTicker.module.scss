@@ -1,0 +1,41 @@
+.ticker {
+  overflow: hidden;
+  padding: 18px 0;
+  color: var(--ink);
+  background: var(--amber);
+}
+
+
+.tickertrack {
+  display: flex;
+  width: max-content;
+  animation: ticker 28s linear infinite;
+}
+
+
+.tickergroup {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+
+.tickergroup span {
+  padding: 0 42px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+
+.tickergroup i {
+  font-style: normal;
+}
+
+
+@media (width <= 580px) {
+  .tickergroup span {
+    padding: 0 26px;
+  }
+}

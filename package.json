@@ -10,8 +10,10 @@
   },
   "scripts": {
     "dev": "react-router dev --host 127.0.0.1",
-    "build": "react-router typegen && react-router build",
-    "typecheck": "react-router typegen && tsc --noEmit",
+    "postinstall": "react-router typegen",
+    "typegen": "react-router typegen",
+    "build": "pnpm typegen && react-router build",
+    "typecheck": "pnpm typegen && tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "lint:styles": "stylelint \"src/**/*.{css,scss}\"",
     "format": "prettier --write .",

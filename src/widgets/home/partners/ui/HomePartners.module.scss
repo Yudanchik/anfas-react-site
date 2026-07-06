@@ -1,0 +1,158 @@
+@use '../../_common' as home;
+
+.sectionpad {
+  @include home.section-pad;
+}
+
+.sectionkicker {
+  @include home.section-kicker;
+}
+
+.sectionkicker span {
+  @include home.section-kicker-pill;
+}
+
+.sectionkicker p {
+  margin: 0;
+}
+
+.partners {
+  background: var(--paper);
+}
+
+.partnerslayout {
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: 8vw;
+}
+
+.partnersintro {
+  align-self: start;
+  position: sticky;
+  top: 70px;
+}
+
+.partnersintro h2 {
+  margin: 0;
+  font-size: clamp(45px, 5.8vw, 86px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+}
+
+.partnersintro h2 em {
+  color: var(--amber);
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+.partnersintro p {
+  max-width: 390px;
+  margin: 28px 0 0;
+  color: rgb(22 23 19 / 70%);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.partnersrail {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: partner-scroll 28s linear infinite;
+}
+
+.reverse {
+  animation-direction: reverse;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  white-space: nowrap;
+}
+
+.card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-width: 168px;
+  min-height: 94px;
+  padding: 18px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 68%);
+  box-shadow: var(--shadow-soft);
+}
+
+.card span {
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.card small {
+  margin-top: 8px;
+  color: rgb(22 23 19 / 62%);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@keyframes partner-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (width <= 1100px) {
+  .partnerslayout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .partnersintro {
+    position: static;
+  }
+}
+
+@media (width <= 580px) {
+  .group {
+    gap: 14px;
+  }
+
+  .card {
+    min-width: 150px;
+    min-height: 88px;
+    padding: 16px 20px;
+  }
+
+  .partnersrail {
+    gap: 14px;
+  }
+}
+
+@media (width <= 420px) {
+  .partnersintro h2 {
+    font-size: clamp(38px, 12vw, 56px);
+  }
+
+  .partnersintro p {
+    font-size: 12px;
+  }
+
+  .card {
+    min-width: 136px;
+    min-height: 84px;
+    padding: 14px 16px;
+  }
+}
