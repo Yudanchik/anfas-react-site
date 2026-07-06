@@ -4,27 +4,77 @@
 :root {
   --font-body: #{f.$font-body};
   --font-heading: #{f.$font-heading};
-
-  /* Type scale */
-  --text-caption: #{f.px(12)};
-  --text-body-sm: #{f.px(14)};
-  --text-body: #{f.px(15)};
-  --text-body-lg: #{f.px(16)};
+  --text-12: #{f.px(12)};
+  --text-14: #{f.px(14)};
+  --text-16: #{f.px(16)};
+  --text-18: #{f.px(18)};
+  --text-20: #{f.px(20)};
+  --text-22: #{f.px(22)};
+  --text-24: #{f.px(24)};
+  --text-28: #{f.px(28)};
+  --text-32: #{f.px(32)};
+  --text-36: #{f.px(36)};
+  --text-44: #{f.px(44)};
+  --text-56: #{f.px(56)};
+  --text-64: #{f.px(64)};
+  --text-caption: var(--text-12);
+  --text-body-sm: var(--text-14);
+  --text-body: var(--text-16);
+  --text-body-lg: var(--text-16);
   --text-card-title: clamp(1.75rem, 2.4vw, 2.25rem);
   --text-step-title: clamp(1.75rem, 2.5vw, 2.375rem);
   --text-section-title: clamp(2.75rem, 4.6vw, 3.75rem);
   --text-section-lead: clamp(0.9375rem, 1.05vw, 1.0625rem);
-  --line-height-body: 1.75;
+  --line-height-body: 1.72;
+  --line-height-copy: 1.8;
   --line-height-tight: 1.04;
+  --line-height-display: 0.94;
+  --letter-spacing-tight: -0.04em;
+  --letter-spacing-display: -0.06em;
+}
 
-  /* Legacy aliases */
-  --text-12: var(--text-caption);
-  --text-14: var(--text-body-sm);
-  --text-16: var(--text-body-lg);
-  --text-18: #{f.px(18)};
-  --text-20: #{f.px(20)};
-  --text-24: #{f.px(24)};
-  --text-32: #{f.px(32)};
-  --text-40: #{f.px(40)};
-  --text-56: #{f.px(56)};
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-16);
+  line-height: var(--line-height-body);
+  letter-spacing: -0.01em;
+  font-variant-numeric: lining-nums tabular-nums;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  line-height: var(--line-height-display);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+p {
+  margin: 0;
+  font-size: var(--text-16);
+  line-height: var(--line-height-body);
+}
+
+small {
+  font-size: var(--text-12);
 }
