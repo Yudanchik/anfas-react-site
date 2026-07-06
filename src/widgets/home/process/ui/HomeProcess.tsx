@@ -1,5 +1,7 @@
 ﻿import { processSteps } from '@/entities/process/model/process.data'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import type { CSSProperties } from 'react'
+
 import styles from './HomeProcess.module.scss'
 
 export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
@@ -31,7 +33,11 @@ export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
 
       <div className={styles.processsteps}>
         {processSteps.map((step, index) => (
-          <article key={step.title} data-reveal>
+          <article
+            key={step.title}
+            data-reveal
+            style={{ '--reveal-delay': `${index * 120}ms` } as CSSProperties}
+          >
             <span>0{index + 1}</span>
             <div>
               <h3>{step.title}</h3>
@@ -43,4 +49,3 @@ export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
     </section>
   )
 }
-
