@@ -1,4 +1,4 @@
-import { useRef, type MouseEvent } from 'react'
+﻿import { useRef, type MouseEvent } from 'react'
 import { Link } from 'react-router'
 
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
@@ -43,6 +43,20 @@ export function HomeHero({ onOpenBrief }: { onOpenBrief: () => void }) {
             Проектируем и реализуем пространства, в которых красиво не только на рендерах, но и
             каждый день.
           </p>
+          <div className={styles.herofeatures} aria-label="Ключевые преимущества">
+            <div>
+              <strong>Сроки</strong>
+              <span>Понятный план работ и прозрачные этапы</span>
+            </div>
+            <div>
+              <strong>Контроль</strong>
+              <span>Фото, отчёты и связь с объектом без хаоса</span>
+            </div>
+            <div>
+              <strong>Формат</strong>
+              <span>Дизайн-проект или пакетное решение под задачу</span>
+            </div>
+          </div>
           <button className={styles.primarybutton} type="button" onClick={onOpenBrief}>
             <span>Обсудить проект</span>
             <i>

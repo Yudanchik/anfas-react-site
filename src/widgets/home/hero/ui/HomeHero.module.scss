@@ -1,4 +1,4 @@
-@use '../../../../shared/styles/mixins' as mixins;
+﻿@use '../../../../shared/styles/mixins' as mixins;
 
 
 .hero {
@@ -107,6 +107,38 @@
   font-weight: 400;
   line-height: 1.6;
   animation-delay: 0.28s;
+}
+
+.herofeatures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 760px;
+  margin-bottom: 30px;
+  animation: rise-in 1s 0.32s cubic-bezier(0.2, 0.7, 0, 1) both;
+}
+
+.herofeatures > div {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 6%);
+  backdrop-filter: blur(8px);
+}
+
+.herofeatures strong {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.herofeatures span {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgb(255 255 255 / 78%);
 }
 
 
@@ -278,6 +310,15 @@
     font-size: clamp(53px, 13vw, 83px);
   }
 
+  .herofeatures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 100%;
+  }
+
+  .herofeatures > div:last-child {
+    grid-column: 1 / -1;
+  }
+
   .heroside {
     display: none;
   }
@@ -293,6 +334,82 @@
   }
 }
 
+@media (width <= 580px) {
+  .hero {
+    min-height: 720px;
+  }
+
+  .heroimage {
+    background-position: 63% center;
+  }
+
+  .herocopy h1 {
+    font-size: clamp(48px, 14vw, 70px);
+  }
+
+  .herolead {
+    max-width: 92%;
+    font-size: 14px;
+  }
+
+  .herofeatures {
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .herofeatures > div {
+    padding: 14px 15px;
+  }
+
+  .herofeatures span {
+    font-size: 12px;
+  }
+}
+
+@media (width <= 420px) {
+  .hero {
+    min-height: 660px;
+  }
+
+  .herogrid {
+    padding: 112px 16px 86px;
+  }
+
+  .heroeyebrow {
+    gap: 10px;
+    margin-bottom: 18px;
+    letter-spacing: 0.11em;
+  }
+
+  .herocopy h1 {
+    font-size: clamp(38px, 13vw, 62px);
+    line-height: 0.94;
+  }
+
+  .herolead {
+    max-width: 100%;
+    margin: 22px 0;
+    font-size: 13px;
+  }
+
+  .herofeatures {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .herofeatures > div {
+    padding: 14px 15px;
+  }
+
+  .herofeatures span {
+    font-size: 12px;
+  }
+
+  .primarybutton {
+    width: 100%;
+  }
+}
 
 @media (width <= 580px) {
   .hero {
@@ -361,5 +478,23 @@
     left: 16px;
     flex-wrap: wrap;
     gap: 8px 12px;
+  }
+}
+
+@media (width <= 420px) {
+  .herocopy h1 {
+    font-size: clamp(38px, 13vw, 62px);
+  }
+
+  .herolead {
+    margin-bottom: 22px;
+  }
+
+  .herofeatures {
+    grid-template-columns: 1fr;
+  }
+
+  .primarybutton {
+    width: 100%;
   }
 }
