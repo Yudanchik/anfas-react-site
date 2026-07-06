@@ -1,5 +1,5 @@
 ﻿.calculator {
-  padding: 96px 4.2vw 40px;
+  padding: 112px 4.2vw;
   background: var(--paper);
 }
 
@@ -274,7 +274,7 @@
 
 @media (width <= 700px) {
   .calculator {
-    padding: 72px 6vw 28px;
+    padding: 96px 6vw 40px;
   }
 
   .form,
@@ -294,7 +294,7 @@
 
 @media (width <= 420px) {
   .calculator {
-    padding: 64px 16px 24px;
+    padding: 80px 16px 28px;
   }
 
   .form,
@@ -324,3 +324,4 @@
     font-size: 13px;
   }
 }
+

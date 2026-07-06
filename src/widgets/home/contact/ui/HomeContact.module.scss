@@ -1,4 +1,4 @@
-@use '../../../../shared/styles/mixins' as mixins;
+﻿@use '../../../../shared/styles/mixins' as mixins;
 
 
 .contact {
@@ -8,7 +8,7 @@
   flex-direction: column;
   justify-content: center;
   min-height: 820px;
-  padding: 110px 5vw;
+  padding: 112px 5vw;
   overflow: hidden;
   text-align: center;
   color: var(--paper);
@@ -224,3 +224,4 @@
     display: none;
   }
 }
+
