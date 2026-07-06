@@ -37,7 +37,7 @@ export default function ServicesRoute() {
         <em>Весь путь.</em>
       </h1>
 
-      <SeoContentBlock {...seoContentPages.services} />
+      <SeoContentBlock embedded {...seoContentPages.services} />
 
       <div className={styles.grid}>
         {services.map((service) => (

@@ -5,6 +5,7 @@ import { AppProviders } from '@/app/providers/AppProviders'
 import { BriefProvider } from '@/features/brief/model/BriefContext'
 import { BriefModal } from '@/features/brief/ui/BriefModal'
 import { useScrollEffects } from '@/shared/hooks/useScrollEffects'
+import { ScrollToTop } from '@/shared/ui/scroll-to-top/ScrollToTop'
 import { SiteFooter } from '@/widgets/site-footer/SiteFooter'
 import { SiteHeader } from '@/widgets/site-header/SiteHeader'
 
@@ -43,6 +44,7 @@ export default function Root() {
           <Outlet />
           <SiteFooter />
           <BriefModal />
+          <ScrollToTop />
         </div>
       </BriefProvider>
     </AppProviders>

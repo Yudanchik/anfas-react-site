@@ -36,7 +36,7 @@ export default function ContactsRoute() {
         <br />
         <em>ваш интерьер.</em>
       </h1>
-      <SeoContentBlock {...seoContentPages.contacts} />
+      <SeoContentBlock embedded {...seoContentPages.contacts} />
 
       <div className={styles.content}>
         <h2>Связаться</h2>

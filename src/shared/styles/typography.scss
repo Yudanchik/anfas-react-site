@@ -4,38 +4,27 @@
 :root {
   --font-body: #{f.$font-body};
   --font-heading: #{f.$font-heading};
-  --text-12: #{f.px(12)};
-  --text-14: #{f.px(14)};
-  --text-16: #{f.px(16)};
+
+  /* Type scale */
+  --text-caption: #{f.px(12)};
+  --text-body-sm: #{f.px(14)};
+  --text-body: #{f.px(15)};
+  --text-body-lg: #{f.px(16)};
+  --text-card-title: clamp(1.75rem, 2.4vw, 2.25rem);
+  --text-step-title: clamp(1.75rem, 2.5vw, 2.375rem);
+  --text-section-title: clamp(2.75rem, 4.6vw, 3.75rem);
+  --text-section-lead: clamp(0.9375rem, 1.05vw, 1.0625rem);
+  --line-height-body: 1.75;
+  --line-height-tight: 1.04;
+
+  /* Legacy aliases */
+  --text-12: var(--text-caption);
+  --text-14: var(--text-body-sm);
+  --text-16: var(--text-body-lg);
   --text-18: #{f.px(18)};
   --text-20: #{f.px(20)};
   --text-24: #{f.px(24)};
   --text-32: #{f.px(32)};
   --text-40: #{f.px(40)};
   --text-56: #{f.px(56)};
-}
-
-html {
-  font-family: var(--font-body);
-  font-synthesis: none;
-  text-rendering: optimizelegibility;
-}
-
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-body);
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-ul,
-ol,
-dl {
-  margin: 0;
 }

@@ -1,7 +1,7 @@
 ﻿import { useMemo, useState } from 'react'
-import { Link } from 'react-router'
 
 import { packageCalculator } from '../model/package-calculator.data'
+import { SectionHeader } from '../../ui'
 
 import styles from './HomePackageCalculator.module.scss'
 
@@ -65,22 +65,20 @@ export function HomePackageCalculator({ onOpenBrief }: { onOpenBrief: () => void
   }
 
   return (
-    <section className={styles.calculator}>
+    <section id="calculator" className={styles.calculator}>
       <div className={styles.layout}>
-        <div className={styles.header} data-reveal>
-          <div>
-            <div className={styles.kicker}>
-              <span>05</span>
-              <p>{packageCalculator.eyebrow}</p>
-            </div>
-            <h2 className={styles.title}>
+        <SectionHeader
+          number="06"
+          label={packageCalculator.eyebrow}
+          title={
+            <>
               {packageCalculator.title}
               <br />
               <em>за 1 минуту</em>
-            </h2>
-          </div>
-          <p className={styles.lead}>{packageCalculator.lead}</p>
-        </div>
+            </>
+          }
+          lead={packageCalculator.lead}
+        />
 
         <div className={styles.grid}>
           <div className={styles.form} data-reveal>
@@ -167,9 +165,9 @@ export function HomePackageCalculator({ onOpenBrief }: { onOpenBrief: () => void
               <button className={styles.button} type="button" onClick={onOpenBrief}>
                 Получить расчёт
               </button>
-              <Link className={styles.buttonAlt} to="/contacts">
+              <button className={styles.buttonAlt} type="button" onClick={onOpenBrief}>
                 Обсудить пакет
-              </Link>
+              </button>
             </div>
           </aside>
         </div>

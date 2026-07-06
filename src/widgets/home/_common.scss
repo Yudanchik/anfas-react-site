@@ -1,5 +1,9 @@
-@mixin section-pad {
-  padding: 130px 4.2vw;
+﻿@mixin section-pad {
+  padding: 96px 4.2vw;
+}
+
+@mixin section-gap {
+  margin-bottom: 0;
 }
 
 @mixin section-kicker {
@@ -8,7 +12,7 @@
   gap: 16px;
   width: max-content;
   margin-bottom: 54px;
-  font-size: 12px;
+  font-size: var(--text-caption);
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -26,3 +30,4 @@
   border-radius: 50%;
   place-items: center;
 }
+

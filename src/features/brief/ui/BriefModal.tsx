@@ -57,9 +57,7 @@ export function BriefModal() {
 
         {!submitted ? (
           <>
-            <p className="eyebrow">
-              <span /> Начнём знакомство
-            </p>
+            <p className={styles.eyebrow}>Начнём знакомство</p>
             <h2 className={styles.title}>
               Расскажите
               <br />
@@ -91,10 +89,10 @@ export function BriefModal() {
                 {errors.service && <small className={styles.error}>{errors.service.message}</small>}
               </label>
 
-              <button className="primary-button dark" type="submit">
+              <button className={styles.submit} type="submit">
                 <span>Отправить заявку</span>
                 <i>
-                  <ArrowIcon />
+                  <ArrowIcon size={16} />
                 </i>
               </button>
               <small className={styles.privacy}>

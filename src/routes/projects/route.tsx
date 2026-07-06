@@ -46,7 +46,7 @@ export default function ProjectsRoute() {
         работ.
       </p>
 
-      <SeoContentBlock {...seoContentPages.projects} />
+      <SeoContentBlock embedded {...seoContentPages.projects} />
 
       <div className={styles.grid}>
         {projects.map((project) => (

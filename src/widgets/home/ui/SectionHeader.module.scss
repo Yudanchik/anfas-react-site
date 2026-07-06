@@ -1,0 +1,71 @@
+@use './section-header' as header;
+
+.sectionHeader {
+  @include header.section-head;
+}
+
+.sectionHeaderMain {
+  min-width: 0;
+}
+
+.sectionHeaderKicker {
+  @include header.section-kicker-base;
+
+  p {
+    margin: 0;
+  }
+}
+
+.sectionHeaderNumber {
+  @include header.section-kicker-pill;
+}
+
+.sectionHeaderTitle {
+  @include header.section-title-base;
+
+  em {
+    @include header.section-title-em;
+  }
+}
+
+.sectionHeaderLead {
+  @include header.section-lead-base;
+}
+
+.light {
+  .sectionHeaderKicker {
+    @include header.section-kicker-on-light;
+  }
+
+  .sectionHeaderLead {
+    @include header.section-lead-on-light;
+  }
+}
+
+.dark {
+  .sectionHeaderKicker {
+    @include header.section-kicker-on-dark;
+  }
+
+  .sectionHeaderTitle {
+    color: var(--paper);
+  }
+
+  .sectionHeaderLead {
+    @include header.section-lead-on-dark;
+  }
+}
+
+@media (width <= 580px) {
+  .sectionHeader {
+    padding-bottom: 40px;
+  }
+
+  .sectionHeaderKicker {
+    margin-bottom: 18px;
+  }
+
+  .sectionHeaderLead {
+    margin-top: 16px;
+  }
+}

@@ -1,3 +1,5 @@
+import { SectionHeader } from '@/widgets/home/ui'
+
 import styles from './SeoContentBlock.module.scss'
 
 type SeoItem = {
@@ -6,22 +8,17 @@ type SeoItem = {
 }
 
 type SeoContentBlockProps = {
-  eyebrow: string
   title: string
   lead: string
   items: readonly SeoItem[]
+  /** Внутри inner-page без дополнительных боковых отступов */
+  embedded?: boolean
 }
 
-export function SeoContentBlock({ eyebrow, title, lead, items }: SeoContentBlockProps) {
+export function SeoContentBlock({ title, lead, items, embedded = false }: SeoContentBlockProps) {
   return (
-    <section>
-      <div className={styles.header} data-reveal>
-        <p className={styles.eyebrow}>{eyebrow}</p>
-        <div>
-          <h2 className={styles.title}>{title}</h2>
-          <p className={styles.lead}>{lead}</p>
-        </div>
-      </div>
+    <section className={`${styles.section} ${embedded ? styles.embedded : ''}`}>
+      <SectionHeader title={title} lead={lead} />
       <div className={styles.grid} data-reveal>
         {items.map((item) => (
           <article className={styles.card} key={item.title}>

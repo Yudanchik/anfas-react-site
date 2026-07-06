@@ -2,43 +2,43 @@ import { Link } from 'react-router'
 
 import { services } from '@/entities/service/model/services.data'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { SectionHeader } from '../../ui'
 import styles from './HomeServices.module.scss'
 
 export function HomeServices() {
   return (
     <section id="services" className={styles.services + ' ' + styles.sectionpad}>
-      <div className={styles.sectionhead} data-reveal>
-        <div>
-          <div className={styles.sectionkicker + ' ' + styles.sectionkickerlight}>
-            <span>02</span>
-            <p>Что мы делаем</p>
-          </div>
-          <h2>
+      <SectionHeader
+        tone="dark"
+        number="02"
+        label="Что мы делаем"
+        title={
+          <>
             Один подрядчик.
             <br />
             <em>Весь путь.</em>
-          </h2>
-        </div>
-        <p>
-          От первой линии на плане до последней лампы: одна команда отвечает за результат целиком.
-        </p>
-      </div>
+          </>
+        }
+        lead="От первой линии на плане до последней лампы: одна команда отвечает за результат целиком."
+      />
 
       <div className={styles.servicelist}>
         {services.map((service) => (
-          <article className={styles.servicecard} key={service.id} data-reveal>
+          <article className={styles.servicecard} key={service.id} data-reveal="scale">
             <span className={styles.servicenumber}>{service.number}</span>
-            <div>
-              <h3>{service.title}</h3>
-              <p>{service.text}</p>
+            <div className={styles.servicecardbody}>
+              <h3 className={styles.servicecardtitle}>{service.title}</h3>
+              <p className={styles.servicecardtext}>{service.text}</p>
             </div>
-            <ul>
+            <ul className={styles.servicecardtags}>
               {service.tags.map((tag) => (
-                <li key={tag}>{tag}</li>
+                <li className={styles.servicecardtag} key={tag}>
+                  {tag}
+                </li>
               ))}
             </ul>
             <Link to={`/services#${service.id}`} aria-label={`Подробнее: ${service.title}`}>
-              <ArrowIcon />
+              <ArrowIcon size={16} />
             </Link>
           </article>
         ))}

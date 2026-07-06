@@ -1,6 +1,7 @@
 ﻿import { company } from '@/shared/config/company'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 
+import { SectionHeader } from '../../ui'
 import styles from './HomeSocials.module.scss'
 
 const socials = [
@@ -25,20 +26,20 @@ export function HomeSocials() {
   return (
     <section className={styles.socials + ' ' + styles.sectionpad}>
       <div className={styles.socialslayout}>
-        <div className={styles.socialsintro} data-reveal>
-          <div className={styles.sectionkicker + ' ' + styles.sectionkickerlight}>
-            <span>08</span>
-            <p>Следите за нами</p>
-          </div>
-          <h2>
-            Живые проекты,
-            <br />
-            полезные материалы и <em>новости компании</em>
-          </h2>
-          <p>
-            Соцсети помогают быстрее увидеть стиль работы и почувствовать, как мы ведём проекты. В
-            них же мы показываем промежуточные этапы, полезные советы и новости команды.
-          </p>
+        <div className={styles.socialsintro}>
+          <SectionHeader
+            tone="dark"
+            number="10"
+            label="Следите за нами"
+            title={
+              <>
+                Живые проекты,
+                <br />
+                полезные материалы и <em>новости компании</em>
+              </>
+            }
+            lead="Соцсети помогают быстрее увидеть стиль работы и почувствовать, как мы ведём проекты. В них же мы показываем промежуточные этапы, полезные советы и новости команды."
+          />
         </div>
 
         <div className={styles.socialscontent} data-reveal>
@@ -66,19 +67,23 @@ export function HomeSocials() {
             {socials.map((social) =>
               social.href ? (
                 <a className={styles.socialcard} href={social.href} key={social.title} target="_blank" rel="noreferrer">
-                  <div>
+                  <div className={styles.socialcardmain}>
                     <strong>{social.title}</strong>
                     <p>{social.text}</p>
                   </div>
-                  <ArrowIcon />
+                  <span className={styles.socialcardaction} aria-hidden="true">
+                    <ArrowIcon size={16} />
+                  </span>
                 </a>
               ) : (
                 <div className={styles.socialcard + ' ' + styles.socialcarddisabled} key={social.title}>
-                  <div>
-                    <strong>{social.title}</strong>
+                  <div className={styles.socialcardmain}>
+                    <div className={styles.socialcardhead}>
+                      <strong>{social.title}</strong>
+                      <span className={styles.socialbadge}>Скоро</span>
+                    </div>
                     <p>{social.text}</p>
                   </div>
-                  <span>Скоро</span>
                 </div>
               ),
             )}
