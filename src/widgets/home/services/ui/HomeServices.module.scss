@@ -1,62 +1,9 @@
-@use '../../../../shared/styles/mixins' as mixins;
+﻿@use '../../../../shared/styles/mixins' as mixins;
 @use '../../_common' as home;
 
 
 .sectionpad {
   @include home.section-pad;
-}
-
-
-.sectionkicker {
-  @include home.section-kicker;
-}
-
-
-.sectionkickerlight {
-  @include home.section-kicker-light;
-}
-
-
-.sectionkicker span {
-  @include home.section-kicker-pill;
-}
-
-
-.sectionkicker p {
-  margin: 0;
-}
-
-
-.sectionhead {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 40px;
-  padding-bottom: 70px;
-}
-
-
-.sectionhead h2,
-
-.projectshead h2,
-
-.processintro h2,
-
-.faqtitle h2 {
-  margin: 0;
-  font-size: clamp(48px, 6vw, 91px);
-  font-weight: 400;
-  line-height: 0.98;
-  letter-spacing: -0.06em;
-}
-
-
-.sectionhead > p {
-  max-width: 360px;
-  margin: 0 5vw 10px 0;
-  color: rgb(243 240 233 / 70%);
-  font-size: 13px;
-  line-height: 1.8;
 }
 
 
@@ -74,11 +21,11 @@
 .servicecard {
   position: relative;
   display: grid;
-  grid-template-columns: 100px 1.25fr 0.75fr 64px;
+  grid-template-columns: minmax(80px, 120px) minmax(0, 1.2fr) minmax(180px, 0.8fr) 72px;
   align-items: center;
-  gap: 40px;
-  min-height: 260px;
-  padding: 40px 0;
+  gap: 28px;
+  min-height: 240px;
+  padding: 40px 36px;
   border-bottom: 1px solid rgb(255 255 255 / 20%);
 }
 
@@ -107,59 +54,80 @@
 
 
 .servicenumber {
-  align-self: start;
-  padding-top: 8px;
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  min-width: 68px;
+  min-height: 68px;
+  padding: 0 16px;
+  border: 1px solid rgb(255 255 255 / 34%);
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  background: rgb(255 255 255 / 6%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 10%);
 }
 
 
-.servicecard h3 {
+.servicecardbody {
+  min-width: 0;
+}
+
+
+.servicecardtitle {
   margin: 0 0 20px;
   font-family: var(--font-heading);
-  font-size: clamp(31px, 3vw, 49px);
+  font-size: var(--text-card-title);
   font-weight: 400;
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.04em;
 }
 
 
-.servicecard p {
+.servicecardtext {
   max-width: 620px;
   margin: 0;
   color: rgb(243 240 233 / 68%);
-  font-size: 13px;
-  line-height: 1.8;
+  font-size: var(--text-body);
+  line-height: var(--line-height-body);
 }
 
 
 .servicecard:hover,
 
-.servicecard:hover p {
+.servicecard:hover .servicecardtext {
   color: var(--ink);
 }
 
 
-.servicecard ul {
+.servicecardtags {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 
-.servicecard li {
-  padding: 8px 0;
-  font-size: 12px;
+.servicecardtag {
+  padding: 10px 0;
+  font-size: var(--text-body-sm);
+  line-height: var(--line-height-body);
   border-bottom: 1px solid rgb(255 255 255 / 20%);
 }
 
 
-.servicecard:hover li {
+.servicecard:hover .servicecardtag {
   border-color: rgb(22 23 19 / 25%);
 }
 
 
 .servicecard > a {
   display: grid;
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   padding: 0;
   cursor: pointer;
   transition: transform 0.35s ease;
@@ -177,7 +145,7 @@
 
 
 .servicecard > a svg {
-  width: 20px;
+  width: 18px;
   fill: none;
   stroke: currentcolor;
 }
@@ -185,8 +153,8 @@
 
 @media (width <= 1100px) {
   .servicecard {
-    grid-template-columns: 65px 1.2fr 0.8fr 56px;
-    gap: 26px;
+    grid-template-columns: minmax(64px, 92px) minmax(0, 1.2fr) minmax(160px, 0.8fr) 56px;
+    gap: 22px;
   }
 }
 
@@ -201,8 +169,8 @@
   }
 
   .servicecard {
-    grid-template-columns: 45px 1fr 48px;
-    min-height: 220px;
+    grid-template-columns: minmax(44px, 68px) 1fr 48px;
+    min-height: 208px;
   }
 
   .servicecard ul {
@@ -229,20 +197,24 @@
 
   .servicecard {
     grid-template-columns: 1fr 46px;
-    gap: 16px;
-    padding: 36px 0;
+    gap: 14px;
+    padding: 32px 0;
   }
 
   .servicenumber {
     grid-column: 1 / -1;
-    padding: 0;
+    justify-self: start;
+    min-width: 56px;
+    min-height: 56px;
+    font-size: 18px;
   }
 
   .servicecard h3 {
-    font-size: 29px;
+    font-size: 28px;
   }
 
   .servicecard p {
     padding: 0;
   }
 }
+

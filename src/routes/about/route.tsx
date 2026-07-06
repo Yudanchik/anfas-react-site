@@ -31,7 +31,7 @@ export default function AboutRoute() {
         <br />
         <em>по делу.</em>
       </h1>
-      <SeoContentBlock {...seoContentPages.about} />
+      <SeoContentBlock embedded {...seoContentPages.about} />
 
       <div className={styles.content}>
         <h2>Кирилл и Антон</h2>

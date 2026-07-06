@@ -1,46 +1,23 @@
-section {
-  padding: 56px 0 0;
+@use '../../home/_common' as home;
+
+.section {
+  @include home.section-pad;
+
+  background: var(--paper);
 }
 
-.header {
-  display: grid;
-  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
-  gap: 24px;
-  padding-top: 40px;
+.embedded {
+  padding: 0;
+  margin-top: 72px;
+  padding-top: 48px;
   border-top: 1px solid var(--line);
-}
-
-.eyebrow {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.72;
-}
-
-.title {
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: clamp(30px, 3.8vw, 56px);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.05em;
-}
-
-.lead {
-  max-width: 760px;
-  margin: 18px 0 0;
-  font-size: 16px;
-  line-height: 1.8;
-  color: rgb(22 23 19 / 78%);
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
-  margin-top: 32px;
+  margin-top: 8px;
 }
 
 .card {
@@ -55,33 +32,33 @@ section {
 .cardTitle {
   margin: 0 0 12px;
   font-family: var(--font-heading);
-  font-size: 22px;
+  font-size: var(--text-body-lg);
   font-weight: 400;
-  line-height: 1.1;
+  line-height: var(--line-height-tight);
 }
 
 .cardText {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: var(--text-body-sm);
+  line-height: var(--line-height-body);
   color: rgb(22 23 19 / 72%);
 }
 
 @media (width <= 900px) {
-  .header,
   .grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (width <= 700px) {
-  section {
-    padding-top: 44px;
+  .section:not(.embedded) {
+    padding-top: 80px;
+    padding-bottom: 80px;
   }
 
-  .header {
-    gap: 16px;
-    padding-top: 28px;
+  .embedded {
+    margin-top: 56px;
+    padding-top: 36px;
   }
 
   .card {

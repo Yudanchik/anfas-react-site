@@ -1,34 +1,37 @@
-﻿import { Link } from 'react-router'
-
-import { formatChoice } from '../model/format-choice.data'
+﻿import { formatChoice } from '../model/format-choice.data'
+import { SectionHeader } from '../../ui'
 
 import styles from './HomeFormatChoice.module.scss'
 
-export function HomeFormatChoice() {
+export function HomeFormatChoice({
+  onOpenBrief,
+  onScrollToCalculator,
+}: {
+  onOpenBrief: () => void
+  onScrollToCalculator: () => void
+}) {
   return (
     <section className={styles.choice}>
       <div className={styles.layout}>
-        <div className={styles.header} data-reveal>
-          <div>
-            <div className={styles.kicker}>
-              <span>04</span>
-              <p>{formatChoice.eyebrow}</p>
-            </div>
-            <h2 className={styles.title}>
+        <SectionHeader
+          number="04"
+          label={formatChoice.eyebrow}
+          title={
+            <>
               {formatChoice.title}
               <br />
               <em>без лишнего шума</em>
-            </h2>
-          </div>
-          <p className={styles.lead}>{formatChoice.lead}</p>
-        </div>
+            </>
+          }
+          lead={formatChoice.lead}
+        />
 
         <div className={styles.options} data-reveal>
           {formatChoice.options.map((option) => (
             <article className={styles.card} key={option.key}>
               <p className={styles.badge}>{option.key === 'individual' ? 'Индивидуально' : 'Быстрый старт'}</p>
-              <div>
-                <h3>{option.title}</h3>
+              <div className={styles.cardBody}>
+                <h3 className={styles.cardTitle}>{option.title}</h3>
                 <p className={styles.cardText}>{option.text}</p>
               </div>
               <ul className={styles.points}>
@@ -36,9 +39,13 @@ export function HomeFormatChoice() {
                   <li key={point}>{point}</li>
                 ))}
               </ul>
-              <Link className={styles.action} to={option.href}>
+              <button
+                className={styles.action}
+                type="button"
+                onClick={option.key === 'individual' ? onOpenBrief : onScrollToCalculator}
+              >
                 {option.cta}
-              </Link>
+              </button>
             </article>
           ))}
         </div>

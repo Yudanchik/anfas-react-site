@@ -7,8 +7,57 @@ body.modal-open {
   overflow: hidden;
 }
 
+body.modal-open [data-scroll-top] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none;
+}
+
 .site-shell {
   overflow: clip;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.2, 0.7, 0, 1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+[data-reveal][data-visible] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-reveal='scale'] {
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 0.6s ease,
+    transform 0.65s cubic-bezier(0.2, 0.7, 0, 1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+[data-reveal='scale'][data-visible] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal='scale'] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 .scroll-progress {

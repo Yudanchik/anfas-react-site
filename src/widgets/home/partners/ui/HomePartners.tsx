@@ -1,4 +1,5 @@
 ﻿import { partners } from '../model/partners.data'
+import { SectionHeader } from '../../ui'
 import styles from './HomePartners.module.scss'
 
 const firstRow = partners.slice(0, 6)
@@ -31,20 +32,19 @@ export function HomePartners() {
   return (
     <section className={styles.partners + ' ' + styles.sectionpad}>
       <div className={styles.partnerslayout}>
-        <div className={styles.partnersintro} data-reveal>
-          <div className={styles.sectionkicker}>
-            <span>07</span>
-            <p>Наши партнёры</p>
-          </div>
-          <h2>
-            Дизайн, комплектация
-            <br />
-            и <em>сильная команда</em>
-          </h2>
-          <p>
-            Мы работаем с архитекторами, студиями и поставщиками, которые помогают держать качество
-            и скорость на высоком уровне. Такой круг партнёров делает процесс спокойнее и понятнее.
-          </p>
+        <div className={styles.partnersintro}>
+          <SectionHeader
+            number="09"
+            label="Наши партнёры"
+            title={
+              <>
+                Дизайн, комплектация
+                <br />
+                и <em>сильная команда</em>
+              </>
+            }
+            lead="Мы работаем с архитекторами, студиями и поставщиками, которые помогают держать качество и скорость на высоком уровне. Такой круг партнёров делает процесс спокойнее и понятнее."
+          />
         </div>
 
         <div className={styles.partnersrail} data-reveal>

@@ -1,5 +1,6 @@
 import { faqItems } from '@/features/faq/model/faq.data'
 import { PlusIcon } from '@/shared/ui/icons/PlusIcon'
+import { SectionHeader } from '../../ui'
 import styles from './HomeFaq.module.scss'
 
 export function HomeFaq({
@@ -12,40 +13,48 @@ export function HomeFaq({
   return (
     <section className={styles.faq + ' ' + styles.sectionpad}>
       <div className={styles.faqtitle}>
-        <div className={styles.sectionkicker} data-reveal>
-          <span>05</span>
-          <p>Частые вопросы</p>
-        </div>
-        <h2 data-reveal>
-          Закрываем
-          <br />
-          <em>главные страхи.</em>
-        </h2>
-        <p data-reveal>
-          Здесь собрали короткие ответы про сроки, бюджет, контроль, удалённый ремонт и выбор между
-          дизайн-проектом и пакетным решением.
-        </p>
+        <SectionHeader
+          number="08"
+          label="Частые вопросы"
+          title={
+            <>
+              Закрываем
+              <br />
+              <em>главные страхи.</em>
+            </>
+          }
+          lead="Здесь собрали короткие ответы про сроки, бюджет, контроль, удалённый ремонт и выбор между дизайн-проектом и пакетным решением."
+        />
       </div>
       <div className={styles.faqlist}>
-        {faqItems.map((item, index) => (
-          <article
-            className={`${styles.faqitem} ${openFaq === index ? styles.isopen : ''}`}
-            key={item.question}
-          >
-            <button
-              type="button"
-              aria-expanded={openFaq === index}
-              onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
+        {faqItems.map((item, index) => {
+          const isOpen = openFaq === index
+
+          return (
+            <article
+              className={`${styles.faqitem} ${isOpen ? styles.isopen : ''}`}
+              key={item.question}
             >
-              <span>0{index + 1}</span>
-              <strong>{item.question}</strong>
-              <PlusIcon open={openFaq === index} />
-            </button>
-            <div className={styles.faqanswer}>
-              <p>{item.answer}</p>
-            </div>
-          </article>
-        ))}
+              <button
+                className={styles.faqtrigger}
+                type="button"
+                aria-expanded={isOpen}
+                onClick={() => setOpenFaq(isOpen ? -1 : index)}
+              >
+                <span className={styles.faqnumber}>0{index + 1}</span>
+                <strong className={styles.faqquestion}>{item.question}</strong>
+                <span className={styles.faqtoggle}>
+                  <PlusIcon open={isOpen} />
+                </span>
+              </button>
+              <div className={styles.faqanswer}>
+                <div className={styles.faqanswerinner}>
+                  <p className={styles.faqanswertext}>{item.answer}</p>
+                </div>
+              </div>
+            </article>
+          )
+        })}
       </div>
     </section>
   )

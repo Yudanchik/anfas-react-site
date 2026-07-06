@@ -1,61 +1,13 @@
 ﻿.compare {
   position: relative;
   margin-top: 0;
-  padding: 112px 4.2vw;
+  padding: 96px 4.2vw;
   background: var(--paper);
 }
 
 .layout {
   display: grid;
   gap: 28px;
-}
-
-.header {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: 24px;
-  align-items: end;
-}
-
-.kicker {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 0 18px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.72;
-}
-
-.kicker::before {
-  width: 40px;
-  height: 1px;
-  content: '';
-  background: currentcolor;
-}
-
-.title {
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: clamp(36px, 5vw, 72px);
-  font-weight: 400;
-  line-height: 0.98;
-  letter-spacing: -0.06em;
-}
-
-.title em {
-  color: var(--amber);
-  font-style: normal;
-}
-
-.lead {
-  max-width: 680px;
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.8;
-  color: rgb(22 23 19 / 72%);
 }
 
 .cards {
@@ -76,25 +28,30 @@
 
 .cardAccent {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--text-caption);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--amber);
 }
 
-.card h3 {
+.cardBody {
+  min-width: 0;
+}
+
+.cardTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(24px, 2.6vw, 40px);
+  font-size: var(--text-card-title);
   font-weight: 400;
-  line-height: 1.05;
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.04em;
 }
 
 .cardText {
   margin: 0;
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: var(--text-body);
+  line-height: var(--line-height-body);
 }
 
 .cardList {
@@ -109,16 +66,16 @@
   padding: 12px 14px;
   border-radius: var(--radius-sm);
   background: rgb(255 255 255 / 42%);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: var(--text-body-sm);
+  line-height: var(--line-height-body);
 }
 
 .cardNote {
   margin: 0;
   padding-top: 12px;
   border-top: 1px solid var(--line);
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: var(--text-body-sm);
+  line-height: var(--line-height-body);
   color: rgb(22 23 19 / 72%);
 }
 
@@ -147,7 +104,7 @@
 }
 
 .tableTitle span {
-  font-size: 12px;
+  font-size: var(--text-caption);
   text-transform: uppercase;
   opacity: 0.6;
 }
@@ -159,6 +116,10 @@
   color: var(--paper);
 }
 
+.tableRow {
+  display: contents;
+}
+
 .tableHeader,
 .tableCell,
 .tableRowLabel {
@@ -167,20 +128,20 @@
 }
 
 .tableHeader {
-  font-size: 12px;
+  font-size: var(--text-caption);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgb(243 240 233 / 72%);
 }
 
 .tableRowLabel {
-  font-size: 15px;
+  font-size: var(--text-body);
   font-weight: 600;
 }
 
 .tableCell {
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: var(--text-body-sm);
+  line-height: var(--line-height-body);
   color: rgb(243 240 233 / 88%);
 }
 
@@ -196,8 +157,8 @@
 .footerText {
   max-width: 640px;
   margin: 0;
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: var(--text-body);
+  line-height: var(--line-height-body);
   color: rgb(22 23 19 / 72%);
 }
 
@@ -214,8 +175,10 @@
   justify-content: center;
   min-height: 54px;
   padding: 0 22px;
+  cursor: pointer;
+  border: 0;
   border-radius: 100px;
-  font-size: 14px;
+  font-size: var(--text-body-sm);
   font-weight: 600;
   transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
@@ -237,7 +200,6 @@
 }
 
 @media (width <= 900px) {
-  .header,
   .cards,
   .table {
     grid-template-columns: 1fr;
@@ -298,7 +260,7 @@
 
   .cardList li {
     padding: 10px 12px;
-    font-size: 13px;
+    font-size: var(--text-body-sm);
   }
 
   .tableTitle,
@@ -310,7 +272,7 @@
   }
 
   .footerText {
-    font-size: 14px;
+    font-size: var(--text-body-sm);
   }
 
   .footerActions {

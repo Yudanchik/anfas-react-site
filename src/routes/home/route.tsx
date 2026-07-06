@@ -3,6 +3,7 @@ import { useLoaderData } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
 import { useBrief } from '@/features/brief/model/BriefContext'
+import { scrollToId } from '@/shared/lib/scroll-to'
 import { HomeContact } from '@/widgets/home/contact'
 import { HomeFaq } from '@/widgets/home/faq'
 import { HomeHero } from '@/widgets/home/hero'
@@ -49,6 +50,7 @@ export default function HomeRoute() {
   const { projects } = useLoaderData<typeof loader>()
   const { openBrief } = useBrief()
   const [openFaq, setOpenFaq] = useState(0)
+  const scrollToCalculator = () => scrollToId('calculator')
 
   return (
     <main>
@@ -56,8 +58,8 @@ export default function HomeRoute() {
       <HomeTicker />
       <HomeManifesto />
       <HomeServices />
-      <HomeFormatCompare />
-      <HomeFormatChoice />
+      <HomeFormatCompare onOpenBrief={openBrief} onScrollToCalculator={scrollToCalculator} />
+      <HomeFormatChoice onOpenBrief={openBrief} onScrollToCalculator={scrollToCalculator} />
       <HomeProjects projects={projects} />
       <HomePackageCalculator onOpenBrief={openBrief} />
       <HomeProcess onOpenBrief={openBrief} />

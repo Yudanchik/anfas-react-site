@@ -1,0 +1,27 @@
+.plusIcon {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 1.5px;
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0, 1);
+  transform: translate(-50%, -50%);
+  background: currentcolor;
+  border-radius: 1px;
+}
+
+.lineVertical {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.open .lineVertical {
+  transform: translate(-50%, -50%) rotate(0deg);
+}

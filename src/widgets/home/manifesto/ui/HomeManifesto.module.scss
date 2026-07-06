@@ -30,7 +30,7 @@
 .manifestonote {
   max-width: 340px;
   margin: auto 0 12px;
-  font-size: 13px;
+  font-size: var(--text-body-sm);
   line-height: 1.8;
 }
 
@@ -59,9 +59,9 @@
 .statsrow {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 120px;
-  padding-top: 28px;
+  gap: 0;
+  margin-top: 88px;
+  padding-top: 32px;
   border-top: 1px solid var(--line);
 }
 
@@ -69,13 +69,18 @@
   display: flex;
   align-items: flex-end;
   gap: 18px;
-  flex: 1 1 240px;
-  min-height: 138px;
-  padding: 24px 24px 0 0;
+  flex: 1 1 220px;
+  min-height: 120px;
+  padding: 0 28px 0 0;
   border-right: 1px solid var(--line);
 }
 
+.statsrow > div:first-child {
+  padding-left: 0;
+}
+
 .statsrow > div:last-child {
+  padding-right: 0;
   border-right: 0;
 }
 
@@ -87,7 +92,7 @@
 }
 
 .statsrow span {
-  font-size: 12px;
+  font-size: var(--text-caption);
   line-height: 1.55;
   text-transform: uppercase;
 }
@@ -108,12 +113,20 @@
   }
 
   .statsrow {
-    margin-top: 80px;
+    margin-top: 64px;
   }
 
   .statsrow > div {
     align-items: flex-start;
-    padding-right: 0;
+    flex: 1 1 100%;
+    min-height: auto;
+    padding: 20px 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .statsrow > div:last-child {
+    border-bottom: 0;
   }
 }
 
@@ -128,15 +141,13 @@
 
   .statsrow {
     gap: 0;
+    margin-top: 56px;
   }
 
   .statsrow > div {
     align-items: center;
     gap: 14px;
-    min-height: auto;
-    padding: 24px 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
+    padding: 22px 0;
   }
 
   .statsrow strong {
