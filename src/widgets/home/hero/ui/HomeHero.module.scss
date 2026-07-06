@@ -312,3 +312,54 @@
     font-size: 14px;
   }
 }
+
+@media (width <= 420px) {
+  .hero {
+    min-height: 660px;
+  }
+
+  .herogrid {
+    padding: 112px 16px 86px;
+  }
+
+  .heroeyebrow {
+    gap: 10px;
+    margin-bottom: 18px;
+    letter-spacing: 0.11em;
+  }
+
+  .herocopy h1 {
+    font-size: clamp(38px, 14vw, 56px);
+    line-height: 0.94;
+  }
+
+  .herolead {
+    max-width: 100%;
+    margin: 22px 0 26px;
+    font-size: 13px;
+  }
+
+  .primarybutton {
+    gap: 14px;
+    width: 100%;
+    min-height: 56px;
+    padding: 8px 8px 8px 20px;
+  }
+
+  .primarybutton > span {
+    font-size: 12px;
+  }
+
+  .primarybutton i {
+    width: 44px;
+    height: 44px;
+  }
+
+  .herometa {
+    right: 16px;
+    bottom: 20px;
+    left: 16px;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+}

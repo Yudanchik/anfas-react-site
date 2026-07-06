@@ -250,3 +250,33 @@
     padding: 16px;
   }
 }
+
+@media (width <= 420px) {
+  .socialsintro h2 {
+    font-size: clamp(38px, 12vw, 56px);
+  }
+
+  .socialsvisual,
+  .socialcard {
+    padding: 18px;
+  }
+
+  .visualframe {
+    min-height: 270px;
+    padding: 16px;
+  }
+
+  .visualfeed article {
+    grid-template-columns: 32px 1fr;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .sociallinks {
+    gap: 12px;
+  }
+
+  .socialcard strong {
+    font-size: 24px;
+  }
+}

@@ -315,3 +315,27 @@
     margin-top: 0;
   }
 }
+
+@media (width <= 420px) {
+  .projectshead .sectionkicker {
+    margin-bottom: 32px;
+  }
+
+  .projectcopy {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .projectcopy dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 12px;
+  }
+
+  .projectcopy dd {
+    white-space: normal;
+  }
+
+  .textlink {
+    gap: 24px;
+  }
+}

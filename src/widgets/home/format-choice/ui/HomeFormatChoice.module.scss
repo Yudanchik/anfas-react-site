@@ -173,3 +173,22 @@
     padding: 22px;
   }
 }
+
+@media (width <= 420px) {
+  .choice {
+    padding: 64px 16px 24px;
+  }
+
+  .card {
+    padding: 18px 16px;
+  }
+
+  .cardText,
+  .footerText {
+    font-size: 14px;
+  }
+
+  .points li {
+    font-size: 13px;
+  }
+}
