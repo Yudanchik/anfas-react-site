@@ -1,4 +1,4 @@
-@use '../../_common' as home;
+﻿@use '../../_common' as home;
 
 
 .sectionpad {
@@ -58,6 +58,42 @@
   margin: 0;
   font-size: 13px;
   line-height: 1.8;
+}
+
+
+.visual {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 350px);
+  margin-top: 28px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 62%), rgb(255 255 255 / 38%)),
+    repeating-linear-gradient(135deg, rgb(22 23 19 / 4%) 0 12px, rgb(22 23 19 / 7%) 12px 24px);
+  box-shadow: var(--shadow-soft);
+}
+
+
+.visual span {
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgb(22 23 19 / 8%);
+}
+
+
+.visual p {
+  max-width: 260px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgb(22 23 19 / 72%);
 }
 
 
@@ -149,5 +185,29 @@
 
   .processsteps h3 {
     font-size: 29px;
+  }
+
+  .visual {
+    width: 100%;
+    padding: 18px;
+  }
+}
+
+@media (width <= 420px) {
+  .processintro h2 {
+    font-size: clamp(38px, 12vw, 58px);
+  }
+
+  .outlinebutton {
+    width: 100%;
+  }
+
+  .processsteps article {
+    min-height: auto;
+    padding: 30px 0;
+  }
+
+  .processsteps p {
+    font-size: 13px;
   }
 }
