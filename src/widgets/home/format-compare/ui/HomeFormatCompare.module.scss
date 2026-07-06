@@ -276,3 +276,44 @@
     width: 100%;
   }
 }
+
+@media (width <= 580px) {
+  .tableWrap {
+    overflow-x: auto;
+  }
+
+  .table {
+    min-width: 560px;
+  }
+}
+
+@media (width <= 420px) {
+  .compare {
+    padding: 64px 16px 24px;
+  }
+
+  .card {
+    padding: 18px 16px;
+  }
+
+  .cardList li {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .tableTitle,
+  .tableHeader,
+  .tableCell,
+  .tableRowLabel {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .footerText {
+    font-size: 14px;
+  }
+
+  .footerActions {
+    gap: 10px;
+  }
+}

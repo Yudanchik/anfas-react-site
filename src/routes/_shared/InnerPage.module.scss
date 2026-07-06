@@ -217,3 +217,40 @@
     gap: 16px;
   }
 }
+
+@media (width <= 420px) {
+  .page,
+  .projectHero {
+    padding-inline: 16px;
+  }
+
+  .page {
+    padding-top: 72px;
+    padding-bottom: 80px;
+  }
+
+  .title {
+    font-size: clamp(34px, 12vw, 54px);
+  }
+
+  .lead {
+    margin-top: 24px;
+    font-size: 14px;
+  }
+
+  .cardHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .projectMeta {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .projectMeta dd {
+    font-size: 12px;
+    white-space: normal;
+  }
+}

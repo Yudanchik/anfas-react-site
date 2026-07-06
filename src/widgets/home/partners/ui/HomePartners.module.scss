@@ -140,3 +140,19 @@
     gap: 14px;
   }
 }
+
+@media (width <= 420px) {
+  .partnersintro h2 {
+    font-size: clamp(38px, 12vw, 56px);
+  }
+
+  .partnersintro p {
+    font-size: 12px;
+  }
+
+  .card {
+    min-width: 136px;
+    min-height: 84px;
+    padding: 14px 16px;
+  }
+}

@@ -186,3 +186,24 @@
     margin-left: 42px;
   }
 }
+
+@media (width <= 420px) {
+  .faqtitle h2 {
+    font-size: clamp(38px, 12vw, 54px);
+  }
+
+  .faqitem > button {
+    min-height: 96px;
+    grid-template-columns: 24px 1fr 20px;
+    gap: 10px;
+  }
+
+  .faqitem strong {
+    font-size: 18px;
+  }
+
+  .faqanswer p {
+    margin-left: 34px;
+    font-size: 12px;
+  }
+}

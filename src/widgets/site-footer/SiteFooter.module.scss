@@ -274,3 +274,38 @@
     justify-content: flex-start;
   }
 }
+
+@media (width <= 420px) {
+  .siteFooter {
+    padding: 62px 16px 24px;
+  }
+
+  .footerBanner {
+    padding: 18px;
+  }
+
+  .footerBanner h3 {
+    font-size: clamp(24px, 8vw, 34px);
+  }
+
+  .footerBanner p,
+  .brandLead {
+    font-size: 12px;
+  }
+
+  .socials a {
+    min-height: 40px;
+    padding: 0 14px;
+  }
+
+  .footerNav a,
+  .contactCards a,
+  .contactCards p {
+    font-size: 14px;
+  }
+
+  .footerSubscribe button {
+    width: 100%;
+    justify-content: center;
+  }
+}
