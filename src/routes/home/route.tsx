@@ -7,6 +7,7 @@ import { HomeContact } from '@/widgets/home/contact'
 import { HomeFaq } from '@/widgets/home/faq'
 import { HomeHero } from '@/widgets/home/hero'
 import { HomeManifesto } from '@/widgets/home/manifesto'
+import { HomePackageCalculator } from '@/widgets/home/package-calculator'
 import { HomePartners } from '@/widgets/home/partners'
 import { HomeProcess } from '@/widgets/home/process'
 import { HomeProjects } from '@/widgets/home/projects'
@@ -31,6 +32,17 @@ export const meta = () => [
     content:
       'Ремонт квартир под ключ, дизайн-проект и пакетные решения в Санкт-Петербурге. Прозрачные сроки, понятный бюджет и контроль на каждом этапе.',
   },
+  {
+    name: 'keywords',
+    content:
+      'ремонт квартир под ключ, ремонт квартиры спб, дизайн-проект квартиры, пакетный ремонт квартиры, ремонт с фиксированной ценой, ремонт с понятными сроками',
+  },
+  { property: 'og:title', content: 'Ремонт квартир под ключ в Санкт-Петербурге | Анфас' },
+  {
+    property: 'og:description',
+    content:
+      'Ремонт квартир под ключ, дизайн-проект и пакетные решения в Санкт-Петербурге. Прозрачные сроки, понятный бюджет и контроль на каждом этапе.',
+  },
 ]
 
 export default function HomeRoute() {
@@ -47,6 +59,7 @@ export default function HomeRoute() {
       <HomeFormatCompare />
       <HomeFormatChoice />
       <HomeProjects projects={projects} />
+      <HomePackageCalculator onOpenBrief={openBrief} />
       <HomeProcess onOpenBrief={openBrief} />
       <HomeQuote />
       <HomeFaq openFaq={openFaq} setOpenFaq={setOpenFaq} />
@@ -57,4 +70,3 @@ export default function HomeRoute() {
     </main>
   )
 }
-

@@ -1,4 +1,4 @@
-import { processSteps } from '@/entities/process/model/process.data'
+﻿import { processSteps } from '@/entities/process/model/process.data'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import styles from './HomeProcess.module.scss'
 
@@ -19,6 +19,10 @@ export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
           Без туманных формулировок и «разберёмся по ходу». Каждый этап имеет результат, срок и
           ответственного.
         </p>
+        <div className={styles.visual} data-reveal aria-label="Плейсхолдер визуала приложения">
+          <span>Здесь будет изображение приложения</span>
+          <p>Скрин интерфейса с этапами, фото, отчётами и комментариями с объекта.</p>
+        </div>
         <button className={styles.outlinebutton} type="button" onClick={onOpenBrief} data-reveal>
           <span>Начать с первого шага</span>
           <ArrowIcon />
@@ -39,3 +43,4 @@ export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
     </section>
   )
 }
+
