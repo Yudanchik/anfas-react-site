@@ -1,5 +1,9 @@
 ﻿@mixin section-pad {
-  padding: 96px 4.2vw;
+  padding: 48px;
+
+  @media (width <= 820px) {
+    padding: 24px;
+  }
 }
 
 @mixin section-gap {

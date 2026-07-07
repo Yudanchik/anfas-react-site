@@ -1,10 +1,13 @@
+@use '../../_common' as home;
+
 .quotesection {
   position: relative;
   display: flex;
   align-items: flex-end;
   min-height: 860px;
-  padding: 6vw;
   overflow: hidden;
+
+  @include home.section-pad;
 }
 
 
@@ -65,7 +68,6 @@
 @media (width <= 820px) {
   .quotesection {
     min-height: 720px;
-    padding: 6vw;
   }
 
   .quotecard {
@@ -77,7 +79,6 @@
 @media (width <= 580px) {
   .quotesection {
     min-height: 690px;
-    padding: 0;
   }
 
   .quotecard {

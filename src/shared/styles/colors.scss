@@ -9,6 +9,8 @@
   --paper-deep: #{c.$paper-deep};
   --amber: #{c.$amber};
   --sage: #{c.$sage};
+  --section-kicker: #{c.$amber};
+  --section-lead: color-mix(in srgb, #{c.$amber} 82%, #{c.$sage} 18%);
   --line: #{c.$line};
   --shadow-soft: #{c.$shadow-soft};
   --scroll-progress: 0;

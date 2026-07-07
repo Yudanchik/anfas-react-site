@@ -2,6 +2,11 @@
 
 .sectionHeader {
   @include header.section-head;
+
+  &.dark {
+    max-width: none;
+    padding-bottom: 0;
+  }
 }
 
 .sectionHeaderMain {
@@ -32,32 +37,14 @@
   @include header.section-lead-base;
 }
 
-.light {
-  .sectionHeaderKicker {
-    @include header.section-kicker-on-light;
-  }
-
-  .sectionHeaderLead {
-    @include header.section-lead-on-light;
-  }
-}
-
 .dark {
-  .sectionHeaderKicker {
-    @include header.section-kicker-on-dark;
-  }
-
   .sectionHeaderTitle {
     color: var(--paper);
-  }
-
-  .sectionHeaderLead {
-    @include header.section-lead-on-dark;
   }
 }
 
 @media (width <= 580px) {
-  .sectionHeader {
+  .sectionHeader:not(.dark) {
     padding-bottom: 40px;
   }
 

@@ -1,7 +1,11 @@
-﻿.compare {
+﻿@use '../../_common' as home;
+
+.compare {
   position: relative;
   margin-top: 0;
-  padding: 96px 4.2vw;
+
+  @include home.section-pad;
+
   background: var(--paper);
 }
 
@@ -212,10 +216,6 @@
 }
 
 @media (width <= 700px) {
-  .compare {
-    padding: 96px 6vw 40px;
-  }
-
   .card,
   .tableTitle,
   .tableHeader,
@@ -250,10 +250,6 @@
 }
 
 @media (width <= 420px) {
-  .compare {
-    padding: 80px 16px 28px;
-  }
-
   .card {
     padding: 18px 16px;
   }
