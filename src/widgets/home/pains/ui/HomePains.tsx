@@ -1,8 +1,13 @@
-import { useMemo, useRef } from 'react'
+import type { CSSProperties } from 'react'
 
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
-import { useScrollStage } from '@/shared/hooks/useScrollStage'
 import { SectionHeader } from '../../ui'
+import {
+  StoryProgressFill,
+  StorySlideLayer,
+  storyTrackHeight,
+  useStoryScrollTrack,
+} from '../../ui/scroll-story'
 import { pains } from '../model/pains.data'
 
 import styles from './HomePains.module.scss'
@@ -19,14 +24,10 @@ function renderMultiline(text: string) {
 }
 
 export function HomePains({ onOpenBrief }: { onOpenBrief: () => void }) {
-  const stageRef = useRef<HTMLDivElement>(null)
-  const anchorsRef = useRef<Array<HTMLDivElement | null>>([])
-  const activeIndex = useScrollStage(stageRef, anchorsRef)
-
-  const total = pains.items.length
+  const slideCount = pains.items.length
+  const { trackRef, activeIndex, progress, scrollYProgress, reduceMotion } =
+    useStoryScrollTrack(slideCount)
   const activeItem = pains.items[activeIndex]
-
-  const progress = useMemo(() => ((activeIndex + 1) / total) * 100, [activeIndex, total])
 
   return (
     <section id="pains" className={styles.pains + ' ' + styles.sectionpad}>
@@ -43,55 +44,78 @@ export function HomePains({ onOpenBrief }: { onOpenBrief: () => void }) {
         lead={pains.lead}
       />
 
-      <div className={styles.stage} ref={stageRef}>
+      <div
+        className={styles.storytrack}
+        ref={trackRef}
+        style={{ '--story-slides': slideCount, height: storyTrackHeight(slideCount) } as CSSProperties}
+      >
         <div className={styles.sticky}>
           <div className={styles.top}>
             <span className={styles.counter}>
               <span className={styles.counterNow}>{activeItem.number}</span>
-              <span className={styles.counterOf}>/ {String(total).padStart(2, '0')}</span>
+              <span className={styles.counterOf}>/ {String(slideCount).padStart(2, '0')}</span>
             </span>
             <div className={styles.rail} aria-hidden="true">
-              <div className={styles.railFill} style={{ width: `${progress}%` }} />
+              <StoryProgressFill
+                className={styles.railFill}
+                scrollYProgress={scrollYProgress}
+                reduceMotion={reduceMotion}
+                fallbackWidth={`${progress}%`}
+              />
             </div>
             <span className={styles.progressText}>Страх · {activeItem.label}</span>
           </div>
 
           <div className={styles.grid}>
             <div className={styles.left}>
-              {pains.items.map((pain, index) => (
-                <div
-                  key={pain.number}
-                  className={styles.quote + (index === activeIndex ? ' ' + styles.quoteActive : '')}
-                  data-index={index}
-                >
-                  <span className={styles.quoteNum}>
-                    {pain.number} · {pain.label}
-                  </span>
-                  <p className={styles.quoteText}>{pain.quote}</p>
-                </div>
-              ))}
+              <div className={styles.quoteStack}>
+                {pains.items.map((pain, index) => (
+                  <StorySlideLayer
+                    key={pain.number}
+                    index={index}
+                    total={slideCount}
+                    activeIndex={activeIndex}
+                    scrollYProgress={scrollYProgress}
+                    reduceMotion={reduceMotion}
+                    className={styles.quote}
+                    variant="rise"
+                  >
+                    <span className={styles.quoteNum}>
+                      {pain.number} · {pain.label}
+                    </span>
+                    <p className={styles.quoteText}>{pain.quote}</p>
+                  </StorySlideLayer>
+                ))}
+              </div>
             </div>
 
-            <div className={styles.right}>
-              {pains.items.map((pain, index) => (
-                <div
-                  key={pain.number}
-                  className={styles.solve + (index === activeIndex ? ' ' + styles.solveActive : '')}
-                  data-index={index}
-                >
-                  <span className={styles.solveTag}>Решение Anfas</span>
-                  <h3 className={styles.solveTitle}>{renderMultiline(pain.solveTitle)}</h3>
-                  <p className={styles.solveText}>{pain.solveText}</p>
-                  <div className={styles.solveStats}>
-                    {pain.stats.map((stat) => (
-                      <div className={styles.solveStat} key={stat.label}>
-                        <strong>{stat.value}</strong>
-                        <span>{stat.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <aside className={styles.right}>
+              <div className={styles.solveStack}>
+                {pains.items.map((pain, index) => (
+                  <StorySlideLayer
+                    key={pain.number}
+                    index={index}
+                    total={slideCount}
+                    activeIndex={activeIndex}
+                    scrollYProgress={scrollYProgress}
+                    reduceMotion={reduceMotion}
+                    className={styles.solve}
+                    variant="fade"
+                  >
+                    <span className={styles.solveTag}>Решение Anfas</span>
+                    <h3 className={styles.solveTitle}>{renderMultiline(pain.solveTitle)}</h3>
+                    <p className={styles.solveText}>{pain.solveText}</p>
+                    <div className={styles.solveStats}>
+                      {pain.stats.map((stat) => (
+                        <div className={styles.solveStat} key={stat.label}>
+                          <strong>{stat.value}</strong>
+                          <span>{stat.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </StorySlideLayer>
+                ))}
+              </div>
 
               <div className={styles.ctaRow}>
                 <button className={styles.cta} type="button" onClick={onOpenBrief}>
@@ -102,21 +126,8 @@ export function HomePains({ onOpenBrief }: { onOpenBrief: () => void }) {
                 </button>
                 <span className={styles.ctaHint}>— оставьте заявку, перезвоним за час</span>
               </div>
-            </div>
+            </aside>
           </div>
-        </div>
-
-        <div className={styles.anchors} aria-hidden="true">
-          {pains.items.map((_, index) => (
-            <div
-              key={index}
-              className={styles.anchor}
-              data-index={index}
-              ref={(el) => {
-                anchorsRef.current[index] = el
-              }}
-            />
-          ))}
         </div>
       </div>
     </section>

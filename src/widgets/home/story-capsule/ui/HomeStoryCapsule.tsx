@@ -1,8 +1,13 @@
-import { useMemo, useRef } from 'react'
+import type { CSSProperties } from 'react'
 
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
-import { useScrollStage } from '@/shared/hooks/useScrollStage'
 import { SectionHeader } from '../../ui'
+import {
+  StoryProgressFill,
+  StorySlideLayer,
+  storyTrackHeight,
+  useStoryScrollTrack,
+} from '../../ui/scroll-story'
 import { storyCapsule } from '../model/story-capsule.data'
 
 import styles from './HomeStoryCapsule.module.scss'
@@ -19,12 +24,9 @@ function renderMultiline(text: string) {
 }
 
 export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
-  const stageRef = useRef<HTMLDivElement>(null)
-  const anchorsRef = useRef<Array<HTMLDivElement | null>>([])
-  const activeIndex = useScrollStage(stageRef, anchorsRef)
-
-  const total = storyCapsule.scenes.length
-  const progress = useMemo(() => ((activeIndex + 1) / total) * 100, [activeIndex, total])
+  const slideCount = storyCapsule.scenes.length
+  const { trackRef, activeIndex, progress, scrollYProgress, reduceMotion } =
+    useStoryScrollTrack(slideCount)
 
   return (
     <section className={styles.story + ' ' + styles.sectionpad}>
@@ -35,40 +37,59 @@ export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
         lead={storyCapsule.lead}
       />
 
-      <div className={styles.stage} ref={stageRef}>
+      <div
+        className={styles.storytrack}
+        ref={trackRef}
+        style={{ '--story-slides': slideCount, height: storyTrackHeight(slideCount) } as CSSProperties}
+      >
         <div className={styles.sticky}>
           <div className={styles.layout}>
             <div className={styles.visual}>
               {storyCapsule.scenes.map((scene, index) => (
-                <div
+                <StorySlideLayer
                   key={scene.label}
-                  className={styles.scene + (index === activeIndex ? ' ' + styles.sceneActive : '')}
-                  data-index={index}
+                  index={index}
+                  total={slideCount}
+                  activeIndex={activeIndex}
+                  scrollYProgress={scrollYProgress}
+                  reduceMotion={reduceMotion}
+                  className={styles.scene}
+                  variant="scene"
                 >
                   <span className={styles.photoLabel}>{scene.label}</span>
-                </div>
+                </StorySlideLayer>
               ))}
             </div>
 
             <aside className={styles.side}>
               <div className={styles.counter}>
                 <span className={styles.counterNow}>{String(activeIndex + 1).padStart(2, '0')}</span>
-                <span className={styles.counterOf}>/ {String(total).padStart(2, '0')}</span>
+                <span className={styles.counterOf}>/ {String(slideCount).padStart(2, '0')}</span>
               </div>
               <div className={styles.rail} aria-hidden="true">
-                <div className={styles.railFill} style={{ width: `${progress}%` }} />
+                <StoryProgressFill
+                  className={styles.railFill}
+                  scrollYProgress={scrollYProgress}
+                  reduceMotion={reduceMotion}
+                  fallbackWidth={`${progress}%`}
+                />
               </div>
 
               <div className={styles.captions}>
                 {storyCapsule.scenes.map((scene, index) => (
-                  <div
+                  <StorySlideLayer
                     key={scene.label}
-                    className={styles.caption + (index === activeIndex ? ' ' + styles.captionActive : '')}
-                    data-index={index}
+                    index={index}
+                    total={slideCount}
+                    activeIndex={activeIndex}
+                    scrollYProgress={scrollYProgress}
+                    reduceMotion={reduceMotion}
+                    className={styles.caption}
+                    variant="fade"
                   >
                     <h4 className={styles.captionTitle}>{scene.title}</h4>
                     <p className={styles.captionText}>{scene.text}</p>
-                  </div>
+                  </StorySlideLayer>
                 ))}
               </div>
 
@@ -80,19 +101,6 @@ export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
               </button>
             </aside>
           </div>
-        </div>
-
-        <div className={styles.anchors} aria-hidden="true">
-          {storyCapsule.scenes.map((_, index) => (
-            <div
-              key={index}
-              className={styles.anchor}
-              data-index={index}
-              ref={(el) => {
-                anchorsRef.current[index] = el
-              }}
-            />
-          ))}
         </div>
       </div>
     </section>
