@@ -4,10 +4,11 @@
   position: relative;
   display: flex;
   align-items: flex-end;
-  min-height: 860px;
-  overflow: hidden;
+  flex: 1;
 
   @include home.section-pad;
+
+  overflow: hidden;
 }
 
 
@@ -29,7 +30,6 @@
 .quotecard {
   position: relative;
   z-index: 1;
-  max-width: 620px;
   margin-left: auto;
   padding: 50px 56px;
   background: var(--paper);
@@ -65,22 +65,7 @@
 }
 
 
-@media (width <= 820px) {
-  .quotesection {
-    min-height: 720px;
-  }
-
-  .quotecard {
-    max-width: 520px;
-  }
-}
-
-
 @media (width <= 580px) {
-  .quotesection {
-    min-height: 690px;
-  }
-
   .quotecard {
     width: calc(100% - 32px);
     margin: 0 16px 16px;

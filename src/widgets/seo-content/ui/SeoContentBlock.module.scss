@@ -19,13 +19,15 @@
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   margin-top: 8px;
 }
 
 .card {
+  flex: 1 1 calc(33.333% - 11px);
+  min-width: 0;
   min-height: 100%;
   padding: 24px;
   border: 1px solid var(--line);
@@ -37,21 +39,21 @@
 .cardTitle {
   margin: 0 0 12px;
   font-family: var(--font-heading);
-  font-size: var(--text-body-lg);
+  font-size: var(--text-card-title);
   font-weight: 400;
   line-height: var(--line-height-tight);
 }
 
 .cardText {
   margin: 0;
-  font-size: var(--text-body-sm);
+  font-size: var(--text-card-description);
   line-height: var(--line-height-body);
   color: rgb(22 23 19 / 72%);
 }
 
 @media (width <= 900px) {
-  .grid {
-    grid-template-columns: 1fr;
+  .card {
+    flex: 1 1 100%;
   }
 }
 

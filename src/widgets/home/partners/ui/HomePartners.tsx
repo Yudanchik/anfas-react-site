@@ -32,20 +32,18 @@ export function HomePartners() {
   return (
     <section className={styles.partners + ' ' + styles.sectionpad}>
       <div className={styles.partnerslayout}>
-        <div className={styles.partnersintro}>
-          <SectionHeader
-            number="09"
-            label="Наши партнёры"
-            title={
-              <>
-                Дизайн, комплектация
-                <br />
-                и <em>сильная команда</em>
-              </>
-            }
-            lead="Мы работаем с архитекторами, студиями и поставщиками, которые помогают держать качество и скорость на высоком уровне. Такой круг партнёров делает процесс спокойнее и понятнее."
-          />
-        </div>
+        <SectionHeader
+          number="09"
+          label="Наши партнёры"
+          title={
+            <>
+              Дизайн, комплектация
+              <br />
+              и <em>сильная команда</em>
+            </>
+          }
+          lead="Мы работаем с архитекторами, студиями и поставщиками, которые помогают держать качество и скорость на высоком уровне. Такой круг партнёров делает процесс спокойнее и понятнее."
+        />
 
         <div className={styles.partnersrail} data-reveal>
           <PartnerTrack items={firstRow} />

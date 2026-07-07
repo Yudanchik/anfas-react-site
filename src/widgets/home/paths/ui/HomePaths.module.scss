@@ -12,14 +12,13 @@
 
 
 .container {
-  max-width: 1240px;
   margin: 0 auto;
 }
 
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 18px;
   margin-top: 28px;
 }
@@ -27,8 +26,11 @@
 
 .card {
   position: relative;
-  display: grid;
+  display: flex;
+  flex: 1 1 calc(50% - 9px);
+  flex-direction: column;
   gap: 16px;
+  min-width: 0;
   padding: 26px;
   cursor: pointer;
   text-align: left;
@@ -59,7 +61,7 @@
 .title {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(1.75rem, 2.5vw, 2.25rem);
+  font-size: var(--text-card-title);
   font-weight: 400;
   line-height: var(--line-height-tight);
   letter-spacing: -0.04em;
@@ -67,13 +69,14 @@
 
 .desc {
   margin: 0;
-  font-size: var(--text-body);
+  font-size: var(--text-card-description);
   line-height: var(--line-height-body);
   color: rgb(22 23 19 / 74%);
 }
 
 .features {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   margin: 0;
   padding: 0;
@@ -149,8 +152,8 @@
 
 
 @media (width <= 900px) {
-  .grid {
-    grid-template-columns: 1fr;
+  .card {
+    flex: 1 1 100%;
   }
 }
 
@@ -163,4 +166,3 @@
     height: 180px;
   }
 }
-

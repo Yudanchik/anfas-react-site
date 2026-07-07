@@ -10,8 +10,8 @@
 }
 
 .statsrow {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 18px;
   align-items: end;
   padding-top: 22px;
@@ -20,6 +20,7 @@
 
 .metaitem {
   display: flex;
+  flex: 1;
   align-items: baseline;
   gap: 10px;
   min-width: 0;
@@ -34,7 +35,7 @@
 
 .metanum {
   font-family: var(--font-heading);
-  font-size: clamp(28px, 2.6vw, 44px);
+  font-size: var(--text-h2);
   font-weight: 400;
   line-height: var(--line-height-tight);
   letter-spacing: -0.03em;
@@ -50,11 +51,11 @@
 
 @media (width <= 820px) {
   .statsrow {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px 18px;
   }
 
   .metaitem {
+    flex: 1 1 calc(50% - 9px);
     border-right: 0;
     padding-right: 0;
   }
@@ -62,11 +63,12 @@
 
 @media (width <= 580px) {
   .statsrow {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 14px;
   }
 
   .metaitem {
+    flex: 1 1 100%;
     padding: 12px 0;
     border-bottom: 1px solid var(--line);
   }

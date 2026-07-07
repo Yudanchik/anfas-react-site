@@ -27,11 +27,11 @@
 }
 
 @mixin section-kicker-pill {
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 29px;
   height: 29px;
   border: 1px solid currentcolor;
   border-radius: 50%;
-  place-items: center;
 }
-

@@ -12,20 +12,19 @@ export function HomeFaq({
 }) {
   return (
     <section className={styles.faq + ' ' + styles.sectionpad}>
-      <div className={styles.faqtitle}>
-        <SectionHeader
-          number="08"
-          label="Частые вопросы"
-          title={
-            <>
-              Закрываем
-              <br />
-              <em>главные страхи.</em>
-            </>
-          }
-          lead="Здесь собрали короткие ответы про сроки, бюджет, контроль, удалённый ремонт и выбор между дизайн-проектом и пакетным решением."
-        />
-      </div>
+      <SectionHeader
+        className={styles.faqtitle}
+        number="08"
+        label="Частые вопросы"
+        title={
+          <>
+            Закрываем
+            <br />
+            <em>главные страхи.</em>
+          </>
+        }
+        lead="Здесь собрали короткие ответы про сроки, бюджет, контроль, удалённый ремонт и выбор между дизайн-проектом и пакетным решением."
+      />
       <div className={styles.faqlist}>
         {faqItems.map((item, index) => {
           const isOpen = openFaq === index

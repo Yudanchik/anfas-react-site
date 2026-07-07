@@ -7,7 +7,7 @@
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  min-height: 820px;
+  flex: 1;
   overflow: hidden;
 
   @include home.section-pad;
@@ -71,7 +71,7 @@
 .contact h2 {
   margin: 0;
   color: var(--ink);
-  font-size: clamp(52px, 7vw, 104px);
+  font-size: var(--text-h2);
   font-weight: 400;
   line-height: 0.98;
   letter-spacing: -0.06em;
@@ -87,7 +87,6 @@
 
 
 .contactlead {
-  max-width: 540px;
   margin: 32px 0 38px;
   color: rgb(22 23 19 / 75%);
   font-size: var(--text-body-sm);
@@ -116,7 +115,9 @@
 
 
 .contactbutton i {
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 48px;
   height: 48px;
   transition:
@@ -124,7 +125,6 @@
     background 0.35s ease;
   border-radius: 50%;
   background: var(--paper);
-  place-items: center;
   color: var(--ink);
 }
 
@@ -220,14 +220,6 @@
 
 
 @media (width <= 580px) {
-  .contact {
-    min-height: 720px;
-  }
-
-  .contact h2 {
-    font-size: clamp(46px, 13vw, 68px);
-  }
-
   .contactorbit {
     width: 120vw;
   }
@@ -236,4 +228,3 @@
     display: none;
   }
 }
-

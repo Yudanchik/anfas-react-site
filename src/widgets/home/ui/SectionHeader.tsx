@@ -35,11 +35,17 @@ export function SectionHeader({
 }: SectionHeaderProps) {
   const showKicker = Boolean(number && label)
 
+  const headerClassName = [
+    styles.sectionHeader,
+    sectionHeaderClassNames.root,
+    tone === 'dark' ? styles.dark : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
-    <header
-      className={`${styles.sectionHeader} ${sectionHeaderClassNames.root} ${styles[tone]} ${className ?? ''}`}
-      data-reveal
-    >
+    <header className={headerClassName} data-reveal>
       <div className={`${styles.sectionHeaderMain} ${sectionHeaderClassNames.main}`}>
         {showKicker ? (
           <div className={`${styles.sectionHeaderKicker} ${sectionHeaderClassNames.kicker}`}>

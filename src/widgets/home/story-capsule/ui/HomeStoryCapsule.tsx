@@ -28,14 +28,13 @@ export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
 
   return (
     <section className={styles.story + ' ' + styles.sectionpad}>
-      <div className={styles.intro} data-reveal>
-        <SectionHeader
-          number="06"
-          label={storyCapsule.eyebrow}
-          title={<>{renderMultiline(storyCapsule.title)}</>}
-          lead={storyCapsule.lead}
-        />
-      </div>
+      <SectionHeader
+        number="06"
+        label={storyCapsule.eyebrow}
+        tone="dark"
+        title={<>{renderMultiline(storyCapsule.title)}</>}
+        lead={storyCapsule.lead}
+      />
 
       <div className={styles.stage} ref={stageRef}>
         <div className={styles.sticky}>
