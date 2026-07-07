@@ -11,6 +11,9 @@ import { HomeProcess } from '@/widgets/home/process'
 import { HomePaths } from '@/widgets/home/paths'
 import { HomeSocials } from '@/widgets/home/socials'
 import { HomeTicker } from '@/widgets/home/ticker'
+import { HomePains } from '@/widgets/home/pains'
+import { HomeStoryIndividual } from '@/widgets/home/story-individual'
+import { HomeStoryCapsule } from '@/widgets/home/story-capsule'
 
 export const meta = () => [
   { title: 'Ремонт квартир под ключ в Санкт-Петербурге | Анфас' },
@@ -45,13 +48,13 @@ export default function HomeRoute() {
       <HomeManifesto />
 
       {/* 04: боли → решения */}
-      {/* <HomePains onOpenBrief={openBrief} /> */}
+      <HomePains onOpenBrief={openBrief} />
 
       {/* 05: индивидуальный путь */}
-      {/* <HomeStoryIndividual onOpenBrief={openBrief} /> */}
+      <HomeStoryIndividual onOpenBrief={openBrief} />
 
       {/* 06: капсула */}
-      {/* <HomeStoryCapsule onOpenBrief={openBrief} /> */}
+      <HomeStoryCapsule onOpenBrief={openBrief} />
 
       {/* 07: выбор тарифов */}
       <HomePaths onOpenBrief={openBrief} />

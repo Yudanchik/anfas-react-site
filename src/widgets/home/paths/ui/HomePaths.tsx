@@ -1,5 +1,4 @@
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
-import { scrollToId } from '@/shared/lib/scroll-to'
 import { SectionHeader } from '../../ui'
 
 import styles from './HomePaths.module.scss'
@@ -23,7 +22,6 @@ export function HomePaths({ onOpenBrief }: { onOpenBrief: () => void }) {
 
         <div className={styles.grid} data-reveal>
           <button className={`${styles.card} ${styles.individual}`} type="button" onClick={onOpenBrief}>
-            {/* <div className={styles.tag}>01 · Под себя</div> */}
             <h3 className={styles.title}>Индивидуальный проект</h3>
             <p className={styles.desc}>
               Уникальный дизайн, авторская мебель, нестандартные планировки. Создаём с нуля под вас.
@@ -39,18 +37,16 @@ export function HomePaths({ onOpenBrief }: { onOpenBrief: () => void }) {
                 от <strong>9 000 ₽</strong> / м² · дизайн
               </span>
               <span className={styles.cta}>
-                Обсудить <ArrowIcon size={16} />
+                <span>Оставить заявку</span>
+                <i>
+                  <ArrowIcon size={16} />
+                </i>
               </span>
             </div>
             <div className={styles.photo} aria-hidden="true" />
           </button>
 
-          <button
-            className={`${styles.card} ${styles.capsule}`}
-            type="button"
-            onClick={() => scrollToId('calculator')}
-          >
-            {/* <div className={styles.tag}>02 · Готово</div> */}
+          <button className={`${styles.card} ${styles.capsule}`} type="button" onClick={onOpenBrief}>
             <h3 className={styles.title}>Капсульный ремонт</h3>
             <p className={styles.desc}>
               Готовый комплект решений: стиль, материалы, сроки и цена — известны до начала работ.
@@ -66,7 +62,10 @@ export function HomePaths({ onOpenBrief }: { onOpenBrief: () => void }) {
                 от <strong>49 000 ₽</strong> / м² · под ключ
               </span>
               <span className={styles.cta}>
-                К калькулятору <ArrowIcon size={16} />
+                <span>Оставить заявку</span>
+                <i>
+                  <ArrowIcon size={16} />
+                </i>
               </span>
             </div>
             <div className={styles.photo} aria-hidden="true" />
