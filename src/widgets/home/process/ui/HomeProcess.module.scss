@@ -1,6 +1,6 @@
-@use '../../_common' as home;
-@use '../../../../shared/styles/flex' as flex;
-@use '../../../../shared/styles/media' as mq;
+@use 'common' as home;
+@use 'flex' as flex;
+@use 'media' as mq;
 
 $stack-min: 821px;
 $home-tablet: 820px;
@@ -15,6 +15,7 @@ $home-xs: 420px;
 .process {
   @include home.surface-dark;
   @include flex.flex($fw: wrap);
+
   gap: clamp(48px, 7vw, 112px);
 
   @include mq.min($stack-min) {
@@ -49,6 +50,7 @@ $home-xs: 420px;
 
 .processvisual {
   @include flex.flex($fd: column);
+
   gap: 12px;
   width: min(100%, 380px);
   margin-top: 32px;
@@ -93,6 +95,7 @@ $home-xs: 420px;
 
 .processcta {
   @include flex.flex($jc: space-between, $ai: center);
+
   width: min(100%, 380px);
   margin-top: 38px;
   padding: 16px 0;
@@ -131,6 +134,7 @@ $home-xs: 420px;
 
 .processstepslist {
   @include flex.flex($fd: column);
+
   flex: 1.22;
   gap: 16px;
   min-width: 0;
@@ -180,7 +184,9 @@ $home-xs: 420px;
 .processstackviewport {
   position: sticky;
   top: var(--stack-base);
+
   @include flex.flex($fd: column);
+
   gap: var(--stack-gap);
   width: 100%;
 }
@@ -211,6 +217,7 @@ $home-xs: 420px;
 
 .processstepinner {
   @include flex.flex($fd: column);
+
   gap: 18px;
   padding: 28px 34px 30px;
   border: 1px solid rgb(255 255 255 / 10%);
@@ -242,12 +249,14 @@ $home-xs: 420px;
 
 .processstephead {
   @include flex.flex($jc: space-between, $ai: center);
+
   gap: 16px;
   min-height: 44px;
 }
 
 .processstepmark {
   @include flex.flex($jc: center, $ai: center);
+
   flex-shrink: 0;
   min-width: 34px;
   height: 34px;

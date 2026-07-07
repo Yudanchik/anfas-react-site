@@ -1,4 +1,4 @@
-@use '../../home/_common' as home;
+@use 'common' as home;
 
 .section {
   @include home.section-pad;

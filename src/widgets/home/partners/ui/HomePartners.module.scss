@@ -1,6 +1,6 @@
-@use '../../_common' as home;
-@use '../../../../shared/styles/flex' as flex;
-@use '../../../../shared/styles/media' as mq;
+@use 'common' as home;
+@use 'flex' as flex;
+@use 'media' as mq;
 
 $partner-gap: 16px;
 $home-compact: 580px;
@@ -28,6 +28,7 @@ $home-xs: 420px;
 
 .partnerslayout {
   @include flex.flex($fd: column);
+
   gap: 56px;
 
   @include mq.max($home-compact) {
@@ -37,6 +38,7 @@ $home-xs: 420px;
 
 .partnersrail {
   @include flex.flex($fd: column);
+
   gap: $partner-gap;
   overflow: hidden;
   padding: 12px 0 16px;
@@ -49,6 +51,7 @@ $home-xs: 420px;
 
 .marqueeTrack {
   @include flex.flex($ai: center);
+
   gap: $partner-gap;
   width: max-content;
   will-change: transform;
@@ -56,6 +59,7 @@ $home-xs: 420px;
 
 .card {
   @include flex.flex($fd: column, $jc: center, $ai: center);
+
   flex-shrink: 0;
   min-width: 168px;
   padding: 18px 24px;

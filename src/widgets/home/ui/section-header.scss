@@ -1,9 +1,10 @@
-@use '../_common' as home;
+@use 'common' as home;
 
 @mixin section-head {
   display: flex;
   flex-direction: column;
   gap: 0;
+
   // padding-bottom: 52px;
 }
 

@@ -1,5 +1,5 @@
-﻿@use '../../../../shared/styles/mixins' as mixins;
-@use '../../_common' as home;
+﻿@use 'mixins' as mixins;
+@use 'common' as home;
 
 .sectionpad {
   @include home.section-pad;

@@ -3,14 +3,12 @@
 $phone: 480px;
 $tablet: 768px;
 $laptop: 1200px;
-
 $bkp-min: (
   phone: null,
   tablet: $phone + 1,
   laptop: $tablet + 1,
   desktop: $laptop + 1,
 );
-
 $bkp-max: (
   phone: $phone,
   tablet: $tablet,

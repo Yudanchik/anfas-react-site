@@ -1,6 +1,6 @@
-﻿@forward '../../shared/styles/flex';
-@forward '../../shared/styles/media';
-@use '../../shared/styles/media' as mq;
+﻿@forward 'flex';
+@forward 'media';
+@use 'media' as mq;
 
 @mixin section-pad {
   padding: 48px;
