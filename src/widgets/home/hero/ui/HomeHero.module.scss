@@ -303,12 +303,16 @@
     padding: 130px 6vw 100px;
   }
 
-  .herofeatures > div {
-    flex: 1 1 calc(50% - 6px);
+  .herofeatures {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    max-width: 100%;
   }
 
-  .herofeatures > div:last-child {
-    flex-basis: 100%;
+  .herofeatures > div {
+    flex: unset;
+    min-width: 0;
   }
 
   .heroside {
@@ -366,13 +370,13 @@
   }
 
   .herofeatures > div {
-    flex: 1 1 100%;
     padding: 14px 15px;
   }
 
   .primarybutton {
     gap: 14px;
-    width: 100%;
+    width: auto;
+    max-width: 100%;
     min-height: 56px;
     padding: 8px 8px 8px 20px;
   }

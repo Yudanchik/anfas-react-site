@@ -3,9 +3,9 @@ import type { CSSProperties } from 'react'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { SectionHeader } from '../../ui'
 import {
+  StoryDockedHeader,
   StoryProgressFill,
   StorySlideLayer,
-  storyTrackHeight,
   useStoryScrollTrack,
 } from '../../ui/scroll-story'
 import { storyIndividual } from '../model/story-individual.data'
@@ -25,40 +25,59 @@ function renderMultiline(text: string) {
 
 export function HomeStoryIndividual({ onOpenBrief }: { onOpenBrief: () => void }) {
   const slideCount = storyIndividual.scenes.length
-  const { trackRef, activeIndex, progress, scrollYProgress, reduceMotion } =
-    useStoryScrollTrack(slideCount)
+  const {
+    trackRef,
+    activeIndex,
+    progress,
+    scrollYProgress,
+    slidesScrollYProgress,
+    introShare,
+    trackHeight,
+    reduceMotion,
+  } = useStoryScrollTrack(slideCount)
 
   return (
     <section className={styles.story + ' ' + styles.sectionpad}>
-      <SectionHeader
-        number="05"
-        label={storyIndividual.eyebrow}
-        title={<>{renderMultiline(storyIndividual.title)}</>}
-        lead={storyIndividual.lead}
-      />
-
       <div
         className={styles.storytrack}
         ref={trackRef}
-        style={{ '--story-slides': slideCount, height: storyTrackHeight(slideCount) } as CSSProperties}
+        style={{ '--story-slides': slideCount, height: trackHeight } as CSSProperties}
       >
         <div className={styles.sticky}>
           <div className={styles.layout}>
-            <div className={styles.visual}>
-              {storyIndividual.scenes.map((scene, index) => (
-                <StorySlideLayer
-                  key={scene.label}
-                  index={index}
-                  total={slideCount}
-                  activeIndex={activeIndex}
-                  scrollYProgress={scrollYProgress}
-                  reduceMotion={reduceMotion}
-                  className={styles.scene}
-                  variant="scene"
-                >
-                  <span className={styles.photoLabel}>{scene.label}</span>
-                </StorySlideLayer>
-              ))}
+            <div className={styles.leftColumn}>
+              <StoryDockedHeader
+                className={styles.storyHeader}
+                scrollYProgress={scrollYProgress}
+                introShare={introShare}
+                reduceMotion={reduceMotion}
+              >
+                <SectionHeader
+                  number="05"
+                  label={storyIndividual.eyebrow}
+                  title={<>{renderMultiline(storyIndividual.title)}</>}
+                  lead={storyIndividual.lead}
+                  tone="dark"
+                  reveal={false}
+                />
+              </StoryDockedHeader>
+
+              <div className={styles.visual}>
+                {storyIndividual.scenes.map((scene, index) => (
+                  <StorySlideLayer
+                    key={scene.label}
+                    index={index}
+                    total={slideCount}
+                    activeIndex={activeIndex}
+                    scrollYProgress={slidesScrollYProgress}
+                    reduceMotion={reduceMotion}
+                    className={styles.scene}
+                    variant="scene"
+                  >
+                    <span className={styles.photoLabel}>{scene.label}</span>
+                  </StorySlideLayer>
+                ))}
+              </div>
             </div>
 
             <aside className={styles.side}>
@@ -69,7 +88,7 @@ export function HomeStoryIndividual({ onOpenBrief }: { onOpenBrief: () => void }
               <div className={styles.rail} aria-hidden="true">
                 <StoryProgressFill
                   className={styles.railFill}
-                  scrollYProgress={scrollYProgress}
+                  scrollYProgress={slidesScrollYProgress}
                   reduceMotion={reduceMotion}
                   fallbackWidth={`${progress}%`}
                 />
@@ -82,7 +101,7 @@ export function HomeStoryIndividual({ onOpenBrief }: { onOpenBrief: () => void }
                     index={index}
                     total={slideCount}
                     activeIndex={activeIndex}
-                    scrollYProgress={scrollYProgress}
+                    scrollYProgress={slidesScrollYProgress}
                     reduceMotion={reduceMotion}
                     className={styles.caption}
                     variant="fade"

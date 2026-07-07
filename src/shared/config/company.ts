@@ -8,7 +8,13 @@ export const company = {
   address: 'Санкт-Петербург, наб. Обводного канала, 118АХ',
   vkHref: 'https://vk.com/anfas_remont',
   telegramHref: 'https://t.me/anfas_remont',
+  youtubeHref: 'https://www.youtube.com/@anfas_remont',
+  instagramHref: 'https://www.instagram.com/anfas_remont/',
   foundedYear: '2012',
+  legalOwner: 'ИП Осетров Кирилл Артурович',
+  legalInn: '7838108397',
+  legalOgrnip: '1227800123418',
+  legalProfileHref: 'https://www.rusprofile.ru/id/1227800123418',
 } as const
 
 export const navigation = [

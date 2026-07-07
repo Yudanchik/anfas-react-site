@@ -18,6 +18,7 @@ type SectionHeaderProps = {
   number?: string
   label?: string
   tone?: 'light' | 'dark'
+  reveal?: boolean
   className?: string
   titleClassName?: string
   leadClassName?: string
@@ -29,6 +30,7 @@ export function SectionHeader({
   number,
   label,
   tone = 'light',
+  reveal = true,
   className,
   titleClassName,
   leadClassName,
@@ -45,7 +47,10 @@ export function SectionHeader({
     .join(' ')
 
   return (
-    <header className={headerClassName} data-reveal>
+    <header
+      className={headerClassName}
+      {...(reveal ? { 'data-reveal': true } : { 'data-visible': true })}
+    >
       <div className={`${styles.sectionHeaderMain} ${sectionHeaderClassNames.main}`}>
         {showKicker ? (
           <div className={`${styles.sectionHeaderKicker} ${sectionHeaderClassNames.kicker}`}>
