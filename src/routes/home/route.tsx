@@ -7,13 +7,9 @@ import { HomeHero } from '@/widgets/home/hero'
 import { HomeManifesto } from '@/widgets/home/manifesto'
 import { HomePackageCalculator } from '@/widgets/home/package-calculator'
 import { HomePartners } from '@/widgets/home/partners'
-import { HomePains } from '@/widgets/home/pains'
 import { HomeProcess } from '@/widgets/home/process'
 import { HomePaths } from '@/widgets/home/paths'
-import { HomeQuote } from '@/widgets/home/quote'
 import { HomeSocials } from '@/widgets/home/socials'
-import { HomeStoryCapsule } from '@/widgets/home/story-capsule'
-import { HomeStoryIndividual } from '@/widgets/home/story-individual'
 import { HomeTicker } from '@/widgets/home/ticker'
 
 export const meta = () => [
@@ -49,13 +45,13 @@ export default function HomeRoute() {
       <HomeManifesto />
 
       {/* 04: боли → решения */}
-      <HomePains onOpenBrief={openBrief} />
+      {/* <HomePains onOpenBrief={openBrief} /> */}
 
       {/* 05: индивидуальный путь */}
-      <HomeStoryIndividual onOpenBrief={openBrief} />
+      {/* <HomeStoryIndividual onOpenBrief={openBrief} /> */}
 
       {/* 06: капсула */}
-      <HomeStoryCapsule onOpenBrief={openBrief} />
+      {/* <HomeStoryCapsule onOpenBrief={openBrief} /> */}
 
       {/* 07: выбор тарифов */}
       <HomePaths onOpenBrief={openBrief} />
@@ -67,7 +63,6 @@ export default function HomeRoute() {
       <HomePartners />
       <HomeSocials />
       <HomeProcess onOpenBrief={openBrief} />
-      <HomeQuote />
       <HomeFaq openFaq={openFaq} setOpenFaq={setOpenFaq} />
       <HomeContact onOpenBrief={openBrief} />
     </main>

@@ -2,8 +2,7 @@
 
 .calculator {
   @include home.section-pad;
-
-  background: var(--paper);
+  @include home.surface-light;
 }
 
 .layout {

@@ -6,7 +6,7 @@
 }
 
 .manifesto {
-  background: var(--paper);
+  @include home.surface-dark;
 }
 
 .statsrow {
@@ -15,7 +15,7 @@
   gap: 18px;
   align-items: end;
   padding-top: 22px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--section-line, var(--line));
 }
 
 .metaitem {
@@ -25,7 +25,7 @@
   gap: 10px;
   min-width: 0;
   padding-right: 18px;
-  border-right: 1px solid var(--line);
+  border-right: 1px solid var(--section-line, var(--line));
 }
 
 .metaitem:last-child {
@@ -46,7 +46,7 @@
   line-height: 1.4;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: rgb(22 23 19 / 64%);
+  color: color-mix(in srgb, currentcolor 64%, transparent);
 }
 
 @media (width <= 820px) {
@@ -70,7 +70,7 @@
   .metaitem {
     flex: 1 1 100%;
     padding: 12px 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--section-line, var(--line));
   }
 
   .metaitem:last-child {

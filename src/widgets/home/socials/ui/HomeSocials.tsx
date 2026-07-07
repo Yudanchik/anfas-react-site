@@ -28,7 +28,6 @@ export function HomeSocials() {
       <div className={styles.socialslayout}>
         <SectionHeader
           className={styles.socialsintro}
-          tone="dark"
           number="10"
           label="Следите за нами"
           title={

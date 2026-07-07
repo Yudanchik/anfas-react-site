@@ -7,6 +7,12 @@
   --ink: #{c.$ink};
   --paper: #{c.$paper};
   --paper-deep: #{c.$paper-deep};
+  --surface-light: #{c.$paper};
+  --surface-dark: #{c.$ink};
+  --surface-fg-light: #{c.$ink};
+  --surface-fg-dark: #{c.$paper};
+  --line-on-light: #{c.$line};
+  --line-on-dark: rgb(255 255 255 / 16%);
   --amber: #{c.$amber};
   --sage: #{c.$sage};
   --section-kicker: #{c.$amber};

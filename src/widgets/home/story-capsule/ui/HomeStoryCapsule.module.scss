@@ -7,8 +7,7 @@
 
 
 .story {
-  color: var(--paper);
-  background: var(--ink);
+  @include home.surface-light;
 }
 
 
@@ -26,7 +25,7 @@
   flex: 1;
   flex-direction: column;
   padding: clamp(24px, 4vh, 40px) 0 clamp(40px, 6vh, 64px);
-  background: var(--ink);
+  background: var(--section-bg, var(--paper));
 }
 
 
@@ -57,11 +56,12 @@
     transform 1.6s cubic-bezier(0.2, 0.7, 0, 1),
     filter 0.9s cubic-bezier(0.2, 0.7, 0, 1);
   border-radius: 24px;
-  border: 1px solid rgb(255 255 255 / 16%);
+  border: 1px solid var(--line);
   overflow: hidden;
   background:
-    radial-gradient(circle at 30% 30%, rgb(237 174 36 / 22%), transparent 50%),
-    linear-gradient(135deg, rgb(255 255 255 / 12%), rgb(255 255 255 / 2%));
+    radial-gradient(circle at 30% 30%, rgb(237 174 36 / 20%), transparent 45%),
+    linear-gradient(135deg, rgb(22 23 19 / 10%), rgb(22 23 19 / 3%)),
+    #fff;
   pointer-events: none;
 }
 
@@ -83,10 +83,10 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgb(243 240 233 / 82%);
-  background: rgb(22 23 19 / 45%);
-  border: 1px solid rgb(255 255 255 / 16%);
-  backdrop-filter: blur(8px);
+  color: rgb(22 23 19 / 72%);
+  background: rgb(255 255 255 / 75%);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(6px);
 }
 
 
@@ -112,14 +112,14 @@
 .counterOf {
   font-size: 20px;
   font-weight: 400;
-  color: rgb(243 240 233 / 40%);
+  color: rgb(22 23 19 / 55%);
 }
 
 .rail {
   position: relative;
   height: 2px;
   border-radius: 999px;
-  background: rgb(243 240 233 / 18%);
+  background: rgb(22 23 19 / 18%);
   overflow: hidden;
 }
 
@@ -172,7 +172,7 @@
   margin: 0;
   font-size: var(--text-card-description);
   line-height: 1.55;
-  color: rgb(243 240 233 / 70%);
+  color: rgb(22 23 19 / 72%);
 }
 
 .cta {
@@ -186,14 +186,13 @@
   cursor: pointer;
   border: 0;
   border-radius: 999px;
-  color: var(--ink);
-  background: var(--paper);
-  transition: transform 0.25s ease, background-color 0.25s ease;
+  color: var(--paper);
+  background: var(--ink);
+  transition: transform 0.25s ease;
 }
 
 .cta:hover {
   transform: translateY(-1px);
-  background: var(--amber);
 }
 
 .cta > span {
@@ -209,7 +208,7 @@
   height: 38px;
   border-radius: 50%;
   color: var(--ink);
-  background: #fff;
+  background: var(--amber);
 }
 
 

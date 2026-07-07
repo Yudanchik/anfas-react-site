@@ -17,11 +17,11 @@
 }
 
 .process {
+  @include home.surface-dark;
+
   display: flex;
   flex-wrap: wrap;
   gap: clamp(48px, 7vw, 112px);
-  color: var(--paper);
-  background: var(--ink);
 }
 
 .processintro {
@@ -34,7 +34,7 @@
 
 .processintro > p {
   margin: 0;
-  color: rgb(243 240 233 / 72%);
+  color: color-mix(in srgb, currentcolor 72%, transparent);
   font-size: var(--text-section-lead);
   line-height: 1.8;
 }

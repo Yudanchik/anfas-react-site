@@ -17,7 +17,7 @@
 }
 
 .partners {
-  background: var(--paper);
+  @include home.surface-dark;
 }
 
 .partnerslayout {
@@ -59,9 +59,9 @@
   flex-direction: column;
   min-width: 168px;
   padding: 18px 24px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--section-line, var(--line));
   border-radius: var(--radius-md);
-  background: rgb(255 255 255 / 68%);
+  background: color-mix(in srgb, var(--section-fg, var(--ink)) 8%, transparent);
   box-shadow: var(--shadow-soft);
 }
 
@@ -74,7 +74,7 @@
 
 .card small {
   margin-top: 8px;
-  color: rgb(22 23 19 / 62%);
+  color: color-mix(in srgb, currentcolor 62%, transparent);
   font-size: var(--text-caption);
   font-weight: 600;
   letter-spacing: 0.1em;

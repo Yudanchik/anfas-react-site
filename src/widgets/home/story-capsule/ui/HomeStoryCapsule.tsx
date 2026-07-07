@@ -31,7 +31,6 @@ export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
       <SectionHeader
         number="06"
         label={storyCapsule.eyebrow}
-        tone="dark"
         title={<>{renderMultiline(storyCapsule.title)}</>}
         lead={storyCapsule.lead}
       />

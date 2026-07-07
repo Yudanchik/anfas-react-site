@@ -35,3 +35,25 @@
   border: 1px solid currentcolor;
   border-radius: 50%;
 }
+
+@mixin surface-light {
+  color: var(--surface-fg-light);
+  background: var(--surface-light);
+
+  --section-bg: var(--surface-light);
+  --section-fg: var(--surface-fg-light);
+  --section-line: var(--line-on-light);
+}
+
+@mixin surface-dark {
+  color: var(--surface-fg-dark);
+  background: var(--surface-dark);
+
+  --section-bg: var(--surface-dark);
+  --section-fg: var(--surface-fg-dark);
+  --section-line: var(--line-on-dark);
+
+  :global(.sectionHeaderTitle) {
+    color: var(--surface-fg-dark);
+  }
+}

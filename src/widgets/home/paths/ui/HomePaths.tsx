@@ -23,7 +23,7 @@ export function HomePaths({ onOpenBrief }: { onOpenBrief: () => void }) {
 
         <div className={styles.grid} data-reveal>
           <button className={`${styles.card} ${styles.individual}`} type="button" onClick={onOpenBrief}>
-            <div className={styles.tag}>01 · Под себя</div>
+            {/* <div className={styles.tag}>01 · Под себя</div> */}
             <h3 className={styles.title}>Индивидуальный проект</h3>
             <p className={styles.desc}>
               Уникальный дизайн, авторская мебель, нестандартные планировки. Создаём с нуля под вас.
@@ -50,7 +50,7 @@ export function HomePaths({ onOpenBrief }: { onOpenBrief: () => void }) {
             type="button"
             onClick={() => scrollToId('calculator')}
           >
-            <div className={styles.tag}>02 · Готово</div>
+            {/* <div className={styles.tag}>02 · Готово</div> */}
             <h3 className={styles.title}>Капсульный ремонт</h3>
             <p className={styles.desc}>
               Готовый комплект решений: стиль, материалы, сроки и цена — известны до начала работ.
