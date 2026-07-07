@@ -1,5 +1,8 @@
-﻿.calculator {
-  padding: 112px 4.2vw;
+﻿@use '../../_common' as home;
+
+.calculator {
+  @include home.section-pad;
+
   background: var(--paper);
 }
 
@@ -275,10 +278,6 @@
 }
 
 @media (width <= 700px) {
-  .calculator {
-    padding: 96px 6vw 40px;
-  }
-
   .form,
   .result {
     padding: 22px;
@@ -295,10 +294,6 @@
 }
 
 @media (width <= 420px) {
-  .calculator {
-    padding: 80px 16px 28px;
-  }
-
   .form,
   .result {
     padding: 18px 16px;

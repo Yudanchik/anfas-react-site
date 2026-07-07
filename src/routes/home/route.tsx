@@ -1,30 +1,20 @@
 ﻿import { useState } from 'react'
-import { useLoaderData } from 'react-router'
 
-import { projectRepository } from '@/entities/project/api'
 import { useBrief } from '@/features/brief/model/BriefContext'
-import { scrollToId } from '@/shared/lib/scroll-to'
 import { HomeContact } from '@/widgets/home/contact'
 import { HomeFaq } from '@/widgets/home/faq'
 import { HomeHero } from '@/widgets/home/hero'
 import { HomeManifesto } from '@/widgets/home/manifesto'
 import { HomePackageCalculator } from '@/widgets/home/package-calculator'
 import { HomePartners } from '@/widgets/home/partners'
+import { HomePains } from '@/widgets/home/pains'
 import { HomeProcess } from '@/widgets/home/process'
-import { HomeProjects } from '@/widgets/home/projects'
+import { HomePaths } from '@/widgets/home/paths'
 import { HomeQuote } from '@/widgets/home/quote'
 import { HomeSocials } from '@/widgets/home/socials'
-import { HomeServices } from '@/widgets/home/services'
-import { HomeFormatCompare } from '@/widgets/home/format-compare'
-import { HomeFormatChoice } from '@/widgets/home/format-choice'
-import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
+import { HomeStoryCapsule } from '@/widgets/home/story-capsule'
+import { HomeStoryIndividual } from '@/widgets/home/story-individual'
 import { HomeTicker } from '@/widgets/home/ticker'
-
-export async function loader() {
-  return {
-    projects: await projectRepository.getAll(),
-  }
-}
 
 export const meta = () => [
   { title: 'Ремонт квартир под ключ в Санкт-Петербурге | Анфас' },
@@ -47,27 +37,38 @@ export const meta = () => [
 ]
 
 export default function HomeRoute() {
-  const { projects } = useLoaderData<typeof loader>()
   const { openBrief } = useBrief()
   const [openFaq, setOpenFaq] = useState(0)
-  const scrollToCalculator = () => scrollToId('calculator')
 
   return (
     <main>
       <HomeHero onOpenBrief={openBrief} />
       <HomeTicker />
+
+      {/* 03: meta stats (быстрое доверие) */}
       <HomeManifesto />
-      <HomeServices />
-      <HomeFormatCompare onOpenBrief={openBrief} onScrollToCalculator={scrollToCalculator} />
-      <HomeFormatChoice onOpenBrief={openBrief} onScrollToCalculator={scrollToCalculator} />
-      <HomeProjects projects={projects} />
+
+      {/* 04: боли → решения */}
+      <HomePains onOpenBrief={openBrief} />
+
+      {/* 05: индивидуальный путь */}
+      <HomeStoryIndividual onOpenBrief={openBrief} />
+
+      {/* 06: капсула */}
+      <HomeStoryCapsule onOpenBrief={openBrief} />
+
+      {/* 07: выбор тарифов */}
+      <HomePaths onOpenBrief={openBrief} />
+
+      {/* 08: калькулятор */}
       <HomePackageCalculator onOpenBrief={openBrief} />
+
+      {/* 09–14: хвостовые секции */}
+      <HomePartners />
+      <HomeSocials />
       <HomeProcess onOpenBrief={openBrief} />
       <HomeQuote />
       <HomeFaq openFaq={openFaq} setOpenFaq={setOpenFaq} />
-      <HomePartners />
-      <HomeSocials />
-      <SeoContentBlock {...seoContentPages.home} />
       <HomeContact onOpenBrief={openBrief} />
     </main>
   )

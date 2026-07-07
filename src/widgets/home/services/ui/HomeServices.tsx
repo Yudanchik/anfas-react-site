@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+﻿import { Link } from 'react-router'
 
 import { services } from '@/entities/service/model/services.data'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
@@ -11,15 +11,15 @@ export function HomeServices() {
       <SectionHeader
         tone="dark"
         number="02"
-        label="??? ?? ??????"
+        label="Что мы делаем"
         title={
           <>
-            ???? ?????????.
+            Один подрядчик.
             <br />
-            <em>???? ????.</em>
+            <em>Весь путь.</em>
           </>
         }
-        lead="?? ?????? ????? ?? ????? ?? ????????? ?????: ???? ??????? ???????? ?? ????????? ???????."
+        lead="От первой линии на плане до последней лампы: одна команда отвечает за результат целиком."
       />
 
       <div className={styles.servicelist}>
@@ -37,7 +37,7 @@ export function HomeServices() {
                 </li>
               ))}
             </ul>
-            <Link to={`/services#${service.id}`} aria-label={`?????????: ${service.title}`}>
+            <Link to={`/services#${service.id}`} aria-label={`Подробнее: ${service.title}`}>
               <ArrowIcon size={16} />
             </Link>
           </article>

@@ -1,5 +1,5 @@
 ﻿@use '../../../../shared/styles/mixins' as mixins;
-
+@use '../../_common' as home;
 
 .contact {
   position: relative;
@@ -8,8 +8,10 @@
   flex-direction: column;
   justify-content: center;
   min-height: 820px;
-  padding: 112px 5vw;
   overflow: hidden;
+
+  @include home.section-pad;
+
   text-align: center;
   color: var(--paper);
   background: var(--amber);
@@ -220,8 +222,6 @@
 @media (width <= 580px) {
   .contact {
     min-height: 720px;
-    padding-right: 6vw;
-    padding-left: 6vw;
   }
 
   .contact h2 {
