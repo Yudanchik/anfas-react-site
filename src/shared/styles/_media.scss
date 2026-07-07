@@ -1,0 +1,70 @@
+@use 'sass:map';
+
+$phone: 480px;
+$tablet: 768px;
+$laptop: 1200px;
+
+$bkp-min: (
+  phone: null,
+  tablet: $phone + 1,
+  laptop: $tablet + 1,
+  desktop: $laptop + 1,
+);
+
+$bkp-max: (
+  phone: $phone,
+  tablet: $tablet,
+  laptop: $laptop,
+  desktop: null,
+);
+
+@mixin media($keys...) {
+  @each $key in $keys {
+    $min: map.get($bkp-min, $key);
+    $max: map.get($bkp-max, $key);
+
+    @if $min != null and $max != null {
+      @media (width >= $min) and (width <= $max) {
+        @content;
+      }
+    } @else if $min != null {
+      @media (width >= $min) {
+        @content;
+      }
+    } @else if $max != null {
+      @media (width <= $max) {
+        @content;
+      }
+    }
+  }
+}
+
+@mixin min($width) {
+  @media (width >= $width) {
+    @content;
+  }
+}
+
+@mixin max($width) {
+  @media (width <= $width) {
+    @content;
+  }
+}
+
+@mixin hover {
+  @media (hover: hover) {
+    @content;
+  }
+}
+
+@mixin motion-ok {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+@mixin motion-reduce {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}

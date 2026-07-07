@@ -1,7 +1,11 @@
-﻿@mixin section-pad {
+﻿@forward '../../shared/styles/flex';
+@forward '../../shared/styles/media';
+@use '../../shared/styles/media' as mq;
+
+@mixin section-pad {
   padding: 48px;
 
-  @media (width <= 820px) {
+  @include mq.max(820px) {
     padding: 24px;
   }
 }

@@ -1,4 +1,10 @@
 @use '../../_common' as home;
+@use '../../../../shared/styles/flex' as flex;
+@use '../../../../shared/styles/media' as mq;
+
+$partner-gap: 16px;
+$home-compact: 580px;
+$home-xs: 420px;
 
 .sectionpad {
   @include home.section-pad;
@@ -21,90 +27,67 @@
 }
 
 .partnerslayout {
-  display: flex;
-  flex-direction: column;
+  @include flex.flex($fd: column);
   gap: 56px;
+
+  @include mq.max($home-compact) {
+    gap: 40px;
+  }
 }
 
 .partnersrail {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  @include flex.flex($fd: column);
+  gap: $partner-gap;
   overflow: hidden;
-  padding: 8px 0;
+  padding: 12px 0 16px;
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 
-.track {
-  display: flex;
+.marquee {
+  overflow: hidden;
+}
+
+.marqueeTrack {
+  @include flex.flex($ai: center);
+  gap: $partner-gap;
   width: max-content;
-  animation: partner-scroll 36s linear infinite;
-}
-
-.reverse {
-  animation-direction: reverse;
-}
-
-.group {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  white-space: nowrap;
+  will-change: transform;
 }
 
 .card {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  @include flex.flex($fd: column, $jc: center, $ai: center);
+  flex-shrink: 0;
   min-width: 168px;
   padding: 18px 24px;
   border: 1px solid var(--section-line, var(--line));
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--section-fg, var(--ink)) 8%, transparent);
   box-shadow: var(--shadow-soft);
-}
+  white-space: nowrap;
 
-.card span {
-  font-size: clamp(20px, 2vw, 28px);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.05em;
-}
-
-.card small {
-  margin-top: 8px;
-  color: color-mix(in srgb, currentcolor 62%, transparent);
-  font-size: var(--text-caption);
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-@keyframes partner-scroll {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@media (width <= 580px) {
-  .partnerslayout {
-    gap: 40px;
-  }
-
-  .group {
-    gap: 14px;
-  }
-
-  .card {
+  @include mq.max($home-compact) {
     min-width: 150px;
     padding: 16px 20px;
   }
-}
 
-@media (width <= 420px) {
-  .card {
+  @include mq.max($home-xs) {
     min-width: 136px;
     padding: 14px 16px;
+  }
+
+  span {
+    font-size: clamp(20px, 2vw, 28px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  small {
+    margin-top: 8px;
+    color: color-mix(in srgb, currentcolor 62%, transparent);
+    font-size: var(--text-caption);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 }

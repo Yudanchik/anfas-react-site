@@ -1,47 +1,54 @@
 @use '../../_common' as home;
+@use '../../../../shared/styles/flex' as flex;
+@use '../../../../shared/styles/media' as mq;
+
+$stack-min: 821px;
+$home-tablet: 820px;
+$home-narrow: 1100px;
+$home-compact: 580px;
+$home-xs: 420px;
 
 .sectionpad {
   @include home.section-pad;
 }
 
-.sectionkicker {
-  @include home.section-kicker;
-}
-
-.sectionkicker span {
-  @include home.section-kicker-pill;
-}
-
-.sectionkicker p {
-  margin: 0;
-}
-
 .process {
   @include home.surface-dark;
-
-  display: flex;
-  flex-wrap: wrap;
+  @include flex.flex($fw: wrap);
   gap: clamp(48px, 7vw, 112px);
+
+  @include mq.min($stack-min) {
+    flex-wrap: nowrap;
+  }
+
+  @include mq.max($home-narrow) {
+    gap: 56px;
+  }
+
+  @include mq.max($home-tablet) {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
 .processintro {
-  position: sticky;
-  top: 88px;
   flex: 0.78;
   align-self: start;
   min-width: 0;
+
+  @include mq.min($stack-min) {
+    position: sticky;
+    top: 88px;
+  }
+
+  @include mq.max($home-tablet) {
+    flex: 1 1 100%;
+    margin-bottom: 40px;
+  }
 }
 
-.processintro > p {
-  margin: 0;
-  color: color-mix(in srgb, currentcolor 72%, transparent);
-  font-size: var(--text-section-lead);
-  line-height: 1.8;
-}
-
-.visual {
-  display: flex;
-  flex-direction: column;
+.processvisual {
+  @include flex.flex($fd: column);
   gap: 12px;
   width: min(100%, 380px);
   margin-top: 32px;
@@ -53,9 +60,19 @@
     radial-gradient(circle at top right, rgb(237 174 36 / 16%), transparent 44%);
   box-shadow: 0 18px 50px rgb(0 0 0 / 20%);
   backdrop-filter: blur(14px);
+
+  @include mq.max($home-tablet) {
+    margin-top: 0;
+    margin-bottom: 24px;
+  }
+
+  @include mq.max($home-compact) {
+    width: 100%;
+    padding: 18px;
+  }
 }
 
-.visual span {
+.processvisualtag {
   width: fit-content;
   padding: 8px 12px;
   border-radius: 999px;
@@ -67,17 +84,15 @@
   background: rgb(237 174 36 / 10%);
 }
 
-.visual p {
+.processvisualtext {
   margin: 0;
   color: rgb(243 240 233 / 72%);
   font-size: var(--text-14);
   line-height: 1.7;
 }
 
-.outlinebutton {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.processcta {
+  @include flex.flex($jc: space-between, $ai: center);
   width: min(100%, 380px);
   margin-top: 38px;
   padding: 16px 0;
@@ -88,93 +103,154 @@
   border-top: 1px solid rgb(255 255 255 / 22%);
   border-bottom: 1px solid rgb(255 255 255 / 22%);
   background: transparent;
+
+  @include mq.max($home-tablet) {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  @include mq.max($home-compact) {
+    width: 100%;
+    padding: 14px 0;
+  }
+
+  @include mq.max($home-xs) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover svg {
+    transform: translateX(8px);
+  }
 }
 
-.outlinebutton svg {
-  transition: transform 0.3s ease;
-}
-
-.outlinebutton:hover svg {
-  transform: translateX(8px);
-}
-
-.processsteps {
-  display: flex;
+.processstepslist {
+  @include flex.flex($fd: column);
   flex: 1.22;
-  flex-direction: column;
-  gap: 0;
+  gap: 16px;
   min-width: 0;
   padding-top: 12px;
-  padding-bottom: 18vh;
+
+  @include mq.max($home-tablet) {
+    flex: 1 1 100%;
+    padding-top: 0;
+  }
 }
 
-.processsteps article {
+.processtrack {
+  --stack-base: 88px;
+  --stack-head: 52px;
+  --stack-gap: 24px;
+  --stack-step: calc(var(--stack-head) + var(--stack-gap));
+  --stack-card-run: 32vh;
+  --stack-release: 52vh;
+
+  position: relative;
+  flex: 1.22;
+  min-width: 0;
+  height: calc(var(--stack-card-run) * 5 + var(--stack-release));
+  padding-top: 12px;
+
+  .processstep {
+    position: sticky;
+    top: calc(var(--stack-base) + var(--step-i, 0) * var(--stack-step));
+    z-index: calc(var(--step-i, 0) + 1);
+  }
+
+  &[data-stack-hold] .processstackviewport {
+    gap: 0;
+    height: var(--stack-frozen-height);
+    min-height: calc(var(--stack-step) * 4 + 11rem);
+  }
+
+  &[data-stack-hold] .processstep {
+    position: absolute;
+    top: calc(var(--step-i, 0) * var(--stack-step));
+    right: 0;
+    left: auto;
+    margin: 0;
+  }
+}
+
+.processstackviewport {
   position: sticky;
-  top: 96px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px 28px;
+  top: var(--stack-base);
+  @include flex.flex($fd: column);
+  gap: var(--stack-gap);
+  width: 100%;
+}
+
+.processstackrelease {
+  height: var(--stack-release);
+  pointer-events: none;
+}
+
+.processstep {
+  position: relative;
   width: min(100%, 680px);
   margin-left: auto;
-  padding: 32px 34px 30px;
+
+  @include mq.max($home-narrow) {
+    width: 100%;
+  }
+
+  @include mq.max($home-tablet) {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  @include mq.max($home-compact) {
+    width: 100%;
+  }
+}
+
+.processstepinner {
+  @include flex.flex($fd: column);
+  gap: 18px;
+  padding: 28px 34px 30px;
   border: 1px solid rgb(255 255 255 / 10%);
   border-radius: var(--radius-lg);
   background: linear-gradient(160deg, rgb(27 27 26 / 92%), rgb(18 18 17 / 92%));
   box-shadow: 0 18px 50px rgb(0 0 0 / 24%);
   backdrop-filter: blur(14px);
-  transition:
-    transform 0.35s cubic-bezier(0.2, 0.7, 0, 1),
-    border-color 0.35s ease,
-    box-shadow 0.35s ease;
+  transform-origin: top center;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+
+  @include mq.max($home-compact) {
+    gap: 16px;
+    padding: 24px 20px;
+  }
+
+  @include mq.max($home-xs) {
+    padding: 22px 18px;
+  }
+
+  @include mq.min($stack-min) {
+    @include mq.hover {
+      &:hover {
+        border-color: rgb(237 174 36 / 28%);
+        box-shadow: 0 22px 60px rgb(0 0 0 / 28%);
+      }
+    }
+  }
 }
 
-.processsteps article:not(:first-child) {
-  margin-top: -26px;
+.processstephead {
+  @include flex.flex($jc: space-between, $ai: center);
+  gap: 16px;
+  min-height: 44px;
 }
 
-.processsteps article:nth-child(1) {
-  top: 88px;
-  z-index: 1;
-}
-
-.processsteps article:nth-child(2) {
-  top: 112px;
-  z-index: 2;
-}
-
-.processsteps article:nth-child(3) {
-  top: 136px;
-  z-index: 3;
-}
-
-.processsteps article:nth-child(4) {
-  top: 160px;
-  z-index: 4;
-}
-
-.processsteps article:nth-child(5) {
-  top: 184px;
-  z-index: 5;
-}
-
-.processsteps article:hover {
-  transform: translateY(-4px);
-  border-color: rgb(237 174 36 / 28%);
-  box-shadow: 0 22px 60px rgb(0 0 0 / 28%);
-}
-
-.processsteps article > div {
-  display: contents;
-}
-
-.processsteps article > span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.processstepmark {
+  @include flex.flex($jc: center, $ai: center);
   flex-shrink: 0;
   min-width: 34px;
   height: 34px;
-  margin-left: auto;
   padding: 0 10px;
   border: 1px solid rgb(237 174 36 / 28%);
   border-radius: 999px;
@@ -185,7 +261,7 @@
   background: rgb(237 174 36 / 8%);
 }
 
-.processsteps h3 {
+.processsteptitle {
   flex: 1;
   min-width: 0;
   margin: 0;
@@ -194,86 +270,15 @@
   font-weight: 400;
   line-height: 1;
   letter-spacing: -0.05em;
+
+  @include mq.max($home-compact) {
+    font-size: var(--text-card-title);
+  }
 }
 
-.processsteps p {
-  flex: 1 1 100%;
+.processsteptext {
   margin: 0;
   color: rgb(243 240 233 / 72%);
   font-size: var(--text-step-description);
   line-height: 1.8;
-}
-
-@media (width <= 1100px) {
-  .process {
-    gap: 56px;
-  }
-
-  .processsteps article {
-    width: 100%;
-  }
-}
-
-@media (width <= 820px) {
-  .process {
-    flex-direction: column;
-  }
-
-  .processintro {
-    position: static;
-    flex: 1 1 100%;
-    margin-bottom: 72px;
-  }
-
-  .processsteps {
-    flex: 1 1 100%;
-    padding-bottom: 0;
-  }
-
-  .processsteps article {
-    position: relative;
-    top: auto;
-    margin-top: 0;
-  }
-
-  .processsteps article:not(:first-child) {
-    margin-top: 16px;
-  }
-}
-
-@media (width <= 580px) {
-  .visual,
-  .outlinebutton,
-  .processsteps article {
-    width: 100%;
-  }
-
-  .visual {
-    padding: 18px;
-  }
-
-  .outlinebutton {
-    padding: 14px 0;
-  }
-
-  .processsteps article {
-    gap: 16px 20px;
-    padding: 24px 20px;
-  }
-
-  .processsteps h3 {
-  font-size: var(--text-card-title);
-  }
-}
-
-@media (width <= 420px) {
-  .outlinebutton {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .processsteps article {
-    padding: 22px 18px;
-  }
 }

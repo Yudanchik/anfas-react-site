@@ -14,18 +14,16 @@
   flex-wrap: wrap;
   gap: 18px;
   align-items: end;
-  padding-top: 22px;
-  border-top: 1px solid var(--section-line, var(--line));
 }
 
 .metaitem {
   display: flex;
+  justify-content: center;
   flex: 1;
   align-items: baseline;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
-  padding-right: 18px;
-  border-right: 1px solid var(--section-line, var(--line));
+  border-right: 2px solid var(--section-line, var(--line));
 }
 
 .metaitem:last-child {
@@ -71,6 +69,7 @@
     flex: 1 1 100%;
     padding: 12px 0;
     border-bottom: 1px solid var(--section-line, var(--line));
+    width: 100%;
   }
 
   .metaitem:last-child {
