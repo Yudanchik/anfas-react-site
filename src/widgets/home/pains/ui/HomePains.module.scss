@@ -30,7 +30,7 @@ $home-compact: 580px;
 
   flex: 1;
   min-height: calc(100vh - 88px);
-  padding: clamp(16px, 2vh, 24px) 0 clamp(16px, 2vh, 24px);
+  padding: clamp(16px, 2vh, 24px) 0;
   overflow: hidden;
   background: var(--section-bg, var(--paper));
 }
@@ -386,6 +386,7 @@ $home-compact: 580px;
   .cta {
     width: 100%;
   }
+
   .top {
     flex-wrap: wrap;
   }
