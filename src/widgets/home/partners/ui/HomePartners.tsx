@@ -11,7 +11,7 @@ export function HomePartners() {
     <section className={styles.partners + ' ' + styles.sectionpad}>
       <div className={styles.partnerslayout}>
         <SectionHeader
-          number="09"
+          number="06"
           label="Наши партнёры"
           title={
             <>

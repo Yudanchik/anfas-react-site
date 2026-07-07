@@ -17,7 +17,7 @@ export function HomeFaq({
         <SectionHeader
           className={styles.faqtitle}
           tone="dark"
-          number="08"
+          number="09"
           label="Частые вопросы"
           title={
             <>

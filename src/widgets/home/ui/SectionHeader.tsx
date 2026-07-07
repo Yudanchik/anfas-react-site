@@ -57,7 +57,13 @@ export function SectionHeader({
             <span className={`${styles.sectionHeaderNumber} ${sectionHeaderClassNames.number}`}>
               {number}
             </span>
-            <p className={`${styles.sectionHeaderLabel} ${sectionHeaderClassNames.label}`}>{label}</p>
+            <p
+              className={[styles.sectionHeaderLabel, sectionHeaderClassNames.label]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {label}
+            </p>
           </div>
         ) : null}
         <h2

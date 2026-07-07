@@ -1,5 +1,5 @@
 import { motion, useMotionValueEvent, useTransform, type MotionValue } from 'framer-motion'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 
 type StoryDockedHeaderProps = {
   scrollYProgress: MotionValue<number>
@@ -9,6 +9,14 @@ type StoryDockedHeaderProps = {
   children: ReactNode
 }
 
+function getDocked(progress: number, introShare: number) {
+  if (introShare === 0) {
+    return true
+  }
+
+  return progress >= introShare * 0.92
+}
+
 export function StoryDockedHeader({
   scrollYProgress,
   introShare,
@@ -16,7 +24,7 @@ export function StoryDockedHeader({
   className,
   children,
 }: StoryDockedHeaderProps) {
-  const [docked, setDocked] = useState(introShare === 0)
+  const [docked, setDocked] = useState(() => getDocked(scrollYProgress.get(), introShare))
 
   const dock = useTransform(
     scrollYProgress,
@@ -27,18 +35,9 @@ export function StoryDockedHeader({
 
   const scale = useTransform(dock, [0, 1], reduceMotion || introShare === 0 ? [1, 1] : [1.03, 1])
 
-  useEffect(() => {
-    if (introShare === 0) {
-      setDocked(true)
-      return
-    }
-
-    const progress = scrollYProgress.get()
-    setDocked(progress >= introShare * 0.92)
-  }, [introShare, scrollYProgress])
-
-  useMotionValueEvent(dock, 'change', (value) => {
-    setDocked(value >= 0.92 || introShare === 0)
+  useMotionValueEvent(scrollYProgress, 'change', (progress) => {
+    const nextDocked = getDocked(progress, introShare)
+    setDocked((current) => (current === nextDocked ? current : nextDocked))
   })
 
   if (reduceMotion || introShare === 0) {

@@ -53,7 +53,7 @@ export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
                 reduceMotion={reduceMotion}
               >
                 <SectionHeader
-                  number="06"
+                  number="03"
                   label={storyCapsule.eyebrow}
                   title={<>{renderMultiline(storyCapsule.title)}</>}
                   lead={storyCapsule.lead}

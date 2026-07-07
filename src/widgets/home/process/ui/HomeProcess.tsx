@@ -21,7 +21,7 @@ export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
     <section id="process" className={styles.process + ' ' + styles.sectionpad}>
       <div className={styles.processintro}>
         <SectionHeader
-          number="07"
+          number="08"
           label="Как всё устроено"
           title={
             <>

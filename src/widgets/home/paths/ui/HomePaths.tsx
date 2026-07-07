@@ -8,7 +8,7 @@ export function HomePaths({ onOpenBrief }: { onOpenBrief: () => void }) {
     <section id="paths" className={styles.paths + ' ' + styles.sectionpad}>
       <div className={styles.container}>
         <SectionHeader
-          number="07"
+          number="04"
           label="Время выбрать"
           title={
             <>
