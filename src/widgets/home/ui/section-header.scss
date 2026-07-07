@@ -10,9 +10,11 @@
 
 @mixin section-kicker-base {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  width: max-content;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px 14px;
+  width: 100%;
+  max-width: 100%;
   margin-bottom: 22px;
   color: var(--section-kicker);
   font-size: var(--text-caption);

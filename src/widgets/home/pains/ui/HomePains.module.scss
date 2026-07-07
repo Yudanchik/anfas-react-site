@@ -7,6 +7,10 @@ $home-compact: 580px;
 
 .sectionpad {
   @include home.section-pad;
+
+  @include mq.min($home-tablet + 1px) {
+    padding-block: 32px;
+  }
 }
 
 .pains {
@@ -26,7 +30,7 @@ $home-compact: 580px;
 
   flex: 1;
   min-height: calc(100vh - 88px);
-  padding: clamp(48px, 8vh, 72px) 0 clamp(32px, 5vh, 48px);
+  padding: clamp(16px, 2vh, 24px) 0;
   overflow: hidden;
   background: var(--section-bg, var(--paper));
 }
@@ -35,7 +39,7 @@ $home-compact: 580px;
   @include flex.flex($ai: center);
 
   gap: clamp(14px, 2vw, 22px);
-  margin-bottom: clamp(28px, 5vh, 52px);
+  margin-bottom: clamp(16px, 2.5vh, 28px);
 }
 
 .counter {
@@ -143,8 +147,9 @@ $home-compact: 580px;
   background: var(--ink);
 
   @include mq.max($home-tablet) {
+    flex: 0 0 auto;
     min-height: auto;
-    padding: 32px 24px 20px;
+    padding: 20px 20px 16px;
   }
 }
 
@@ -154,7 +159,9 @@ $home-compact: 580px;
   min-height: clamp(280px, 34vh, 380px);
 
   @include mq.max($home-tablet) {
-    min-height: clamp(240px, 32vh, 320px);
+    flex: 0 0 auto;
+    min-height: clamp(212px, 34vh, 272px);
+    overflow: hidden;
   }
 }
 
@@ -232,7 +239,7 @@ $home-compact: 580px;
 }
 
 .cta {
-  @include flex.flex($ai: center);
+  @include flex.flex($ai: center, $jc: space-between);
 
   gap: 14px;
   min-height: 52px;
@@ -274,9 +281,28 @@ $home-compact: 580px;
 }
 
 @include mq.max($home-tablet) {
+  .storytrack {
+    margin-inline: -48px;
+  }
+
+  .sticky {
+    top: 24px;
+    min-height: calc(100vh - 24px);
+    padding: 0 0 clamp(24px, 4vh, 32px);
+    border: 0;
+    outline: none;
+    box-shadow: none;
+  }
+
+  .top {
+    margin-bottom: clamp(20px, 3vh, 32px);
+    padding-inline: 48px;
+  }
+
   .grid {
     flex-direction: column;
-    gap: 30px;
+    gap: 16px;
+    padding-inline: 48px;
   }
 
   .left {
@@ -284,14 +310,81 @@ $home-compact: 580px;
   }
 
   .quoteStack {
-    min-height: clamp(180px, 26vh, 260px);
+    min-height: clamp(140px, 20vh, 200px);
+  }
+
+  .quoteText {
+    font-size: var(--text-h2);
+  }
+
+  .solve {
+    gap: 12px;
+  }
+
+  .solveTitle {
+    font-size: var(--text-22);
+    line-height: 1.15;
+  }
+
+  .solveText {
+    font-size: var(--text-body-sm);
+    line-height: 1.45;
+  }
+
+  .solveStats {
+    gap: 12px 16px;
+    padding-top: 12px;
+  }
+
+  .solveStat strong {
+    font-size: var(--text-24);
+  }
+
+  .solveStat span {
+    font-size: 11px;
+  }
+
+  .ctaRow {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    margin-top: 16px;
+    padding-top: 16px;
+    background: var(--ink);
+  }
+
+  .ctaHint {
+    flex: 1 1 100%;
+  }
+}
+
+@include mq.max(820px) {
+  .storytrack {
+    margin-inline: -24px;
+  }
+
+  .top {
+    padding-inline: 24px;
+  }
+
+  .grid {
+    padding-inline: 24px;
   }
 }
 
 @include mq.max($home-compact) {
-  .sticky {
-    top: 72px;
-    min-height: calc(100vh - 72px);
+  .solveStack {
+    min-height: clamp(196px, 30vh, 248px);
+  }
+
+  .ctaRow {
+    margin-top: 12px;
+    padding-top: 12px;
+    gap: 10px;
+  }
+
+  .cta {
+    width: 100%;
   }
 
   .top {
@@ -303,7 +396,7 @@ $home-compact: 580px;
     text-align: left;
   }
 
-  .solveStat {
-    flex: 1 1 100%;
+  .quoteStack {
+    min-height: clamp(120px, 18vh, 168px);
   }
 }

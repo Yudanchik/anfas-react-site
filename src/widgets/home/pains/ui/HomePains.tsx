@@ -32,7 +32,7 @@ export function HomePains({ onOpenBrief }: { onOpenBrief: () => void }) {
   return (
     <section id="pains" className={styles.pains + ' ' + styles.sectionpad}>
       <SectionHeader
-        number="04"
+        number="01"
         label={pains.eyebrow}
         title={
           <>

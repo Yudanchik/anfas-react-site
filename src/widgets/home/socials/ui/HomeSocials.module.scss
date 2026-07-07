@@ -1,23 +1,14 @@
 @use 'common' as home;
+@use 'flex' as flex;
+@use 'media' as mq;
+
+$home-wide: 1100px;
+$home-tablet: 820px;
+$home-compact: 580px;
+$home-xs: 420px;
 
 .sectionpad {
   @include home.section-pad;
-}
-
-.sectionkicker {
-  @include home.section-kicker;
-}
-
-.sectionkicker span {
-  @include home.section-kicker-pill;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sectionkicker p {
-  margin: 0;
 }
 
 .socials {
@@ -25,109 +16,41 @@
 }
 
 .socialslayout {
-  display: flex;
+  @include flex.flex($ai: stretch);
+
   flex-wrap: wrap;
-  gap: 8vw;
+  gap: clamp(20px, 3.5vw, 40px);
+}
+
+.socialsleft {
+  @include flex.flex($fd: column);
+
+  flex: 1.12;
+  gap: clamp(20px, 2.8vw, 28px);
+  min-width: min(100%, 520px);
 }
 
 .socialsintro {
-  flex: 0.82;
-  align-self: start;
-  position: sticky;
-  top: 70px;
   min-width: 0;
-}
 
-.socialscontent {
-  display: flex;
-  flex: 1.18;
-  flex-direction: column;
-  gap: 20px;
-  min-width: 0;
-}
-
-.socialsvisual {
-  padding: 28px;
-  border: 1px solid var(--section-line, var(--line));
-  border-radius: var(--radius-lg);
-  background:
-    radial-gradient(circle at top right, rgb(237 174 36 / 20%), transparent 42%),
-    linear-gradient(145deg, rgb(22 23 19 / 4%), rgb(22 23 19 / 2%));
-  box-shadow: var(--shadow-soft);
-}
-
-.visualframe {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 24px;
-  border: 1px solid var(--section-line, var(--line));
-  border-radius: calc(var(--radius-lg) - 4px);
-  background: color-mix(in srgb, var(--section-fg, var(--ink)) 4%, transparent);
-}
-
-.visualkicker {
-  width: max-content;
-  padding: 8px 14px;
-  font-size: var(--text-caption);
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--section-fg, var(--ink)) 8%, transparent);
-}
-
-.visualfeed {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: auto;
-}
-
-.visualfeed article {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
-  border: 1px solid var(--section-line, var(--line));
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--section-fg, var(--ink)) 4%, transparent);
-}
-
-.visualfeed article span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--section-fg, var(--ink)) 8%, transparent);
-  font-size: var(--text-caption);
-  font-weight: 600;
-}
-
-.visualfeed article p {
-  margin: 0;
-  flex: 1;
-  min-width: 0;
-  font-size: var(--text-body-sm);
-  line-height: 1.6;
+  :global(.sectionHeaderLead) {
+    max-width: 54ch;
+    margin-top: 14px;
+  }
 }
 
 .sociallinks {
-  display: flex;
-  flex-wrap: wrap;
+  @include flex.flex($fw: wrap);
+
   gap: 16px;
 }
 
 .socialcard {
-  display: flex;
-  flex: 1 1 calc(33.333% - 11px);
-  align-items: stretch;
-  justify-content: space-between;
+  @include flex.flex($jc: space-between, $ai: stretch);
+
+  flex: 1 1 calc(50% - 8px);
   gap: 16px;
-  min-width: 0;
+  min-width: min(100%, 240px);
   padding: 24px;
   border: 1px solid var(--section-line, var(--line));
   border-radius: var(--radius-lg);
@@ -135,22 +58,22 @@
   box-shadow: var(--shadow-soft);
   color: inherit;
   text-decoration: none;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--amber) 40%, var(--line));
+  }
 }
 
 .socialcardmain {
-  display: flex;
+  @include flex.flex($fd: column);
+
   flex: 1;
-  flex-direction: column;
   gap: 10px;
   min-width: 0;
-}
-
-.socialcardhead {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 12px;
 }
 
 .socialcard strong {
@@ -170,9 +93,8 @@
 }
 
 .socialcardaction {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex.flex($jc: center, $ai: center);
+
   align-self: flex-end;
   flex-shrink: 0;
 }
@@ -185,87 +107,109 @@
   stroke-width: 1.5;
 }
 
-.socialcarddisabled {
-  color: color-mix(in srgb, currentcolor 76%, transparent);
+.phonestage {
+  @include flex.flex;
+
+  flex: 0.88;
+  min-width: min(100%, 360px);
 }
 
-.socialbadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--section-fg, var(--ink)) 10%, transparent);
+.phonepanel {
+  @include flex.flex($jc: center, $ai: center);
+
+  flex: 1;
+  min-height: 100%;
+  padding: clamp(28px, 4vw, 40px);
+  border: 1px solid var(--section-line, var(--line));
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at top right, rgb(237 174 36 / 20%), transparent 42%),
+    linear-gradient(145deg, rgb(22 23 19 / 4%), rgb(22 23 19 / 2%));
+  box-shadow: var(--shadow-soft);
+}
+
+.phoneshell {
+  position: relative;
+  width: min(100%, 300px);
+}
+
+.phonemockup {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.phonescreen {
+  position: absolute;
+  z-index: 2;
+  top: 1.6%;
+  left: 5.2%;
+  width: 89.6%;
+  height: 97%;
+  overflow: hidden;
+  border-radius: 8%;
+  background: #000;
+}
+
+.phonescreen video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.metadisclaimer {
+  max-width: 54ch;
+  margin: 4px 0 0;
+  color: color-mix(in srgb, var(--section-fg, var(--ink)) 52%, transparent);
   font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  line-height: 1.55;
 }
 
-@media (width <= 1100px) {
+@include mq.max($home-wide) {
   .socialslayout {
-    flex-direction: column;
-    gap: 40px;
+    flex-direction: column-reverse;
   }
 
-  .socialsintro {
+  .socialsleft,
+  .phonestage {
     flex: 1 1 100%;
-    position: static;
+    min-width: 0;
   }
 
-  .socialscontent {
-    flex: 1 1 100%;
+  .phonestage {
+    order: -1;
+  }
+
+  .phonepanel {
+    min-height: auto;
+    padding: clamp(24px, 5vw, 32px);
+  }
+
+  .phoneshell {
+    width: min(100%, 260px);
+    margin: 0 auto;
   }
 }
 
-@media (width <= 820px) {
+@include mq.max($home-tablet) {
   .socialcard {
     flex: 1 1 100%;
   }
 }
 
-@media (width <= 580px) {
-  .socialsvisual,
+@include mq.max($home-compact) {
   .socialcard {
     padding: 20px;
   }
-
-  .visualframe {
-    padding: 18px;
-  }
-
-  .visualfeed article {
-    gap: 12px;
-    padding: 16px;
-  }
-
-  .visualfeed article span {
-    width: 36px;
-    height: 36px;
-  }
 }
 
-@media (width <= 420px) {
-  .socialsvisual,
+@include mq.max($home-xs) {
   .socialcard {
     padding: 18px;
-  }
-
-  .visualframe {
-    padding: 16px;
-  }
-
-  .visualfeed article {
-    gap: 10px;
-    padding: 14px;
-  }
-
-  .visualfeed article span {
-    width: 32px;
-    height: 32px;
   }
 
   .sociallinks {

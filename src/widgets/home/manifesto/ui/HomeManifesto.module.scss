@@ -49,34 +49,54 @@
 
 @media (width <= 820px) {
   .statsrow {
-    gap: 16px 18px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border: 1px solid var(--section-line, var(--line));
+    border-radius: var(--radius-lg);
+    overflow: hidden;
   }
 
   .metaitem {
-    flex: 1 1 calc(50% - 9px);
-    border-right: 0;
-    padding-right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 8px;
+    flex: unset;
+    min-width: 0;
+    padding: 20px 18px;
+    border-right: 1px solid var(--section-line, var(--line));
+    border-bottom: 1px solid var(--section-line, var(--line));
+
+    &:nth-child(2n) {
+      border-right: 0;
+    }
+
+    &:nth-child(n + 3) {
+      border-bottom: 0;
+    }
+  }
+
+  .metanum {
+    font-size: clamp(28px, 7vw, 36px);
+  }
+
+  .metalabel {
+    line-height: 1.35;
+    letter-spacing: 0.08em;
   }
 }
 
 @media (width <= 580px) {
-  .statsrow {
-    flex-direction: column;
-    gap: 14px;
-  }
-
   .metaitem {
-    flex: 1 1 100%;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--section-line, var(--line));
-    width: 100%;
-  }
-
-  .metaitem:last-child {
-    border-bottom: 0;
+    padding: 18px 16px;
   }
 
   .metanum {
-    font-size: 32px;
+    font-size: 28px;
+  }
+
+  .metalabel {
+    font-size: 10px;
   }
 }

@@ -22,6 +22,16 @@
 
 .sectionHeaderNumber {
   @include header.section-kicker-pill;
+
+  flex-shrink: 0;
+}
+
+.sectionHeaderLabel {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .sectionHeaderTitle {
@@ -43,12 +53,14 @@
 }
 
 @media (width <= 580px) {
-  .sectionHeader:not(.dark) {
-    padding-bottom: 40px;
+  .sectionHeaderKicker {
+    gap: 10px 12px;
+    margin-bottom: 18px;
+    letter-spacing: 0.1em;
   }
 
-  .sectionHeaderKicker {
-    margin-bottom: 18px;
+  .sectionHeaderLabel {
+    letter-spacing: 0.08em;
   }
 
   .sectionHeaderLead {

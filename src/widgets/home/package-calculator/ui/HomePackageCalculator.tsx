@@ -68,7 +68,7 @@ export function HomePackageCalculator({ onOpenBrief }: { onOpenBrief: () => void
     <section id="calculator" className={styles.calculator}>
       <div className={styles.layout}>
         <SectionHeader
-          number="06"
+          number="05"
           label={packageCalculator.eyebrow}
           title={
             <>
