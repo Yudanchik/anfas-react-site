@@ -1,9 +1,8 @@
-﻿@use '../../../../shared/styles/mixins' as mixins;
+﻿@use 'mixins' as mixins;
 
 
 .hero {
   position: relative;
-  min-height: clamp(680px, 100svh, 920px);
   overflow: hidden;
   color: #fff;
   background: #282721;
@@ -37,17 +36,11 @@
 .herogrid {
   position: relative;
   z-index: 2;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(200px, 270px);
-  align-items: end;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 32px;
-  min-height: inherit;
   padding: clamp(120px, 12vh, 150px) clamp(20px, 4.2vw, 72px) clamp(88px, 10vh, 108px);
-}
-
-
-.herocopy {
-  max-width: 920px;
 }
 
 
@@ -70,6 +63,12 @@
 }
 
 
+.herocopy {
+  flex: 1;
+  min-width: 0;
+}
+
+
 .herocopy h1,
 
 .herolead,
@@ -82,9 +81,8 @@
 
 
 .herocopy h1 {
-  max-width: 920px;
   margin: 0;
-  font-size: clamp(58px, 7.6vw, 116px);
+  font-size: var(--text-h1);
   font-weight: 400;
   line-height: 0.91;
   letter-spacing: -0.065em;
@@ -101,17 +99,16 @@
 
 
 .herolead {
-  max-width: 570px;
   margin: 28px 0 30px;
-  font-size: clamp(15px, 1.3vw, 19px);
+  font-size: var(--text-hero-lead);
   font-weight: 400;
   line-height: 1.6;
   animation-delay: 0.28s;
 }
 
 .herofeatures {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   max-width: 760px;
   margin-bottom: 30px;
@@ -119,8 +116,11 @@
 }
 
 .herofeatures > div {
-  display: grid;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
   gap: 8px;
+  min-width: 0;
   padding: 16px 18px;
   border: 1px solid rgb(255 255 255 / 16%);
   border-radius: var(--radius-md);
@@ -163,7 +163,9 @@
 
 
 .primarybutton i {
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 48px;
   height: 48px;
   transition:
@@ -171,7 +173,6 @@
     background 0.35s ease;
   border-radius: 50%;
   background: #fff;
-  place-items: center;
 }
 
 
@@ -227,13 +228,14 @@
 
 
 .herocaselink i {
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 42px;
   height: 42px;
   transition: transform 0.35s ease;
   border: 1px solid rgb(255 255 255 / 40%);
   border-radius: 50%;
-  place-items: center;
 }
 
 
@@ -294,29 +296,19 @@
 
 
 @media (width <= 820px) {
-  .hero {
-    min-height: 760px;
-  }
-
   .herogrid {
-    display: flex;
     align-items: flex-start;
     flex-direction: column;
     justify-content: flex-end;
     padding: 130px 6vw 100px;
   }
 
-  .herocopy h1 {
-    font-size: clamp(53px, 13vw, 83px);
-  }
-
-  .herofeatures {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    max-width: 100%;
+  .herofeatures > div {
+    flex: 1 1 calc(50% - 6px);
   }
 
   .herofeatures > div:last-child {
-    grid-column: 1 / -1;
+    flex-basis: 100%;
   }
 
   .heroside {
@@ -335,20 +327,11 @@
 }
 
 @media (width <= 580px) {
-  .hero {
-    min-height: 720px;
-  }
-
   .heroimage {
     background-position: 63% center;
   }
 
-  .herocopy h1 {
-    font-size: clamp(48px, 14vw, 70px);
-  }
-
   .herolead {
-    max-width: 92%;
     font-size: 14px;
   }
 
@@ -367,10 +350,6 @@
 }
 
 @media (width <= 420px) {
-  .hero {
-    min-height: 660px;
-  }
-
   .herogrid {
     padding: 112px 16px 86px;
   }
@@ -381,79 +360,14 @@
     letter-spacing: 0.11em;
   }
 
-  .herocopy h1 {
-    font-size: clamp(38px, 13vw, 62px);
-    line-height: 0.94;
-  }
-
   .herolead {
-    max-width: 100%;
-    margin: 22px 0;
-    font-size: var(--text-body-sm);
-  }
-
-  .herofeatures {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-bottom: 24px;
-  }
-
-  .herofeatures > div {
-    padding: 14px 15px;
-  }
-
-  .herofeatures span {
-    font-size: var(--text-caption);
-  }
-
-  .primarybutton {
-    width: 100%;
-  }
-}
-
-@media (width <= 580px) {
-  .hero {
-    min-height: 720px;
-  }
-
-  .heroimage {
-    background-position: 63% center;
-  }
-
-  .herocopy h1 {
-    font-size: clamp(48px, 14vw, 70px);
-  }
-
-  .herolead {
-    max-width: 92%;
-    font-size: 14px;
-  }
-}
-
-@media (width <= 420px) {
-  .hero {
-    min-height: 660px;
-  }
-
-  .herogrid {
-    padding: 112px 16px 86px;
-  }
-
-  .heroeyebrow {
-    gap: 10px;
-    margin-bottom: 18px;
-    letter-spacing: 0.11em;
-  }
-
-  .herocopy h1 {
-    font-size: clamp(38px, 14vw, 56px);
-    line-height: 0.94;
-  }
-
-  .herolead {
-    max-width: 100%;
     margin: 22px 0 26px;
     font-size: var(--text-body-sm);
+  }
+
+  .herofeatures > div {
+    flex: 1 1 100%;
+    padding: 14px 15px;
   }
 
   .primarybutton {
@@ -478,23 +392,5 @@
     left: 16px;
     flex-wrap: wrap;
     gap: 8px 12px;
-  }
-}
-
-@media (width <= 420px) {
-  .herocopy h1 {
-    font-size: clamp(38px, 13vw, 62px);
-  }
-
-  .herolead {
-    margin-bottom: 22px;
-  }
-
-  .herofeatures {
-    grid-template-columns: 1fr;
-  }
-
-  .primarybutton {
-    width: 100%;
   }
 }

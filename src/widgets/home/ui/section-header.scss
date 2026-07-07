@@ -1,11 +1,11 @@
-@use '../_common' as home;
+@use 'common' as home;
 
 @mixin section-head {
   display: flex;
   flex-direction: column;
   gap: 0;
-  max-width: 920px;
-  padding-bottom: 52px;
+
+  // padding-bottom: 52px;
 }
 
 @mixin section-kicker-base {
@@ -43,7 +43,6 @@
 }
 
 @mixin section-lead-base {
-  max-width: 56ch;
   margin: 18px 0 0;
   color: var(--section-lead);
   font-size: var(--text-section-lead);

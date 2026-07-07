@@ -4,6 +4,8 @@
 :root {
   --font-body: #{f.$font-body};
   --font-heading: #{f.$font-heading};
+
+  /* Primitive scale — редко меняется напрямую */
   --text-12: #{f.px(12)};
   --text-14: #{f.px(14)};
   --text-16: #{f.px(16)};
@@ -17,14 +19,28 @@
   --text-44: #{f.px(44)};
   --text-56: #{f.px(56)};
   --text-64: #{f.px(64)};
+  --text-88: #{f.px(88)};
+
+  /*
+   * Semantic tokens — меняйте здесь, чтобы перенастроить весь сайт.
+   * h1 / h2, лиды секций, заголовки и описания карточек.
+   */
+  --text-h1: var(--text-88);
+  --text-h2: var(--text-44);
+  --text-section-title: var(--text-h2);
+  --text-section-lead: var(--text-16);
+  --text-card-title: var(--text-28);
+  --text-card-description: var(--text-16);
+  --text-step-title: var(--text-28);
+  --text-step-description: var(--text-16);
+  --text-hero-lead: var(--text-18);
+  --text-display-quote: var(--text-56);
+
+  /* Алиасы для совместимости */
   --text-caption: var(--text-12);
   --text-body-sm: var(--text-14);
-  --text-body: var(--text-16);
-  --text-body-lg: var(--text-16);
-  --text-card-title: clamp(1.75rem, 2.4vw, 2.25rem);
-  --text-step-title: clamp(1.75rem, 2.5vw, 2.375rem);
-  --text-section-title: clamp(2.75rem, 4.6vw, 3.75rem);
-  --text-section-lead: clamp(0.9375rem, 1.05vw, 1.0625rem);
+  --text-body: var(--text-card-description);
+  --text-body-lg: var(--text-18);
   --line-height-body: 1.72;
   --line-height-copy: 1.8;
   --line-height-tight: 1.04;
@@ -40,7 +56,7 @@ html {
 body {
   margin: 0;
   font-family: var(--font-body);
-  font-size: var(--text-16);
+  font-size: var(--text-body);
   line-height: var(--line-height-body);
   letter-spacing: -0.01em;
   font-variant-numeric: lining-nums tabular-nums;
@@ -71,10 +87,10 @@ h6 {
 
 p {
   margin: 0;
-  font-size: var(--text-16);
+  font-size: var(--text-body);
   line-height: var(--line-height-body);
 }
 
 small {
-  font-size: var(--text-12);
+  font-size: var(--text-caption);
 }

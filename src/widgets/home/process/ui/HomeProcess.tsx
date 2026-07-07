@@ -1,11 +1,22 @@
-﻿import { processSteps } from '@/entities/process/model/process.data'
-import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
-import type { CSSProperties } from 'react'
+﻿import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { processSteps } from '@/entities/process/model/process.data'
+import { useEffect, useState, type CSSProperties } from 'react'
 
 import { SectionHeader } from '../../ui'
+import { HomeProcessStack } from './HomeProcessStack'
 import styles from './HomeProcess.module.scss'
 
 export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
+  const [isDesktopStack, setIsDesktopStack] = useState(false)
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 821px)')
+    const sync = () => setIsDesktopStack(media.matches)
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [])
+
   return (
     <section id="process" className={styles.process + ' ' + styles.sectionpad}>
       <div className={styles.processintro}>
@@ -33,29 +44,28 @@ export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
         </button>
       </div>
 
-      <div className={styles.processsteps}>
-        {processSteps.map((step, index) => (
-          <article
-            className={styles.processstep}
-            key={step.title}
-            data-reveal
-            style={
-              {
-                '--reveal-delay': `${index * 100}ms`,
-                '--step-index': index,
-              } as CSSProperties
-            }
-          >
-            <div className={styles.processstepicon} aria-hidden="true">
-              <span className={styles.processstepmark}>{step.mark}</span>
-            </div>
-            <div className={styles.processstepbody}>
-              <h3 className={styles.processsteptitle}>{step.title}</h3>
-              <p className={styles.processsteptext}>{step.text}</p>
-            </div>
-          </article>
-        ))}
-      </div>
+      {isDesktopStack ? (
+        <HomeProcessStack />
+      ) : (
+        <div className={styles.processstepslist}>
+          {processSteps.map((step, index) => (
+            <article
+              className={styles.processstep}
+              key={step.title}
+              data-reveal
+              style={{ '--reveal-delay': `${index * 100}ms` } as CSSProperties}
+            >
+              <div className={styles.processstepinner}>
+                <div className={styles.processstephead}>
+                  <h3 className={styles.processsteptitle}>{step.title}</h3>
+                  <span className={styles.processstepmark}>{step.mark}</span>
+                </div>
+                <p className={styles.processsteptext}>{step.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   )
 }

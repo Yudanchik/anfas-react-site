@@ -1,4 +1,4 @@
-@use '../../_common' as home;
+@use 'common' as home;
 
 .sectionpad {
   @include home.section-pad;
@@ -15,11 +15,10 @@
 
 .servicecard {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(80px, 120px) minmax(0, 1.2fr) minmax(180px, 0.8fr) 72px;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 28px;
-  min-height: 240px;
   padding: 40px 36px;
   border-bottom: 1px solid rgb(255 255 255 / 20%);
 }
@@ -48,10 +47,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
   align-self: center;
-  min-width: 68px;
-  min-height: 68px;
-  padding: 0 16px;
+  min-width: 80px;
+  padding: 16px;
   border: 1px solid rgb(255 255 255 / 34%);
   border-radius: 999px;
   font-family: var(--font-heading);
@@ -64,6 +63,7 @@
 }
 
 .servicecardbody {
+  flex: 1.2;
   min-width: 0;
 }
 
@@ -77,10 +77,9 @@
 }
 
 .servicecardtext {
-  max-width: 620px;
   margin: 0;
   color: rgb(243 240 233 / 68%);
-  font-size: var(--text-body);
+  font-size: var(--text-card-description);
   line-height: var(--line-height-body);
 }
 
@@ -90,6 +89,8 @@
 }
 
 .servicecardtags {
+  flex: 0.8;
+  min-width: 180px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -107,17 +108,19 @@
 }
 
 .servicecard > a {
-  display: grid;
-  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   width: 60px;
   height: 60px;
+  margin-left: auto;
   padding: 0;
   cursor: pointer;
   transition: transform 0.35s ease;
   border: 1px solid rgb(255 255 255 / 40%);
   border-radius: 50%;
   background: transparent;
-  place-items: center;
 }
 
 .servicecard:hover > a {
@@ -133,16 +136,25 @@
 
 @media (width <= 1100px) {
   .servicecard {
-    grid-template-columns: minmax(64px, 92px) minmax(0, 1.2fr) minmax(160px, 0.8fr) 56px;
     gap: 22px;
+  }
+
+  .servicenumber {
+    min-width: 64px;
+  }
+
+  .servicecardtags {
+    min-width: 160px;
   }
 }
 
 @media (width <= 820px) {
   .servicecard {
-    grid-template-columns: minmax(44px, 68px) 1fr 48px;
-    min-height: 208px;
     padding: 32px 24px;
+  }
+
+  .servicenumber {
+    min-width: 44px;
   }
 
   .servicecardtags {
@@ -156,25 +168,27 @@
 
 @media (width <= 580px) {
   .servicecard {
-    grid-template-columns: 1fr 46px;
     gap: 14px;
     padding: 28px 0;
   }
 
   .servicenumber {
-    grid-column: 1 / -1;
-    justify-self: start;
+    flex: 1 1 100%;
     min-width: 56px;
-    min-height: 56px;
+    padding: 14px 16px;
     font-size: var(--text-18);
   }
 
   .servicecardtitle {
-    font-size: clamp(26px, 8vw, 34px);
+  font-size: var(--text-card-title);
   }
 
   .servicecardtext {
     padding: 0;
-    justify-self: start;
+  }
+
+  .servicecard > a {
+    width: 46px;
+    height: 46px;
   }
 }

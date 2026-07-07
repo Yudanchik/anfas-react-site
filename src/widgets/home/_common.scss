@@ -1,7 +1,11 @@
-﻿@mixin section-pad {
+﻿@forward 'flex';
+@forward 'media';
+@use 'media' as mq;
+
+@mixin section-pad {
   padding: 48px;
 
-  @media (width <= 820px) {
+  @include mq.max(820px) {
     padding: 24px;
   }
 }
@@ -27,11 +31,33 @@
 }
 
 @mixin section-kicker-pill {
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 29px;
   height: 29px;
   border: 1px solid currentcolor;
   border-radius: 50%;
-  place-items: center;
 }
 
+@mixin surface-light {
+  color: var(--surface-fg-light);
+  background: var(--surface-light);
+
+  --section-bg: var(--surface-light);
+  --section-fg: var(--surface-fg-light);
+  --section-line: var(--line-on-light);
+}
+
+@mixin surface-dark {
+  color: var(--surface-fg-dark);
+  background: var(--surface-dark);
+
+  --section-bg: var(--surface-dark);
+  --section-fg: var(--surface-fg-dark);
+  --section-line: var(--line-on-dark);
+
+  :global(.sectionHeaderTitle) {
+    color: var(--surface-fg-dark);
+  }
+}

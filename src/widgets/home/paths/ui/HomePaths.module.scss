@@ -1,4 +1,4 @@
-@use '../../_common' as home;
+@use 'common' as home;
 
 
 .sectionpad {
@@ -7,19 +7,18 @@
 
 
 .paths {
-  background: var(--paper);
+  @include home.surface-dark;
 }
 
 
 .container {
-  max-width: 1240px;
   margin: 0 auto;
 }
 
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 18px;
   margin-top: 28px;
 }
@@ -27,39 +26,42 @@
 
 .card {
   position: relative;
-  display: grid;
+  display: flex;
+  flex: 1 1 calc(50% - 9px);
+  flex-direction: column;
   gap: 16px;
+  min-width: 0;
   padding: 26px;
   cursor: pointer;
   text-align: left;
-  border: 1px solid var(--line);
+  border: 1px solid var(--section-line, var(--line));
   border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--paper) 86%, #fff 14%);
+  background: color-mix(in srgb, var(--section-fg, var(--ink)) 6%, transparent);
   box-shadow: var(--shadow-soft);
   transition: transform 0.35s cubic-bezier(0.2, 0.7, 0, 1), border-color 0.35s ease;
 }
 
 .card:hover {
   transform: translateY(-3px);
-  border-color: rgb(22 23 19 / 22%);
+  border-color: color-mix(in srgb, currentcolor 22%, transparent);
 }
 
 
-.tag {
-  width: fit-content;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: var(--text-caption);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  background: rgb(22 23 19 / 8%);
-}
+// .tag {
+//   width: fit-content;
+//   padding: 8px 12px;
+//   border-radius: 999px;
+//   font-size: var(--text-caption);
+//   font-weight: 700;
+//   letter-spacing: 0.12em;
+//   text-transform: uppercase;
+//   background: color-mix(in srgb, var(--section-fg, var(--ink)) 8%, transparent);
+// }
 
 .title {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(1.75rem, 2.5vw, 2.25rem);
+  font-size: var(--text-card-title);
   font-weight: 400;
   line-height: var(--line-height-tight);
   letter-spacing: -0.04em;
@@ -67,13 +69,14 @@
 
 .desc {
   margin: 0;
-  font-size: var(--text-body);
+  font-size: var(--text-card-description);
   line-height: var(--line-height-body);
-  color: rgb(22 23 19 / 74%);
+  color: color-mix(in srgb, currentcolor 74%, transparent);
 }
 
 .features {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   margin: 0;
   padding: 0;
@@ -104,14 +107,14 @@
   justify-content: space-between;
   gap: 12px 16px;
   padding-top: 14px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--section-line, var(--line));
 }
 
 .price {
   font-size: var(--text-caption);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgb(22 23 19 / 62%);
+  color: color-mix(in srgb, currentcolor 62%, transparent);
 }
 
 .price strong {
@@ -119,7 +122,7 @@
   font-size: 18px;
   font-weight: 400;
   letter-spacing: -0.03em;
-  color: var(--ink);
+  color: inherit;
   text-transform: none;
 }
 
@@ -129,7 +132,6 @@
   gap: 10px;
   font-size: var(--text-body-sm);
   font-weight: 600;
-  color: var(--ink);
 }
 
 .photo {
@@ -142,15 +144,50 @@
     #fff;
 }
 
+.individual {
+  color: var(--surface-fg-dark);
+  background: var(--surface-dark);
+  border-color: var(--line-on-dark);
+
+  .foot {
+    border-top-color: var(--line-on-dark);
+  }
+
+  .cta {
+    color: var(--surface-fg-dark);
+  }
+
+  .photo {
+    border-color: var(--line-on-dark);
+    background:
+      radial-gradient(circle at 30% 30%, rgb(237 174 36 / 18%), transparent 48%),
+      linear-gradient(135deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 2%)),
+      color-mix(in srgb, var(--surface-dark) 90%, #fff);
+  }
+}
 
 .capsule {
-  background: color-mix(in srgb, var(--paper) 80%, var(--amber) 6%);
+  color: var(--surface-fg-light);
+  background: color-mix(in srgb, var(--surface-light) 92%, var(--amber) 8%);
+  border-color: var(--line-on-light);
+
+  .foot {
+    border-top-color: var(--line-on-light);
+  }
+
+  .cta {
+    color: var(--surface-fg-light);
+  }
+
+  .photo {
+    border-color: var(--line-on-light);
+  }
 }
 
 
 @media (width <= 900px) {
-  .grid {
-    grid-template-columns: 1fr;
+  .card {
+    flex: 1 1 100%;
   }
 }
 
@@ -163,4 +200,3 @@
     height: 180px;
   }
 }
-

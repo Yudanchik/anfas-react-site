@@ -30,20 +30,18 @@ export function HomePains({ onOpenBrief }: { onOpenBrief: () => void }) {
 
   return (
     <section id="pains" className={styles.pains + ' ' + styles.sectionpad}>
-      <div className={styles.intro} data-reveal>
-        <SectionHeader
-          number="04"
-          label={pains.eyebrow}
-          title={
-            <>
-              Ремонт пугает.
-              <br />
-              Мы знаем — <em>почему.</em>
-            </>
-          }
-          lead={pains.lead}
-        />
-      </div>
+      <SectionHeader
+        number="04"
+        label={pains.eyebrow}
+        title={
+          <>
+            Ремонт пугает.
+            <br />
+            Мы знаем — <em>почему.</em>
+          </>
+        }
+        lead={pains.lead}
+      />
 
       <div className={styles.stage} ref={stageRef}>
         <div className={styles.sticky}>

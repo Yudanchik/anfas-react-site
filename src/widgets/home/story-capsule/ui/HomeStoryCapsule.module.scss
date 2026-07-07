@@ -1,4 +1,4 @@
-@use '../../_common' as home;
+@use 'common' as home;
 
 
 .sectionpad {
@@ -7,15 +7,9 @@
 
 
 .story {
-  color: var(--paper);
-  background: var(--ink);
+  @include home.surface-light;
 }
 
-
-.intro {
-  max-width: 920px;
-  padding-bottom: clamp(28px, 4vh, 60px);
-}
 
 
 .stage {
@@ -27,15 +21,17 @@
   position: sticky;
   top: 0;
   z-index: 2;
-  min-height: 100vh;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   padding: clamp(24px, 4vh, 40px) 0 clamp(40px, 6vh, 64px);
-  background: var(--ink);
+  background: var(--section-bg, var(--paper));
 }
 
 
 .layout {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: clamp(28px, 5vw, 60px);
   align-items: center;
 }
@@ -43,6 +39,7 @@
 
 .visual {
   position: relative;
+  flex: 1.3;
   min-width: 0;
   height: clamp(320px, 78vh, 680px);
 }
@@ -59,11 +56,12 @@
     transform 1.6s cubic-bezier(0.2, 0.7, 0, 1),
     filter 0.9s cubic-bezier(0.2, 0.7, 0, 1);
   border-radius: 24px;
-  border: 1px solid rgb(255 255 255 / 16%);
+  border: 1px solid var(--line);
   overflow: hidden;
   background:
-    radial-gradient(circle at 30% 30%, rgb(237 174 36 / 22%), transparent 50%),
-    linear-gradient(135deg, rgb(255 255 255 / 12%), rgb(255 255 255 / 2%));
+    radial-gradient(circle at 30% 30%, rgb(237 174 36 / 20%), transparent 45%),
+    linear-gradient(135deg, rgb(22 23 19 / 10%), rgb(22 23 19 / 3%)),
+    #fff;
   pointer-events: none;
 }
 
@@ -78,25 +76,26 @@
   position: absolute;
   left: 16px;
   bottom: 16px;
-  max-width: calc(100% - 32px);
+  width: calc(100% - 32px);
   padding: 10px 12px;
   border-radius: 999px;
   font-size: var(--text-caption);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgb(243 240 233 / 82%);
-  background: rgb(22 23 19 / 45%);
-  border: 1px solid rgb(255 255 255 / 16%);
-  backdrop-filter: blur(8px);
+  color: rgb(22 23 19 / 72%);
+  background: rgb(255 255 255 / 75%);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(6px);
 }
 
 
 .side {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 24px;
-  max-width: 440px;
+  min-width: 0;
 }
 
 .counter {
@@ -113,14 +112,14 @@
 .counterOf {
   font-size: 20px;
   font-weight: 400;
-  color: rgb(243 240 233 / 40%);
+  color: rgb(22 23 19 / 55%);
 }
 
 .rail {
   position: relative;
   height: 2px;
   border-radius: 999px;
-  background: rgb(243 240 233 / 18%);
+  background: rgb(22 23 19 / 18%);
   overflow: hidden;
 }
 
@@ -134,7 +133,7 @@
 
 .captions {
   position: relative;
-  min-height: 150px;
+  flex: 1;
 }
 
 .caption {
@@ -163,7 +162,7 @@
 .captionTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(28px, 2.8vw, 40px);
+  font-size: var(--text-card-title);
   font-weight: 500;
   line-height: 1.05;
   letter-spacing: -0.025em;
@@ -171,9 +170,9 @@
 
 .captionText {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--text-card-description);
   line-height: 1.55;
-  color: rgb(243 240 233 / 70%);
+  color: rgb(22 23 19 / 72%);
 }
 
 .cta {
@@ -187,14 +186,13 @@
   cursor: pointer;
   border: 0;
   border-radius: 999px;
-  color: var(--ink);
-  background: var(--paper);
-  transition: transform 0.25s ease, background-color 0.25s ease;
+  color: var(--paper);
+  background: var(--ink);
+  transition: transform 0.25s ease;
 }
 
 .cta:hover {
   transform: translateY(-1px);
-  background: var(--amber);
 }
 
 .cta > span {
@@ -203,13 +201,14 @@
 }
 
 .cta i {
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 38px;
   height: 38px;
   border-radius: 50%;
   color: var(--ink);
-  background: #fff;
-  place-items: center;
+  background: var(--amber);
 }
 
 
@@ -226,21 +225,21 @@
 
 @media (width <= 900px) {
   .layout {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 24px;
   }
 
   .sticky {
-    min-height: auto;
     padding: 40px 0;
   }
 
   .visual {
+    flex: 1 1 100%;
     height: 50vh;
   }
 
   .side {
-    max-width: none;
+    flex: 1 1 100%;
   }
 
   .anchor {

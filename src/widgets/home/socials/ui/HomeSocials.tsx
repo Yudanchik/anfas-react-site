@@ -26,21 +26,19 @@ export function HomeSocials() {
   return (
     <section className={styles.socials + ' ' + styles.sectionpad}>
       <div className={styles.socialslayout}>
-        <div className={styles.socialsintro}>
-          <SectionHeader
-            tone="dark"
-            number="10"
-            label="Следите за нами"
-            title={
-              <>
-                Живые проекты,
-                <br />
-                полезные материалы и <em>новости компании</em>
-              </>
-            }
-            lead="Соцсети помогают быстрее увидеть стиль работы и почувствовать, как мы ведём проекты. В них же мы показываем промежуточные этапы, полезные советы и новости команды."
-          />
-        </div>
+        <SectionHeader
+          className={styles.socialsintro}
+          number="10"
+          label="Следите за нами"
+          title={
+            <>
+              Живые проекты,
+              <br />
+              полезные материалы и <em>новости компании</em>
+            </>
+          }
+          lead="Соцсети помогают быстрее увидеть стиль работы и почувствовать, как мы ведём проекты. В них же мы показываем промежуточные этапы, полезные советы и новости команды."
+        />
 
         <div className={styles.socialscontent} data-reveal>
           <div className={styles.socialsvisual}>
