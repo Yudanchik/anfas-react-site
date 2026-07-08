@@ -16,6 +16,10 @@ const base = publicPath.endsWith('/') ? publicPath : `${publicPath}/`
 export default defineConfig({
   base,
   plugins: [reactRouter(), tsconfigPaths()],
+  server: {
+    host: true,
+    allowedHosts: ['.ngrok-free.dev', '.ngrok-free.app', '.ngrok.io'],
+  },
   css: {
     preprocessorOptions: {
       scss: {

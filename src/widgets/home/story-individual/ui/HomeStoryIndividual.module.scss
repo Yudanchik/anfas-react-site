@@ -33,6 +33,8 @@ $home-compact: 580px;
   min-height: calc(100vh - 88px);
   padding: clamp(12px, 1.5vh, 20px) 0 clamp(16px, 2vh, 24px);
   background: var(--section-bg, var(--paper));
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .layout {
