@@ -16,25 +16,50 @@ import {
 } from './model/story-scroll'
 
 const DESKTOP_INTRO_QUERY = '(min-width: 901px)'
+const MOBILE_SCROLL_QUERY = '(max-width: 900px)'
+
+function getScrollHeaderOffset() {
+  if (typeof window === 'undefined') {
+    return STORY_SCROLL.headerOffset
+  }
+
+  return window.matchMedia(MOBILE_SCROLL_QUERY).matches
+    ? STORY_SCROLL.headerOffsetMobile
+    : STORY_SCROLL.headerOffset
+}
 
 export function useStoryScrollTrack(slideCount: number, options?: { withIntro?: boolean }) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [withIntro, setWithIntro] = useState(false)
+  const [headerOffset, setHeaderOffset] = useState(getScrollHeaderOffset)
   const reduceMotion = useReducedMotion()
   const enableIntro = options?.withIntro !== false
 
   useEffect(() => {
-    const media = window.matchMedia(DESKTOP_INTRO_QUERY)
-    const update = () => setWithIntro(enableIntro && media.matches)
+    const introMedia = window.matchMedia(DESKTOP_INTRO_QUERY)
+    const scrollMedia = window.matchMedia(MOBILE_SCROLL_QUERY)
+
+    const update = () => {
+      setWithIntro(enableIntro && introMedia.matches)
+      setHeaderOffset(
+        scrollMedia.matches ? STORY_SCROLL.headerOffsetMobile : STORY_SCROLL.headerOffset,
+      )
+    }
+
     update()
-    media.addEventListener('change', update)
-    return () => media.removeEventListener('change', update)
+    introMedia.addEventListener('change', update)
+    scrollMedia.addEventListener('change', update)
+
+    return () => {
+      introMedia.removeEventListener('change', update)
+      scrollMedia.removeEventListener('change', update)
+    }
   }, [enableIntro])
 
   const { scrollYProgress } = useScroll({
     target: trackRef,
-    offset: [`start ${STORY_SCROLL.headerOffset}px`, 'end end'],
+    offset: [`start ${headerOffset}px`, 'end end'],
   })
 
   const slidesScrollYProgress = useTransform(scrollYProgress, (progress) =>

@@ -1,5 +1,6 @@
 export const STORY_SCROLL = {
   headerOffset: 88,
+  headerOffsetMobile: 24,
   introVh: 72,
   slideVh: 88,
   releaseVh: 14,

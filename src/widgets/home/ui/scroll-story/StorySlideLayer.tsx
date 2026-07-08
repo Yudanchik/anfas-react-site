@@ -2,6 +2,7 @@ import { motion, useTransform, type MotionValue } from 'framer-motion'
 import type { ReactNode } from 'react'
 
 import { storySlideRange } from './model/story-scroll'
+import { useStoryLiteMotion } from './useStoryLiteMotion'
 
 type StorySlideLayerProps = {
   index: number
@@ -24,6 +25,9 @@ export function StorySlideLayer({
   children,
   variant = 'fade',
 }: StorySlideLayerProps) {
+  const liteMotion = useStoryLiteMotion()
+  const useSnapMotion = Boolean(reduceMotion || liteMotion)
+
   const { start, enter, exit, end } = storySlideRange(index, total)
 
   const opacity = useTransform(scrollYProgress, [start, enter, exit, end], [0, 1, 1, 0], {
@@ -44,10 +48,10 @@ export function StorySlideLayer({
     { clamp: true },
   )
 
-  const blur = useTransform(opacity, (value) => `blur(${(1 - value) * (variant === 'scene' ? 10 : 8)}px)`)
-
-  if (reduceMotion) {
-    if (index !== activeIndex) return null
+  if (useSnapMotion) {
+    if (index !== activeIndex) {
+      return null
+    }
 
     return <div className={className}>{children}</div>
   }
@@ -59,7 +63,7 @@ export function StorySlideLayer({
         opacity,
         y,
         scale,
-        filter: blur,
+        willChange: 'opacity, transform',
       }}
     >
       {children}
@@ -80,9 +84,10 @@ export function StoryProgressFill({
   fallbackWidth,
   className,
 }: StoryProgressFillProps) {
+  const liteMotion = useStoryLiteMotion()
   const width = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
 
-  if (reduceMotion) {
+  if (reduceMotion || liteMotion) {
     return <div className={className} style={{ width: fallbackWidth }} />
   }
 
