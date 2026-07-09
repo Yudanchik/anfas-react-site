@@ -1,8 +1,9 @@
-﻿import { Link, useLoaderData } from 'react-router'
+import { Link, useLoaderData } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from '../_shared/InnerPage.module.scss'
 
@@ -16,7 +17,8 @@ export const meta = () => [
   { title: 'Проекты ремонта квартир в Санкт-Петербурге | Анфас' },
   {
     name: 'description',
-    content: 'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге. Портфолио с примерами работ, площадью и типом объекта.',
+    content:
+      'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге. Портфолио с примерами работ, площадью и типом объекта.',
   },
   {
     name: 'keywords',
@@ -26,7 +28,8 @@ export const meta = () => [
   { property: 'og:title', content: 'Проекты ремонта квартир в Санкт-Петербурге | Анфас' },
   {
     property: 'og:description',
-    content: 'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге. Портфолио с примерами работ, площадью и типом объекта.',
+    content:
+      'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге. Портфолио с примерами работ, площадью и типом объекта.',
   },
 ]
 
@@ -35,36 +38,37 @@ export default function ProjectsRoute() {
 
   return (
     <main className={styles.page}>
-      <p className={styles.eyebrow}>Реализованные проекты</p>
-      <h1 className={styles.title}>
-        Пространства,
-        <br />
-        которые уже <em>живут.</em>
-      </h1>
-      <p className={styles.lead}>
-        Реальные квартиры и коммерческие пространства с открытыми сроками, площадью и бюджетом
-        работ.
-      </p>
+      <PageWrapper>
+        <p className={styles.eyebrow}>Реализованные проекты</p>
+        <h1 className={styles.title}>
+          Пространства,
+          <br />
+          которые уже <em>живут.</em>
+        </h1>
+        <p className={styles.lead}>
+          Реальные квартиры и коммерческие пространства с открытыми сроками, площадью и бюджетом
+          работ.
+        </p>
 
-      <SeoContentBlock embedded {...seoContentPages.projects} />
+        <SeoContentBlock embedded {...seoContentPages.projects} />
 
-      <div className={styles.grid}>
-        {projects.map((project) => (
-          <Link className={styles.card} key={project.slug} to={`/projects/${project.slug}`}>
-            <div className={styles.image}>
-              <img src={assetUrl(project.image)} alt={project.type} />
-            </div>
-            <div className={styles.cardHeader}>
-              <div>
-                <span>{project.type}</span>
-                <h2>{project.title}</h2>
+        <div className={styles.grid}>
+          {projects.map((project) => (
+            <Link className={styles.card} key={project.slug} to={`/projects/${project.slug}`}>
+              <div className={styles.image}>
+                <img src={assetUrl(project.image)} alt={project.type} />
               </div>
-              <span>{project.area}</span>
-            </div>
-          </Link>
-        ))}
-      </div>
+              <div className={styles.cardHeader}>
+                <div>
+                  <span>{project.type}</span>
+                  <h2>{project.title}</h2>
+                </div>
+                <span>{project.area}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </PageWrapper>
     </main>
   )
 }
-

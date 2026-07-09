@@ -1,5 +1,5 @@
 .page {
-  padding: 96px var(--page-gutter) 130px;
+  padding: 96px 0 130px;
   background: var(--paper);
 }
 
@@ -142,7 +142,7 @@
 
 .projectHero {
   position: relative;
-  padding: 100px 4.2vw 60px;
+  padding: 100px 0 60px;
   overflow: hidden;
   color: #fff;
   background: var(--ink);
@@ -197,7 +197,7 @@
 
 @media (width <= 700px) {
   .page {
-    padding: 76px var(--page-gutter-mobile) 96px;
+    padding: 76px 0 96px;
   }
 
   .grid {
@@ -218,7 +218,7 @@
   }
 
   .projectHero {
-    padding: 76px var(--page-gutter-mobile) 46px;
+    padding: 76px 0 46px;
   }
 
   .projectMeta {
@@ -236,7 +236,7 @@
 @media (width <= 420px) {
   .page,
   .projectHero {
-    padding-inline: var(--page-gutter-mobile);
+    padding-inline: 0;
   }
 
   .page {

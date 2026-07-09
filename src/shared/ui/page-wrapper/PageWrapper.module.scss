@@ -1,0 +1,12 @@
+.wrapper {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+@media (width <= 820px) {
+  .wrapper {
+    padding-inline: var(--page-gutter-mobile);
+  }
+}

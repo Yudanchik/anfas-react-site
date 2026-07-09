@@ -1,4 +1,5 @@
-﻿import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
+import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from '../_shared/InnerPage.module.scss'
 
@@ -25,22 +26,23 @@ export const meta = () => [
 export default function AboutRoute() {
   return (
     <main className={styles.page}>
-      <p className={styles.eyebrow}>О компании</p>
-      <h1 className={styles.title}>
-        Просто, честно,
-        <br />
-        <em>по делу.</em>
-      </h1>
-      <SeoContentBlock embedded {...seoContentPages.about} />
+      <PageWrapper>
+        <p className={styles.eyebrow}>О компании</p>
+        <h1 className={styles.title}>
+          Просто, честно,
+          <br />
+          <em>по делу.</em>
+        </h1>
+        <SeoContentBlock embedded {...seoContentPages.about} />
 
-      <div className={styles.content}>
-        <h2>Кирилл и Антон</h2>
-        <p>
-          Мы берём на себя дизайн и ремонт квартиры под ключ. Клиент не должен разбираться в
-          стройке, координировать подрядчиков и ездить на объект каждый день.
-        </p>
-      </div>
+        <div className={styles.content}>
+          <h2>Кирилл и Антон</h2>
+          <p>
+            Мы берём на себя дизайн и ремонт квартиры под ключ. Клиент не должен разбираться в
+            стройке, координировать подрядчиков и ездить на объект каждый день.
+          </p>
+        </div>
+      </PageWrapper>
     </main>
   )
 }
-

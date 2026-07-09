@@ -1,7 +1,7 @@
-﻿import { services } from '@/entities/service/model/services.data'
 import { useBrief } from '@/features/brief/model/BriefContext'
-
+import { services } from '@/entities/service/model/services.data'
 import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from '../_shared/InnerPage.module.scss'
 
@@ -30,31 +30,32 @@ export default function ServicesRoute() {
 
   return (
     <main className={styles.page}>
-      <p className={styles.eyebrow}>Услуги</p>
-      <h1 className={styles.title}>
-        Один подрядчик.
-        <br />
-        <em>Весь путь.</em>
-      </h1>
+      <PageWrapper>
+        <p className={styles.eyebrow}>Услуги</p>
+        <h1 className={styles.title}>
+          Один подрядчик.
+          <br />
+          <em>Весь путь.</em>
+        </h1>
 
-      <SeoContentBlock embedded {...seoContentPages.services} />
+        <SeoContentBlock embedded {...seoContentPages.services} />
 
-      <div className={styles.grid}>
-        {services.map((service) => (
-          <article className={styles.card} id={service.id} key={service.id}>
-            <div className={styles.cardHeader}>
-              <h2>{service.title}</h2>
-              <span>{service.number}</span>
-            </div>
-            <p className={styles.lead}>{service.text}</p>
-          </article>
-        ))}
-      </div>
+        <div className={styles.grid}>
+          {services.map((service) => (
+            <article className={styles.card} id={service.id} key={service.id}>
+              <div className={styles.cardHeader}>
+                <h2>{service.title}</h2>
+                <span>{service.number}</span>
+              </div>
+              <p className={styles.lead}>{service.text}</p>
+            </article>
+          ))}
+        </div>
 
-      <button className={styles.button} type="button" onClick={openBrief}>
-        Обсудить проект
-      </button>
+        <button className={styles.button} type="button" onClick={openBrief}>
+          Обсудить проект
+        </button>
+      </PageWrapper>
     </main>
   )
 }
-

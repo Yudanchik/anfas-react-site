@@ -1,7 +1,7 @@
-﻿import { company } from '@/shared/config/company'
+import { company } from '@/shared/config/company'
 import { useBrief } from '@/features/brief/model/BriefContext'
-
 import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from '../_shared/InnerPage.module.scss'
 
@@ -30,28 +30,29 @@ export default function ContactsRoute() {
 
   return (
     <main className={styles.page}>
-      <p className={styles.eyebrow}>Контакты</p>
-      <h1 className={styles.title}>
-        Давайте обсудим
-        <br />
-        <em>ваш интерьер.</em>
-      </h1>
-      <SeoContentBlock embedded {...seoContentPages.contacts} />
+      <PageWrapper>
+        <p className={styles.eyebrow}>Контакты</p>
+        <h1 className={styles.title}>
+          Давайте обсудим
+          <br />
+          <em>ваш интерьер.</em>
+        </h1>
+        <SeoContentBlock embedded {...seoContentPages.contacts} />
 
-      <div className={styles.content}>
-        <h2>Связаться</h2>
-        <p>
-          {company.phone}
-          <br />
-          {company.email}
-          <br />
-          {company.address}
-        </p>
-      </div>
-      <button className={styles.button} type="button" onClick={openBrief}>
-        Заполнить короткий бриф
-      </button>
+        <div className={styles.content}>
+          <h2>Связаться</h2>
+          <p>
+            {company.phone}
+            <br />
+            {company.email}
+            <br />
+            {company.address}
+          </p>
+        </div>
+        <button className={styles.button} type="button" onClick={openBrief}>
+          Заполнить короткий бриф
+        </button>
+      </PageWrapper>
     </main>
   )
 }
-
