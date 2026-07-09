@@ -40,7 +40,7 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 32px;
-  padding: clamp(120px, 12vh, 150px) clamp(20px, 4.2vw, 72px) clamp(88px, 10vh, 108px);
+  padding: clamp(120px, 12vh, 150px) var(--page-gutter) clamp(88px, 10vh, 108px);
 }
 
 
@@ -51,7 +51,7 @@
   margin: 0 0 24px;
   font-size: var(--text-caption);
   font-weight: 600;
-  letter-spacing: 0.13em;
+  letter-spacing: var(--letter-spacing-eyebrow);
   text-transform: uppercase;
 }
 
@@ -83,9 +83,9 @@
 .herocopy h1 {
   margin: 0;
   font-size: var(--text-h1);
-  font-weight: 400;
-  line-height: 0.91;
-  letter-spacing: -0.065em;
+  font-weight: 500;
+  line-height: 0.94;
+  letter-spacing: var(--letter-spacing-display);
   animation-delay: 0.14s;
 }
 
@@ -93,7 +93,7 @@
 .herocopy h1 em {
   color: var(--amber);
   font-family: var(--font-heading);
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: -0.03em;
 }
 
@@ -209,7 +209,7 @@
   gap: 8px;
   font-size: var(--text-caption);
   font-weight: 600;
-  letter-spacing: 0.15em;
+  letter-spacing: var(--letter-spacing-eyebrow);
   text-transform: uppercase;
 }
 
@@ -254,9 +254,9 @@
 .herometa {
   position: absolute;
   z-index: 3;
-  right: 4.2vw;
+  right: var(--page-gutter);
   bottom: 34px;
-  left: 4.2vw;
+  left: var(--page-gutter);
   display: flex;
   align-items: center;
   gap: 18px;
@@ -300,7 +300,7 @@
     align-items: flex-start;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 130px 6vw 100px;
+    padding: 130px var(--page-gutter-mobile) 100px;
   }
 
   .herofeatures {
@@ -320,9 +320,9 @@
   }
 
   .herometa {
-    right: 6vw;
+    right: var(--page-gutter-mobile);
     bottom: 28px;
-    left: 6vw;
+    left: var(--page-gutter-mobile);
   }
 
   .herometa > span:not(.scrollnote) {
@@ -336,7 +336,7 @@
   }
 
   .herolead {
-    font-size: 14px;
+    font-size: var(--text-14);
   }
 
   .herofeatures {
@@ -355,7 +355,7 @@
 
 @media (width <= 420px) {
   .herogrid {
-    padding: 112px 16px 86px;
+    padding: 112px var(--page-gutter-mobile) 86px;
   }
 
   .heroeyebrow {

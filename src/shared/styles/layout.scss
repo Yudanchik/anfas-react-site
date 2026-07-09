@@ -1,0 +1,24 @@
+@use './themes/default/spacing' as s;
+
+:root {
+  --space-4: #{s.$space-4}px;
+  --space-8: #{s.$space-8}px;
+  --space-12: #{s.$space-12}px;
+  --space-16: #{s.$space-16}px;
+  --space-20: #{s.$space-20}px;
+  --space-24: #{s.$space-24}px;
+  --space-32: #{s.$space-32}px;
+  --space-40: #{s.$space-40}px;
+  --space-48: #{s.$space-48}px;
+  --space-64: #{s.$space-64}px;
+  --space-80: #{s.$space-80}px;
+  --space-96: #{s.$space-96}px;
+  --space-120: #{s.$space-120}px;
+  --page-gutter: #{s.$page-gutter};
+  --page-gutter-mobile: #{s.$page-gutter-mobile};
+  --section-pad-y: #{s.$section-pad-y};
+  --section-pad-y-tight: #{s.$section-pad-y-tight};
+  --section-gap: #{s.$section-gap};
+  --section-gap-tight: #{s.$section-gap-tight};
+  --content-max: #{s.$content-max}px;
+}

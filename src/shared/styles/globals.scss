@@ -1,5 +1,6 @@
 @use './reset';
 @use './colors';
+@use './layout';
 @use './typography';
 
 body.menu-open,
@@ -15,6 +16,7 @@ body.modal-open [data-scroll-top] {
 
 .site-shell {
   overflow-x: clip;
+  background: var(--paper);
 }
 
 main {
@@ -79,18 +81,18 @@ main {
 }
 
 .brand-word {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.08em;
+  font-size: var(--text-32);
+  font-weight: 600;
+  line-height: 0.96;
+  letter-spacing: var(--letter-spacing-display);
 }
 
 .brand-caption {
   padding-left: 12px;
-  font-size: 12px;
+  font-size: var(--text-12);
   font-weight: 600;
   line-height: 1.2;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--letter-spacing-wide);
   text-transform: uppercase;
   border-left: 1px solid currentcolor;
 }

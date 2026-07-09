@@ -12,14 +12,14 @@
   display: flex;
   align-items: flex-start;
   flex-wrap: wrap;
-  gap: 12px 14px;
+  gap: var(--space-12) var(--space-16);
   width: 100%;
   max-width: 100%;
-  margin-bottom: 22px;
+  margin-bottom: var(--space-20);
   color: var(--section-kicker);
   font-size: var(--text-caption);
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--letter-spacing-eyebrow);
   text-transform: uppercase;
 }
 
@@ -31,21 +31,21 @@
   margin: 0;
   font-family: var(--font-heading);
   font-size: var(--text-section-title);
-  font-weight: 400;
+  font-weight: 500;
   line-height: var(--line-height-tight);
-  letter-spacing: -0.045em;
+  letter-spacing: var(--letter-spacing-tight);
 }
 
 @mixin section-title-em {
   color: var(--amber);
   font-family: var(--font-heading);
-  font-weight: 400;
+  font-weight: 500;
   font-style: normal;
   letter-spacing: -0.03em;
 }
 
 @mixin section-lead-base {
-  margin: 18px 0 0;
+  margin: var(--space-16) 0 0;
   color: var(--section-lead);
   font-size: var(--text-section-lead);
   line-height: var(--line-height-body);

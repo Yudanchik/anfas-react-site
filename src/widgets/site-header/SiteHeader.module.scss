@@ -10,7 +10,7 @@
   justify-content: space-between;
   width: 100%;
   height: 88px;
-  padding: 0 4.2vw;
+  padding: 0 var(--page-gutter);
   color: var(--paper);
   border-bottom: 1px solid rgb(255 255 255 / 30%);
   backdrop-filter: blur(8px);
@@ -35,14 +35,15 @@
   display: flex;
   flex: 1;
   justify-content: center;
-  gap: clamp(26px, 3.4vw, 58px);
+  gap: clamp(24px, 3vw, 56px);
 
-  @include f.body-font(14, 1.4, 500);
+  @include f.body-font(14, 1.35, 500, 0.02em);
 }
 
 .desktopNav a {
   position: relative;
   padding: 8px 0;
+  letter-spacing: 0.02em;
 }
 
 .desktopNav a::after {
@@ -73,7 +74,7 @@
   border: 0;
   background: transparent;
 
-  @include f.uppercase-label(12, 600, 0.08em);
+  @include f.uppercase-label(12, 600, var(--letter-spacing-wide));
 }
 
 .headerPhone b {
@@ -117,7 +118,7 @@
   visibility: hidden;
   flex-direction: column;
   justify-content: space-between;
-  padding: 130px 7vw 40px;
+  padding: 130px var(--page-gutter) 40px;
   transition:
     clip-path 0.6s cubic-bezier(0.77, 0, 0.18, 1),
     visibility 0.6s;
@@ -139,13 +140,14 @@
 .mobileMenu nav a {
   display: flex;
   align-items: baseline;
-  gap: 20px;
+  gap: 18px;
   padding: 18px 0;
-  font-size: clamp(38px, 11vw, 62px);
-  line-height: 1;
+  font-size: clamp(var(--text-32), 10vw, var(--text-56));
+  line-height: 0.96;
   border-bottom: 1px solid rgb(255 255 255 / 18%);
-
-  @include f.heading-font(38);
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: var(--letter-spacing-tight);
 }
 
 .mobileMenu nav span {
@@ -170,7 +172,7 @@
   .siteHeader {
     position: absolute;
     height: 76px;
-    padding: 0 6vw;
+    padding: 0 var(--page-gutter-mobile);
   }
 
   .desktopNav,
@@ -185,12 +187,12 @@
 
 @media (width <= 580px) {
   .mobileMenu {
-    padding: 130px 6vw 40px;
+    padding: 130px var(--page-gutter-mobile) 40px;
   }
 
   .mobileMenu nav a {
     gap: 16px;
-    font-size: clamp(32px, 13vw, 54px);
+    font-size: clamp(var(--text-28), 12vw, var(--text-44));
   }
 
   .mobileMenuFooter {

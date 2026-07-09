@@ -32,7 +32,6 @@ $home-compact: 580px;
   min-height: calc(100vh - 88px);
   padding: clamp(16px, 2vh, 24px) 0;
   background: var(--section-bg, var(--paper));
-  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
@@ -59,7 +58,7 @@ $home-compact: 580px;
 }
 
 .counterOf {
-  font-size: 15px;
+  font-size: var(--text-14);
   font-weight: 400;
   color: rgb(22 23 19 / 55%);
 }
@@ -82,7 +81,7 @@ $home-compact: 580px;
 
 .progressText {
   min-width: 88px;
-  font-size: 11px;
+  font-size: var(--text-12);
   font-weight: 600;
   letter-spacing: 0.14em;
   text-align: right;
@@ -177,7 +176,7 @@ $home-compact: 580px;
 }
 
 .solveTag {
-  font-size: 11px;
+  font-size: var(--text-12);
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -225,7 +224,7 @@ $home-compact: 580px;
 .solveStat span {
   display: block;
   margin-top: 4px;
-  font-size: 12px;
+  font-size: var(--text-12);
   line-height: 1.4;
   color: rgb(245 242 236 / 55%);
 }
@@ -276,7 +275,7 @@ $home-compact: 580px;
 }
 
 .ctaHint {
-  font-size: 11px;
+  font-size: var(--text-12);
   letter-spacing: 0.04em;
   color: rgb(245 242 236 / 50%);
 }
@@ -342,7 +341,7 @@ $home-compact: 580px;
   }
 
   .solveStat span {
-    font-size: 11px;
+    font-size: var(--text-12);
   }
 
   .ctaRow {

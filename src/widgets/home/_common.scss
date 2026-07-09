@@ -3,10 +3,10 @@
 @use 'media' as mq;
 
 @mixin section-pad {
-  padding: 48px;
+  padding: var(--section-pad-y) var(--page-gutter);
 
   @include mq.max(820px) {
-    padding: 24px;
+    padding: var(--section-pad-y-tight) var(--page-gutter-mobile);
   }
 }
 
@@ -17,12 +17,12 @@
 @mixin section-kicker {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-16);
   width: max-content;
-  margin-bottom: 54px;
+  margin-bottom: var(--space-40);
   font-size: var(--text-caption);
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--letter-spacing-eyebrow);
   text-transform: uppercase;
 }
 
@@ -34,8 +34,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 29px;
-  height: 29px;
+  width: 28px;
+  height: 28px;
   border: 1px solid currentcolor;
   border-radius: 50%;
 }

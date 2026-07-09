@@ -8,7 +8,7 @@ $home-compact: 580px;
 $home-xs: 420px;
 
 .siteFooter {
-  padding: 74px 4.2vw 28px;
+  padding: 74px var(--page-gutter) 28px;
   color: var(--paper);
   background:
     radial-gradient(circle at top left, rgb(237 174 36 / 10%), transparent 34%),
@@ -18,7 +18,7 @@ $home-xs: 420px;
 .footerTop {
   @include flex.flex($fw: wrap);
 
-  gap: 3vw;
+  gap: clamp(28px, 3vw, 48px);
   padding-bottom: 56px;
   border-bottom: 1px solid rgb(255 255 255 / 12%);
 }
@@ -27,7 +27,7 @@ $home-xs: 420px;
   @include flex.flex($fd: column);
 
   flex: 1.25 1 240px;
-  gap: 22px;
+  gap: var(--space-20);
   min-width: 0;
   padding-right: 2vw;
 }
@@ -39,7 +39,7 @@ $home-xs: 420px;
 .brandLead {
   margin: 0;
   color: rgb(243 240 233 / 72%);
-  font-size: 13px;
+  font-size: var(--text-14);
   line-height: 1.8;
 }
 
@@ -60,7 +60,7 @@ $home-xs: 420px;
   border-radius: 999px;
   background: rgb(255 255 255 / 4%);
   color: inherit;
-  font-size: 13px;
+  font-size: var(--text-14);
   font-weight: 600;
   text-decoration: none;
   transition:
@@ -77,7 +77,7 @@ $home-xs: 420px;
   @include flex.flex($fw: wrap);
 
   flex: 2 1 520px;
-  gap: 3vw;
+  gap: clamp(28px, 3vw, 48px);
   min-width: 0;
 }
 
@@ -89,7 +89,7 @@ $home-xs: 420px;
 .footerColumn {
   @include flex.flex($fd: column);
 
-  gap: 18px;
+  gap: var(--space-16);
   min-width: 0;
 }
 
@@ -104,21 +104,21 @@ $home-xs: 420px;
 
 .footerTitle {
   color: rgb(243 240 233 / 52%);
-  font-size: 12px;
+  font-size: var(--text-12);
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--letter-spacing-wide);
   text-transform: uppercase;
 }
 
 .footerNav {
   @include flex.flex($fd: column);
 
-  gap: 12px;
+  gap: var(--space-12);
 }
 
 .footerNav a {
   color: inherit;
-  font-size: 16px;
+  font-size: var(--text-16);
   line-height: 1.4;
   text-decoration: none;
 }
@@ -135,10 +135,10 @@ $home-xs: 420px;
   cursor: pointer;
   color: inherit;
   font-family: var(--font-heading);
-  font-size: clamp(22px, 5vw, 28px);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.03em;
+  font-size: clamp(var(--text-22), 5vw, var(--text-28));
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: var(--letter-spacing-tight);
   border: 0;
   background: transparent;
 }
@@ -182,21 +182,21 @@ $home-xs: 420px;
 .mobileContacts {
   @include flex.flex($fd: column);
 
-  gap: 16px;
+  gap: var(--space-16);
   padding: 24px 0 8px;
 }
 
 .metaDisclaimer {
   margin: 16px 0 0;
   color: rgb(243 240 233 / 48%);
-  font-size: 11px;
+  font-size: var(--text-12);
   line-height: 1.55;
 }
 
 .contactCards {
   @include flex.flex($fd: column);
 
-  gap: 14px;
+  gap: var(--space-12);
 }
 
 .contactCards > div {
@@ -210,7 +210,7 @@ $home-xs: 420px;
   display: block;
   margin-bottom: 10px;
   color: rgb(243 240 233 / 50%);
-  font-size: 12px;
+  font-size: var(--text-12);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -221,7 +221,7 @@ $home-xs: 420px;
   margin: 0;
   color: inherit;
   font-family: var(--font-heading);
-  font-size: clamp(15px, 1.35vw, 20px);
+  font-size: clamp(var(--text-14), 1.35vw, var(--text-22));
   line-height: 1.45;
   text-decoration: none;
 }
@@ -229,7 +229,7 @@ $home-xs: 420px;
 .footerBanner {
   @include flex.flex($fw: wrap);
 
-  gap: 3vw;
+  gap: clamp(24px, 3vw, 48px);
   margin-top: 24px;
   padding: 30px;
   border: 1px solid rgb(255 255 255 / 10%);
@@ -246,25 +246,25 @@ $home-xs: 420px;
   display: inline-flex;
   margin-bottom: 14px;
   color: var(--amber);
-  font-size: 12px;
+  font-size: var(--text-12);
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--letter-spacing-wide);
   text-transform: uppercase;
 }
 
 .footerBanner h3 {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(28px, 3vw, 44px);
-  font-weight: 400;
-  line-height: 1.08;
-  letter-spacing: -0.04em;
+  font-size: clamp(var(--text-28), 3vw, var(--text-44));
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: var(--letter-spacing-tight);
 }
 
 .footerBanner p {
   margin: 18px 0 0;
   color: rgb(243 240 233 / 72%);
-  font-size: 13px;
+  font-size: var(--text-14);
   line-height: 1.8;
 }
 
@@ -281,7 +281,7 @@ $home-xs: 420px;
   padding: 16px 18px;
   color: var(--paper);
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: var(--text-14);
   border: 1px solid rgb(255 255 255 / 14%);
   border-radius: var(--radius-md);
   outline: none;
@@ -302,7 +302,7 @@ $home-xs: 420px;
 }
 
 .footerSubscribe button span {
-  font-size: 12px;
+  font-size: var(--text-12);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -323,7 +323,7 @@ $home-xs: 420px;
   gap: 20px 32px;
   padding-top: 24px;
   color: rgb(243 240 233 / 52%);
-  font-size: 12px;
+  font-size: var(--text-12);
 }
 
 .footerLegal {
@@ -462,13 +462,13 @@ $home-xs: 420px;
     padding: 18px;
   }
 
-  .footerBanner h3 {
-    font-size: clamp(24px, 8vw, 34px);
-  }
+.footerBanner h3 {
+  font-size: clamp(var(--text-22), 8vw, var(--text-32));
+}
 
   .footerBanner p,
   .brandLead {
-    font-size: 12px;
+    font-size: var(--text-12);
   }
 
   .socials a,
@@ -480,7 +480,7 @@ $home-xs: 420px;
   .footerNav a,
   .contactCards a,
   .contactCards p {
-    font-size: 14px;
+    font-size: var(--text-14);
   }
 
   .footerSubscribe button {
