@@ -1,19 +1,13 @@
-import type { CSSProperties } from 'react'
-
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
-import {
-  StoryDockedHeader,
-  StoryProgressFill,
-  StorySlideLayer,
-  useStoryScrollTrack,
-} from '../../ui/scroll-story'
 import { storyCapsule } from '../model/story-capsule.data'
 
 import styles from './HomeStoryCapsule.module.scss'
 
 function renderMultiline(text: string) {
   const lines = text.split('\n')
+
   return lines.map((line, index) => (
     // biome-ignore lint/suspicious/noArrayIndexKey: Static presentation text
     <span key={index}>
@@ -24,103 +18,61 @@ function renderMultiline(text: string) {
 }
 
 export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
-  const slideCount = storyCapsule.scenes.length
-  const {
-    trackRef,
-    activeIndex,
-    progress,
-    scrollYProgress,
-    slidesScrollYProgress,
-    introShare,
-    trackHeight,
-    reduceMotion,
-  } = useStoryScrollTrack(slideCount)
-
   return (
     <section className={styles.story + ' ' + styles.sectionpad}>
-      <div
-        className={styles.storytrack}
-        ref={trackRef}
-        style={{ '--story-slides': slideCount, height: trackHeight } as CSSProperties}
-      >
-        <div className={styles.sticky}>
-          <div className={styles.layout}>
-            <div className={styles.leftColumn}>
-              <StoryDockedHeader
-                className={styles.storyHeader}
-                scrollYProgress={scrollYProgress}
-                introShare={introShare}
-                reduceMotion={reduceMotion}
-              >
-                <SectionHeader
-                  number="03"
-                  label={storyCapsule.eyebrow}
-                  title={<>{renderMultiline(storyCapsule.title)}</>}
-                  lead={storyCapsule.lead}
-                  reveal={false}
-                />
-              </StoryDockedHeader>
+      <PageWrapper className={styles.layout}>
+        <div className={styles.intro}>
+          <SectionHeader
+            className={styles.storyHeader}
+            number="03"
+            label={storyCapsule.eyebrow}
+            title={<>{renderMultiline(storyCapsule.title)}</>}
+            lead={storyCapsule.lead}
+            reveal={false}
+          />
 
-              <div className={styles.visual}>
-                {storyCapsule.scenes.map((scene, index) => (
-                  <StorySlideLayer
-                    key={scene.label}
-                    index={index}
-                    total={slideCount}
-                    activeIndex={activeIndex}
-                    scrollYProgress={slidesScrollYProgress}
-                    reduceMotion={reduceMotion}
-                    className={styles.scene}
-                    variant="scene"
-                  >
-                    <span className={styles.photoLabel}>{scene.label}</span>
-                  </StorySlideLayer>
-                ))}
-              </div>
+          <div className={styles.summaryCard}>
+            <div className={styles.summaryVisual}>
+              <img
+                className={styles.summaryImage}
+                src="/images/project-murinskiy.jpeg"
+                alt="Капсульный интерьер с готовыми решениями по отделке и комплектации"
+              />
             </div>
+            <span className={styles.summaryOverline}>{storyCapsule.summary.overline}</span>
+            <h3 className={styles.summaryTitle}>{storyCapsule.summary.title}</h3>
+            <p className={styles.summaryText}>{storyCapsule.summary.text}</p>
 
-            <aside className={styles.side}>
-              <div className={styles.counter}>
-                <span className={styles.counterNow}>{String(activeIndex + 1).padStart(2, '0')}</span>
-                <span className={styles.counterOf}>/ {String(slideCount).padStart(2, '0')}</span>
-              </div>
-              <div className={styles.rail} aria-hidden="true">
-                <StoryProgressFill
-                  className={styles.railFill}
-                  scrollYProgress={slidesScrollYProgress}
-                  reduceMotion={reduceMotion}
-                  fallbackWidth={`${progress}%`}
-                />
-              </div>
+            <ul className={styles.summaryList}>
+              {storyCapsule.summary.bullets.map((bullet) => (
+                <li className={styles.summaryItem} key={bullet}>
+                  {bullet}
+                </li>
+              ))}
+            </ul>
 
-              <div className={styles.captions}>
-                {storyCapsule.scenes.map((scene, index) => (
-                  <StorySlideLayer
-                    key={scene.label}
-                    index={index}
-                    total={slideCount}
-                    activeIndex={activeIndex}
-                    scrollYProgress={slidesScrollYProgress}
-                    reduceMotion={reduceMotion}
-                    className={styles.caption}
-                    variant="fade"
-                  >
-                    <h4 className={styles.captionTitle}>{scene.title}</h4>
-                    <p className={styles.captionText}>{scene.text}</p>
-                  </StorySlideLayer>
-                ))}
-              </div>
-
-              <button className={styles.cta} type="button" onClick={onOpenBrief}>
-                <span>Обсудить капсулу</span>
-                <i>
-                  <ArrowIcon size={16} />
-                </i>
-              </button>
-            </aside>
+            <button className={styles.cta} type="button" onClick={onOpenBrief}>
+              <span>Обсудить капсульный формат</span>
+              <i>
+                <ArrowIcon size={16} />
+              </i>
+            </button>
           </div>
         </div>
-      </div>
+
+        <div className={styles.process}>
+          {storyCapsule.steps.map((step) => (
+            <article className={styles.stepCard} key={step.number}>
+              <div className={styles.stepTop}>
+                <span className={styles.stepNumber}>{step.number}</span>
+                <span className={styles.stepMeta}>{step.meta}</span>
+              </div>
+              <h3 className={styles.stepTitle}>{step.title}</h3>
+              <p className={styles.stepText}>{step.text}</p>
+            </article>
+          ))}
+        </div>
+      </PageWrapper>
     </section>
   )
 }

@@ -5,15 +5,19 @@
   z-index: 50;
   top: 0;
   left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   width: 100%;
   height: 88px;
-  padding: 0 var(--page-gutter);
   color: var(--paper);
   border-bottom: 1px solid rgb(255 255 255 / 30%);
   backdrop-filter: blur(8px);
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  gap: 24px;
 }
 
 .isInner {
@@ -21,6 +25,10 @@
   color: var(--ink);
   border-bottom-color: var(--line);
   background: var(--paper);
+}
+
+.isInner :global(.brand-logo) {
+  filter: none;
 }
 
 .isInner .menuButton {
@@ -172,7 +180,6 @@
   .siteHeader {
     position: absolute;
     height: 76px;
-    padding: 0 var(--page-gutter-mobile);
   }
 
   .desktopNav,

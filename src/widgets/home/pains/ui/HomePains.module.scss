@@ -2,14 +2,16 @@
 @use 'flex' as flex;
 @use 'media' as mq;
 
-$home-tablet: 900px;
-$home-compact: 580px;
+$tablet: 1023px;
+$mobile: 640px;
 
 .sectionpad {
   @include home.section-pad;
 
-  @include mq.min($home-tablet + 1px) {
-    padding-block: 32px;
+  padding-block: 40px;
+
+  @include mq.max($tablet) {
+    padding-block: 28px;
   }
 }
 
@@ -17,165 +19,202 @@ $home-compact: 580px;
   @include home.surface-light;
 }
 
-.storytrack {
-  position: relative;
+.header {
+  margin-bottom: 28px;
+
+  @include mq.max($tablet) {
+    margin-bottom: 20px;
+  }
 }
 
-.sticky {
-  position: sticky;
-  top: 88px;
-  z-index: 2;
+.headerTitle {
+  @include mq.max($tablet) {
+    max-width: 13ch;
+  }
+}
 
+.headerLead {
+  max-width: min(100%, 58ch);
+  text-wrap: balance;
+
+  @include mq.max($tablet) {
+    max-width: 44ch;
+    font-size: var(--text-body-sm);
+  }
+}
+
+.list {
   @include flex.flex($fd: column);
 
-  flex: 1;
-  min-height: calc(100vh - 88px);
-  padding: clamp(16px, 2vh, 24px) 0;
-  background: var(--section-bg, var(--paper));
-  backface-visibility: hidden;
+  gap: 28px;
 }
 
-.top {
+.item {
+  position: relative;
+  animation: stairReveal 560ms ease both;
+}
+
+.item:nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.item:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.item:nth-child(4) {
+  animation-delay: 200ms;
+}
+
+.itemOffset {
+  @include mq.min($tablet + 1px) {
+    margin-left: clamp(72px, 8vw, 152px);
+    margin-top: 18px;
+  }
+}
+
+.itemRail {
+  width: 100%;
+  height: 1px;
+  margin-bottom: 22px;
+  background: linear-gradient(90deg, rgb(237 174 36 / 28%), rgb(22 23 19 / 12%));
+
+  @include mq.max($tablet) {
+    margin-bottom: 18px;
+  }
+}
+
+.itemGrid {
+  display: grid;
+  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+  gap: 32px;
+  align-items: stretch;
+
+  @include mq.max($tablet) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.visual {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #141412;
+  box-shadow: 0 18px 50px rgb(22 23 19 / 8%);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  @include mq.max($tablet) {
+    min-height: 0;
+    aspect-ratio: 1.35 / 1;
+    border-radius: 22px;
+  }
+}
+
+.visualImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.03);
+  transition: transform 0.45s ease;
+}
+
+.item:hover .visualImage {
+  transform: scale(1.07);
+}
+
+.item:hover .visual {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 56px rgb(22 23 19 / 12%);
+}
+
+.visualOverlay {
+  @include flex.flex($fd: column, $jc: flex-end);
+
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+  padding: 24px;
+  background:
+    linear-gradient(180deg, rgb(17 17 15 / 10%) 0%, rgb(17 17 15 / 26%) 36%, rgb(17 17 15 / 88%) 100%),
+    linear-gradient(90deg, rgb(17 17 15 / 78%) 0%, rgb(17 17 15 / 20%) 100%);
+
+  @include mq.max($tablet) {
+    padding: 18px;
+  }
+}
+
+.visualMeta {
   @include flex.flex($ai: center);
 
-  gap: clamp(14px, 2vw, 22px);
-  margin-bottom: clamp(16px, 2.5vh, 28px);
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
-.counter {
-  @include flex.flex($display: false, $ai: baseline);
-
-  display: inline-flex;
-  gap: 8px;
-  min-width: 92px;
+.number {
   font-family: var(--font-heading);
-  font-size: var(--text-36);
-  letter-spacing: -0.04em;
-}
-
-.counterNow {
+  font-size: var(--text-18);
   font-weight: 500;
+  color: var(--paper);
 }
 
-.counterOf {
-  font-size: var(--text-14);
-  font-weight: 400;
-  color: rgb(22 23 19 / 55%);
-}
-
-.rail {
-  position: relative;
-  flex: 1;
-  height: 2px;
-  border-radius: 999px;
-  background: rgb(22 23 19 / 18%);
-  overflow: hidden;
-}
-
-.railFill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 0;
-  background: var(--amber);
-}
-
-.progressText {
-  min-width: 88px;
+.label {
   font-size: var(--text-12);
   font-weight: 600;
   letter-spacing: 0.14em;
-  text-align: right;
   text-transform: uppercase;
-  color: rgb(22 23 19 / 62%);
-}
-
-.grid {
-  @include flex.flex($ai: stretch);
-
-  flex: 1;
-  flex-wrap: wrap;
-  gap: clamp(28px, 5vw, 60px);
-}
-
-.left {
-  position: relative;
-  flex: 1.4;
-  min-width: min(100%, 520px);
-}
-
-.quoteStack {
-  position: relative;
-  min-height: clamp(220px, 30vh, 340px);
+  color: rgb(246 243 238 / 82%);
 }
 
 .quote {
-  position: absolute;
-  inset: 0;
-
-  @include flex.flex($fd: column, $jc: center);
-
-  gap: 22px;
-  pointer-events: none;
-}
-
-.quoteNum {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--amber);
-}
-
-.quoteText {
   margin: 0;
-  font-family: var(--font-heading);
-  font-size: var(--text-display-quote);
-  font-weight: 500;
-  line-height: 0.92;
-  letter-spacing: -0.045em;
-}
-
-.right {
-  @include flex.flex($fd: column);
-
-  flex: 1;
-  min-width: min(100%, 460px);
-  min-height: clamp(440px, 54vh, 580px);
-  padding: 44px 40px 28px;
-  border-radius: 24px;
+  max-width: 11ch;
   color: var(--paper);
-  background: var(--ink);
+  font-family: var(--font-heading);
+  font-size: clamp(22px, 2vw, 34px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
 
-  @include mq.max($home-tablet) {
-    flex: 0 0 auto;
-    min-height: auto;
-    padding: 20px 20px 16px;
+  @include mq.max($tablet) {
+    font-size: 18px;
+    line-height: 1.02;
   }
 }
 
-.solveStack {
-  position: relative;
-  flex: 1;
-  min-height: clamp(280px, 34vh, 380px);
-
-  @include mq.max($home-tablet) {
-    flex: 0 0 auto;
-    min-height: clamp(212px, 34vh, 272px);
-    overflow: hidden;
-  }
-}
-
-.solve {
-  position: absolute;
-  inset: 0;
-
+.content {
   @include flex.flex($fd: column);
 
-  gap: 16px;
-  pointer-events: none;
+  padding: 24px 26px;
+  border-radius: 28px;
+  color: var(--paper);
+  background:
+    radial-gradient(circle at top right, rgb(237 174 36 / 16%), transparent 36%),
+    linear-gradient(160deg, rgb(26 24 22 / 98%), rgb(18 17 15 / 98%));
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 5%),
+    0 20px 48px rgb(22 23 19 / 8%);
+
+  @include mq.max($tablet) {
+    padding: 18px;
+    border-radius: 22px;
+  }
 }
 
-.solveTag {
+.contentHead {
+  @include flex.flex($fd: column);
+
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.kicker {
   font-size: var(--text-12);
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -183,79 +222,136 @@ $home-compact: 580px;
   color: var(--amber);
 }
 
-.solveTitle {
+.painTitle {
   margin: 0;
+  max-width: 15ch;
+  color: var(--paper);
   font-family: var(--font-heading);
-  font-size: var(--text-card-title);
+  font-size: clamp(28px, 2.4vw, 42px);
+  font-weight: 500;
+  line-height: 0.96;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+
+  @include mq.max($tablet) {
+    max-width: 100%;
+    font-size: 22px;
+    line-height: 1;
+  }
+}
+
+.solution {
+  @include flex.flex($fd: column);
+
+  gap: 10px;
+}
+
+.solutionTag {
+  font-size: var(--text-12);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(245 242 236 / 54%);
+}
+
+.solutionTitle {
+  margin: 0;
+  max-width: 22ch;
+  color: var(--paper);
+  font-family: var(--font-heading);
+  font-size: clamp(18px, 1.45vw, 26px);
   font-weight: 500;
   line-height: 1.1;
   letter-spacing: -0.02em;
+
+  @include mq.max($tablet) {
+    max-width: 100%;
+    font-size: 18px;
+  }
 }
 
-.solveText {
+.solutionText {
   margin: 0;
-  font-size: var(--text-card-description);
+  max-width: 54ch;
+  font-size: var(--text-body-sm);
   line-height: 1.55;
-  color: rgb(245 242 236 / 75%);
+  color: rgb(245 242 236 / 72%);
+
+  @include mq.max($tablet) {
+    max-width: 100%;
+    line-height: 1.45;
+  }
 }
 
-.solveStats {
+.stats {
   @include flex.flex($fw: wrap);
 
-  gap: 24px;
-  padding-top: 22px;
-  margin-top: auto;
-  border-top: 1px solid rgb(245 242 236 / 15%);
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgb(255 255 255 / 10%);
+
+  @include mq.max($tablet) {
+    margin-top: 18px;
+    padding-top: 14px;
+  }
 }
 
-.solveStat {
+.stat {
   flex: 1 1 calc(50% - 12px);
   min-width: 0;
 }
 
-.solveStat strong {
+.stat strong {
   display: block;
+  color: var(--paper);
   font-family: var(--font-heading);
-  font-size: var(--text-card-title);
+  font-size: clamp(18px, 1.4vw, 24px);
   font-weight: 500;
   letter-spacing: -0.02em;
+
+  @include mq.max($tablet) {
+    font-size: 18px;
+  }
 }
 
-.solveStat span {
+.stat span {
   display: block;
   margin-top: 4px;
   font-size: var(--text-12);
   line-height: 1.4;
-  color: rgb(245 242 236 / 55%);
+  color: rgb(245 242 236 / 52%);
 }
 
-.ctaRow {
-  @include flex.flex($fw: wrap, $ai: center);
+.footer {
+  @include flex.flex($jc: center);
 
-  gap: 12px 16px;
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid rgb(245 242 236 / 12%);
+  margin-top: 28px;
+
+  @include mq.max($tablet) {
+    margin-top: 20px;
+  }
 }
 
 .cta {
   @include flex.flex($ai: center, $jc: space-between);
 
   gap: 14px;
-  min-height: 52px;
+  min-height: 54px;
   padding: 6px 6px 6px 22px;
   cursor: pointer;
   border: 0;
   border-radius: 999px;
   color: var(--paper);
-  background: var(--amber);
+  background: var(--ink);
+  box-shadow: 0 16px 36px rgb(22 23 19 / 12%);
   transition:
     transform 0.25s ease,
     background 0.25s ease;
 
   &:hover {
     transform: translateY(-1px);
-    background: color-mix(in srgb, var(--amber) 82%, #000 18%);
+    background: color-mix(in srgb, var(--ink) 84%, #000 16%);
   }
 
   > span {
@@ -266,137 +362,40 @@ $home-compact: 580px;
   i {
     @include flex.flex($jc: center, $ai: center);
 
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     color: var(--ink);
-    background: #fff;
+    background: var(--amber);
+  }
+
+  @include mq.max($tablet) {
+    width: 100%;
+    min-height: 48px;
+    padding-left: 18px;
   }
 }
 
-.ctaHint {
-  font-size: var(--text-12);
-  letter-spacing: 0.04em;
-  color: rgb(245 242 236 / 50%);
-}
-
-@include mq.max($home-tablet) {
-  .storytrack {
-    margin-inline: -48px;
-  }
-
-  .sticky {
-    top: 24px;
-    min-height: calc(100vh - 24px);
-    padding: 0 0 clamp(24px, 4vh, 32px);
-    border: 0;
-    outline: none;
-    box-shadow: none;
-  }
-
-  .top {
-    margin-bottom: clamp(20px, 3vh, 32px);
-    padding-inline: 48px;
-  }
-
-  .grid {
-    flex-direction: column;
-    gap: 16px;
-    padding-inline: 48px;
-  }
-
-  .left {
-    flex: 1 1 100%;
-  }
-
-  .quoteStack {
-    min-height: clamp(140px, 20vh, 200px);
-  }
-
-  .quoteText {
-    font-size: var(--text-h2);
-  }
-
-  .solve {
-    gap: 12px;
-  }
-
-  .solveTitle {
-    font-size: var(--text-22);
-    line-height: 1.15;
-  }
-
-  .solveText {
-    font-size: var(--text-body-sm);
-    line-height: 1.45;
-  }
-
-  .solveStats {
-    gap: 12px 16px;
-    padding-top: 12px;
-  }
-
-  .solveStat strong {
-    font-size: var(--text-24);
-  }
-
-  .solveStat span {
-    font-size: var(--text-12);
-  }
-
-  .ctaRow {
-    position: relative;
-    z-index: 2;
-    flex-shrink: 0;
-    margin-top: 16px;
-    padding-top: 16px;
-    background: var(--ink);
-  }
-
-  .ctaHint {
-    flex: 1 1 100%;
-  }
-}
-
-@include mq.max(820px) {
-  .storytrack {
-    margin-inline: -24px;
-  }
-
-  .top {
-    padding-inline: 24px;
-  }
-
-  .grid {
-    padding-inline: 24px;
-  }
-}
-
-@include mq.max($home-compact) {
-  .solveStack {
-    min-height: clamp(196px, 30vh, 248px);
-  }
-
-  .ctaRow {
-    margin-top: 12px;
-    padding-top: 12px;
-    gap: 10px;
-  }
-
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .visualImage,
   .cta {
-    width: 100%;
+    transition: none;
   }
 
-  .top {
-    flex-wrap: wrap;
+  .item {
+    animation: none;
+  }
+}
+
+@keyframes stairReveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
   }
 
-  .progressText {
-    width: 100%;
-    text-align: left;
-  }
-
-  .quoteStack {
-    min-height: clamp(120px, 18vh, 168px);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

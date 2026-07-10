@@ -14,6 +14,9 @@ $home-xs: 420px;
 
 .process {
   @include home.surface-dark;
+}
+
+.processshell {
   @include flex.flex($fw: wrap);
 
   gap: clamp(48px, 7vw, 112px);

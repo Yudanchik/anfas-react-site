@@ -1,5 +1,6 @@
 ﻿import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 import {
   META_DISCLAIMER,
@@ -12,7 +13,7 @@ import styles from './HomeSocials.module.scss'
 export function HomeSocials() {
   return (
     <section className={styles.socials + ' ' + styles.sectionpad}>
-      <div className={styles.socialslayout}>
+      <PageWrapper className={styles.socialslayout}>
         <div className={styles.socialsleft}>
           <SectionHeader
             className={styles.socialsintro}
@@ -69,7 +70,7 @@ export function HomeSocials() {
             </div>
           </div>
         </div>
-      </div>
+      </PageWrapper>
     </section>
   )
 }

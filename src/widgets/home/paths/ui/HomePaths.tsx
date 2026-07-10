@@ -1,4 +1,5 @@
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 
 import styles from './HomePaths.module.scss'
@@ -6,7 +7,7 @@ import styles from './HomePaths.module.scss'
 export function HomePaths({ onOpenBrief }: { onOpenBrief: () => void }) {
   return (
     <section id="paths" className={styles.paths + ' ' + styles.sectionpad}>
-      <div className={styles.container}>
+      <PageWrapper className={styles.container}>
         <SectionHeader
           number="04"
           label="Время выбрать"
@@ -71,8 +72,7 @@ export function HomePaths({ onOpenBrief }: { onOpenBrief: () => void }) {
             <div className={styles.photo} aria-hidden="true" />
           </button>
         </div>
-      </div>
+      </PageWrapper>
     </section>
   )
 }
-

@@ -8,7 +8,7 @@ $home-compact: 580px;
 $home-xs: 420px;
 
 .siteFooter {
-  padding: 74px var(--page-gutter) 28px;
+  padding-block: 74px 28px;
   color: var(--paper);
   background:
     radial-gradient(circle at top left, rgb(237 174 36 / 10%), transparent 34%),
@@ -443,10 +443,6 @@ $home-xs: 420px;
 }
 
 @include mq.max($home-compact) {
-  .siteFooter {
-    padding-inline: 6vw;
-  }
-
   .footerBottom {
     flex-direction: column;
     align-items: flex-start;
@@ -455,7 +451,7 @@ $home-xs: 420px;
 
 @include mq.max($home-xs) {
   .siteFooter {
-    padding: 40px 16px 24px;
+    padding-block: 40px 24px;
   }
 
   .footerBanner {

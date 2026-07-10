@@ -1,4 +1,3 @@
-﻿@use 'mixins' as mixins;
 @use 'common' as home;
 
 .sectionpad {
@@ -7,28 +6,58 @@
 
 .manifesto {
   @include home.surface-dark;
+
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(22px, 3vw, 38px);
+
+  &::before {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background:
+      radial-gradient(circle at 12% 20%, rgb(197 160 102 / 12%), transparent 28%),
+      radial-gradient(circle at 88% 78%, rgb(255 255 255 / 5%), transparent 26%);
+    pointer-events: none;
+  }
 }
 
 .statsrow {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 18px;
   align-items: end;
+  gap: 18px;
+  animation: manifesto-float 9s ease-in-out infinite;
 }
 
 .metaitem {
   display: flex;
-  justify-content: center;
   flex: 1;
   align-items: baseline;
+  justify-content: center;
   gap: 12px;
   min-width: 0;
   border-right: 2px solid var(--section-line, var(--line));
+  animation: manifesto-rise 0.9s cubic-bezier(0.2, 0.7, 0, 1) both;
 }
 
 .metaitem:last-child {
   padding-right: 0;
   border-right: 0;
+}
+
+.metaitem:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.metaitem:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.metaitem:nth-child(4) {
+  animation-delay: 0.24s;
 }
 
 .metanum {
@@ -58,11 +87,11 @@
   }
 
   .metaitem {
+    flex: unset;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
     gap: 8px;
-    flex: unset;
     min-width: 0;
     padding: 20px 18px;
     border-right: 1px solid var(--section-line, var(--line));
@@ -88,6 +117,10 @@
 }
 
 @media (width <= 580px) {
+  .manifesto {
+    padding-block: 18px 24px;
+  }
+
   .metaitem {
     padding: 18px 16px;
   }
@@ -98,5 +131,35 @@
 
   .metalabel {
     font-size: var(--text-12);
+  }
+}
+
+@keyframes manifesto-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes manifesto-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statsrow,
+  .metaitem {
+    animation: none;
   }
 }

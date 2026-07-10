@@ -1,5 +1,6 @@
 ﻿import { useMemo, useState } from 'react'
 
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { packageCalculator } from '../model/package-calculator.data'
 import { SectionHeader } from '../../ui'
 
@@ -66,7 +67,7 @@ export function HomePackageCalculator({ onOpenBrief }: { onOpenBrief: () => void
 
   return (
     <section id="calculator" className={styles.calculator}>
-      <div className={styles.layout}>
+      <PageWrapper className={styles.layout}>
         <SectionHeader
           number="05"
           label={packageCalculator.eyebrow}
@@ -171,8 +172,7 @@ export function HomePackageCalculator({ onOpenBrief }: { onOpenBrief: () => void
             </div>
           </aside>
         </div>
-      </div>
+      </PageWrapper>
     </section>
   )
 }
-
