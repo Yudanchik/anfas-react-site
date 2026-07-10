@@ -21,7 +21,7 @@ export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
   return (
     <section className={styles.story + ' ' + styles.sectionpad}>
       <PageWrapper className={styles.layout}>
-        <div className={styles.intro}>
+        <div className={styles.processColumn}>
           <SectionHeader
             className={styles.storyHeader}
             number="03"
@@ -31,8 +31,24 @@ export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
             reveal={false}
           />
 
+          <div className={styles.process}>
+            {storyCapsule.steps.map((step) => (
+              <article className={styles.stepCard} key={step.number}>
+                <div className={styles.stepTop}>
+                  <span className={styles.stepNumber}>{step.number}</span>
+                  <span className={styles.stepMeta}>{step.meta}</span>
+                </div>
+                <h3 className={styles.stepTitle}>{step.title}</h3>
+                <p className={styles.stepText}>{step.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.intro}>
           <div className={styles.summaryCard}>
             <div className={styles.summaryVisual}>
+              <div className={styles.summaryBadge}>Капсульный формат</div>
               <img
                 className={styles.summaryImage}
                 src="/images/project-murinskiy.jpeg"
@@ -58,19 +74,6 @@ export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
               </i>
             </button>
           </div>
-        </div>
-
-        <div className={styles.process}>
-          {storyCapsule.steps.map((step) => (
-            <article className={styles.stepCard} key={step.number}>
-              <div className={styles.stepTop}>
-                <span className={styles.stepNumber}>{step.number}</span>
-                <span className={styles.stepMeta}>{step.meta}</span>
-              </div>
-              <h3 className={styles.stepTitle}>{step.title}</h3>
-              <p className={styles.stepText}>{step.text}</p>
-            </article>
-          ))}
         </div>
       </PageWrapper>
     </section>

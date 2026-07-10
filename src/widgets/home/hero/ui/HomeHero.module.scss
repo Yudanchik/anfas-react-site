@@ -11,7 +11,6 @@
 
 .sectionpad {
   min-height: 100svh;
-  padding-inline: var(--page-gutter);
 }
 
 .media {
@@ -236,11 +235,8 @@
 }
 
 @media (width <= 820px) {
-  .sectionpad {
-    padding-inline: var(--page-gutter-mobile);
-  }
-
   .inner {
+    min-height: auto;
     padding-block: 82px 18px;
   }
 
@@ -285,7 +281,13 @@
 }
 
 @media (width <= 480px) {
+  .hero,
+  .sectionpad {
+    min-height: auto;
+  }
+
   .inner {
+    min-height: auto;
     padding-block: 76px 12px;
   }
 
@@ -342,7 +344,13 @@
 }
 
 @media (width <= 375px) {
+  .hero,
+  .sectionpad {
+    min-height: auto;
+  }
+
   .inner {
+    min-height: auto;
     padding-block: 70px 10px;
   }
 
@@ -358,7 +366,20 @@
   }
 
   .cards {
-    display: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .card {
+    padding: 12px 14px;
+    border-radius: 18px;
+  }
+
+  .card strong {
+    font-size: 15px;
+    line-height: 1.08;
   }
 }
 

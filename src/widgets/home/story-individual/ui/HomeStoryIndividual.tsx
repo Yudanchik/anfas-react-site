@@ -52,7 +52,6 @@ export function HomeStoryIndividual({ onOpenBrief }: { onOpenBrief: () => void }
             />
             <div className={styles.heroGlow} aria-hidden="true" />
             <div className={styles.heroBadge}>Индивидуальный путь</div>
-            <div className={styles.heroFrame} aria-hidden="true" />
           </div>
 
           <div className={styles.heroContent}>

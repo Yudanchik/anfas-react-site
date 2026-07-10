@@ -3,10 +3,10 @@
 @use 'media' as mq;
 
 @mixin section-pad {
-  padding: var(--section-pad-y) var(--page-gutter);
+  padding-block: var(--section-pad-y);
 
   @include mq.max(820px) {
-    padding: var(--section-pad-y-tight) var(--page-gutter-mobile);
+    padding-block: var(--section-pad-y-tight);
   }
 }
 
