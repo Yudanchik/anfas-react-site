@@ -173,7 +173,9 @@ export function SiteFooter() {
               </a>
             </p>
             <p>ИНН {company.legalInn}</p>
-            <p>ОГРНИП {company.legalOgrnip}</p>
+            <p>
+              {company.legalRegLabel} {company.legalRegNumber}
+            </p>
           </div>
           <Link className={styles.footerPrivacy} to="/privacy">
             Политика конфиденциальности

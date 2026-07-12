@@ -4,13 +4,13 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: 100svh;
+  min-height: 720px;
   color: var(--paper);
   background: #17110c;
 }
 
 .sectionpad {
-  min-height: 100svh;
+  min-height: inherit;
 }
 
 .media {
@@ -54,8 +54,8 @@
 .inner {
   position: relative;
   z-index: 1;
-  min-height: 100svh;
-  padding-block: clamp(112px, 12vh, 148px) clamp(28px, 4vh, 40px);
+  min-height: inherit;
+  padding-block: 132px 40px;
 }
 
 .copy {
@@ -229,12 +229,25 @@
 }
 
 @media (width <= 1180px) {
+  .hero {
+    min-height: 660px;
+  }
+
+  .inner {
+    padding-block: 118px 34px;
+  }
+
   .textBlock {
     max-width: 720px;
   }
 }
 
 @media (width <= 820px) {
+  .hero,
+  .sectionpad {
+    min-height: auto;
+  }
+
   .inner {
     min-height: auto;
     padding-block: 82px 18px;
