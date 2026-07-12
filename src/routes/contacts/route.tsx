@@ -6,29 +6,48 @@ import styles from '../_shared/InnerPage.module.scss'
 
 const contactCards = [
   {
+    mark: '01',
     label: 'Телефон',
     title: company.phone,
-    text: 'Позвоните, если хотите быстро обсудить ремонт квартиры, сроки, бюджет или формат работы.',
+    action: 'Позвонить',
+    text: 'Быстрый способ обсудить ремонт квартиры под ключ, сроки, бюджет и подходящий формат работы.',
     href: company.phoneHref,
   },
   {
+    mark: '02',
     label: 'Почта',
     title: company.email,
-    text: 'Удобно для планировок, референсов, смет, технических заданий и подробных вопросов.',
+    action: 'Написать',
+    text: 'Подходит для планировок, референсов, смет, технических заданий и подробных вопросов по проекту.',
     href: company.emailHref,
   },
   {
+    mark: '03',
     label: 'Офис',
     title: company.addressShort,
-    text: `${company.office}. Встречу лучше согласовать заранее, чтобы команда была готова к вашему проекту.`,
+    action: 'Открыть карту',
+    text: `${company.office}. Встречу лучше согласовать заранее, чтобы команда подготовилась к вашему объекту.`,
     href: company.mapHref,
   },
 ] as const
 
 const contactSteps = [
-  'Расскажите, какая квартира и на каком этапе объект.',
-  'Пришлите планировку, метраж или несколько фото, если они уже есть.',
+  'Расскажите, какая квартира, какой метраж и на каком этапе объект.',
+  'Пришлите планировку, фото или референсы, если они уже есть.',
   'Мы подскажем, подходит ли индивидуальный проект или капсульный ремонт.',
+] as const
+
+const heroMeta = [
+  { label: 'Город', value: 'Санкт-Петербург' },
+  { label: 'Форматы', value: 'индивидуальный и капсульный ремонт' },
+  { label: 'Ответ', value: 'в рабочее время' },
+] as const
+
+const socialLinks = [
+  { label: 'Telegram', href: company.telegramHref },
+  { label: 'VK', href: company.vkHref },
+  { label: 'YouTube', href: company.youtubeHref },
+  { label: 'Instagram', href: company.instagramHref },
 ] as const
 
 const legalRows = [
@@ -63,10 +82,11 @@ export default function ContactsRoute() {
   const { openBrief } = useBrief()
 
   return (
-    <main className={styles.page}>
-      <PageWrapper>
+    <main className={`${styles.page} ${styles.contactPage}`}>
+      <section className={styles.contactLightSection}>
+        <PageWrapper>
         <section className={styles.contactHero}>
-          <div>
+          <div className={styles.contactHeroContent}>
             <p className={styles.eyebrow}>Контакты</p>
             <h1 className={styles.title}>
               Давайте обсудим
@@ -74,10 +94,19 @@ export default function ContactsRoute() {
               <em>ваш ремонт.</em>
             </h1>
             <p className={styles.lead}>
-              Свяжитесь с Anfas, если хотите ремонт квартиры под ключ в Санкт-Петербурге без
-              хаоса: с понятной сметой, календарным планом, комплектацией и ответственностью одной
-              команды.
+              Свяжитесь с Anfas, если хотите ремонт квартиры под ключ в Санкт-Петербурге без хаоса:
+              с понятной сметой, календарным планом, комплектацией и ответственностью одной команды.
             </p>
+
+            <div className={styles.contactHeroMeta} aria-label="Кратко о работе">
+              {heroMeta.map((item) => (
+                <div key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </div>
+              ))}
+            </div>
+
             <div className={styles.buttonRow}>
               <button className={styles.button} type="button" onClick={() => openBrief('general')}>
                 Оставить заявку
@@ -95,15 +124,31 @@ export default function ContactsRoute() {
             <p>{company.workHours}</p>
           </aside>
         </section>
+        </PageWrapper>
+      </section>
 
+      <section className={styles.contactDarkSection}>
+        <PageWrapper>
         <section className={styles.contactCards} aria-label="Способы связи">
-          {contactCards.map((card) => (
-            <a className={styles.contactCard} href={card.href} key={card.label} target={card.href.startsWith('http') ? '_blank' : undefined} rel={card.href.startsWith('http') ? 'noreferrer' : undefined}>
-              <span>{card.label}</span>
-              <h2>{card.title}</h2>
-              <p>{card.text}</p>
-            </a>
-          ))}
+          {contactCards.map((card) => {
+            const isExternal = card.href.startsWith('http')
+
+            return (
+              <a
+                className={styles.contactCard}
+                href={card.href}
+                key={card.label}
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noreferrer' : undefined}
+              >
+                <b className={styles.contactCardMark}>{card.mark}</b>
+                <span>{card.label}</span>
+                <h2>{card.title}</h2>
+                <p>{card.text}</p>
+                <strong className={styles.contactCardAction}>{card.action}</strong>
+              </a>
+            )
+          })}
         </section>
 
         <section className={styles.contactInfoGrid}>
@@ -133,6 +178,24 @@ export default function ContactsRoute() {
           </article>
         </section>
 
+        <section className={styles.contactSocials} aria-label="Социальные сети">
+          <div>
+            <span>Соцсети</span>
+            <h2>Показываем проекты, процессы и детали ремонта.</h2>
+          </div>
+          <nav aria-label="Социальные сети Anfas">
+            {socialLinks.map((link) => (
+              <a href={link.href} key={link.label} target="_blank" rel="noreferrer">
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        </section>
+        </PageWrapper>
+      </section>
+
+      <section className={styles.contactLightSection}>
+        <PageWrapper>
         <section className={styles.legalPanel} aria-label="Реквизиты компании">
           <div>
             <p className={styles.eyebrow}>Реквизиты</p>
@@ -147,7 +210,8 @@ export default function ContactsRoute() {
             ))}
           </dl>
         </section>
-      </PageWrapper>
+        </PageWrapper>
+      </section>
     </main>
   )
 }

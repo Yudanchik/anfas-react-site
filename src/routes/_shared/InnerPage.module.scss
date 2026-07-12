@@ -3,6 +3,32 @@
   background: var(--paper);
 }
 
+.contactPage {
+  padding: 0;
+  background: var(--paper);
+}
+
+.contactLightSection,
+.contactDarkSection {
+  padding: var(--section-gap-tight) 0;
+}
+
+.contactLightSection {
+  background: var(--paper);
+}
+
+.contactDarkSection {
+  color: var(--paper);
+  background:
+    radial-gradient(circle at 82% 16%, rgb(197 160 102 / 14%), transparent 32%),
+    linear-gradient(135deg, rgb(22 23 19), rgb(28 28 25));
+}
+
+.contactLightSection:last-child {
+  padding-top: var(--space-56);
+  padding-bottom: var(--section-gap);
+}
+
 .eyebrow {
   display: flex;
   align-items: center;
@@ -186,9 +212,54 @@
   align-items: end;
 }
 
+.contactHero {
+  padding-bottom: var(--space-48);
+  border-bottom: 1px solid var(--line);
+}
+
+.contactHeroContent {
+  max-width: 760px;
+}
+
 .documentHero .lead,
 .contactHero .lead {
   max-width: 660px;
+}
+
+.contactHeroMeta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-12);
+  margin-top: var(--space-32);
+
+  div {
+    min-width: 0;
+    padding: var(--space-16);
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--radius-md);
+    background: var(--glass-light);
+    backdrop-filter: var(--glass-blur);
+  }
+
+  span,
+  strong {
+    display: block;
+  }
+
+  span {
+    color: rgb(22 23 19 / 52%);
+    font-size: var(--text-caption);
+    font-weight: 700;
+    letter-spacing: var(--letter-spacing-eyebrow);
+    text-transform: uppercase;
+  }
+
+  strong {
+    margin-top: var(--space-8);
+    font-size: var(--text-body-sm);
+    font-weight: 500;
+    line-height: 1.45;
+  }
 }
 
 .documentSummary,
@@ -357,11 +428,21 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
-  margin-top: 66px;
+  margin-top: 0;
+  padding: 0;
+  color: var(--paper);
 }
 
 .contactCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
   color: inherit;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-color: rgb(255 255 255 / 12%);
+  background: rgb(255 255 255 / 5%);
+  backdrop-filter: var(--glass-blur);
   text-decoration: none;
   transition:
     transform 0.35s cubic-bezier(0.2, 0.7, 0, 1),
@@ -370,9 +451,39 @@
 
   &:hover {
     transform: translateY(-4px);
-    border-color: rgb(197 160 102 / 48%);
-    background: rgb(255 255 255 / 78%);
+    border-color: rgb(197 160 102 / 52%);
+    background: rgb(255 255 255 / 9%);
   }
+
+  p {
+    color: rgb(255 255 255 / 68%);
+  }
+}
+
+.contactCardMark {
+  position: absolute;
+  top: var(--space-24);
+  right: var(--space-24);
+  color: rgb(255 255 255 / 13%);
+  font-family: var(--font-heading);
+  font-size: var(--text-block-title);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.contactCardAction {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 42px;
+  margin-top: auto;
+  padding: 0 var(--space-16);
+  color: var(--ink);
+  border: 1px solid rgb(197 160 102 / 40%);
+  border-radius: var(--radius-pill);
+  background: var(--amber);
+  font-size: var(--text-body-sm);
+  font-weight: 700;
 }
 
 .contactInfoGrid {
@@ -396,7 +507,7 @@
   h2 {
     max-width: 520px;
     margin: 18px 0 0;
-    font-size: var(--text-h3);
+    font-size: var(--text-card-title);
     font-weight: 500;
     line-height: 1.02;
   }
@@ -460,15 +571,34 @@
 
 .legalPanel {
   display: grid;
-  grid-template-columns: minmax(240px, 0.42fr) minmax(0, 1fr);
+  grid-template-columns: minmax(280px, 0.34fr) minmax(0, 1fr);
   gap: 42px;
-  margin-top: 72px;
-  padding-top: 42px;
-  border-top: 1px solid var(--line);
+  margin-top: 0;
+  padding: var(--card-padding);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-panel);
+  background:
+    radial-gradient(circle at 92% 0%, rgb(197 160 102 / 12%), transparent 30%),
+    rgb(255 255 255 / 56%);
+  box-shadow: var(--shadow-card);
+
+  > div,
+  dl {
+    min-width: 0;
+  }
+
+  > div {
+    align-self: start;
+  }
+
+  .eyebrow {
+    margin-bottom: var(--space-24);
+  }
 
   h2 {
+    max-width: 340px;
     margin: 0;
-    font-size: var(--text-h2);
+    font-size: var(--text-section-title);
     font-weight: 500;
     line-height: 1;
   }
@@ -483,7 +613,7 @@
     background: var(--glass-light);
   }
 
-  div {
+  dl > div {
     display: grid;
     grid-template-columns: 180px minmax(0, 1fr);
     gap: 22px;
@@ -500,10 +630,72 @@
     margin: 0;
     font-size: var(--text-14);
     line-height: 1.55;
+    word-break: break-word;
   }
 
   dt {
     color: rgb(22 23 19 / 52%);
+  }
+}
+
+.contactSocials {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.62fr) minmax(0, 1fr);
+  gap: var(--space-32);
+  align-items: center;
+  margin-top: 18px;
+  padding: var(--card-padding);
+  color: var(--paper);
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: var(--radius-panel);
+  background:
+    radial-gradient(circle at 8% 0%, rgb(197 160 102 / 20%), transparent 34%),
+    linear-gradient(135deg, rgb(22 23 19), rgb(31 30 27));
+  box-shadow: var(--shadow-card-strong);
+
+  span {
+    color: var(--amber);
+    font-size: var(--text-caption);
+    font-weight: 700;
+    letter-spacing: var(--letter-spacing-eyebrow);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    max-width: 560px;
+    margin: var(--space-12) 0 0;
+    font-size: var(--text-card-title);
+    font-weight: 500;
+    line-height: var(--line-height-tight);
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-8);
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--space-16);
+    border: 1px solid rgb(255 255 255 / 14%);
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 6%);
+    color: var(--paper);
+    font-size: var(--text-body-sm);
+    font-weight: 700;
+    transition:
+      transform 0.35s cubic-bezier(0.2, 0.7, 0, 1),
+      background 0.35s cubic-bezier(0.2, 0.7, 0, 1);
+
+    &:hover {
+      transform: translateY(-2px);
+      color: var(--ink);
+      background: var(--amber);
+    }
   }
 }
 
@@ -635,13 +827,33 @@
     padding: 76px 0 96px;
   }
 
+  .contactPage {
+    padding: 0;
+  }
+
+  .contactLightSection,
+  .contactDarkSection {
+    padding: 64px 0;
+  }
+
+  .contactLightSection:last-child {
+    padding-top: 48px;
+    padding-bottom: 80px;
+  }
+
   .documentHero,
   .contactHero,
+  .contactHeroMeta,
   .documentLayout,
   .contactInfoGrid,
+  .contactSocials,
   .legalPanel {
     grid-template-columns: 1fr;
     gap: 28px;
+  }
+
+  .contactHero {
+    padding-bottom: var(--space-32);
   }
 
   .documentSummary,
@@ -659,13 +871,27 @@
   .contactCards {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .documentCards {
     margin-top: 44px;
+  }
+
+  .contactCard {
+    min-height: auto;
+  }
+
+  .contactSocials nav {
+    justify-content: flex-start;
   }
 
   .documentLayout,
   .legalPanel {
     margin-top: 48px;
-    padding-top: 28px;
+  }
+
+  .legalPanel {
+    margin-top: 0;
   }
 
   .documentAside {
@@ -683,7 +909,7 @@
     min-height: auto;
   }
 
-  .legalPanel div {
+  .legalPanel dl > div {
     grid-template-columns: 1fr;
     gap: 4px;
     padding: var(--space-16) var(--space-20);
@@ -755,6 +981,20 @@
     padding-bottom: 80px;
   }
 
+  .contactPage {
+    padding: 0;
+  }
+
+  .contactLightSection,
+  .contactDarkSection {
+    padding: 52px 0;
+  }
+
+  .contactLightSection:last-child {
+    padding-top: 40px;
+    padding-bottom: 64px;
+  }
+
   .lead {
     margin-top: 24px;
     font-size: var(--text-14);
@@ -771,6 +1011,29 @@
     padding: var(--card-padding);
   }
 
+  .contactHeroMeta {
+    gap: var(--space-8);
+
+    div {
+      padding: var(--space-12);
+    }
+  }
+
+  .contactCards {
+    padding: 0;
+  }
+
+  .contactCardMark {
+    top: var(--space-20);
+    right: var(--space-20);
+    font-size: var(--text-section-title);
+  }
+
+  .contactCardAction {
+    width: 100%;
+    justify-content: center;
+  }
+
   .buttonRow {
     gap: 10px;
   }
@@ -784,6 +1047,11 @@
 
   .contactAccent a {
     font-size: var(--text-20);
+  }
+
+  .contactSocials a {
+    flex: 1 1 calc(50% - var(--space-8));
+    justify-content: center;
   }
 
   .contactDarkCard h2,
