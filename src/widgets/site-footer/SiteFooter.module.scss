@@ -39,8 +39,23 @@ $home-xs: 420px;
 .brandLead {
   margin: 0;
   color: rgb(243 240 233 / 72%);
-  font-size: var(--text-14);
-  line-height: 1.8;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.footerCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 22px;
+  cursor: pointer;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--amber);
 }
 
 .socials,
@@ -200,10 +215,12 @@ $home-xs: 420px;
 }
 
 .contactCards > div {
-  padding: 16px 18px;
+  padding: 18px 20px;
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: var(--radius-md);
-  background: rgb(255 255 255 / 4%);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgb(237 174 36 / 10%), transparent 42%),
+    rgb(255 255 255 / 4%);
 }
 
 .contactCards span {
@@ -221,7 +238,7 @@ $home-xs: 420px;
   margin: 0;
   color: inherit;
   font-family: var(--font-heading);
-  font-size: clamp(var(--text-14), 1.35vw, var(--text-22));
+  font-size: 20px;
   line-height: 1.45;
   text-decoration: none;
 }

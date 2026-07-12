@@ -17,7 +17,11 @@ function renderMultiline(text: string) {
   ))
 }
 
-export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
+export function HomeStoryCapsule({
+  onOpenBrief,
+}: {
+  onOpenBrief: (service?: 'individual' | 'package') => void
+}) {
   return (
     <section className={styles.story + ' ' + styles.sectionpad}>
       <PageWrapper className={styles.layout}>
@@ -67,7 +71,7 @@ export function HomeStoryCapsule({ onOpenBrief }: { onOpenBrief: () => void }) {
               ))}
             </ul>
 
-            <button className={styles.cta} type="button" onClick={onOpenBrief}>
+            <button className={styles.cta} type="button" onClick={() => onOpenBrief('package')}>
               <span>Обсудить капсульный формат</span>
               <i>
                 <ArrowIcon size={16} />

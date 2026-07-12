@@ -45,8 +45,9 @@ export default function ProjectRoute() {
         <img className={styles.projectImage} src={assetUrl(project.image)} alt={project.type} />
         <PageWrapper className={styles.projectWrapper}>
           <div className={styles.projectContent}>
-            <p className={styles.eyebrow}>{project.type}</p>
-            <h1 className={styles.title}>{project.title}</h1>
+            <p className={styles.eyebrow}>{project.location}</p>
+            <h1 className={styles.title}>{project.type}</h1>
+            <p className={styles.projectLead}>{project.description}</p>
             <dl className={styles.projectMeta}>
               <div>
                 <dt>Площадь</dt>
@@ -66,10 +67,35 @@ export default function ProjectRoute() {
       </section>
       <section className={styles.page}>
         <PageWrapper>
-          <div className={styles.content}>
-            <h2>О проекте</h2>
-            <p>{project.description}</p>
+          <div className={styles.projectIntro}>
+            <div>
+              <p className={styles.eyebrow}>О проекте</p>
+              <h2>{project.title}</h2>
+            </div>
+            <div className={styles.projectText}>
+              <p>{project.description}</p>
+              {project.details.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
           </div>
+
+          {project.gallery.length > 0 ? (
+            <div className={styles.projectGallery} aria-label={`Галерея проекта ${project.title}`}>
+              {project.gallery.map((image, index) => (
+                <figure
+                  className={`${styles.galleryItem} ${index % 6 === 0 ? styles.galleryItemWide : ''}`}
+                  key={image}
+                >
+                  <img
+                    src={assetUrl(image)}
+                    alt={`${project.title}: фото ${index + 1}`}
+                    loading={index < 3 ? 'eager' : 'lazy'}
+                  />
+                </figure>
+              ))}
+            </div>
+          ) : null}
         </PageWrapper>
       </section>
     </main>

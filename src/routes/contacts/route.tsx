@@ -49,7 +49,7 @@ export default function ContactsRoute() {
             {company.address}
           </p>
         </div>
-        <button className={styles.button} type="button" onClick={openBrief}>
+        <button className={styles.button} type="button" onClick={() => openBrief('general')}>
           Заполнить короткий бриф
         </button>
       </PageWrapper>

@@ -7,7 +7,7 @@ export function HomeFormatCompare({
   onOpenBrief,
   onScrollToCalculator,
 }: {
-  onOpenBrief: () => void
+  onOpenBrief: (service?: 'general' | 'individual' | 'package') => void
   onScrollToCalculator: () => void
 }) {
   return (
@@ -43,7 +43,9 @@ export function HomeFormatCompare({
               <button
                 className={item.key === 'individual' ? styles.actionAlt : styles.action}
                 type="button"
-                onClick={item.key === 'individual' ? onOpenBrief : onScrollToCalculator}
+                onClick={
+                  item.key === 'individual' ? () => onOpenBrief('individual') : onScrollToCalculator
+                }
               >
                 {item.key === 'individual' ? 'Обсудить проект' : 'Перейти к калькулятору'}
               </button>
@@ -79,7 +81,7 @@ export function HomeFormatCompare({
             <button className={styles.actionAlt} type="button" onClick={onScrollToCalculator}>
               Открыть калькулятор
             </button>
-            <button className={styles.action} type="button" onClick={onOpenBrief}>
+            <button className={styles.action} type="button" onClick={() => onOpenBrief('general')}>
               Обсудить формат
             </button>
           </div>

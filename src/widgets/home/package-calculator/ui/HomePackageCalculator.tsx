@@ -38,7 +38,11 @@ const optionWeeks: Record<OptionType, number> = {
   design: 2,
 }
 
-export function HomePackageCalculator({ onOpenBrief }: { onOpenBrief: () => void }) {
+export function HomePackageCalculator({
+  onOpenBrief,
+}: {
+  onOpenBrief: (service?: 'individual' | 'package') => void
+}) {
   const [area, setArea] = useState<number>(areaDefaults)
   const [roomType, setRoomType] = useState<RoomType>(roomDefaults)
   const [level, setLevel] = useState<LevelType>(levelDefaults)
@@ -163,10 +167,10 @@ export function HomePackageCalculator({ onOpenBrief }: { onOpenBrief: () => void
             </ul>
 
             <div className={styles.actions}>
-              <button className={styles.button} type="button" onClick={onOpenBrief}>
+              <button className={styles.button} type="button" onClick={() => onOpenBrief('package')}>
                 Получить расчёт
               </button>
-              <button className={styles.buttonAlt} type="button" onClick={onOpenBrief}>
+              <button className={styles.buttonAlt} type="button" onClick={() => onOpenBrief('package')}>
                 Обсудить пакет
               </button>
             </div>

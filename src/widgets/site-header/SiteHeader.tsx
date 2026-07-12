@@ -40,7 +40,7 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <button className={styles.headerPhone} type="button" onClick={openBrief}>
+          <button className={styles.headerPhone} type="button" onClick={() => openBrief('general')}>
             <span>Обсудить проект</span>
             <b>{company.phone}</b>
           </button>

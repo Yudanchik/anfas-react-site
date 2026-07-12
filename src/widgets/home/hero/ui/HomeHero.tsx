@@ -87,7 +87,7 @@ export function HomeHero({ onOpenBrief }: { onOpenBrief: () => void }) {
                 <p className={styles.lead}>{heroContent.lead}</p>
 
                 <div className={styles.actions}>
-                  <button className={styles.primaryCta} type="button" onClick={onOpenBrief}>
+                  <button className={styles.primaryCta} type="button" onClick={() => onOpenBrief()}>
                     <span>Обсудить проект</span>
                     <i>
                       <ArrowIcon size={16} />

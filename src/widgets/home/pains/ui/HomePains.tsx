@@ -73,7 +73,7 @@ export function HomePains({ onOpenBrief }: { onOpenBrief: () => void }) {
         </div>
 
         <div className={styles.footer}>
-          <button className={styles.cta} type="button" onClick={onOpenBrief}>
+          <button className={styles.cta} type="button" onClick={() => onOpenBrief()}>
             <span>Обсудить проект без хаоса и сюрпризов</span>
             <i>
               <ArrowIcon size={16} />

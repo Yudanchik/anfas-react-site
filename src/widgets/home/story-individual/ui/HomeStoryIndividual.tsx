@@ -17,7 +17,11 @@ function renderMultiline(text: string) {
   ))
 }
 
-export function HomeStoryIndividual({ onOpenBrief }: { onOpenBrief: () => void }) {
+export function HomeStoryIndividual({
+  onOpenBrief,
+}: {
+  onOpenBrief: (service?: 'individual' | 'package') => void
+}) {
   return (
     <section className={styles.story + ' ' + styles.sectionpad}>
       <PageWrapper className={styles.layout}>
@@ -68,7 +72,7 @@ export function HomeStoryIndividual({ onOpenBrief }: { onOpenBrief: () => void }
               ))}
             </div>
 
-            <button className={styles.cta} type="button" onClick={onOpenBrief}>
+            <button className={styles.cta} type="button" onClick={() => onOpenBrief('individual')}>
               <span>Хочу проект под себя</span>
               <i>
                 <ArrowIcon size={16} />

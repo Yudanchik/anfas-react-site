@@ -33,7 +33,7 @@ export function HomeContact({ onOpenBrief }: { onOpenBrief: () => void }) {
       <button
         className={styles.contactbutton}
         type="button"
-        onClick={onOpenBrief}
+        onClick={() => onOpenBrief()}
         data-reveal
         style={{ '--reveal-delay': '240ms' } as CSSProperties}
       >

@@ -1,6 +1,6 @@
-﻿import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
-
+import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+
 import { SectionHeader } from '../../ui'
 import {
   META_DISCLAIMER,
@@ -18,16 +18,33 @@ export function HomeSocials() {
           <SectionHeader
             className={styles.socialsintro}
             number="07"
-            label="Следите за нами"
+            label="Соцсети и видео"
             title={
               <>
-                Живые проекты,
+                Следите за проектами,
                 <br />
-                полезные материалы и <em>новости компании</em>
+                материалами и <em>ходом ремонта</em>
               </>
             }
-            lead="Соцсети помогают быстрее увидеть стиль работы и почувствовать, как мы ведём проекты. В них же мы показываем промежуточные этапы, полезные советы и новости команды."
+            lead="Показываем реальные объекты, решения по интерьеру, подбор материалов и то, как идёт ремонт квартиры под ключ вживую. Это помогает быстрее понять наш стиль работы и уровень детализации."
           />
+
+          <article className={styles.spotlight} data-reveal>
+            <div className={styles.spotlightTop}>
+              <span className={styles.spotlightTag}>Anfas media</span>
+              <strong>Реальный процесс, а не витрина без контекста.</strong>
+            </div>
+            <div className={styles.spotlightStats}>
+              <div>
+                <b>3+</b>
+                <span>ключевых канала с живым контентом</span>
+              </div>
+              <div>
+                <b>Объекты</b>
+                <span>показываем этапы, а не только финал</span>
+              </div>
+            </div>
+          </article>
 
           <div className={styles.sociallinks} data-reveal>
             {socialLinks.map((social) => (
@@ -49,11 +66,22 @@ export function HomeSocials() {
             ))}
           </div>
 
-          <p className={styles.metadisclaimer}>{META_DISCLAIMER}</p>
+          <div className={styles.socialsnote}>
+            <p className={styles.metadisclaimer}>{META_DISCLAIMER}</p>
+            <p className={styles.socialscaption}>
+              Основной упор делаем на VK, Telegram и YouTube: там регулярно показываем этапы реализации,
+              дизайн-проекты, ответы на частые вопросы и полезный контент про ремонт в Санкт-Петербурге.
+            </p>
+          </div>
         </div>
 
         <div className={styles.phonestage} data-reveal>
           <div className={styles.phonepanel}>
+            <div className={styles.phonepanelHeader}>
+              <span className={styles.phonepanelTag}>Anfas online</span>
+              <p>Видео с объектов, короткие обзоры интерьеров и понятные апдейты по этапам ремонта.</p>
+            </div>
+
             <div className={styles.phoneshell}>
               <img
                 className={styles.phonemockup}
@@ -67,6 +95,12 @@ export function HomeSocials() {
                   <source src={SOCIALS_VIDEO_SRC} type="video/mp4" />
                 </video>
               </div>
+            </div>
+
+            <div className={styles.phonepanelFooter} aria-hidden="true">
+              <span>Объекты в работе</span>
+              <span>Разборы решений</span>
+              <span>Реальные сроки</span>
             </div>
           </div>
         </div>

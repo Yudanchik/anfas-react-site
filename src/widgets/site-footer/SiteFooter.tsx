@@ -1,6 +1,7 @@
 import { useId, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 
+import { useBrief } from '@/features/brief/model/BriefContext'
 import { services } from '@/entities/service/model/services.data'
 import { company } from '@/shared/config/company'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
@@ -75,34 +76,30 @@ function FooterContactCards() {
       </div>
       <div className={styles.contactCardWide}>
         <span>Адрес</span>
-        <p>
-          Санкт-Петербург,
-          <br />
-          наб. Обводного канала, 118АХ
-        </p>
+        <p>{company.address}</p>
       </div>
     </div>
   )
 }
 
 export function SiteFooter() {
+  const { openBrief } = useBrief()
+
   return (
     <footer className={styles.siteFooter}>
       <PageWrapper>
         <div className={styles.footerTop}>
           <div className={styles.brandColumn}>
-            <Link className={`brand ${styles.footerBrand}`} to="/">
-              <span className="brand-word">Анфас</span>
-              <span className="brand-caption">
-                дизайн
-                <br />
-                и ремонт
-              </span>
+            <Link className={`brand ${styles.footerBrand}`} to="/" aria-label={`${company.name} — на главную`}>
+              <img className="brand-logo" src="/images/anfas-logo-official.svg" alt={company.name} />
             </Link>
             <p className={styles.brandLead}>
-              Системный подход к ремонту и дизайну интерьера, прозрачные этапы, понятный бюджет и
-              контроль на каждом шаге.
+              Ремонт квартир под ключ в Санкт-Петербурге: дизайн, комплектация и реализация в одной
+              системе без хаоса, плавающих сроков и непрозрачных решений.
             </p>
+            <button className={styles.footerCta} type="button" onClick={() => openBrief('general')}>
+              Обсудить проект
+            </button>
             <FooterSocials className={styles.socials} />
           </div>
 
