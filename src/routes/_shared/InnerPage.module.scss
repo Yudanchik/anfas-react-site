@@ -1,5 +1,5 @@
 .page {
-  padding: 96px 0 130px;
+  padding: var(--section-gap-tight) 0 var(--section-gap);
   background: var(--paper);
 }
 
@@ -130,13 +130,13 @@
 .button {
   display: inline-flex;
   align-items: center;
-  min-height: 56px;
+  min-height: var(--button-height);
   margin-top: 40px;
-  padding: 0 26px;
+  padding: 0 var(--space-24);
   cursor: pointer;
   color: var(--paper);
   border: 0;
-  border-radius: 100px;
+  border-radius: var(--radius-pill);
   background: var(--ink);
 }
 
@@ -155,25 +155,26 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 56px;
-  padding: 0 26px;
+  min-height: var(--button-height);
+  padding: 0 var(--space-24);
   color: var(--ink);
   border: 1px solid rgb(22 23 19 / 18%);
-  border-radius: 100px;
-  background: rgb(255 255 255 / 42%);
+  border-radius: var(--radius-pill);
+  background: var(--glass-light);
+  backdrop-filter: var(--glass-blur);
 }
 
 .buttonLight {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 54px;
+  min-height: var(--button-height);
   margin-top: auto;
-  padding: 0 24px;
+  padding: 0 var(--space-24);
   cursor: pointer;
   color: var(--ink);
   border: 0;
-  border-radius: 100px;
+  border-radius: var(--radius-pill);
   background: var(--amber);
 }
 
@@ -194,14 +195,14 @@
 .contactAccent {
   display: grid;
   gap: 0;
-  padding: 30px;
+  padding: var(--card-padding);
   color: var(--paper);
   border: 1px solid rgb(255 255 255 / 12%);
-  border-radius: 32px;
+  border-radius: var(--radius-panel);
   background:
     radial-gradient(circle at 85% 0%, rgb(197 160 102 / 22%), transparent 36%),
     linear-gradient(135deg, rgb(22 23 19 / 98%), rgb(38 34 26 / 96%));
-  box-shadow: 0 28px 70px rgb(22 23 19 / 14%);
+  box-shadow: var(--shadow-card-strong);
 }
 
 .documentSummary div {
@@ -251,18 +252,18 @@
 .documentCard,
 .contactCard,
 .contactMapCard {
-  padding: 28px;
-  border: 1px solid rgb(22 23 19 / 10%);
-  border-radius: 30px;
-  background: rgb(255 255 255 / 56%);
-  box-shadow: 0 22px 70px rgb(22 23 19 / 5%);
+  padding: var(--card-padding);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-card);
+  background: var(--glass-light);
+  box-shadow: var(--shadow-card);
 }
 
 .documentCard h2,
 .contactCard h2,
 .contactMapCard h2 {
   margin: 18px 0 0;
-  font-size: 24px;
+  font-size: var(--text-card-title);
   font-weight: 500;
   line-height: 1.05;
 }
@@ -291,10 +292,11 @@
   align-self: start;
   display: grid;
   gap: 10px;
-  padding: 28px;
+  padding: var(--card-padding);
   border: 1px solid rgb(197 160 102 / 22%);
-  border-radius: 28px;
-  background: rgb(255 255 255 / 42%);
+  border-radius: var(--radius-card);
+  background: var(--glass-light);
+  backdrop-filter: var(--glass-blur);
 
   p {
     margin: 0;
@@ -310,14 +312,14 @@
 }
 
 .documentSection {
-  padding: 34px;
-  border: 1px solid rgb(22 23 19 / 9%);
-  border-radius: 30px;
-  background: rgb(255 255 255 / 64%);
+  padding: var(--card-padding);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-card);
+  background: var(--glass-light);
 
   h2 {
     margin: 0 0 18px;
-    font-size: 24px;
+    font-size: var(--text-card-title);
     font-weight: 500;
     line-height: 1.08;
   }
@@ -339,7 +341,7 @@
 
   a {
     color: var(--paper);
-    font-size: 24px;
+    font-size: var(--text-card-title);
     font-weight: 500;
     line-height: 1.08;
   }
@@ -384,9 +386,9 @@
   display: flex;
   flex-direction: column;
   min-height: 420px;
-  padding: 34px;
+  padding: var(--card-padding);
   color: var(--paper);
-  border-radius: 34px;
+  border-radius: var(--radius-panel);
   background:
     radial-gradient(circle at 86% 8%, rgb(197 160 102 / 24%), transparent 34%),
     linear-gradient(135deg, var(--ink), rgb(28 27 24));
@@ -427,7 +429,7 @@
       content: counter(contact-step, decimal-leading-zero);
       place-items: center;
       color: var(--ink);
-      border-radius: 999px;
+      border-radius: var(--radius-pill);
       background: var(--amber);
       font-size: var(--text-12);
       font-weight: 700;
@@ -449,9 +451,9 @@
     align-self: flex-start;
     min-height: 52px;
     margin-top: auto;
-    padding: 0 22px;
+    padding: 0 var(--space-24);
     color: var(--paper);
-    border-radius: 100px;
+    border-radius: var(--radius-pill);
     background: var(--ink);
   }
 }
@@ -475,17 +477,17 @@
     display: grid;
     gap: 0;
     margin: 0;
-    border: 1px solid rgb(22 23 19 / 9%);
-    border-radius: 30px;
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--radius-card);
     overflow: hidden;
-    background: rgb(255 255 255 / 56%);
+    background: var(--glass-light);
   }
 
   div {
     display: grid;
     grid-template-columns: 180px minmax(0, 1fr);
     gap: 22px;
-    padding: 18px 24px;
+    padding: var(--space-16) var(--space-24);
     border-bottom: 1px solid rgb(22 23 19 / 9%);
 
     &:last-child {
@@ -650,7 +652,7 @@
   .contactMapCard,
   .documentSection,
   .documentAside {
-    border-radius: 24px;
+    border-radius: var(--radius-card);
   }
 
   .documentCards,
@@ -673,7 +675,7 @@
   .documentSection,
   .contactDarkCard,
   .contactMapCard {
-    padding: 24px;
+    padding: var(--card-padding);
   }
 
   .contactDarkCard,
@@ -684,7 +686,7 @@
   .legalPanel div {
     grid-template-columns: 1fr;
     gap: 4px;
-    padding: 16px 18px;
+    padding: var(--space-16) var(--space-20);
   }
 
   .grid {
@@ -766,7 +768,7 @@
   .contactMapCard,
   .documentSection,
   .documentAside {
-    padding: 20px;
+    padding: var(--card-padding);
   }
 
   .buttonRow {
@@ -781,12 +783,12 @@
   }
 
   .contactAccent a {
-    font-size: 20px;
+    font-size: var(--text-20);
   }
 
   .contactDarkCard h2,
   .legalPanel h2 {
-    font-size: 28px;
+    font-size: var(--text-section-title);
   }
 
   .contactDarkCard li {

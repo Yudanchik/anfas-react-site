@@ -1,7 +1,5 @@
+@use './design-tokens';
 @use './reset';
-@use './colors';
-@use './layout';
-@use './typography';
 
 body.menu-open,
 body.modal-open {
