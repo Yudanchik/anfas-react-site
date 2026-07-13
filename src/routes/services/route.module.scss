@@ -6,41 +6,59 @@ $compact: 580px;
 $xs: 420px;
 
 .page {
-  padding: 96px 0 120px;
+  padding: 0 0 120px;
   background: var(--paper);
 
   @include mq.max($tablet) {
-    padding: 78px 0 88px;
+    padding: 0 0 88px;
   }
 }
 
-.hero {
+.heroSection {
   position: relative;
   overflow: hidden;
-  padding: 42px;
-  border: 1px solid rgb(22 23 19 / 10%);
-  border-radius: 36px;
+  min-height: 700px;
   color: var(--paper);
-  background:
-    linear-gradient(90deg, rgb(17 17 15 / 76%), rgb(17 17 15 / 38%)),
-    url('/images/hero/hero-bedroom.png') center / cover no-repeat;
-  box-shadow: 0 24px 60px rgb(22 23 19 / 12%);
-
-  @include mq.max($tablet) {
-    padding: 28px 22px;
-    border-radius: 26px;
-  }
+  background: var(--ink);
 }
 
-.heroInner {
+.heroMedia {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(16 16 14 / 80%) 0%, rgb(16 16 14 / 46%) 42%, rgb(16 16 14 / 22%) 100%),
+    linear-gradient(180deg, rgb(16 16 14 / 30%), rgb(16 16 14 / 52%));
+}
+
+.heroShell {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);
+  gap: 32px;
   align-items: end;
+  min-height: 700px;
+  padding-top: 146px;
+  padding-bottom: 72px;
 
   @include mq.max($tablet) {
     grid-template-columns: 1fr;
+    min-height: 0;
+    padding-top: 112px;
+    padding-bottom: 48px;
   }
+}
+
+.heroContent {
+  max-width: 760px;
 }
 
 .eyebrow {
@@ -48,11 +66,11 @@ $xs: 420px;
   align-items: center;
   gap: 12px;
   margin: 0 0 18px;
+  color: rgb(245 242 236 / 72%);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgb(245 242 236 / 72%);
 
   &::before {
     width: 34px;
@@ -63,10 +81,10 @@ $xs: 420px;
 }
 
 .title {
-  max-width: 11ch;
+  max-width: 12ch;
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(42px, 5vw, 68px);
+  font-size: clamp(42px, 5vw, 72px);
   font-weight: 500;
   line-height: 0.95;
   letter-spacing: -0.05em;
@@ -78,31 +96,32 @@ $xs: 420px;
 }
 
 .lead {
-  max-width: 46ch;
-  margin: 18px 0 0;
+  max-width: 42ch;
+  margin: 24px 0 0;
   color: rgb(245 242 236 / 76%);
   font-size: 16px;
-  line-height: 1.72;
+  line-height: 1.75;
 }
 
 .heroAside {
   @include flex.flex($fd: column);
 
   gap: 14px;
-  align-self: stretch;
+  align-self: end;
 }
 
 .heroCard {
-  padding: 18px 20px;
+  padding: 20px 22px;
   border: 1px solid rgb(255 255 255 / 12%);
-  border-radius: 24px;
+  border-radius: 28px;
   background: rgb(255 255 255 / 6%);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 48px rgb(0 0 0 / 16%);
 }
 
 .heroCard span {
   display: inline-flex;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   color: var(--amber);
   font-size: 12px;
   font-weight: 600;
@@ -113,12 +132,28 @@ $xs: 420px;
 .heroCard p {
   margin: 0;
   color: rgb(245 242 236 / 82%);
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: 1.68;
+}
+
+.surfaceLight,
+.surfaceDark {
+  padding: 40px 0;
+}
+
+.surfaceLight {
+  background: var(--paper);
+}
+
+.surfaceDark {
+  color: var(--paper);
+  background:
+    radial-gradient(circle at 82% 14%, rgb(237 174 36 / 12%), transparent 32%),
+    linear-gradient(135deg, rgb(22 23 19), rgb(28 28 25));
 }
 
 .section {
-  margin-top: 34px;
+  margin-top: 0;
 }
 
 .sectionHeader {
@@ -165,6 +200,18 @@ $xs: 420px;
   color: rgb(22 23 19 / 68%);
   font-size: 16px;
   line-height: 1.74;
+}
+
+.surfaceDark .sectionLabel {
+  color: rgb(245 242 236 / 56%);
+}
+
+.surfaceDark .sectionTitle {
+  color: var(--paper);
+}
+
+.surfaceDark .sectionLead {
+  color: rgb(245 242 236 / 70%);
 }
 
 .servicesGrid {
@@ -432,10 +479,10 @@ $xs: 420px;
 
 .compareCard {
   padding: 24px;
-  border: 1px solid rgb(22 23 19 / 10%);
+  border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 28px;
-  background: rgb(255 255 255 / 82%);
-  box-shadow: 0 18px 42px rgb(22 23 19 / 6%);
+  background: rgb(255 255 255 / 5%);
+  box-shadow: 0 18px 42px rgb(0 0 0 / 18%);
 }
 
 .compareCard span {
@@ -455,17 +502,18 @@ $xs: 420px;
   font-weight: 500;
   line-height: 1.04;
   letter-spacing: -0.03em;
+  color: var(--paper);
 }
 
 .compareCard p {
   margin: 0;
-  color: rgb(22 23 19 / 70%);
+  color: rgb(245 242 236 / 70%);
   font-size: 15px;
   line-height: 1.65;
 }
 
 .formSection {
-  margin-top: 34px;
+  margin-top: 0;
   padding: 28px;
   border: 1px solid rgb(22 23 19 / 10%);
   border-radius: 32px;
@@ -609,4 +657,39 @@ $xs: 420px;
   color: rgb(22 23 19 / 74%);
   font-size: 15px;
   line-height: 1.65;
+}
+
+@media (width <= 420px) {
+  .page {
+    padding-bottom: 80px;
+  }
+
+  .heroSection {
+    min-height: 0;
+  }
+
+  .heroShell {
+    padding-top: 96px;
+    padding-bottom: 40px;
+  }
+
+  .title {
+    max-width: 11ch;
+    font-size: clamp(32px, 10vw, 52px);
+  }
+
+  .lead {
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  .surfaceLight,
+  .surfaceDark {
+    padding: 28px 0;
+  }
+
+  .serviceButton,
+  .formButton {
+    width: 100%;
+  }
 }

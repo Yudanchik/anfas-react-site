@@ -1,28 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 
+import { sharedHeroSlides } from '@/shared/config/hero-media'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './HomeHero.module.scss'
 
-const slides = [
-  {
-    image: '/images/hero/hero-bedroom.png',
-    alt: 'Спокойная премиальная спальня в тёплых бежевых тонах',
-    eyebrow: 'Санкт-Петербург · с 2012 года',
-  },
-  {
-    image: '/images/hero/hero-living.png',
-    alt: 'Современная гостиная с мягким светом и дорогими материалами',
-    eyebrow: 'Дизайн · ремонт · комплектация',
-  },
-  {
-    image: '/images/hero/hero-kitchen.png',
-    alt: 'Минималистичная кухня с акцентным тёплым освещением',
-    eyebrow: 'Под ваш ритм жизни',
-  },
-] as const
+const slides = sharedHeroSlides
 
 const heroContent = {
   title: {

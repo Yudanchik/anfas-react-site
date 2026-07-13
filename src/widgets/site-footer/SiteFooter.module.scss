@@ -39,8 +39,8 @@ $home-xs: 420px;
 .brandLead {
   margin: 0;
   color: rgb(243 240 233 / 72%);
-  font-size: 15px;
-  line-height: 1.75;
+  font-size: var(--text-16);
+  line-height: 1.7;
 }
 
 .footerCta {
@@ -53,7 +53,7 @@ $home-xs: 420px;
   border: 0;
   border-radius: 999px;
   color: var(--ink);
-  font-size: 14px;
+  font-size: var(--text-16);
   font-weight: 600;
   background: var(--amber);
 }
@@ -75,7 +75,7 @@ $home-xs: 420px;
   border-radius: 999px;
   background: rgb(255 255 255 / 4%);
   color: inherit;
-  font-size: var(--text-14);
+  font-size: var(--text-16);
   font-weight: 600;
   text-decoration: none;
   transition:
@@ -118,11 +118,12 @@ $home-xs: 420px;
 }
 
 .footerTitle {
-  color: rgb(243 240 233 / 52%);
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: var(--letter-spacing-wide);
-  text-transform: uppercase;
+  color: var(--paper);
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .footerNav {
@@ -132,10 +133,14 @@ $home-xs: 420px;
 }
 
 .footerNav a {
-  color: inherit;
+  color: rgb(243 240 233 / 62%);
   font-size: var(--text-16);
   line-height: 1.4;
   text-decoration: none;
+
+  &:hover {
+    color: var(--paper);
+  }
 }
 
 .accordion {
@@ -227,19 +232,20 @@ $home-xs: 420px;
   display: block;
   margin-bottom: 10px;
   color: rgb(243 240 233 / 50%);
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .contactCards a,
 .contactCards p {
   margin: 0;
-  color: inherit;
-  font-family: var(--font-heading);
-  font-size: 20px;
-  line-height: 1.45;
+  color: rgb(243 240 233 / 72%);
+  font-family: var(--font-body);
+  font-size: var(--text-16);
+  line-height: 1.5;
   text-decoration: none;
 }
 
@@ -481,7 +487,7 @@ $home-xs: 420px;
 
   .footerBanner p,
   .brandLead {
-    font-size: var(--text-12);
+    font-size: var(--text-16);
   }
 
   .socials a,
@@ -493,7 +499,7 @@ $home-xs: 420px;
   .footerNav a,
   .contactCards a,
   .contactCards p {
-    font-size: var(--text-14);
+    font-size: var(--text-16);
   }
 
   .footerSubscribe button {

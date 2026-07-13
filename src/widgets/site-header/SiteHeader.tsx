@@ -11,7 +11,13 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { openBrief } = useBrief()
   const { pathname } = useLocation()
-  const isHome = pathname === '/'
+  const isHeroPage =
+    pathname === '/' ||
+    pathname === '/services' ||
+    pathname === '/about' ||
+    pathname === '/contacts' ||
+    pathname === '/projects' ||
+    pathname.startsWith('/projects/')
 
   useEffect(() => {
     document.body.classList.toggle('menu-open', menuOpen)
@@ -21,7 +27,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className={`${styles.siteHeader} ${isHome ? '' : styles.isInner}`}>
+      <header className={`${styles.siteHeader} ${isHeroPage ? styles.isGlass : styles.isInner}`}>
         <PageWrapper className={styles.headerInner}>
           <Link
             className="brand"
