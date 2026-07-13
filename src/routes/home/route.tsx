@@ -12,6 +12,7 @@ import { HomePaths } from '@/widgets/home/paths'
 import { HomeSocials } from '@/widgets/home/socials'
 import { HomeTicker } from '@/widgets/home/ticker'
 import { HomePains } from '@/widgets/home/pains'
+import { HomeProjectControl } from '@/widgets/home/project-control'
 import { HomeStoryIndividual } from '@/widgets/home/story-individual'
 import { HomeStoryCapsule } from '@/widgets/home/story-capsule'
 
@@ -49,6 +50,9 @@ export default function HomeRoute() {
 
       {/* 01: боли → решения */}
       <HomePains onOpenBrief={openBrief} />
+
+      {/* Контроль ремонта в личном кабинете */}
+      <HomeProjectControl />
 
       {/* 02: индивидуальный путь */}
       <HomeStoryIndividual onOpenBrief={openBrief} />
