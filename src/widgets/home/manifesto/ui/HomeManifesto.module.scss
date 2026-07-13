@@ -5,7 +5,7 @@
 }
 
 .manifesto {
-  @include home.surface-dark;
+  @include home.surface-light;
 
   position: relative;
   overflow: hidden;
@@ -17,7 +17,7 @@
     content: '';
     background:
       radial-gradient(circle at 12% 20%, rgb(197 160 102 / 12%), transparent 28%),
-      radial-gradient(circle at 88% 78%, rgb(255 255 255 / 5%), transparent 26%);
+      radial-gradient(circle at 88% 78%, rgb(197 160 102 / 8%), transparent 26%);
     pointer-events: none;
   }
 }

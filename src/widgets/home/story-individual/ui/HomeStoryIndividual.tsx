@@ -28,7 +28,7 @@ export function HomeStoryIndividual({
         <div className={styles.headerColumn}>
           <SectionHeader
             className={styles.storyHeader}
-            number="02"
+            number="03"
             label={storyIndividual.eyebrow}
             title={<>{renderMultiline(storyIndividual.title)}</>}
             lead={storyIndividual.lead}

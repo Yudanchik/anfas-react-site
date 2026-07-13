@@ -23,7 +23,10 @@ export function HomeProjectControl() {
     <section className={styles.section} aria-labelledby="project-control-title">
       <PageWrapper className={styles.layout}>
         <div className={styles.copy}>
-          <span className={styles.eyebrow}>Контроль проекта</span>
+          <span className={styles.eyebrow}>
+            <span className={styles.eyebrowNumber}>02</span>
+            <span>Контроль проекта</span>
+          </span>
           <h2 className={styles.title} id="project-control-title">
             Ремонт может быть понятным и <em>спокойным событием</em> в вашей жизни.
           </h2>

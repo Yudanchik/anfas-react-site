@@ -45,28 +45,28 @@ export default function HomeRoute() {
       <HomeHero onOpenBrief={openBrief} />
       <HomeTicker />
 
-      {/* 03: meta stats (быстрое доверие) */}
+      {/* Meta stats: быстрое доверие */}
       <HomeManifesto />
 
       {/* 01: боли → решения */}
       <HomePains onOpenBrief={openBrief} />
 
-      {/* Контроль ремонта в личном кабинете */}
+      {/* 02: контроль ремонта в личном кабинете */}
       <HomeProjectControl />
 
-      {/* 02: индивидуальный путь */}
+      {/* 03: индивидуальный путь */}
       <HomeStoryIndividual onOpenBrief={openBrief} />
 
-      {/* 03: капсула */}
+      {/* 04: капсула */}
       <HomeStoryCapsule onOpenBrief={openBrief} />
 
-      {/* 04: выбор тарифов */}
+      {/* 05: выбор тарифов */}
       <HomePaths onOpenBrief={openBrief} />
 
-      {/* 05: калькулятор */}
+      {/* 06: калькулятор */}
       <HomePackageCalculator onOpenBrief={openBrief} />
 
-      {/* 06–09: хвостовые секции */}
+      {/* 07–09: хвостовые секции */}
       <HomePartners />
       <HomeSocials />
       <HomeProcess onOpenBrief={openBrief} />

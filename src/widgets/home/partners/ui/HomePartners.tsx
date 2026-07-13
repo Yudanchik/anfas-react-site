@@ -14,7 +14,7 @@ export function HomePartners() {
       <PageWrapper className={styles.partnerslayout}>
         <SectionHeader
           className={styles.partnersheader}
-          number="06"
+          number="07"
           label="Партнёры и поставщики"
           title={
             <>

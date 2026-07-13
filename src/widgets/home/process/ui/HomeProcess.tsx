@@ -11,7 +11,7 @@ export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
       <PageWrapper className={styles.processshell}>
         <SectionHeader
           className={styles.processheader}
-          number="08"
+          number="09"
           label="Как идёт ремонт"
           title={
             <>

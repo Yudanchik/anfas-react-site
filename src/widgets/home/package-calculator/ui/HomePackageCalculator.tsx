@@ -73,7 +73,7 @@ export function HomePackageCalculator({
     <section id="calculator" className={styles.calculator}>
       <PageWrapper className={styles.layout}>
         <SectionHeader
-          number="05"
+          number="06"
           label={packageCalculator.eyebrow}
           title={
             <>

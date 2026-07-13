@@ -14,7 +14,7 @@ export function HomePaths({
       <PageWrapper className={styles.container}>
         <SectionHeader
           className={styles.pathsHeader}
-          number="04"
+          number="05"
           label="Время выбрать"
           title={
             <>

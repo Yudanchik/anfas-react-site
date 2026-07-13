@@ -23,6 +23,7 @@ export function HomePains({ onOpenBrief }: { onOpenBrief: () => void }) {
           lead={pains.lead}
           titleClassName={styles.headerTitle}
           leadClassName={styles.headerLead}
+          tone="dark"
           reveal={false}
         />
 

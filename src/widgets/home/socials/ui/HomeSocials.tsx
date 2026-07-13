@@ -17,7 +17,7 @@ export function HomeSocials() {
         <div className={styles.socialsleft}>
           <SectionHeader
             className={styles.socialsintro}
-            number="07"
+            number="08"
             label="Соцсети и видео"
             title={
               <>
