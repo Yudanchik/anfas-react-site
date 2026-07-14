@@ -41,7 +41,7 @@ export default function AboutRoute() {
         <img className={styles.heroMedia} src={hero.image} alt={hero.alt} />
         <PageWrapper className={styles.heroWrap}>
           <div className={styles.heroCopy}>
-            <p className={styles.heroEyebrow}>О компании Anfas</p>
+            <p className={styles.heroEyebrow}>О компании Анфас</p>
             <h1 className={styles.heroTitle}>
               Дизайн и ремонт,
               <br />
@@ -73,7 +73,7 @@ export default function AboutRoute() {
 
           <aside className={styles.heroAside}>
             <article className={styles.heroCard}>
-              <span className={styles.heroCardEyebrow}>Подход Anfas</span>
+              <span className={styles.heroCardEyebrow}>Подход Анфас</span>
               <strong className={styles.heroCardTitle}>
                 Не продаём абстрактный дизайн отдельно от стройки.
               </strong>
@@ -99,7 +99,7 @@ export default function AboutRoute() {
             <p>
               Мы берём на себя дизайн и ремонт квартиры под ключ. Клиент не должен разбираться в
               стройке, координировать подрядчиков и ездить на объект каждый день. Поэтому внутри
-              Anfas проект, смета, комплектация и контроль качества собраны в один процесс, который
+              Анфас проект, смета, комплектация и контроль качества собраны в один процесс, который
               легко читать и контролировать.
             </p>
           </div>

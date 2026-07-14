@@ -31,7 +31,7 @@ export function HomeSocials() {
 
           <article className={styles.spotlight} data-reveal>
             <div className={styles.spotlightTop}>
-              <span className={styles.spotlightTag}>Anfas media</span>
+              <span className={styles.spotlightTag}>Анфас media</span>
               <strong>Реальный процесс, а не витрина без контекста.</strong>
             </div>
             <div className={styles.spotlightStats}>
@@ -78,7 +78,7 @@ export function HomeSocials() {
         <div className={styles.phonestage} data-reveal>
           <div className={styles.phonepanel}>
             <div className={styles.phonepanelHeader}>
-              <span className={styles.phonepanelTag}>Anfas online</span>
+              <span className={styles.phonepanelTag}>Анфас online</span>
               <p>Видео с объектов, короткие обзоры интерьеров и понятные апдейты по этапам ремонта.</p>
             </div>
 
@@ -91,7 +91,7 @@ export function HomeSocials() {
                 decoding="async"
               />
               <div className={styles.phonescreen}>
-                <video autoPlay loop muted playsInline preload="metadata" aria-label="Видео с объектов Anfas">
+                <video autoPlay loop muted playsInline preload="metadata" aria-label="Видео с объектов Анфас">
                   <source src={SOCIALS_VIDEO_SRC} type="video/mp4" />
                 </video>
               </div>

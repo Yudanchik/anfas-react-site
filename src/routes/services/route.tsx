@@ -79,7 +79,7 @@ export default function ServicesRoute() {
 
         <PageWrapper className={styles.heroShell}>
           <div className={styles.heroContent}>
-            <p className={styles.eyebrow}>Услуги Anfas</p>
+            <p className={styles.eyebrow}>Услуги Анфас</p>
             <h1 className={styles.title}>
               Ремонт квартиры
               <br />

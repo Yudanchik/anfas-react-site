@@ -43,7 +43,7 @@ export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
               </div>
 
               <div className={styles.cardBody}>
-                <span className={styles.cardKicker}>Этап Anfas</span>
+                <span className={styles.cardKicker}>Этап Анфас</span>
                 <h3 className={styles.cardTitle}>{step.title}</h3>
                 <p className={styles.cardText}>{step.text}</p>
 

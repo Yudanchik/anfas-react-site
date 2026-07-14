@@ -64,7 +64,7 @@ export const meta = () => [
   {
     name: 'description',
     content:
-      'Контакты Anfas: телефон, почта, офис в Санкт-Петербурге и реквизиты компании. Обсудим ремонт квартиры под ключ, дизайн-проект или капсульный формат.',
+      'Контакты Анфас: телефон, почта, офис в Санкт-Петербурге и реквизиты компании. Обсудим ремонт квартиры под ключ, дизайн-проект или капсульный формат.',
   },
   {
     name: 'keywords',
@@ -75,7 +75,7 @@ export const meta = () => [
   {
     property: 'og:description',
     content:
-      'Телефон, почта, офис и реквизиты Anfas. Поможем выбрать формат ремонта и обсудим ваш проект.',
+      'Телефон, почта, офис и реквизиты Анфас. Поможем выбрать формат ремонта и обсудим ваш проект.',
   },
 ]
 
@@ -96,7 +96,7 @@ export default function ContactsRoute() {
               <em>ваш ремонт</em>
             </h1>
             <p className={styles.heroLead}>
-              Свяжитесь с Anfas, если хотите ремонт квартиры под ключ в Санкт-Петербурге без хаоса:
+              Свяжитесь с Анфас, если хотите ремонт квартиры под ключ в Санкт-Петербурге без хаоса:
               с понятной сметой, календарным планом, комплектацией и ответственностью одной команды.
             </p>
 
@@ -169,7 +169,7 @@ export default function ContactsRoute() {
             </article>
 
             <article className={styles.contactMapCard}>
-              <span>Офис Anfas</span>
+              <span>Офис Анфас</span>
               <h2>{company.addressShort}</h2>
               <p>
                 {company.office}. Приезжайте на встречу после согласования времени: так мы заранее
@@ -186,7 +186,7 @@ export default function ContactsRoute() {
               <span>Соцсети</span>
               <h2>Показываем проекты, процессы и детали ремонта.</h2>
             </div>
-            <nav aria-label="Социальные сети Anfas">
+            <nav aria-label="Социальные сети Анфас">
               {socialLinks.map((link) => (
                 <a href={link.href} key={link.label} target="_blank" rel="noreferrer">
                   {link.label}
