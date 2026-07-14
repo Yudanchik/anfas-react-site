@@ -8,6 +8,18 @@ export default tseslint.config(
     ignores: ['build/**', 'dist/**', '.react-router/**', 'node_modules/**'],
   },
   js.configs.recommended,
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        Buffer: 'readonly',
+        URL: 'readonly',
+        console: 'readonly',
+        fetch: 'readonly',
+        process: 'readonly',
+      },
+    },
+  },
   ...tseslint.configs.recommended,
   {
     files: ['src/**/*.{ts,tsx}'],

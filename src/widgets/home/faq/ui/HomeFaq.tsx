@@ -1,5 +1,6 @@
 import { faqItems } from '@/features/faq/model/faq.data'
 import { PlusIcon } from '@/shared/ui/icons/PlusIcon'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 import styles from './HomeFaq.module.scss'
 
@@ -11,13 +12,13 @@ export function HomeFaq({
   setOpenFaq: (value: number) => void
 }) {
   return (
-    <section className={styles.section}>
+    <section className={styles.section + ' ' + styles.sectionpad}>
       <div className={styles.bgimage} aria-hidden="true" />
-      <div className={styles.content + ' ' + styles.sectionpad}>
+      <PageWrapper className={styles.content}>
         <SectionHeader
           className={styles.faqtitle}
           tone="dark"
-          number="09"
+          number="10"
           label="Частые вопросы"
           title={
             <>
@@ -58,7 +59,7 @@ export function HomeFaq({
             )
           })}
         </div>
-      </div>
+      </PageWrapper>
     </section>
   )
 }

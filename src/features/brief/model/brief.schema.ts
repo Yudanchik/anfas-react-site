@@ -1,13 +1,18 @@
 import { z } from 'zod'
+import { normalizePhoneDigits } from './brief.form'
 
 export const briefSchema = z.object({
-  name: z.string().trim().min(2, 'Укажите имя'),
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Укажите имя')
+    .regex(/^[A-Za-zА-Яа-яЁё\s-]+$/, 'Введите имя без цифр и спецсимволов'),
   phone: z
     .string()
     .trim()
-    .min(10, 'Укажите телефон')
-    .regex(/^[+\d\s()-]+$/, 'Проверьте формат телефона'),
-  service: z.enum(['design', 'renovation', 'full'], {
+    .min(1, 'Укажите телефон')
+    .refine((value) => normalizePhoneDigits(value).length === 11, 'Введите телефон полностью'),
+  service: z.enum(['general', 'individual', 'package'], {
     error: 'Выберите услугу',
   }),
 })

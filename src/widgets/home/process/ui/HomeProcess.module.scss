@@ -2,9 +2,7 @@
 @use 'flex' as flex;
 @use 'media' as mq;
 
-$stack-min: 821px;
 $home-tablet: 820px;
-$home-narrow: 1100px;
 $home-compact: 580px;
 $home-xs: 420px;
 
@@ -14,280 +12,228 @@ $home-xs: 420px;
 
 .process {
   @include home.surface-dark;
-  @include flex.flex($fw: wrap);
-
-  gap: clamp(48px, 7vw, 112px);
-
-  @include mq.min($stack-min) {
-    flex-wrap: nowrap;
-  }
-
-  @include mq.max($home-narrow) {
-    gap: 56px;
-  }
-
-  @include mq.max($home-tablet) {
-    flex-direction: column;
-    gap: 0;
-  }
 }
 
-.processintro {
-  flex: 0.78;
-  align-self: start;
-  min-width: 0;
-
-  @include mq.min($stack-min) {
-    position: sticky;
-    top: 88px;
-  }
-
-  @include mq.max($home-tablet) {
-    flex: 1 1 100%;
-    margin-bottom: 40px;
-  }
-}
-
-.processvisual {
+.processshell {
   @include flex.flex($fd: column);
 
-  gap: 12px;
-  width: min(100%, 380px);
-  margin-top: 32px;
-  padding: 24px;
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: var(--radius-lg);
-  background:
-    linear-gradient(145deg, rgb(255 255 255 / 7%), rgb(255 255 255 / 3%)),
-    radial-gradient(circle at top right, rgb(237 174 36 / 16%), transparent 44%);
-  box-shadow: 0 18px 50px rgb(0 0 0 / 20%);
-  backdrop-filter: blur(14px);
+  gap: 32px;
+}
 
-  @include mq.max($home-tablet) {
-    margin-top: 0;
-    margin-bottom: 24px;
-  }
-
-  @include mq.max($home-compact) {
-    width: 100%;
-    padding: 18px;
+.processheader {
+  :global(.sectionHeaderLead) {
+    max-width: 58ch;
   }
 }
 
-.processvisualtag {
-  width: fit-content;
-  padding: 8px 12px;
-  border-radius: 999px;
-  color: var(--amber);
-  font-size: var(--text-12);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  background: rgb(237 174 36 / 10%);
-}
-
-.processvisualtext {
-  margin: 0;
-  color: rgb(243 240 233 / 72%);
-  font-size: var(--text-14);
-  line-height: 1.7;
-}
-
-.processcta {
-  @include flex.flex($jc: space-between, $ai: center);
-
-  width: min(100%, 380px);
-  margin-top: 38px;
-  padding: 16px 0;
-  cursor: pointer;
-  color: var(--paper);
-  font-size: var(--text-14);
-  border: 0;
-  border-top: 1px solid rgb(255 255 255 / 22%);
-  border-bottom: 1px solid rgb(255 255 255 / 22%);
-  background: transparent;
-
-  @include mq.max($home-tablet) {
-    width: 100%;
-    margin-top: 0;
-  }
-
-  @include mq.max($home-compact) {
-    width: 100%;
-    padding: 14px 0;
-  }
-
-  @include mq.max($home-xs) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  svg {
-    transition: transform 0.3s ease;
-  }
-
-  &:hover svg {
-    transform: translateX(8px);
-  }
-}
-
-.processstepslist {
-  @include flex.flex($fd: column);
-
-  flex: 1.22;
-  gap: 16px;
-  min-width: 0;
-  padding-top: 12px;
-
-  @include mq.max($home-tablet) {
-    flex: 1 1 100%;
-    padding-top: 0;
-  }
-}
-
-.processtrack {
-  --stack-base: 88px;
-  --stack-head: 52px;
-  --stack-gap: 24px;
-  --stack-step: calc(var(--stack-head) + var(--stack-gap));
-  --stack-card-run: 32vh;
-  --stack-release: 52vh;
-
-  position: relative;
-  flex: 1.22;
-  min-width: 0;
-  height: calc(var(--stack-card-run) * 5 + var(--stack-release));
-  padding-top: 12px;
-
-  .processstep {
-    position: sticky;
-    top: calc(var(--stack-base) + var(--step-i, 0) * var(--stack-step));
-    z-index: calc(var(--step-i, 0) + 1);
-  }
-
-  &[data-stack-hold] .processstackviewport {
-    gap: 0;
-    height: var(--stack-frozen-height);
-    min-height: calc(var(--stack-step) * 4 + 11rem);
-  }
-
-  &[data-stack-hold] .processstep {
-    position: absolute;
-    top: calc(var(--step-i, 0) * var(--stack-step));
-    right: 0;
-    left: auto;
-    margin: 0;
-  }
-}
-
-.processstackviewport {
-  position: sticky;
-  top: var(--stack-base);
-
-  @include flex.flex($fd: column);
-
-  gap: var(--stack-gap);
-  width: 100%;
-}
-
-.processstackrelease {
-  height: var(--stack-release);
-  pointer-events: none;
-}
-
-.processstep {
-  position: relative;
-  width: min(100%, 680px);
-  margin-left: auto;
-
-  @include mq.max($home-narrow) {
-    width: 100%;
-  }
-
-  @include mq.max($home-tablet) {
-    width: 100%;
-    margin-left: 0;
-  }
-
-  @include mq.max($home-compact) {
-    width: 100%;
-  }
-}
-
-.processstepinner {
+.processlist {
   @include flex.flex($fd: column);
 
   gap: 18px;
-  padding: 28px 34px 30px;
+}
+
+.processcard {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.88fr) minmax(0, 1.12fr);
+  overflow: hidden;
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(160deg, rgb(27 27 26 / 92%), rgb(18 18 17 / 92%));
-  box-shadow: 0 18px 50px rgb(0 0 0 / 24%);
-  backdrop-filter: blur(14px);
-  transform-origin: top center;
-  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+  border-radius: 32px;
+  background:
+    linear-gradient(150deg, rgb(255 255 255 / 6%), rgb(255 255 255 / 2%)),
+    radial-gradient(circle at top right, rgb(237 174 36 / 12%), transparent 40%);
+  box-shadow: 0 22px 54px rgb(0 0 0 / 16%);
 
-  @include mq.max($home-compact) {
-    gap: 16px;
-    padding: 24px 20px;
+  @include mq.max($home-tablet) {
+    grid-template-columns: 1fr;
+    border-radius: 24px;
+  }
+}
+
+.processcardReverse {
+  grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+
+  .cardMedia {
+    order: 2;
   }
 
-  @include mq.max($home-xs) {
-    padding: 22px 18px;
+  .cardBody {
+    order: 1;
   }
 
-  @include mq.min($stack-min) {
-    @include mq.hover {
-      &:hover {
-        border-color: rgb(237 174 36 / 28%);
-        box-shadow: 0 22px 60px rgb(0 0 0 / 28%);
-      }
+  @include mq.max($home-tablet) {
+    grid-template-columns: 1fr;
+
+    .cardMedia,
+    .cardBody {
+      order: initial;
     }
   }
 }
 
-.processstephead {
-  @include flex.flex($jc: space-between, $ai: center);
-
-  gap: 16px;
-  min-height: 44px;
-}
-
-.processstepmark {
-  @include flex.flex($jc: center, $ai: center);
-
-  flex-shrink: 0;
-  min-width: 34px;
-  height: 34px;
-  padding: 0 10px;
-  border: 1px solid rgb(237 174 36 / 28%);
-  border-radius: 999px;
-  color: var(--amber);
-  font-size: var(--text-12);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  background: rgb(237 174 36 / 8%);
-}
-
-.processsteptitle {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: var(--text-step-title);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.05em;
+.cardMedia {
+  position: relative;
+  min-height: 320px;
 
   @include mq.max($home-compact) {
-    font-size: var(--text-card-title);
+    min-height: 240px;
   }
 }
 
-.processsteptext {
+.cardImage,
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.78) brightness(0.68);
+}
+
+.cardOverlay {
+  background:
+    linear-gradient(180deg, rgb(17 17 15 / 8%), rgb(17 17 15 / 18%)),
+    linear-gradient(0deg, rgb(17 17 15 / 68%), rgb(17 17 15 / 12%));
+}
+
+.cardBadge,
+.cardMark {
+  position: absolute;
+  z-index: 2;
+}
+
+.cardBadge {
+  top: 20px;
+  left: 20px;
+  padding: 10px 14px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 999px;
+  color: rgb(245 242 236 / 88%);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: rgb(255 255 255 / 6%);
+  backdrop-filter: blur(8px);
+}
+
+.cardMark {
+  right: 20px;
+  bottom: 20px;
+  color: rgb(245 242 236 / 92%);
+  font-family: var(--font-heading);
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+
+.cardBody {
+  @include flex.flex($fd: column);
+
+  gap: 16px;
+  padding: 26px 28px;
+
+  @include mq.max($home-compact) {
+    padding: 20px;
+  }
+}
+
+.cardKicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.cardTitle,
+.cardDetail h4 {
   margin: 0;
-  color: rgb(243 240 233 / 72%);
-  font-size: var(--text-step-description);
-  line-height: 1.8;
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--paper);
+}
+
+.cardText,
+.cardDetail p {
+  margin: 0;
+  color: rgb(243 240 233 / 74%);
+  font-size: 15px;
+  line-height: 1.66;
+}
+
+.cardDetail {
+  @include flex.flex($fd: column);
+
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid rgb(255 255 255 / 10%);
+}
+
+.cardStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding-top: 4px;
+
+  @include mq.max($home-xs) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cardStat strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--paper);
+}
+
+.cardStat span {
+  display: block;
+  margin-top: 6px;
+  color: rgb(243 240 233 / 58%);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.processcta {
+  @include flex.flex($ai: center, $jc: space-between);
+
+  gap: 14px;
+  align-self: flex-start;
+  min-height: 52px;
+  padding: 6px 6px 6px 22px;
+  cursor: pointer;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--amber);
+
+  > span {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  i {
+    @include flex.flex($jc: center, $ai: center);
+
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  @include mq.max($home-compact) {
+    width: 100%;
+    align-self: stretch;
+  }
 }

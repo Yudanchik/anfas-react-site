@@ -21,6 +21,9 @@ export default {
     '/projects/zhk-grafika',
     '/projects/verkhnekamenskaya',
     '/projects/prospekt-slavy-4',
+    '/projects/forest-akvilon',
+    '/projects/id-kudrovo',
+    '/projects/grand-house',
     '/services',
   ],
 } satisfies Config

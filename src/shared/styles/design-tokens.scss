@@ -1,0 +1,231 @@
+@use './themes/default/colors' as c;
+@use './themes/default/fonts' as f;
+@use './themes/default/spacing' as s;
+
+/*
+  Дизайн-токены Анфас.
+
+  Это единая точка управления стилем сайта:
+  - цвета и поверхности;
+  - типографика;
+  - отступы и сетка;
+  - радиусы, тени и blur;
+  - обратная совместимость со старыми переменными.
+
+  Как использовать:
+  - h1 страницы: var(--text-page-title)
+  - заголовок секции: var(--text-section-title)
+  - заголовок карточки: var(--text-card-title)
+  - обычный текст: var(--text-body)
+  - подпись или тег: var(--text-caption)
+  - карточка: var(--radius-card), var(--card-padding), var(--shadow-card)
+*/
+
+:root {
+  color: var(--ink);
+  background: var(--paper);
+
+  /* Брендовые цвета */
+  --ink: #{c.$ink};
+  --paper: #{c.$paper};
+  --paper-deep: #{c.$paper-deep};
+  --amber: #{c.$amber};
+  --sage: #{c.$sage};
+  --line: #{c.$line};
+
+  /* Семантические цвета. Используем в новом коде, когда важна роль цвета, а не конкретный оттенок. */
+  --color-text: var(--ink);
+  --color-bg: var(--paper);
+  --color-bg-muted: var(--paper-deep);
+  --color-accent: var(--amber);
+  --color-muted: var(--sage);
+  --color-line: var(--line);
+
+  /* Поверхности секций: светлое/тёмное чередование блоков. */
+  --surface-light: var(--paper);
+  --surface-dark: var(--ink);
+  --surface-fg-light: var(--ink);
+  --surface-fg-dark: var(--paper);
+  --line-on-light: var(--line);
+  --line-on-dark: rgb(255 255 255 / 16%);
+  --section-kicker: var(--amber);
+  --section-lead: color-mix(in srgb, var(--amber) 82%, var(--sage) 18%);
+
+  /* Glass-поверхности: теги, floating cards, премиальные blur-плашки. */
+  --glass-light: rgb(255 255 255 / 52%);
+  --glass-dark: rgb(22 23 19 / 46%);
+  --glass-border-light: rgb(22 23 19 / 10%);
+  --glass-border-dark: rgb(255 255 255 / 16%);
+  --glass-blur: blur(18px);
+
+  /* Шрифты */
+  --font-body: #{f.$font-body};
+  --font-heading: #{f.$font-heading};
+  --font-display: #{f.$font-heading};
+
+  /* Сырая шкала размеров. Новые размеры добавляем только если паттерн реально повторяется. */
+  --text-12: #{f.px(12)};
+  --text-14: #{f.px(14)};
+  --text-16: #{f.px(16)};
+  --text-18: #{f.px(18)};
+  --text-20: #{f.px(20)};
+  --text-22: #{f.px(22)};
+  --text-24: #{f.px(24)};
+  --text-28: #{f.px(28)};
+  --text-32: #{f.px(32)};
+  --text-36: #{f.px(36)};
+  --text-44: #{f.px(44)};
+  --text-56: #{f.px(56)};
+
+  /* Семантическая типографика. В компонентах лучше использовать именно эти токены. */
+  --text-display: var(--text-56); /* Только hero или редкие очень крупные заголовки. */
+  --text-page-title: var(--text-44); /* h1 внутренних страниц. */
+  --text-section-title: var(--text-32); /* h2 внутри секций. */
+  --text-block-title: var(--text-28); /* Крупный заголовок внутри блока или группы карточек. */
+  --text-card-title: var(--text-24); /* h3 или заголовок карточки. */
+  --text-card-title-sm: var(--text-22); /* Компактный заголовок карточки. */
+  --text-section-lead: var(--text-18); /* Лид под заголовком секции. */
+  --text-card-description: var(--text-16); /* Основной текст внутри карточки. */
+  --text-caption: var(--text-12); /* Теги, eyebrow, маленькие подписи. */
+  --text-body-sm: var(--text-14);
+  --text-body: var(--text-16);
+  --text-body-lg: var(--text-18);
+
+  /* Старые алиасы. Нужны, чтобы существующие модули не ломались при переходе на новые имена. */
+  --text-h1: var(--text-page-title);
+  --text-h2: var(--text-36);
+  --text-h3: var(--text-card-title);
+  --text-step-title: var(--text-block-title);
+  --text-step-description: var(--text-body);
+  --text-hero-lead: var(--text-section-lead);
+  --text-display-quote: var(--text-page-title);
+
+  /* Высота строки и межбуквенные интервалы */
+  --line-height-tight: 1.04;
+  --line-height-display: 0.94;
+  --line-height-body: 1.65;
+  --line-height-copy: 1.78;
+  --letter-spacing-tight: -0.045em;
+  --letter-spacing-display: -0.06em;
+  --letter-spacing-wide: 0.08em;
+  --letter-spacing-eyebrow: 0.14em;
+
+  /* Отступы и сетка */
+  --space-4: #{s.$space-4}px;
+  --space-8: #{s.$space-8}px;
+  --space-12: #{s.$space-12}px;
+  --space-16: #{s.$space-16}px;
+  --space-20: #{s.$space-20}px;
+  --space-24: #{s.$space-24}px;
+  --space-32: #{s.$space-32}px;
+  --space-40: #{s.$space-40}px;
+  --space-48: #{s.$space-48}px;
+  --space-64: #{s.$space-64}px;
+  --space-80: #{s.$space-80}px;
+  --space-96: #{s.$space-96}px;
+  --space-120: #{s.$space-120}px;
+  --page-gutter: #{s.$page-gutter};
+  --page-gutter-mobile: #{s.$page-gutter-mobile};
+  --section-pad-y: #{s.$section-pad-y};
+  --section-pad-y-tight: #{s.$section-pad-y-tight};
+  --section-gap: #{s.$section-gap};
+  --section-gap-tight: #{s.$section-gap-tight};
+  --content-max: #{s.$content-max}px;
+
+  /* Карточки, кнопки и тени */
+  --radius-sm: #{c.$radius-sm};
+  --radius-md: #{c.$radius-md};
+  --radius-lg: #{c.$radius-lg};
+  --radius-card: var(--radius-lg);
+  --radius-panel: 34px;
+  --radius-pill: 999px;
+  --card-padding: var(--space-32);
+  --card-padding-sm: var(--space-24);
+  --button-height: 56px;
+  --shadow-soft: #{c.$shadow-soft};
+  --shadow-card: 0 22px 70px rgb(22 23 19 / 7%);
+  --shadow-card-strong: 0 32px 90px rgb(22 23 19 / 14%);
+  --scroll-progress: 0;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--line-height-body);
+  letter-spacing: -0.01em;
+  font-variant-numeric: lining-nums tabular-nums;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  text-wrap: balance;
+}
+
+p,
+li,
+dd {
+  text-wrap: pretty;
+}
+
+p {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: var(--line-height-body);
+}
+
+small {
+  font-size: var(--text-caption);
+}
+
+@media (width <= 820px) {
+  :root {
+    --text-display: var(--text-44);
+    --text-page-title: var(--text-32);
+    --text-h1: var(--text-page-title);
+    --text-h2: var(--text-28);
+    --text-section-title: var(--text-28);
+    --text-block-title: var(--text-24);
+    --text-card-title: var(--text-22);
+    --text-section-lead: var(--text-16);
+    --card-padding: var(--space-24);
+  }
+}
+
+@media (width <= 480px) {
+  :root {
+    --text-page-title: var(--text-28);
+    --text-h1: var(--text-page-title);
+    --text-h2: var(--text-24);
+    --text-section-title: var(--text-24);
+    --text-card-title: var(--text-20);
+    --card-padding: var(--space-20);
+    --radius-card: 22px;
+    --radius-panel: 26px;
+  }
+}

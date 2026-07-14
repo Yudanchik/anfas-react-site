@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 
-import { company, navigation } from '@/shared/config/company'
 import { useBrief } from '@/features/brief/model/BriefContext'
+import { company, navigation } from '@/shared/config/company'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './SiteHeader.module.scss'
 
@@ -10,7 +11,13 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { openBrief } = useBrief()
   const { pathname } = useLocation()
-  const isHome = pathname === '/'
+  const isHeroPage =
+    pathname === '/' ||
+    pathname === '/services' ||
+    pathname === '/about' ||
+    pathname === '/contacts' ||
+    pathname === '/projects' ||
+    pathname.startsWith('/projects/')
 
   useEffect(() => {
     document.body.classList.toggle('menu-open', menuOpen)
@@ -20,43 +27,41 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className={`${styles.siteHeader} ${isHome ? '' : styles.isInner}`}>
-        <Link
-          className="brand"
-          to="/"
-          aria-label={`${company.name} — на главную`}
-          onClick={() => setMenuOpen(false)}
-        >
-          <span className="brand-word">анфас</span>
-          <span className="brand-caption">
-            дизайн
-            <br />и ремонт
-          </span>
-        </Link>
+      <header className={`${styles.siteHeader} ${isHeroPage ? styles.isGlass : styles.isInner}`}>
+        <PageWrapper className={styles.headerInner}>
+          <Link
+            className="brand"
+            to="/"
+            aria-label={`${company.name} — на главную`}
+            onClick={() => setMenuOpen(false)}
+          >
+            <img className="brand-logo" src="/images/anfas-logo-official.svg" alt={company.name} />
+          </Link>
 
-        <nav className={styles.desktopNav} aria-label="Основная навигация">
-          {navigation.map((item) => (
-            <NavLink key={item.to} to={item.to}>
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+          <nav className={styles.desktopNav} aria-label="Основная навигация">
+            {navigation.map((item) => (
+              <NavLink key={item.to} to={item.to}>
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
 
-        <button className={styles.headerPhone} type="button" onClick={openBrief}>
-          <span>Обсудить проект</span>
-          <b>{company.phone}</b>
-        </button>
+          <button className={styles.headerPhone} type="button" onClick={() => openBrief('general')}>
+            <span>Обсудить проект</span>
+            <b>{company.phone}</b>
+          </button>
 
-        <button
-          className={`${styles.menuButton} ${menuOpen ? styles.isOpen : ''}`}
-          type="button"
-          aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((value) => !value)}
-        >
-          <span />
-          <span />
-        </button>
+          <button
+            className={`${styles.menuButton} ${menuOpen ? styles.isOpen : ''}`}
+            type="button"
+            aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((value) => !value)}
+          >
+            <span />
+            <span />
+          </button>
+        </PageWrapper>
       </header>
 
       <div className={`${styles.mobileMenu} ${menuOpen ? styles.isOpen : ''}`} aria-hidden={!menuOpen}>

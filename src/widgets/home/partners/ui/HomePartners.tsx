@@ -1,33 +1,36 @@
-﻿import { partners } from '../model/partners.data'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
+
+import { partners } from '../model/partners.data'
 import { SectionHeader } from '../../ui'
 import { HomePartnersMarquee } from './HomePartnersMarquee'
 import styles from './HomePartners.module.scss'
 
-const firstRow = partners.slice(0, 6)
-const secondRow = partners.slice(6)
+const firstRow = partners
+const secondRow = [...partners].reverse()
 
 export function HomePartners() {
   return (
     <section className={styles.partners + ' ' + styles.sectionpad}>
-      <div className={styles.partnerslayout}>
+      <PageWrapper className={styles.partnerslayout}>
         <SectionHeader
-          number="06"
-          label="Наши партнёры"
+          className={styles.partnersheader}
+          number="07"
+          label="Партнёры и поставщики"
           title={
             <>
-              Дизайн, комплектация
+              Проверенные бренды,
               <br />
-              и <em>сильная команда</em>
+              команды и <em>комплектация без хаоса</em>
             </>
           }
-          lead="Мы работаем с архитекторами, студиями и поставщиками, которые помогают держать качество и скорость на высоком уровне. Такой круг партнёров делает процесс спокойнее и понятнее."
+          lead="Собираем ремонт квартиры под ключ вместе с архитекторами, студиями и поставщиками, которые умеют держать срок, качество и предсказуемый результат. Это даёт спокойную реализацию без лишних провалов по материалам и логистике."
         />
 
         <div className={styles.partnersrail} data-reveal>
           <HomePartnersMarquee items={firstRow} />
           <HomePartnersMarquee items={secondRow} reverse />
         </div>
-      </div>
+      </PageWrapper>
     </section>
   )
 }

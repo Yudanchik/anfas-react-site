@@ -1,5 +1,5 @@
-$font-body: 'Manrope', 'Segoe UI', sans-serif;
-$font-heading: 'Prata', georgia, serif;
+$font-body: 'Montserrat', 'Segoe UI', sans-serif;
+$font-heading: $font-body;
 
 @function px($value) {
   @return $value * 1px;

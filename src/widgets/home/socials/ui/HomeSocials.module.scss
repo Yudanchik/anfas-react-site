@@ -19,52 +19,125 @@ $home-xs: 420px;
   @include flex.flex($ai: stretch);
 
   flex-wrap: wrap;
-  gap: clamp(20px, 3.5vw, 40px);
+  gap: 32px;
 }
 
 .socialsleft {
   @include flex.flex($fd: column);
 
-  flex: 1.12;
-  gap: clamp(20px, 2.8vw, 28px);
+  flex: 1.08;
+  gap: 24px;
   min-width: min(100%, 520px);
 }
 
 .socialsintro {
-  min-width: 0;
-
   :global(.sectionHeaderLead) {
-    max-width: 54ch;
-    margin-top: 14px;
+    max-width: 58ch;
   }
 }
 
-.sociallinks {
-  @include flex.flex($fw: wrap);
+.spotlight {
+  @include flex.flex($fd: column);
 
+  gap: 18px;
+  padding: 22px 24px;
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgb(237 174 36 / 14%), transparent 38%),
+    linear-gradient(145deg, rgb(255 255 255 / 94%), rgb(255 255 255 / 86%));
+  box-shadow: 0 18px 42px rgb(22 23 19 / 8%);
+}
+
+.spotlightTop {
+  @include flex.flex($fd: column);
+
+  gap: 10px;
+}
+
+.spotlightTag {
+  width: fit-content;
+  padding: 9px 14px;
+  border-radius: 999px;
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: rgb(237 174 36 / 10%);
+}
+
+.spotlightTop strong {
+  max-width: 22ch;
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.spotlightStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.spotlightStats b {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.spotlightStats span {
+  display: block;
+  margin-top: 6px;
+  color: rgb(22 23 19 / 62%);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.sociallinks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+
+  @include mq.max($home-tablet) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .socialcard {
   @include flex.flex($jc: space-between, $ai: stretch);
 
-  flex: 1 1 calc(50% - 8px);
   gap: 16px;
-  min-width: min(100%, 240px);
+  min-height: 188px;
   padding: 24px;
-  border: 1px solid var(--section-line, var(--line));
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--section-fg, var(--ink)) 4%, transparent);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgb(237 174 36 / 10%), transparent 38%),
+    linear-gradient(145deg, rgb(255 255 255 / 94%), rgb(255 255 255 / 86%));
+  box-shadow: 0 18px 40px rgb(22 23 19 / 8%);
   color: inherit;
   text-decoration: none;
   transition:
     transform 0.25s ease,
-    border-color 0.25s ease;
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 
   &:hover {
     transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--amber) 40%, var(--line));
+    border-color: rgb(237 174 36 / 26%);
+    box-shadow: 0 22px 50px rgb(22 23 19 / 12%);
+  }
+
+  @include mq.max($home-compact) {
+    min-height: 0;
+    padding: 20px;
+    border-radius: 22px;
   }
 }
 
@@ -72,24 +145,25 @@ $home-xs: 420px;
   @include flex.flex($fd: column);
 
   flex: 1;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
 }
 
 .socialcard strong {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(24px, 2.4vw, 34px);
-  font-weight: 400;
+  font-size: 24px;
+  font-weight: 500;
   line-height: 1;
   letter-spacing: -0.04em;
+  color: var(--ink);
 }
 
 .socialcard p {
   margin: 0;
-  color: color-mix(in srgb, currentcolor 72%, transparent);
-  font-size: var(--text-body-sm);
-  line-height: 1.7;
+  color: rgb(22 23 19 / 72%);
+  font-size: 15px;
+  line-height: 1.65;
 }
 
 .socialcardaction {
@@ -97,6 +171,12 @@ $home-xs: 420px;
 
   align-self: flex-end;
   flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: 50%;
+  color: var(--ink);
+  background: rgb(255 255 255 / 72%);
 }
 
 .socialcard svg {
@@ -107,30 +187,86 @@ $home-xs: 420px;
   stroke-width: 1.5;
 }
 
+.socialsnote {
+  @include flex.flex($fd: column);
+
+  gap: 10px;
+}
+
+.metadisclaimer,
+.socialscaption {
+  max-width: 58ch;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.metadisclaimer {
+  color: rgb(22 23 19 / 58%);
+}
+
+.socialscaption {
+  color: rgb(22 23 19 / 68%);
+}
+
 .phonestage {
   @include flex.flex;
 
-  flex: 0.88;
+  flex: 0.92;
   min-width: min(100%, 360px);
 }
 
 .phonepanel {
-  @include flex.flex($jc: center, $ai: center);
+  @include flex.flex($fd: column, $jc: space-between);
 
-  flex: 1;
+  width: 100%;
   min-height: 100%;
-  padding: clamp(28px, 4vw, 40px);
-  border: 1px solid var(--section-line, var(--line));
-  border-radius: var(--radius-lg);
+  gap: 24px;
+  padding: 28px;
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: 32px;
   background:
-    radial-gradient(circle at top right, rgb(237 174 36 / 20%), transparent 42%),
-    linear-gradient(145deg, rgb(22 23 19 / 4%), rgb(22 23 19 / 2%));
-  box-shadow: var(--shadow-soft);
+    radial-gradient(circle at top right, rgb(237 174 36 / 20%), transparent 38%),
+    linear-gradient(150deg, rgb(22 23 19 / 7%), rgb(22 23 19 / 3%));
+  box-shadow: 0 22px 56px rgb(22 23 19 / 10%);
+
+  @include mq.max($home-compact) {
+    gap: 20px;
+    padding: 20px;
+    border-radius: 24px;
+  }
+}
+
+.phonepanelHeader {
+  @include flex.flex($fd: column);
+
+  gap: 10px;
+}
+
+.phonepanelHeader p {
+  max-width: 36ch;
+  margin: 0;
+  color: rgb(22 23 19 / 72%);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.phonepanelTag {
+  width: fit-content;
+  padding: 9px 14px;
+  border-radius: 999px;
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: rgb(237 174 36 / 10%);
 }
 
 .phoneshell {
   position: relative;
-  width: min(100%, 300px);
+  width: min(100%, 304px);
+  margin-inline: auto;
 }
 
 .phonemockup {
@@ -161,12 +297,22 @@ $home-xs: 420px;
   object-fit: cover;
 }
 
-.metadisclaimer {
-  max-width: 54ch;
-  margin: 4px 0 0;
-  color: color-mix(in srgb, var(--section-fg, var(--ink)) 52%, transparent);
-  font-size: var(--text-12);
-  line-height: 1.55;
+.phonepanelFooter {
+  @include flex.flex($fw: wrap);
+
+  gap: 10px;
+}
+
+.phonepanelFooter span {
+  padding: 10px 14px;
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(22 23 19 / 62%);
+  background: rgb(255 255 255 / 54%);
 }
 
 @include mq.max($home-wide) {
@@ -183,37 +329,15 @@ $home-xs: 420px;
   .phonestage {
     order: -1;
   }
-
-  .phonepanel {
-    min-height: auto;
-    padding: clamp(24px, 5vw, 32px);
-  }
-
-  .phoneshell {
-    width: min(100%, 260px);
-    margin: 0 auto;
-  }
-}
-
-@include mq.max($home-tablet) {
-  .socialcard {
-    flex: 1 1 100%;
-  }
-}
-
-@include mq.max($home-compact) {
-  .socialcard {
-    padding: 20px;
-  }
 }
 
 @include mq.max($home-xs) {
-  .socialcard {
-    padding: 18px;
+  .spotlightStats {
+    grid-template-columns: 1fr;
   }
 
-  .sociallinks {
-    gap: 12px;
+  .socialcard {
+    padding: 18px;
   }
 
   .socialcard strong {

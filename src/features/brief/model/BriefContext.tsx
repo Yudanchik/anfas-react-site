@@ -1,22 +1,33 @@
 import { createContext, useContext, useMemo, useState, type PropsWithChildren } from 'react'
+import { briefServiceOptions, type BriefService } from './brief.form'
 
 type BriefContextValue = {
   isOpen: boolean
-  openBrief: () => void
+  presetService: BriefService
+  openBrief: (service?: BriefService) => void
   closeBrief: () => void
 }
 
 const BriefContext = createContext<BriefContextValue | null>(null)
 
+function isBriefService(value: unknown): value is BriefService {
+  return briefServiceOptions.some((option) => option.value === value)
+}
+
 export function BriefProvider({ children }: PropsWithChildren) {
   const [isOpen, setIsOpen] = useState(false)
+  const [presetService, setPresetService] = useState<BriefService>('general')
   const value = useMemo(
     () => ({
       isOpen,
-      openBrief: () => setIsOpen(true),
+      presetService,
+      openBrief: (service: BriefService = 'general') => {
+        setPresetService(isBriefService(service) ? service : 'general')
+        setIsOpen(true)
+      },
       closeBrief: () => setIsOpen(false),
     }),
-    [isOpen],
+    [isOpen, presetService],
   )
 
   return <BriefContext.Provider value={value}>{children}</BriefContext.Provider>
