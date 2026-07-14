@@ -1,21 +1,24 @@
-.modal {
+@use 'flex' as flex;
+@use 'media' as mq;
+
+.briefModal {
   position: fixed;
   z-index: 100;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  @include flex.flex($jc: center, $ai: center);
+
   padding: 20px;
   overflow: hidden;
   visibility: hidden;
   transition: visibility 0.45s;
 }
 
-.open {
+.briefModal_open {
   visibility: visible;
 }
 
-.backdrop {
+.briefModal__backdrop {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -29,15 +32,16 @@
   transition: opacity 0.45s ease;
 }
 
-.open .backdrop {
+.briefModal_open .briefModal__backdrop {
   opacity: 1;
 }
 
-.panel {
+.briefModal__panel {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
+
+  @include flex.flex($fd: column);
+
   width: min(100%, 500px);
   overflow: visible;
   padding: 26px;
@@ -66,12 +70,12 @@
   }
 }
 
-.open .panel {
+.briefModal_open .briefModal__panel {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
 
-.close {
+.briefModal__close {
   position: absolute;
   z-index: 2;
   top: 18px;
@@ -88,23 +92,23 @@
   &:hover {
     background: #fff;
   }
-
-  span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 14px;
-    height: 1px;
-    background: var(--ink);
-    transform: translate(-50%, -50%) rotate(45deg);
-  }
-
-  span:last-child {
-    transform: translate(-50%, -50%) rotate(-45deg);
-  }
 }
 
-.eyebrow {
+.briefModal__closeLine {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 1px;
+  background: var(--ink);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.briefModal__closeLine:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.briefModal__eyebrow {
   margin: 0 0 8px;
   font-size: 12px;
   font-weight: 600;
@@ -113,7 +117,7 @@
   color: rgb(22 23 19 / 54%);
 }
 
-.title {
+.briefModal__title {
   margin: 0;
   max-width: 390px;
   padding-right: 52px;
@@ -124,7 +128,7 @@
   letter-spacing: -0.05em;
 }
 
-.lead {
+.briefModal__lead {
   max-width: 390px;
   margin: 12px 0 16px;
   color: rgb(22 23 19 / 68%);
@@ -132,85 +136,83 @@
   line-height: 1.5;
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
+.briefModal__form {
+  @include flex.flex($fd: column);
+
   gap: 14px;
 }
 
-.selected {
+.briefModal__selected {
   display: grid;
   gap: 4px;
   padding: 12px 14px;
   border: 1px solid rgb(22 23 19 / 10%);
   border-radius: 18px;
   background: rgb(255 255 255 / 58%);
-
-  span {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--amber);
-  }
-
-  strong {
-    color: var(--ink);
-    font-size: 17px;
-    font-weight: 600;
-    line-height: 1.15;
-  }
-
-  small {
-    color: rgb(22 23 19 / 58%);
-    font-size: 12px;
-    line-height: 1.45;
-  }
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
+.briefModal__selectedLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.briefModal__selectedValue {
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.briefModal__selectedNote {
+  color: rgb(22 23 19 / 58%);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.briefModal__field {
+  @include flex.flex($fd: column);
+
   gap: 5px;
   opacity: 0;
   transform: translateY(12px);
-
-  > span {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgb(22 23 19 / 56%);
-  }
-
-  input,
-  select {
-    width: 100%;
-    min-height: 50px;
-    padding: 0 2px;
-    color: var(--ink);
-    font-family: var(--font-body);
-    font-size: 18px;
-    border: 0;
-    border-bottom: 1px solid var(--line);
-    border-radius: 0;
-    outline: none;
-    background: transparent;
-    transition: border-color 0.25s ease;
-  }
-
-  input:focus,
-  select:focus {
-    border-color: var(--amber);
-  }
 }
 
-.error {
+.briefModal__fieldLabel {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(22 23 19 / 56%);
+}
+
+.briefModal__fieldControl {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 2px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 18px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  transition: border-color 0.25s ease;
+}
+
+.briefModal__fieldControl:focus {
+  border-color: var(--amber);
+}
+
+.briefModal__error {
   color: #a43c27;
   font-size: 12px;
 }
 
-.open .field {
+.briefModal_open .briefModal__field {
   animation: field-in 0.5s cubic-bezier(0.2, 0.7, 0, 1) forwards;
 
   &:nth-child(1) {
@@ -222,7 +224,7 @@
   }
 }
 
-.submit {
+.briefModal__submit {
   display: inline-flex;
   align-items: center;
   gap: 14px;
@@ -244,19 +246,18 @@
   }
 }
 
-.open .submit {
+.briefModal_open .briefModal__submit {
   animation: field-in 0.5s cubic-bezier(0.2, 0.7, 0, 1) 0.2s forwards;
 }
 
-.submit > span {
+.briefModal__submitText {
   font-size: var(--text-body-sm);
   font-weight: 600;
 }
 
-.submit i {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.briefModal__submitIcon {
+  @include flex.flex($jc: center, $ai: center);
+
   width: 38px;
   height: 38px;
   margin-left: auto;
@@ -265,61 +266,58 @@
   background: #fff;
 }
 
-.privacy {
+.briefModal__privacy {
   max-width: 420px;
   color: rgb(22 23 19 / 50%);
   font-size: 12px;
   line-height: 1.45;
 }
 
-.success {
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  justify-content: center;
+.briefModal__success {
+  @include flex.flex($fd: column, $jc: center, $ai: flex-start);
+
   flex: 1;
   padding: 24px 0;
+}
 
-  > span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    font-size: var(--text-body-lg);
-    color: var(--paper);
-    border-radius: 50%;
-    background: var(--amber);
-  }
+.briefModal__successIcon {
+  @include flex.flex($jc: center, $ai: center);
 
-  h2 {
-    margin: 24px 0 12px;
-    font-family: var(--font-heading);
-    font-size: 42px;
-    font-weight: 400;
-    line-height: 0.98;
-    letter-spacing: -0.04em;
-  }
+  width: 56px;
+  height: 56px;
+  font-size: var(--text-body-lg);
+  color: var(--paper);
+  border-radius: 50%;
+  background: var(--amber);
+}
 
-  p {
-    max-width: 100%;
-    margin: 0;
-    font-size: var(--text-body-sm);
-    line-height: var(--line-height-body);
-    color: rgb(22 23 19 / 72%);
-  }
+.briefModal__successTitle {
+  margin: 24px 0 12px;
+  font-family: var(--font-heading);
+  font-size: 42px;
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
 
-  button {
-    margin-top: 20px;
-    padding: 12px 24px;
-    cursor: pointer;
-    font-size: var(--text-body-sm);
-    font-weight: 600;
-    color: var(--paper);
-    border: 0;
-    border-radius: 40px;
-    background: var(--ink);
-  }
+.briefModal__successText {
+  max-width: 100%;
+  margin: 0;
+  font-size: var(--text-body-sm);
+  line-height: var(--line-height-body);
+  color: rgb(22 23 19 / 72%);
+}
+
+.briefModal__successButton {
+  margin-top: 20px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  color: var(--paper);
+  border: 0;
+  border-radius: 40px;
+  background: var(--ink);
 }
 
 @keyframes field-in {
@@ -329,59 +327,58 @@
   }
 }
 
-@media (width <= 580px) {
-  .modal {
+@include mq.max(580px) {
+  .briefModal {
     padding: 10px;
   }
 
-  .panel {
+  .briefModal__panel {
     width: 100%;
     padding: 20px 16px 18px;
     border-radius: 24px;
     transform: translateY(24px);
   }
 
-  .open .panel {
+  .briefModal_open .briefModal__panel {
     transform: translateY(0);
   }
 
-  .title {
+  .briefModal__title {
     max-width: 270px;
     font-size: 34px;
     line-height: 0.98;
     padding-right: 48px;
   }
 
-  .lead {
+  .briefModal__lead {
     max-width: 100%;
     font-size: 14px;
     line-height: 1.45;
   }
 
-  .field input,
-  .field select {
+  .briefModal__fieldControl {
     min-height: 48px;
     font-size: 16px;
   }
 
-  .selected {
+  .briefModal__selected {
     padding: 10px 12px;
     border-radius: 16px;
   }
 
-  .submit > span {
+  .briefModal__submitText {
     font-size: 13px;
   }
 
-  .privacy {
+  .briefModal__privacy {
     font-size: 11px;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .panel,
-  .field,
-  .submit {
+@include mq.motion-reduce {
+  .briefModal__panel,
+  .briefModal__field,
+  .briefModal__submit {
     opacity: 1;
     transform: none;
     animation: none;

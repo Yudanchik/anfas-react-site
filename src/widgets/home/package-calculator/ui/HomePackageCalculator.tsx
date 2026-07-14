@@ -123,8 +123,8 @@ export function HomePackageCalculator({
   }
 
   return (
-    <section id="calculator" className={styles.calculator}>
-      <PageWrapper className={styles.layout}>
+    <section id="calculator" className={styles.packageCalculator}>
+      <PageWrapper className={styles.packageCalculator__layout}>
         <SectionHeader
           number="06"
           label={packageCalculator.eyebrow}
@@ -138,10 +138,12 @@ export function HomePackageCalculator({
           lead={packageCalculator.lead}
         />
 
-        <div className={styles.switchRow}>
+        <div className={styles.packageCalculator__switchRow}>
           {modes.map((item) => (
             <button
-              className={`${styles.switchButton} ${mode === item.value ? styles.switchButtonActive : ''}`}
+              className={`${styles.packageCalculator__switchButton} ${
+                mode === item.value ? styles.packageCalculator__switchButton_active : ''
+              }`}
               key={item.value}
               type="button"
               onClick={() => setMode(item.value)}
@@ -151,27 +153,29 @@ export function HomePackageCalculator({
           ))}
         </div>
 
-        <div className={styles.grid}>
-          <div className={styles.form} data-reveal>
-            <div className={styles.formHead}>
-              <p className={styles.formKicker}>
+        <div className={styles.packageCalculator__grid}>
+          <div className={styles.packageCalculator__form} data-reveal>
+            <div className={styles.packageCalculator__formHead}>
+              <p className={styles.packageCalculator__formKicker}>
                 {mode === 'package' ? 'Фиксируем цену' : 'Считаем ориентир по смете'}
               </p>
-              <p className={styles.formHint}>
+              <p className={styles.packageCalculator__formHint}>
                 {mode === 'package'
                   ? 'В пакетном режиме считаем только площадь и выбранную комплектацию. Это быстрый и понятный ориентир.'
                   : 'В индивидуальном режиме добавляем параметры квартиры, уровень отделки и дополнительные работы.'}
               </p>
             </div>
 
-            <div className={styles.formGroup}>
-              <div className={styles.labelRow}>
-                <label htmlFor="calculator-area">Площадь квартиры</label>
-                <span className={styles.helper}>{area} м²</span>
+            <div className={styles.packageCalculator__formGroup}>
+              <div className={styles.packageCalculator__labelRow}>
+                <label className={styles.packageCalculator__label} htmlFor="calculator-area">
+                  Площадь квартиры
+                </label>
+                <span className={styles.packageCalculator__helper}>{area} м²</span>
               </div>
               <input
                 id="calculator-area"
-                className={styles.range}
+                className={styles.packageCalculator__range}
                 max={130}
                 min={35}
                 step={1}
@@ -179,10 +183,12 @@ export function HomePackageCalculator({
                 value={area}
                 onChange={(event) => setArea(Number(event.target.value))}
               />
-              <div className={styles.areaMarks}>
+              <div className={styles.packageCalculator__areaMarks}>
                 {packageCalculator.areaMarks.map((value) => (
                   <button
-                    className={`${styles.areaMark} ${area === value ? styles.areaMarkActive : ''}`}
+                    className={`${styles.packageCalculator__areaMark} ${
+                      area === value ? styles.packageCalculator__areaMark_active : ''
+                    }`}
                     key={value}
                     type="button"
                     onClick={() => setArea(value)}
@@ -193,54 +199,58 @@ export function HomePackageCalculator({
               </div>
             </div>
 
-            <fieldset className={styles.formGroup}>
-              <legend>Тип объекта</legend>
-              <div className={styles.typeGrid}>
+            <fieldset className={styles.packageCalculator__formGroup}>
+              <legend className={styles.packageCalculator__legend}>Тип объекта</legend>
+              <div className={styles.packageCalculator__typeGrid}>
                 {packageCalculator.propertyTypes.map((option) => (
                   <button
-                    className={`${styles.typeCard} ${
-                      propertyType === option.value ? styles.typeCardActive : ''
+                    className={`${styles.packageCalculator__typeCard} ${
+                      propertyType === option.value ? styles.packageCalculator__typeCard_active : ''
                     }`}
                     key={option.value}
                     type="button"
                     onClick={() => setPropertyType(option.value)}
                   >
-                    <span className={styles.typeCardLabel}>{option.label}</span>
-                    <span className={styles.typeCardHelper}>{option.helper}</span>
+                    <span className={styles.packageCalculator__typeCardLabel}>{option.label}</span>
+                    <span className={styles.packageCalculator__typeCardHelper}>{option.helper}</span>
                   </button>
                 ))}
               </div>
             </fieldset>
 
             {mode === 'package' ? (
-              <fieldset className={styles.formGroup}>
-                <legend>Вариант комплектации</legend>
-                <div className={styles.variantGrid}>
+              <fieldset className={styles.packageCalculator__formGroup}>
+                <legend className={styles.packageCalculator__legend}>Вариант комплектации</legend>
+                <div className={styles.packageCalculator__variantGrid}>
                   {packageCalculator.packageVariants.map((variant) => (
                     <button
-                      className={`${styles.variantCard} ${
-                        packageVariant === variant.value ? styles.variantCardActive : ''
+                      className={`${styles.packageCalculator__variantCard} ${
+                        packageVariant === variant.value ? styles.packageCalculator__variantCard_active : ''
                       }`}
                       key={variant.value}
                       type="button"
                       onClick={() => setPackageVariant(variant.value)}
                     >
-                      <span className={styles.variantCardLabel}>{variant.label}</span>
-                      <span className={styles.variantCardHelper}>{variant.helper}</span>
-                      <strong className={styles.variantCardRate}>{formatMoney(variant.ratePerM2)} / м²</strong>
+                      <span className={styles.packageCalculator__variantCardLabel}>{variant.label}</span>
+                      <span className={styles.packageCalculator__variantCardHelper}>{variant.helper}</span>
+                      <strong className={styles.packageCalculator__variantCardRate}>
+                        {formatMoney(variant.ratePerM2)} / м²
+                      </strong>
                     </button>
                   ))}
                 </div>
               </fieldset>
             ) : (
               <>
-                <div className={styles.compactGrid}>
-                  <fieldset className={styles.formGroup}>
-                    <legend>Уровень отделки</legend>
-                    <div className={styles.choiceGrid}>
+                <div className={styles.packageCalculator__compactGrid}>
+                  <fieldset className={styles.packageCalculator__formGroup}>
+                    <legend className={styles.packageCalculator__legend}>Уровень отделки</legend>
+                    <div className={styles.packageCalculator__choiceGrid}>
                       {packageCalculator.finishLevels.map((option) => (
                         <button
-                          className={`${styles.choiceButton} ${finish === option.value ? styles.choiceButtonActive : ''}`}
+                          className={`${styles.packageCalculator__choiceButton} ${
+                            finish === option.value ? styles.packageCalculator__choiceButton_active : ''
+                          }`}
                           key={option.value}
                           type="button"
                           onClick={() => setFinish(option.value)}
@@ -251,12 +261,14 @@ export function HomePackageCalculator({
                     </div>
                   </fieldset>
 
-                  <fieldset className={styles.formGroup}>
-                    <legend>Сложность проекта</legend>
-                    <div className={styles.choiceGrid}>
+                  <fieldset className={styles.packageCalculator__formGroup}>
+                    <legend className={styles.packageCalculator__legend}>Сложность проекта</legend>
+                    <div className={styles.packageCalculator__choiceGrid}>
                       {packageCalculator.complexityLevels.map((option) => (
                         <button
-                          className={`${styles.choiceButton} ${complexity === option.value ? styles.choiceButtonActive : ''}`}
+                          className={`${styles.packageCalculator__choiceButton} ${
+                            complexity === option.value ? styles.packageCalculator__choiceButton_active : ''
+                          }`}
                           key={option.value}
                           type="button"
                           onClick={() => setComplexity(option.value)}
@@ -268,20 +280,21 @@ export function HomePackageCalculator({
                   </fieldset>
                 </div>
 
-                <fieldset className={styles.formGroup}>
-                  <legend>Дополнительные работы</legend>
-                  <div className={styles.optionGrid}>
+                <fieldset className={styles.packageCalculator__formGroup}>
+                  <legend className={styles.packageCalculator__legend}>Дополнительные работы</legend>
+                  <div className={styles.packageCalculator__optionGrid}>
                     {visibleOptions.map((option) => (
-                      <label className={styles.optionCard} key={option.value}>
-                        <div className={styles.optionCardHeader}>
+                      <label className={styles.packageCalculator__optionCard} key={option.value}>
+                        <div className={styles.packageCalculator__optionCardHeader}>
                           <input
+                            className={styles.packageCalculator__optionCheckbox}
                             checked={selectedOptions.includes(option.value)}
                             type="checkbox"
                             onChange={() => toggleOption(option.value)}
                           />
-                          <span>{option.label}</span>
+                          <span className={styles.packageCalculator__optionLabel}>{option.label}</span>
                         </div>
-                        <small>{option.helper}</small>
+                        <small className={styles.packageCalculator__optionHelper}>{option.helper}</small>
                       </label>
                     ))}
                   </div>
@@ -290,37 +303,37 @@ export function HomePackageCalculator({
             )}
           </div>
 
-          <aside className={styles.result} data-reveal>
-            <div className={styles.resultTop}>
-              <p className={styles.resultEyebrow}>{estimate.label}</p>
-              <p className={styles.resultSummary}>{estimate.summary}</p>
+          <aside className={styles.packageCalculator__result} data-reveal>
+            <div className={styles.packageCalculator__resultTop}>
+              <p className={styles.packageCalculator__resultEyebrow}>{estimate.label}</p>
+              <p className={styles.packageCalculator__resultSummary}>{estimate.summary}</p>
             </div>
 
-            <div className={styles.resultPanel}>
-              <span className={styles.resultCaption}>{estimate.priceLabel}</span>
-              <strong className={styles.resultPrice}>
+            <div className={styles.packageCalculator__resultPanel}>
+              <span className={styles.packageCalculator__resultCaption}>{estimate.priceLabel}</span>
+              <strong className={styles.packageCalculator__resultPrice}>
                 {estimate.mode === 'package'
                   ? formatMoney(estimate.total)
                   : `${formatMoney(estimate.rangeMin)} — ${formatMoney(estimate.rangeMax)}`}
               </strong>
-              <div className={styles.resultMetaLine}>
+              <div className={styles.packageCalculator__resultMetaLine}>
                 <span>{estimate.rateText}</span>
                 <span>{estimate.note}</span>
               </div>
             </div>
 
-            <div className={styles.metrics}>
-              <div className={styles.metric}>
-                <span>Площадь</span>
-                <strong>{area} м²</strong>
+            <div className={styles.packageCalculator__metrics}>
+              <div className={styles.packageCalculator__metric}>
+                <span className={styles.packageCalculator__metricLabel}>Площадь</span>
+                <strong className={styles.packageCalculator__metricValue}>{area} м²</strong>
               </div>
-              <div className={styles.metric}>
-                <span>Срок</span>
-                <strong>{estimate.durationText}</strong>
+              <div className={styles.packageCalculator__metric}>
+                <span className={styles.packageCalculator__metricLabel}>Срок</span>
+                <strong className={styles.packageCalculator__metricValue}>{estimate.durationText}</strong>
               </div>
-              <div className={styles.metric}>
-                <span>Формат</span>
-                <strong>
+              <div className={styles.packageCalculator__metric}>
+                <span className={styles.packageCalculator__metricLabel}>Формат</span>
+                <strong className={styles.packageCalculator__metricValue}>
                   {mode === 'package'
                     ? `${selectedPackage.label} • ${propertyLabels[propertyType]}`
                     : `${propertyLabels[propertyType]} • ${finishLabels[finish]}`}
@@ -328,17 +341,19 @@ export function HomePackageCalculator({
               </div>
             </div>
 
-            <ul className={styles.notes}>
+            <ul className={styles.packageCalculator__notes}>
               {packageCalculator.notes.map((note) => (
-                <li key={note}>{note}</li>
+                <li className={styles.packageCalculator__note} key={note}>
+                  {note}
+                </li>
               ))}
             </ul>
 
-            <div className={styles.actions}>
-              <button className={styles.button} type="button" onClick={() => onOpenBrief(mode)}>
+            <div className={styles.packageCalculator__actions}>
+              <button className={styles.packageCalculator__button} type="button" onClick={() => onOpenBrief(mode)}>
                 Получить расчёт
               </button>
-              <button className={styles.buttonAlt} type="button" onClick={() => onOpenBrief(mode)}>
+              <button className={styles.packageCalculator__buttonAlt} type="button" onClick={() => onOpenBrief(mode)}>
                 Обсудить формат
               </button>
             </div>

@@ -6,7 +6,7 @@ $home-tablet: 820px;
 $home-compact: 580px;
 $home-xs: 420px;
 
-.sectionpad {
+.process_sectionPad {
   @include home.section-pad;
 }
 
@@ -14,25 +14,25 @@ $home-xs: 420px;
   @include home.surface-dark;
 }
 
-.processshell {
+.process__shell {
   @include flex.flex($fd: column);
 
   gap: 32px;
 }
 
-.processheader {
+.process__header {
   :global(.sectionHeaderLead) {
     max-width: 58ch;
   }
 }
 
-.processlist {
+.process__list {
   @include flex.flex($fd: column);
 
   gap: 18px;
 }
 
-.processcard {
+.process__card {
   display: grid;
   grid-template-columns: minmax(320px, 0.88fr) minmax(0, 1.12fr);
   overflow: hidden;
@@ -49,28 +49,28 @@ $home-xs: 420px;
   }
 }
 
-.processcardReverse {
+.process__card_reverse {
   grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
 
-  .cardMedia {
+  .process__cardMedia {
     order: 2;
   }
 
-  .cardBody {
+  .process__cardBody {
     order: 1;
   }
 
   @include mq.max($home-tablet) {
     grid-template-columns: 1fr;
 
-    .cardMedia,
-    .cardBody {
+    .process__cardMedia,
+    .process__cardBody {
       order: initial;
     }
   }
 }
 
-.cardMedia {
+.process__cardMedia {
   position: relative;
   min-height: 320px;
 
@@ -79,32 +79,32 @@ $home-xs: 420px;
   }
 }
 
-.cardImage,
-.cardOverlay {
+.process__cardImage,
+.process__cardOverlay {
   position: absolute;
   inset: 0;
 }
 
-.cardImage {
+.process__cardImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
   filter: saturate(0.78) brightness(0.68);
 }
 
-.cardOverlay {
+.process__cardOverlay {
   background:
     linear-gradient(180deg, rgb(17 17 15 / 8%), rgb(17 17 15 / 18%)),
     linear-gradient(0deg, rgb(17 17 15 / 68%), rgb(17 17 15 / 12%));
 }
 
-.cardBadge,
-.cardMark {
+.process__cardBadge,
+.process__cardMark {
   position: absolute;
   z-index: 2;
 }
 
-.cardBadge {
+.process__cardBadge {
   top: 20px;
   left: 20px;
   padding: 10px 14px;
@@ -119,7 +119,7 @@ $home-xs: 420px;
   backdrop-filter: blur(8px);
 }
 
-.cardMark {
+.process__cardMark {
   right: 20px;
   bottom: 20px;
   color: rgb(245 242 236 / 92%);
@@ -129,7 +129,7 @@ $home-xs: 420px;
   letter-spacing: -0.05em;
 }
 
-.cardBody {
+.process__cardBody {
   @include flex.flex($fd: column);
 
   gap: 16px;
@@ -140,7 +140,7 @@ $home-xs: 420px;
   }
 }
 
-.cardKicker {
+.process__cardKicker {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -148,8 +148,8 @@ $home-xs: 420px;
   color: var(--amber);
 }
 
-.cardTitle,
-.cardDetail h4 {
+.process__cardTitle,
+.process__cardDetailTitle {
   margin: 0;
   font-family: var(--font-heading);
   font-size: 24px;
@@ -159,15 +159,15 @@ $home-xs: 420px;
   color: var(--paper);
 }
 
-.cardText,
-.cardDetail p {
+.process__cardText,
+.process__cardDetailText {
   margin: 0;
   color: rgb(243 240 233 / 74%);
   font-size: 15px;
   line-height: 1.66;
 }
 
-.cardDetail {
+.process__cardDetail {
   @include flex.flex($fd: column);
 
   gap: 10px;
@@ -175,7 +175,7 @@ $home-xs: 420px;
   border-top: 1px solid rgb(255 255 255 / 10%);
 }
 
-.cardStats {
+.process__cardStats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
@@ -186,7 +186,7 @@ $home-xs: 420px;
   }
 }
 
-.cardStat strong {
+.process__cardStatValue {
   display: block;
   font-family: var(--font-heading);
   font-size: 24px;
@@ -196,7 +196,7 @@ $home-xs: 420px;
   color: var(--paper);
 }
 
-.cardStat span {
+.process__cardStatLabel {
   display: block;
   margin-top: 6px;
   color: rgb(243 240 233 / 58%);
@@ -204,7 +204,7 @@ $home-xs: 420px;
   line-height: 1.5;
 }
 
-.processcta {
+.process__cta {
   @include flex.flex($ai: center, $jc: space-between);
 
   gap: 14px;
@@ -217,23 +217,23 @@ $home-xs: 420px;
   color: var(--ink);
   background: var(--amber);
 
-  > span {
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  i {
-    @include flex.flex($jc: center, $ai: center);
-
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    color: var(--ink);
-    background: var(--paper);
-  }
-
   @include mq.max($home-compact) {
     width: 100%;
     align-self: stretch;
   }
+}
+
+.process__ctaText {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.process__ctaIcon {
+  @include flex.flex($jc: center, $ai: center);
+
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--paper);
 }

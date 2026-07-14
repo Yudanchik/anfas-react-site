@@ -1,3 +1,6 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+
 .page {
   padding: var(--section-gap-tight) 0 var(--section-gap);
   background: var(--paper);
@@ -93,8 +96,8 @@
 }
 
 .heroActions {
-  display: flex;
-  flex-wrap: wrap;
+  @include flex.flex($fw: wrap);
+
   gap: 12px;
   margin-top: 30px;
 }
@@ -262,8 +265,8 @@
 }
 
 .eyebrow {
-  display: flex;
-  align-items: center;
+  @include flex.flex($ai: center);
+
   gap: 12px;
   margin: 0 0 30px;
   font-size: var(--text-12);
@@ -303,8 +306,8 @@
 }
 
 .grid {
-  display: flex;
-  flex-wrap: wrap;
+  @include flex.flex($fw: wrap);
+
   gap: 60px 24px;
   margin-top: 90px;
 }
@@ -333,9 +336,8 @@
 }
 
 .cardHeader {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  @include flex.flex($ai: flex-end, $jc: space-between);
+
   gap: 30px;
   padding: 20px 0;
   border-bottom: 1px solid var(--line);
@@ -362,7 +364,8 @@
 }
 
 .content {
-  display: flex;
+  @include flex.flex;
+
   gap: 8vw;
   margin-top: 90px;
   padding-top: 40px;
@@ -399,8 +402,8 @@
 }
 
 .buttonRow {
-  display: flex;
-  flex-wrap: wrap;
+  @include flex.flex($fw: wrap);
+
   gap: 12px;
   margin-top: 34px;
 
@@ -667,8 +670,9 @@
 
 .contactCard {
   position: relative;
-  display: flex;
-  flex-direction: column;
+
+  @include flex.flex($fd: column);
+
   min-height: 300px;
   color: inherit;
   border: 1px solid rgb(255 255 255 / 12%);
@@ -726,8 +730,8 @@
 }
 
 .contactDarkCard {
-  display: flex;
-  flex-direction: column;
+  @include flex.flex($fd: column);
+
   min-height: 420px;
   padding: var(--card-padding);
   color: var(--paper);
@@ -781,8 +785,8 @@
 }
 
 .contactMapCard {
-  display: flex;
-  flex-direction: column;
+  @include flex.flex($fd: column);
+
   min-height: 420px;
   position: relative;
   overflow: hidden;
@@ -944,9 +948,8 @@
   }
 
   nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    @include flex.flex($fw: wrap, $jc: flex-end);
+
     gap: var(--space-8);
   }
 
@@ -1089,8 +1092,8 @@
 }
 
 .projectIntroTags {
-  display: flex;
-  flex-wrap: wrap;
+  @include flex.flex($fw: wrap);
+
   gap: 10px;
   margin-top: 18px;
 
@@ -1192,9 +1195,8 @@
 }
 
 .projectsIntro {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  @include flex.flex($ai: flex-end, $jc: space-between);
+
   gap: 28px;
   margin-top: 10px;
   padding-bottom: 28px;
@@ -1278,9 +1280,9 @@
 }
 
 .projectBody {
-  display: flex;
+  @include flex.flex($fd: column);
+
   flex: 1;
-  flex-direction: column;
   gap: 18px;
   padding: 22px;
 }
@@ -1366,8 +1368,8 @@
 }
 
 .moreRow {
-  display: flex;
-  justify-content: center;
+  @include flex.flex($jc: center);
+
   margin-top: 28px;
 }
 
@@ -1399,8 +1401,8 @@
 }
 
 .projectsRailMeta {
-  display: flex;
-  flex-wrap: wrap;
+  @include flex.flex($fw: wrap);
+
   gap: 10px;
   margin-top: 18px;
 
@@ -1422,8 +1424,8 @@
 }
 
 .projectsRailControls {
-  display: flex;
-  justify-content: space-between;
+  @include flex.flex($jc: space-between);
+
   gap: 12px;
   margin-top: 28px;
   margin-bottom: 18px;
@@ -1718,7 +1720,7 @@
   line-height: 1;
 }
 
-@media (width <= 700px) {
+@include mq.max(700px) {
   .page,
   .heroPage {
     padding: 76px 0 96px;
@@ -1950,7 +1952,7 @@
   }
 }
 
-@media (width <= 420px) {
+@include mq.max(420px) {
   .page,
   .heroPage,
   .projectHero {

@@ -42,21 +42,24 @@ function FooterAccordion({ title, children }: { title: string; children: ReactNo
   const panelId = useId()
 
   return (
-    <div className={styles.accordion}>
+    <div className={styles.siteFooter__accordion}>
       <button
         type="button"
-        className={styles.accordionTrigger}
+        className={styles.siteFooter__accordionTrigger}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
       >
         <span>{title}</span>
         <i
-          className={styles.accordionIcon + (open ? ` ${styles.accordionIconOpen}` : '')}
+          className={
+            styles.siteFooter__accordionIcon +
+            (open ? ` ${styles.siteFooter__accordionIcon_open}` : '')
+          }
           aria-hidden="true"
         />
       </button>
-      <div className={styles.accordionPanel} id={panelId} hidden={!open}>
+      <div className={styles.siteFooter__accordionPanel} id={panelId} hidden={!open}>
         {children}
       </div>
     </div>
@@ -65,18 +68,22 @@ function FooterAccordion({ title, children }: { title: string; children: ReactNo
 
 function FooterContactCards() {
   return (
-    <div className={styles.contactCards}>
-      <div>
-        <span>Телефон</span>
-        <a href={company.phoneHref}>{company.phone}</a>
+    <div className={styles.siteFooter__contactCards}>
+      <div className={styles.siteFooter__contactCard}>
+        <span className={styles.siteFooter__contactLabel}>Телефон</span>
+        <a className={styles.siteFooter__contactValue} href={company.phoneHref}>
+          {company.phone}
+        </a>
       </div>
-      <div>
-        <span>Почта</span>
-        <a href={company.emailHref}>{company.email}</a>
+      <div className={styles.siteFooter__contactCard}>
+        <span className={styles.siteFooter__contactLabel}>Почта</span>
+        <a className={styles.siteFooter__contactValue} href={company.emailHref}>
+          {company.email}
+        </a>
       </div>
-      <div className={styles.contactCardWide}>
-        <span>Адрес</span>
-        <p>{company.address}</p>
+      <div className={`${styles.siteFooter__contactCard} ${styles.siteFooter__contactCard_wide}`}>
+        <span className={styles.siteFooter__contactLabel}>Адрес</span>
+        <p className={styles.siteFooter__contactValue}>{company.address}</p>
       </div>
     </div>
   )
@@ -88,25 +95,25 @@ export function SiteFooter() {
   return (
     <footer className={styles.siteFooter}>
       <PageWrapper>
-        <div className={styles.footerTop}>
-          <div className={styles.brandColumn}>
-            <Link className={`brand ${styles.footerBrand}`} to="/" aria-label={`${company.name} — на главную`}>
+        <div className={styles.siteFooter__top}>
+          <div className={styles.siteFooter__brandColumn}>
+            <Link className={`brand ${styles.siteFooter__brand}`} to="/" aria-label={`${company.name} — на главную`}>
               <img className="brand-logo" src="/images/anfas-logo-official.svg" alt={company.name} />
             </Link>
-            <p className={styles.brandLead}>
+            <p className={styles.siteFooter__brandLead}>
               Ремонт квартир под ключ в Санкт-Петербурге: дизайн, комплектация и реализация в одной
               системе без хаоса, плавающих сроков и непрозрачных решений.
             </p>
-            <button className={styles.footerCta} type="button" onClick={() => openBrief('general')}>
+            <button className={styles.siteFooter__cta} type="button" onClick={() => openBrief('general')}>
               Обсудить проект
             </button>
-            <FooterSocials className={styles.socials} />
+            <FooterSocials className={styles.siteFooter__socials} />
           </div>
 
-          <div className={styles.footerColumnsDesktop}>
-            <div className={styles.footerColumn}>
-              <span className={styles.footerTitle}>Навигация</span>
-              <nav className={styles.footerNav} aria-label="Навигация по сайту">
+          <div className={styles.siteFooter__columnsDesktop}>
+            <div className={styles.siteFooter__column}>
+              <span className={styles.siteFooter__title}>Навигация</span>
+              <nav className={styles.siteFooter__nav} aria-label="Навигация по сайту">
                 {footerPages.map((page) => (
                   <Link key={page.to} to={page.to}>
                     {page.label}
@@ -115,9 +122,9 @@ export function SiteFooter() {
               </nav>
             </div>
 
-            <div className={styles.footerColumn}>
-              <span className={styles.footerTitle}>Услуги</span>
-              <nav className={styles.footerNav} aria-label="Навигация по услугам">
+            <div className={styles.siteFooter__column}>
+              <span className={styles.siteFooter__title}>Услуги</span>
+              <nav className={styles.siteFooter__nav} aria-label="Навигация по услугам">
                 {services.slice(0, 5).map((service) => (
                   <Link key={service.id} to={`/services#${service.id}`}>
                     {service.title}
@@ -126,15 +133,15 @@ export function SiteFooter() {
               </nav>
             </div>
 
-            <div className={styles.footerColumn}>
-              <span className={styles.footerTitle}>Контакты</span>
+            <div className={styles.siteFooter__column}>
+              <span className={styles.siteFooter__title}>Контакты</span>
               <FooterContactCards />
             </div>
           </div>
 
-          <div className={styles.footerMobile}>
+          <div className={styles.siteFooter__mobile}>
             <FooterAccordion title="Навигация">
-              <nav className={styles.footerNav} aria-label="Навигация по сайту">
+              <nav className={styles.siteFooter__nav} aria-label="Навигация по сайту">
                 {footerPages.map((page) => (
                   <Link key={page.to} to={page.to}>
                     {page.label}
@@ -144,7 +151,7 @@ export function SiteFooter() {
             </FooterAccordion>
 
             <FooterAccordion title="Услуги">
-              <nav className={styles.footerNav} aria-label="Навигация по услугам">
+              <nav className={styles.siteFooter__nav} aria-label="Навигация по услугам">
                 {services.slice(0, 5).map((service) => (
                   <Link key={service.id} to={`/services#${service.id}`}>
                     {service.title}
@@ -153,31 +160,36 @@ export function SiteFooter() {
               </nav>
             </FooterAccordion>
 
-            <div className={styles.mobileContacts}>
-              <span className={styles.footerTitle}>Контакты</span>
+            <div className={styles.siteFooter__mobileContacts}>
+              <span className={styles.siteFooter__title}>Контакты</span>
               <FooterContactCards />
             </div>
 
-            <FooterSocials className={styles.mobileSocials} />
-            <p className={styles.metaDisclaimer}>{META_DISCLAIMER}</p>
+            <FooterSocials className={styles.siteFooter__mobileSocials} />
+            <p className={styles.siteFooter__metaDisclaimer}>{META_DISCLAIMER}</p>
           </div>
         </div>
 
-        <div className={styles.footerBottom}>
-          <div className={styles.footerLegal}>
-            <span className={styles.footerCopyright}>© 2012–2026 Анфас</span>
-            <p>
+        <div className={styles.siteFooter__bottom}>
+          <div className={styles.siteFooter__legal}>
+            <span className={styles.siteFooter__copyright}>© 2012–2026 Анфас</span>
+            <p className={styles.siteFooter__legalText}>
               Владелец сайта:{' '}
-              <a href={company.legalProfileHref} target="_blank" rel="noreferrer">
+              <a
+                className={styles.siteFooter__legalLink}
+                href={company.legalProfileHref}
+                target="_blank"
+                rel="noreferrer"
+              >
                 {company.legalOwner}
               </a>
             </p>
-            <p>ИНН {company.legalInn}</p>
-            <p>
+            <p className={styles.siteFooter__legalText}>ИНН {company.legalInn}</p>
+            <p className={styles.siteFooter__legalText}>
               {company.legalRegLabel} {company.legalRegNumber}
             </p>
           </div>
-          <Link className={styles.footerPrivacy} to="/privacy">
+          <Link className={styles.siteFooter__privacy} to="/privacy">
             Политика конфиденциальности
           </Link>
         </div>

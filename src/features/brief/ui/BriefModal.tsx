@@ -63,45 +63,46 @@ export function BriefModal() {
 
   return (
     <div
-      className={`${styles.modal} ${isOpen ? styles.open : ''}`}
+      className={`${styles.briefModal} ${isOpen ? styles.briefModal_open : ''}`}
       aria-hidden={!isOpen}
       data-service={activeService}
     >
       <button
-        className={styles.backdrop}
+        className={styles.briefModal__backdrop}
         type="button"
         aria-label="Закрыть форму"
         onClick={close}
       />
       <div
-        className={styles.panel}
+        className={styles.briefModal__panel}
         role="dialog"
         aria-modal="true"
         aria-label="Обсудить проект"
         data-service={activeService}
       >
-        <button className={styles.close} type="button" onClick={close} aria-label="Закрыть">
-          <span />
-          <span />
+        <button className={styles.briefModal__close} type="button" onClick={close} aria-label="Закрыть">
+          <span className={styles.briefModal__closeLine} />
+          <span className={styles.briefModal__closeLine} />
         </button>
 
         {!submitted ? (
           <>
-            <p className={styles.eyebrow}>{content.eyebrow}</p>
-            <h2 className={styles.title}>{content.title}</h2>
-            <p className={styles.lead}>{content.lead}</p>
-            <form className={styles.form} onSubmit={handleSubmit(submit)} noValidate>
+            <p className={styles.briefModal__eyebrow}>{content.eyebrow}</p>
+            <h2 className={styles.briefModal__title}>{content.title}</h2>
+            <p className={styles.briefModal__lead}>{content.lead}</p>
+            <form className={styles.briefModal__form} onSubmit={handleSubmit(submit)} noValidate>
               <input type="hidden" value={activeService} {...register('service')} />
 
-              <div className={styles.selected}>
-                <span>Выбрано</span>
-                <strong>{selectedOption.label}</strong>
-                <small>{content.serviceNote}</small>
+              <div className={styles.briefModal__selected}>
+                <span className={styles.briefModal__selectedLabel}>Выбрано</span>
+                <strong className={styles.briefModal__selectedValue}>{selectedOption.label}</strong>
+                <small className={styles.briefModal__selectedNote}>{content.serviceNote}</small>
               </div>
 
-              <label className={styles.field}>
-                <span>Ваше имя</span>
+              <label className={styles.briefModal__field}>
+                <span className={styles.briefModal__fieldLabel}>Ваше имя</span>
                 <input
+                  className={styles.briefModal__fieldControl}
                   type="text"
                   autoComplete="name"
                   maxLength={48}
@@ -111,12 +112,13 @@ export function BriefModal() {
                     setValue('name', sanitizeNameValue(event.target.value), { shouldValidate: true })
                   }
                 />
-                {errors.name && <small className={styles.error}>{errors.name.message}</small>}
+                {errors.name && <small className={styles.briefModal__error}>{errors.name.message}</small>}
               </label>
 
-              <label className={styles.field}>
-                <span>Телефон</span>
+              <label className={styles.briefModal__field}>
+                <span className={styles.briefModal__fieldLabel}>Телефон</span>
                 <input
+                  className={styles.briefModal__fieldControl}
                   type="tel"
                   inputMode="tel"
                   autoComplete="tel"
@@ -127,26 +129,26 @@ export function BriefModal() {
                     setValue('phone', formatPhoneValue(event.target.value), { shouldValidate: true })
                   }
                 />
-                {errors.phone && <small className={styles.error}>{errors.phone.message}</small>}
+                {errors.phone && <small className={styles.briefModal__error}>{errors.phone.message}</small>}
               </label>
 
-              <button className={styles.submit} type="submit">
-                <span>{content.submitLabel}</span>
-                <i>
+              <button className={styles.briefModal__submit} type="submit">
+                <span className={styles.briefModal__submitText}>{content.submitLabel}</span>
+                <i className={styles.briefModal__submitIcon}>
                   <ArrowIcon size={16} />
                 </i>
               </button>
-              <small className={styles.privacy}>
+              <small className={styles.briefModal__privacy}>
                 Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности.
               </small>
             </form>
           </>
         ) : (
-          <div className={styles.success}>
-            <span>✓</span>
-            <h2>{content.successTitle}</h2>
-            <p>{content.successLead}</p>
-            <button type="button" onClick={close}>
+          <div className={styles.briefModal__success}>
+            <span className={styles.briefModal__successIcon}>✓</span>
+            <h2 className={styles.briefModal__successTitle}>{content.successTitle}</h2>
+            <p className={styles.briefModal__successText}>{content.successLead}</p>
+            <button className={styles.briefModal__successButton} type="button" onClick={close}>
               Закрыть
             </button>
           </div>
