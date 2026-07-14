@@ -10,10 +10,10 @@ const secondRow = [...partners].reverse()
 
 export function HomePartners() {
   return (
-    <section className={styles.partners + ' ' + styles.sectionpad}>
-      <PageWrapper className={styles.partnerslayout}>
+    <section className={styles.partners + ' ' + styles.partners_sectionPad}>
+      <PageWrapper className={styles.partners__layout}>
         <SectionHeader
-          className={styles.partnersheader}
+          className={styles.partners__header}
           number="07"
           label="Партнёры и поставщики"
           title={
@@ -26,7 +26,7 @@ export function HomePartners() {
           lead="Собираем ремонт квартиры под ключ вместе с архитекторами, студиями и поставщиками, которые умеют держать срок, качество и предсказуемый результат. Это даёт спокойную реализацию без лишних провалов по материалам и логистике."
         />
 
-        <div className={styles.partnersrail} data-reveal>
+        <div className={styles.partners__rail} data-reveal>
           <HomePartnersMarquee items={firstRow} />
           <HomePartnersMarquee items={secondRow} reverse />
         </div>

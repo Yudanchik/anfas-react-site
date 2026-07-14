@@ -1,4 +1,6 @@
-.wrapper {
+@use 'media' as mq;
+
+.pageWrapper {
   box-sizing: border-box;
   width: 100%;
   max-width: 1200px;
@@ -6,8 +8,8 @@
   padding-inline: 15px;
 }
 
-@media (width <= 820px) {
-  .wrapper {
+@include mq.max(820px) {
+  .pageWrapper {
     padding-inline: var(--page-gutter-mobile);
   }
 }

@@ -27,8 +27,8 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className={`${styles.siteHeader} ${isHeroPage ? styles.isGlass : styles.isInner}`}>
-        <PageWrapper className={styles.headerInner}>
+      <header className={`${styles.siteHeader} ${isHeroPage ? styles.siteHeader_glass : styles.siteHeader_innerPage}`}>
+        <PageWrapper className={styles.siteHeader__inner}>
           <Link
             className="brand"
             to="/"
@@ -38,7 +38,7 @@ export function SiteHeader() {
             <img className="brand-logo" src="/images/anfas-logo-official.svg" alt={company.name} />
           </Link>
 
-          <nav className={styles.desktopNav} aria-label="Основная навигация">
+          <nav className={styles.siteHeader__nav} aria-label="Основная навигация">
             {navigation.map((item) => (
               <NavLink key={item.to} to={item.to}>
                 {item.label}
@@ -46,26 +46,29 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <button className={styles.headerPhone} type="button" onClick={() => openBrief('general')}>
+          <button className={styles.siteHeader__phone} type="button" onClick={() => openBrief('general')}>
             <span>Обсудить проект</span>
             <b>{company.phone}</b>
           </button>
 
           <button
-            className={`${styles.menuButton} ${menuOpen ? styles.isOpen : ''}`}
+            className={`${styles.siteHeader__menuButton} ${menuOpen ? styles.siteHeader__menuButton_open : ''}`}
             type="button"
             aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((value) => !value)}
           >
-            <span />
-            <span />
+            <span className={styles.siteHeader__menuLine} />
+            <span className={styles.siteHeader__menuLine} />
           </button>
         </PageWrapper>
       </header>
 
-      <div className={`${styles.mobileMenu} ${menuOpen ? styles.isOpen : ''}`} aria-hidden={!menuOpen}>
-        <nav>
+      <div
+        className={`${styles.siteHeader__mobileMenu} ${menuOpen ? styles.siteHeader__mobileMenu_open : ''}`}
+        aria-hidden={!menuOpen}
+      >
+        <nav className={styles.siteHeader__mobileNav}>
           {navigation.map((item, index) => (
             <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)}>
               <span>0{index + 1}</span>
@@ -73,7 +76,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className={styles.mobileMenuFooter}>
+        <div className={styles.siteHeader__mobileFooter}>
           <a href={company.phoneHref}>{company.phone}</a>
           <a href={company.emailHref}>{company.email}</a>
         </div>

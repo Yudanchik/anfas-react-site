@@ -36,14 +36,14 @@ export function SeoContentBlock({ title, lead, items, embedded = false }: SeoCon
   }
 
   return (
-    <section className={`${styles.section} ${embedded ? styles.embedded : ''}`}>
+    <section className={`${styles.seoContent} ${embedded ? styles.seoContent_embedded : ''}`}>
       <SectionHeader title={title} lead={lead} />
-      <div className={styles.controls}>
-        <p className={styles.hint}>Листайте карточки</p>
-        <div className={styles.buttons}>
+      <div className={styles.seoContent__controls}>
+        <p className={styles.seoContent__hint}>Листайте карточки</p>
+        <div className={styles.seoContent__buttons}>
           <button
             aria-label="Показать предыдущие карточки"
-            className={`${styles.button} ${styles.buttonReverse}`}
+            className={`${styles.seoContent__button} ${styles.seoContent__button_reverse}`}
             type="button"
             onClick={() => scrollRail(-1)}
           >
@@ -51,7 +51,7 @@ export function SeoContentBlock({ title, lead, items, embedded = false }: SeoCon
           </button>
           <button
             aria-label="Показать следующие карточки"
-            className={styles.button}
+            className={styles.seoContent__button}
             type="button"
             onClick={() => scrollRail(1)}
           >
@@ -60,11 +60,11 @@ export function SeoContentBlock({ title, lead, items, embedded = false }: SeoCon
         </div>
       </div>
 
-      <div ref={railRef} className={styles.grid} data-reveal>
+      <div ref={railRef} className={styles.seoContent__grid} data-reveal>
         {items.map((item) => (
-          <article className={styles.card} key={item.title}>
-            <h3 className={styles.cardTitle}>{item.title}</h3>
-            <p className={styles.cardText}>{item.text}</p>
+          <article className={styles.seoContent__card} key={item.title}>
+            <h3 className={styles.seoContent__cardTitle}>{item.title}</h3>
+            <p className={styles.seoContent__cardText}>{item.text}</p>
           </article>
         ))}
       </div>

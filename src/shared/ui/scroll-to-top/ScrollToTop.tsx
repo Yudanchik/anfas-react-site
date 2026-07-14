@@ -24,7 +24,7 @@ export function ScrollToTop() {
     <button
       type="button"
       data-scroll-top
-      className={`${styles.button} ${visible ? styles.visible : ''}`}
+      className={`${styles.scrollToTop} ${visible ? styles.scrollToTop_visible : ''}`}
       aria-label="Наверх"
       onClick={scrollToTop}
     >

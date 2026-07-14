@@ -1,4 +1,6 @@
 @use 'fonts' as f;
+@use 'flex' as flex;
+@use 'media' as mq;
 
 .siteHeader {
   position: absolute;
@@ -12,55 +14,54 @@
   backdrop-filter: blur(8px);
 }
 
-.isGlass {
+.siteHeader_glass {
   color: var(--paper);
   border-bottom-color: rgb(255 255 255 / 30%);
   background: linear-gradient(180deg, rgb(18 18 15 / 24%), rgb(18 18 15 / 10%));
 }
 
-.headerInner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.siteHeader__inner {
+  @include flex.flex($ai: center, $jc: space-between);
+
   height: 100%;
   gap: 24px;
 }
 
-.isInner {
+.siteHeader_innerPage {
   position: relative;
   color: var(--ink);
   border-bottom-color: var(--line);
   background: var(--paper);
 }
 
-.isInner :global(.brand-logo) {
+.siteHeader_innerPage :global(.brand-logo) {
   filter: none;
 }
 
-.isInner .menuButton {
+.siteHeader_innerPage .siteHeader__menuButton {
   border-color: var(--line);
 }
 
-.isInner .menuButton span {
+.siteHeader_innerPage .siteHeader__menuLine {
   background: var(--ink);
 }
 
-.desktopNav {
-  display: flex;
+.siteHeader__nav {
+  @include flex.flex($jc: center);
+
   flex: 1;
-  justify-content: center;
   gap: clamp(24px, 3vw, 56px);
 
   @include f.body-font(14, 1.35, 500, 0.02em);
 }
 
-.desktopNav a {
+.siteHeader__nav a {
   position: relative;
   padding: 8px 0;
   letter-spacing: 0.02em;
 }
 
-.desktopNav a::after {
+.siteHeader__nav a::after {
   position: absolute;
   right: 0;
   bottom: 2px;
@@ -73,15 +74,14 @@
   background: currentcolor;
 }
 
-.desktopNav a:hover::after {
+.siteHeader__nav a:hover::after {
   transform: scaleX(1);
   transform-origin: left;
 }
 
-.headerPhone {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+.siteHeader__phone {
+  @include flex.flex($fd: column, $ai: flex-end);
+
   padding: 0;
   cursor: pointer;
   color: inherit;
@@ -91,13 +91,13 @@
   @include f.uppercase-label(12, 600, var(--letter-spacing-wide));
 }
 
-.headerPhone b {
+.siteHeader__phone b {
   font-size: var(--text-14);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
-.menuButton {
+.siteHeader__menuButton {
   display: none;
   width: 46px;
   height: 46px;
@@ -107,7 +107,7 @@
   background: transparent;
 }
 
-.menuButton span {
+.siteHeader__menuLine {
   display: block;
   width: 18px;
   height: 1px;
@@ -116,22 +116,22 @@
   background: var(--paper);
 }
 
-.isOpen.menuButton span:first-child {
+.siteHeader__menuButton_open .siteHeader__menuLine:first-child {
   transform: translateY(3px) rotate(45deg);
 }
 
-.isOpen.menuButton span:last-child {
+.siteHeader__menuButton_open .siteHeader__menuLine:last-child {
   transform: translateY(-3px) rotate(-45deg);
 }
 
-.mobileMenu {
+.siteHeader__mobileMenu {
   position: fixed;
   z-index: 40;
   inset: 0;
-  display: flex;
+
+  @include flex.flex($fd: column, $jc: space-between);
+
   visibility: hidden;
-  flex-direction: column;
-  justify-content: space-between;
   padding: 130px var(--page-gutter) 40px;
   transition:
     clip-path 0.6s cubic-bezier(0.77, 0, 0.18, 1),
@@ -141,19 +141,18 @@
   background: var(--ink);
 }
 
-.isOpen.mobileMenu {
+.siteHeader__mobileMenu_open {
   visibility: visible;
   clip-path: circle(150% at calc(100% - 50px) 45px);
 }
 
-.mobileMenu nav {
-  display: flex;
-  flex-direction: column;
+.siteHeader__mobileNav {
+  @include flex.flex($fd: column);
 }
 
-.mobileMenu nav a {
-  display: flex;
-  align-items: baseline;
+.siteHeader__mobileNav a {
+  @include flex.flex($ai: baseline);
+
   gap: 18px;
   padding: 18px 0;
   font-size: clamp(var(--text-32), 10vw, var(--text-56));
@@ -164,52 +163,53 @@
   letter-spacing: var(--letter-spacing-tight);
 }
 
-.mobileMenu nav span {
+.siteHeader__mobileNav span {
   font-family: var(--font-body);
   font-size: var(--text-12);
   color: var(--amber);
 }
 
-.mobileMenuFooter {
-  display: flex;
-  justify-content: space-between;
+.siteHeader__mobileFooter {
+  @include flex.flex($jc: space-between);
+
   font-size: var(--text-14);
 }
 
-@media (width <= 1100px) {
-  .desktopNav {
+@include mq.max(1100px) {
+  .siteHeader__nav {
     gap: 20px;
   }
 }
 
-@media (width <= 820px) {
+@include mq.max(820px) {
   .siteHeader {
     position: absolute;
     height: 76px;
   }
 
-  .desktopNav,
-  .headerPhone {
+  .siteHeader__nav,
+  .siteHeader__phone {
     display: none;
   }
 
-  .menuButton {
+  .siteHeader__menuButton {
     display: block;
   }
 }
 
-@media (width <= 580px) {
-  .mobileMenu {
+@include mq.max(580px) {
+  .siteHeader__mobileMenu {
     padding: 130px var(--page-gutter-mobile) 40px;
   }
 
-  .mobileMenu nav a {
+  .siteHeader__mobileNav a {
     gap: 16px;
     font-size: clamp(var(--text-28), 12vw, var(--text-44));
   }
 
-  .mobileMenuFooter {
-    flex-direction: column;
+  .siteHeader__mobileFooter {
+    @include flex.flex($fd: column);
+
     gap: 12px;
   }
 }

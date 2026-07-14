@@ -8,5 +8,5 @@ type PageWrapperProps = {
 }
 
 export function PageWrapper({ children, className }: PageWrapperProps) {
-  return <div className={[styles.wrapper, className].filter(Boolean).join(' ')}>{children}</div>
+  return <div className={[styles.pageWrapper, className].filter(Boolean).join(' ')}>{children}</div>
 }
