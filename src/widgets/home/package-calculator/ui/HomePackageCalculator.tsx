@@ -33,12 +33,6 @@ const finishLabels: Record<FinishType, string> = {
   premium: 'Премиум',
 }
 
-const complexityLabels: Record<ComplexityType, string> = {
-  simple: 'Без перепланировки',
-  normal: 'С планировкой',
-  complex: 'Сложный сценарий',
-}
-
 export function HomePackageCalculator({
   onOpenBrief,
 }: {
@@ -52,10 +46,7 @@ export function HomePackageCalculator({
   const [complexity, setComplexity] = useState<ComplexityType>('normal')
   const [selectedOptions, setSelectedOptions] = useState<OptionType[]>([])
 
-  const visibleOptions = useMemo(
-    () => packageCalculator.options.filter((option) => option.modes.includes(mode)),
-    [mode],
-  )
+  const visibleOptions = packageCalculator.options
 
   const selectedPackage = useMemo(
     () =>
@@ -72,6 +63,7 @@ export function HomePackageCalculator({
       const durationMax = durationMin + 1
 
       return {
+        mode: 'package' as const,
         total,
         priceLabel: 'Фиксированная ставка за м²',
         summary:
@@ -108,6 +100,7 @@ export function HomePackageCalculator({
     const durationMax = durationMin + 3
 
     return {
+      mode: 'individual' as const,
       total,
       rangeMin,
       rangeMax,
@@ -121,7 +114,7 @@ export function HomePackageCalculator({
       note: 'Итог уточняется после брифа и замера квартиры.',
       propertyLabel: propertyLabels[propertyType],
     }
-  }, [area, complexity, finish, mode, packageVariant, propertyType, selectedOptions, selectedPackage])
+  }, [area, complexity, finish, mode, propertyType, selectedOptions, selectedPackage])
 
   const toggleOption = (value: OptionType) => {
     setSelectedOptions((current) =>
@@ -200,8 +193,8 @@ export function HomePackageCalculator({
               </div>
             </div>
 
-            <div className={styles.formGroup}>
-              <label>Тип объекта</label>
+            <fieldset className={styles.formGroup}>
+              <legend>Тип объекта</legend>
               <div className={styles.typeGrid}>
                 {packageCalculator.propertyTypes.map((option) => (
                   <button
@@ -217,11 +210,11 @@ export function HomePackageCalculator({
                   </button>
                 ))}
               </div>
-            </div>
+            </fieldset>
 
             {mode === 'package' ? (
-              <div className={styles.formGroup}>
-                <label>Вариант комплектации</label>
+              <fieldset className={styles.formGroup}>
+                <legend>Вариант комплектации</legend>
                 <div className={styles.variantGrid}>
                   {packageCalculator.packageVariants.map((variant) => (
                     <button
@@ -238,12 +231,12 @@ export function HomePackageCalculator({
                     </button>
                   ))}
                 </div>
-              </div>
+              </fieldset>
             ) : (
               <>
                 <div className={styles.compactGrid}>
-                  <div className={styles.formGroup}>
-                    <label>Уровень отделки</label>
+                  <fieldset className={styles.formGroup}>
+                    <legend>Уровень отделки</legend>
                     <div className={styles.choiceGrid}>
                       {packageCalculator.finishLevels.map((option) => (
                         <button
@@ -256,10 +249,10 @@ export function HomePackageCalculator({
                         </button>
                       ))}
                     </div>
-                  </div>
+                  </fieldset>
 
-                  <div className={styles.formGroup}>
-                    <label>Сложность проекта</label>
+                  <fieldset className={styles.formGroup}>
+                    <legend>Сложность проекта</legend>
                     <div className={styles.choiceGrid}>
                       {packageCalculator.complexityLevels.map((option) => (
                         <button
@@ -272,7 +265,7 @@ export function HomePackageCalculator({
                         </button>
                       ))}
                     </div>
-                  </div>
+                  </fieldset>
                 </div>
 
                 <fieldset className={styles.formGroup}>
@@ -306,7 +299,7 @@ export function HomePackageCalculator({
             <div className={styles.resultPanel}>
               <span className={styles.resultCaption}>{estimate.priceLabel}</span>
               <strong className={styles.resultPrice}>
-                {mode === 'package'
+                {estimate.mode === 'package'
                   ? formatMoney(estimate.total)
                   : `${formatMoney(estimate.rangeMin)} — ${formatMoney(estimate.rangeMax)}`}
               </strong>

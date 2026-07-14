@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 
 import { useBrief } from '@/features/brief/model/BriefContext'
 import {
@@ -44,11 +44,11 @@ export default function ServicesRoute() {
   const { openBrief } = useBrief()
   const [submitted, setSubmitted] = useState(false)
   const {
+    control,
     formState: { errors },
     handleSubmit,
     register,
     setValue,
-    watch,
     reset,
   } = useForm<BriefFormValues>({
     defaultValues: {
@@ -59,7 +59,7 @@ export default function ServicesRoute() {
     resolver: zodResolver(briefSchema),
   })
 
-  const selectedService = watch('service')
+  const selectedService = useWatch({ control, name: 'service' })
   const hero = innerHeroImages.services
 
   const submit = (_values: BriefFormValues) => {

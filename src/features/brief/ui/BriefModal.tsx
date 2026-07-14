@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 
@@ -18,12 +18,12 @@ export function BriefModal() {
   const { closeBrief, isOpen, presetService } = useBrief()
   const [submitted, setSubmitted] = useState(false)
   const {
+    control,
     formState: { errors },
     handleSubmit,
     register,
     reset,
     setValue,
-    watch,
   } = useForm<BriefFormValues>({
     defaultValues: {
       name: '',
@@ -33,7 +33,7 @@ export function BriefModal() {
     resolver: zodResolver(briefSchema),
   })
 
-  const selectedService = watch('service')
+  const selectedService = useWatch({ control, name: 'service' })
   const activeService = isOpen ? presetService : selectedService
   const content = briefServiceCopy[activeService]
   const selectedOption =

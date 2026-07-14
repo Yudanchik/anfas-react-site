@@ -51,7 +51,7 @@ $mobile: 640px;
 
 .item {
   position: relative;
-  animation: stairReveal 560ms ease both;
+  animation: stair-reveal 560ms ease both;
 }
 
 .item:nth-child(2) {
@@ -230,6 +230,7 @@ $mobile: 640px;
 
 .solution {
   @include flex.flex($fd: column);
+
   gap: 10px;
 }
 
@@ -375,7 +376,7 @@ $mobile: 640px;
   }
 }
 
-@keyframes stairReveal {
+@keyframes stair-reveal {
   from {
     opacity: 0;
     transform: translateY(18px);

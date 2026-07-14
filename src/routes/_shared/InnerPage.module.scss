@@ -835,7 +835,6 @@
     min-height: 52px;
     margin-top: auto;
     padding: 0 var(--space-24);
-    color: var(--paper);
     border-radius: var(--radius-pill);
     background: var(--amber);
     color: var(--ink);
@@ -905,7 +904,7 @@
     margin: 0;
     font-size: var(--text-14);
     line-height: 1.55;
-    word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
   dt {
