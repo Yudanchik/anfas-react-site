@@ -110,7 +110,6 @@ export default function PrivacyRoute() {
         <section className={styles.documentCards} aria-label="Кратко о персональных данных">
           {privacyCards.map((card) => (
             <article className={styles.documentCard} key={card.title}>
-              <span>Анфас Дата</span>
               <h2>{card.title}</h2>
               <p>{card.text}</p>
             </article>

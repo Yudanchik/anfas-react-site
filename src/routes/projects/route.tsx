@@ -6,7 +6,6 @@ import { innerHeroImages } from '@/shared/config/hero-media'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
-import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
 
 import styles from '../_shared/InnerPage.module.scss'
 
@@ -47,7 +46,10 @@ export default function ProjectsRoute() {
   const hero = innerHeroImages.projects
   const [showAll, setShowAll] = useState(false)
 
-  const visibleProjects = useMemo(() => (showAll ? projects : projects.slice(0, 6)), [projects, showAll])
+  const visibleProjects = useMemo(
+    () => (showAll ? projects : projects.slice(0, 6)),
+    [projects, showAll],
+  )
   const hasMoreProjects = projects.length > visibleProjects.length
 
   return (
@@ -63,8 +65,9 @@ export default function ProjectsRoute() {
               которые уже <em>живут</em>
             </h1>
             <p className={styles.heroLead}>
-              Здесь собраны реальные квартиры и коммерческие пространства. Можно посмотреть эстетику,
-              масштаб, ритм материалов и то, как мы доводим интерьер до готового состояния.
+              Здесь собраны реальные квартиры и коммерческие пространства. Можно посмотреть
+              эстетику, масштаб, ритм материалов и то, как мы доводим интерьер до готового
+              состояния.
             </p>
 
             <div className={styles.heroStats}>
@@ -104,24 +107,27 @@ export default function ProjectsRoute() {
               </h2>
               <p className={styles.lead}>
                 Здесь собраны реальные объекты Анфас: от компактных квартир до более масштабных
-                интерьеров. Мы показываем не только картинку, но и логику пространства,
-                материалы, сроки и результат.
+                интерьеров. Мы показываем не только картинку, но и логику пространства, материалы,
+                сроки и результат.
               </p>
             </div>
 
             <aside className={styles.projectsIntroAside}>
               <span>Реальные объекты</span>
               <p>
-                В каждом проекте есть понятная структура: метраж, срок, бюджет и главное
-                настроение интерьера. Это помогает быстро сравнить кейсы и выбрать близкий
-                по духу формат.
+                В каждом проекте есть понятная структура: метраж, срок, бюджет и главное настроение
+                интерьера. Это помогает быстро сравнить кейсы и выбрать близкий по духу формат.
               </p>
             </aside>
           </div>
 
           <div className={styles.projectsGrid}>
             {visibleProjects.map((project) => (
-              <Link className={styles.projectCard} key={project.slug} to={`/projects/${project.slug}`}>
+              <Link
+                className={styles.projectCard}
+                key={project.slug}
+                to={`/projects/${project.slug}`}
+              >
                 <div className={styles.projectImageWrap}>
                   <img src={assetUrl(project.image)} alt={project.title} />
                 </div>
@@ -164,8 +170,6 @@ export default function ProjectsRoute() {
               </button>
             </div>
           ) : null}
-
-          <SeoContentBlock {...seoContentPages.projects} />
         </PageWrapper>
       </section>
     </main>
