@@ -102,7 +102,6 @@ $mobile: 640px;
   overflow: hidden;
   border-radius: 28px;
   background: #141412;
-  box-shadow: 0 18px 50px rgb(22 23 19 / 8%);
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
@@ -128,10 +127,6 @@ $mobile: 640px;
   transform: scale(1.07);
 }
 
-.item:hover .visual {
-  transform: translateY(-2px);
-  box-shadow: 0 24px 56px rgb(22 23 19 / 12%);
-}
 
 .visualOverlay {
   @include flex.flex($fd: column, $jc: flex-end);
@@ -143,10 +138,6 @@ $mobile: 640px;
   background:
     linear-gradient(180deg, rgb(17 17 15 / 10%) 0%, rgb(17 17 15 / 26%) 36%, rgb(17 17 15 / 88%) 100%),
     linear-gradient(90deg, rgb(17 17 15 / 78%) 0%, rgb(17 17 15 / 20%) 100%);
-
-  @include mq.max($tablet) {
-    padding: 18px;
-  }
 }
 
 .visualMeta {
@@ -197,9 +188,6 @@ $mobile: 640px;
   background:
     radial-gradient(circle at top right, rgb(237 174 36 / 16%), transparent 36%),
     linear-gradient(160deg, rgb(26 24 22 / 98%), rgb(18 17 15 / 98%));
-  box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 5%),
-    0 20px 48px rgb(22 23 19 / 8%);
 
   @include mq.max($tablet) {
     padding: 18px;
@@ -242,7 +230,6 @@ $mobile: 640px;
 
 .solution {
   @include flex.flex($fd: column);
-
   gap: 10px;
 }
 
