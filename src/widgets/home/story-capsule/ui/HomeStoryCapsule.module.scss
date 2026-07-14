@@ -32,7 +32,7 @@ $mobile: 640px;
 }
 
 .processColumn {
-  @include flex.flex($fd: column);
+  @include flex.flex($fd: column, $jc: space-between);
 
   gap: 18px;
   min-width: 0;
@@ -76,7 +76,6 @@ $mobile: 640px;
     padding: 18px;
     border-radius: 22px;
   }
-
 }
 
 .summaryVisual {
@@ -304,7 +303,6 @@ $mobile: 640px;
 
 .stepTitle {
   margin: 0;
-  max-width: 14ch;
   font-family: var(--font-heading);
   font-size: 24px;
   font-weight: 500;

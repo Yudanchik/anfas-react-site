@@ -16,7 +16,7 @@ export function HomeFaq({
       <div className={styles.bgimage} aria-hidden="true" />
       <PageWrapper className={styles.content}>
         <SectionHeader
-          className={styles.faqtitle}_heroAside_5j773_122
+          className={styles.faqtitle}
           tone="dark"
           number="10"
           label="Частые вопросы"
