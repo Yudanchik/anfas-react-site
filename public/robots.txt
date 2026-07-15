@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
+User-agent: Yandex
+Allow: /
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&ymclid&fbclid
+
+Host: https://anfas-art.ru
 Sitemap: https://anfas-art.ru/sitemap.xml
