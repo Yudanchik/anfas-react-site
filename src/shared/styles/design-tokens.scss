@@ -1,6 +1,5 @@
 ﻿@use './themes/default/colors' as c;
 @use './themes/default/fonts' as f;
-@use './themes/default/spacing' as s;
 @use './media' as mq;
 
 /*
@@ -105,26 +104,27 @@
   --tracking-label: 0.12em;
 
   /* Отступы и сетка */
-  --space-4: #{s.$space-4}px;
-  --space-8: #{s.$space-8}px;
-  --space-12: #{s.$space-12}px;
-  --space-16: #{s.$space-16}px;
-  --space-20: #{s.$space-20}px;
-  --space-24: #{s.$space-24}px;
-  --space-32: #{s.$space-32}px;
-  --space-40: #{s.$space-40}px;
-  --space-48: #{s.$space-48}px;
-  --space-64: #{s.$space-64}px;
-  --space-80: #{s.$space-80}px;
-  --space-96: #{s.$space-96}px;
-  --space-120: #{s.$space-120}px;
-  --page-gutter: #{s.$page-gutter};
-  --page-gutter-mobile: #{s.$page-gutter-mobile};
-  --section-pad-y: #{s.$section-pad-y};
-  --section-pad-y-tight: #{s.$section-pad-y-tight};
-  --section-gap: #{s.$section-gap};
-  --section-gap-tight: #{s.$section-gap-tight};
-  --content-max: #{s.$content-max}px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-56: 56px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-96: 96px;
+  --space-120: 120px;
+  --page-gutter: clamp(15px, 2.2vw, 24px);
+  --page-gutter-mobile: clamp(16px, 6vw, 24px);
+  --section-pad-y: clamp(72px, 7vw, 96px);
+  --section-pad-y-tight: clamp(72px, 7vw, 96px);
+  --section-gap: clamp(72px, 7vw, 96px);
+  --section-gap-tight: clamp(72px, 7vw, 96px);
+  --content-max: 1200px;
 
   /* Карточки, кнопки и тени */
   --radius-sm: #{c.$radius-sm};
@@ -134,7 +134,6 @@
   --radius-panel: 34px;
   --radius-pill: 999px;
   --card-padding: var(--space-32);
-  --card-padding-sm: var(--space-24);
   --button-height: 56px;
   --shadow-soft: #{c.$shadow-soft};
   --shadow-card: 0 22px 70px rgb(22 23 19 / 7%);
