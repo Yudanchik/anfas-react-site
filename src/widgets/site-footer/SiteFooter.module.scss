@@ -13,37 +13,75 @@ $home-xs: 420px;
   background:
     radial-gradient(circle at top left, rgb(237 174 36 / 10%), transparent 34%),
     linear-gradient(180deg, rgb(25 25 22), rgb(17 17 15));
+
+  @include mq.max($home-tablet) {
+    padding-top: 48px;
+  }
+
+  @include mq.media(phone) {
+    padding-block: 40px 24px;
+  }
 }
 
-.footerTop {
+.siteFooter__top {
   @include flex.flex($fw: wrap);
 
   gap: clamp(28px, 3vw, 48px);
   padding-bottom: 56px;
   border-bottom: 1px solid rgb(255 255 255 / 12%);
+
+  @include mq.media(phone, tablet, laptop) {
+    gap: 28px;
+  }
+
+  @include mq.max($home-tablet) {
+    flex-direction: column;
+    gap: 0;
+    padding-bottom: 32px;
+  }
 }
 
-.brandColumn {
+.siteFooter__brandColumn {
   @include flex.flex($fd: column);
 
   flex: 1.25 1 240px;
   gap: var(--space-20);
   min-width: 0;
   padding-right: 2vw;
+
+  @include mq.media(phone, tablet, laptop) {
+    flex: 1 1 100%;
+    padding-right: 0;
+  }
+
+  @include mq.max($home-tablet) {
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+  }
 }
 
-.footerBrand {
+.siteFooter__brandColumn .siteFooter__socials {
+  @include mq.max($home-tablet) {
+    display: none;
+  }
+}
+
+.siteFooter__brand {
   align-self: start;
 }
 
-.brandLead {
+.siteFooter__brandLead {
   margin: 0;
   color: rgb(243 240 233 / 72%);
   font-size: var(--text-16);
   line-height: 1.7;
+
+  @include mq.media(phone) {
+    font-size: var(--text-16);
+  }
 }
 
-.footerCta {
+.siteFooter__cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -58,15 +96,15 @@ $home-xs: 420px;
   background: var(--amber);
 }
 
-.socials,
-.mobileSocials {
+.siteFooter__socials,
+.siteFooter__mobileSocials {
   @include flex.flex($fw: wrap);
 
   gap: 12px;
 }
 
-.socials a,
-.mobileSocials a {
+.siteFooter__socials a,
+.siteFooter__mobileSocials a {
   @include flex.flex($jc: center, $ai: center);
 
   min-height: 42px;
@@ -86,38 +124,61 @@ $home-xs: 420px;
     border-color: rgb(237 174 36 / 40%);
     background: rgb(255 255 255 / 8%);
   }
+
+  @include mq.media(phone) {
+    min-height: 40px;
+    padding: 0 14px;
+  }
 }
 
-.footerColumnsDesktop {
+.siteFooter__columnsDesktop {
   @include flex.flex($fw: wrap);
 
   flex: 2 1 520px;
   gap: clamp(28px, 3vw, 48px);
   min-width: 0;
+
+  @include mq.media(phone, tablet, laptop) {
+    gap: 28px;
+  }
+
+  @include mq.max($home-tablet) {
+    display: none;
+  }
 }
 
-.footerMobile {
+.siteFooter__mobile {
   display: none;
   width: 100%;
+
+  @include mq.max($home-tablet) {
+    display: block;
+  }
 }
 
-.footerColumn {
+.siteFooter__column {
   @include flex.flex($fd: column);
 
   gap: var(--space-16);
   min-width: 0;
 }
 
-.footerColumnsDesktop > .footerColumn:nth-child(1) {
+.siteFooter__columnsDesktop > .siteFooter__column:nth-child(1) {
   flex: 0.8 1 180px;
 }
 
-.footerColumnsDesktop > .footerColumn:nth-child(2),
-.footerColumnsDesktop > .footerColumn:nth-child(3) {
+.siteFooter__columnsDesktop > .siteFooter__column:nth-child(2),
+.siteFooter__columnsDesktop > .siteFooter__column:nth-child(3) {
   flex: 1 1 200px;
 }
 
-.footerTitle {
+.siteFooter__columnsDesktop > .siteFooter__column {
+  @include mq.media(phone, tablet, laptop) {
+    flex: 1 1 calc(50% - 14px);
+  }
+}
+
+.siteFooter__title {
   color: var(--paper);
   font-family: var(--font-heading);
   font-size: 20px;
@@ -126,13 +187,13 @@ $home-xs: 420px;
   letter-spacing: -0.02em;
 }
 
-.footerNav {
+.siteFooter__nav {
   @include flex.flex($fd: column);
 
   gap: var(--space-12);
 }
 
-.footerNav a {
+.siteFooter__nav a {
   color: rgb(243 240 233 / 62%);
   font-size: var(--text-16);
   line-height: 1.4;
@@ -141,13 +202,17 @@ $home-xs: 420px;
   &:hover {
     color: var(--paper);
   }
+
+  @include mq.media(phone) {
+    font-size: var(--text-16);
+  }
 }
 
-.accordion {
+.siteFooter__accordion {
   border-bottom: 1px solid rgb(255 255 255 / 12%);
 }
 
-.accordionTrigger {
+.siteFooter__accordionTrigger {
   @include flex.flex($jc: space-between, $ai: center);
 
   width: 100%;
@@ -163,7 +228,7 @@ $home-xs: 420px;
   background: transparent;
 }
 
-.accordionIcon {
+.siteFooter__accordionIcon {
   position: relative;
   flex-shrink: 0;
   width: 12px;
@@ -187,7 +252,7 @@ $home-xs: 420px;
   }
 }
 
-.accordionIconOpen {
+.siteFooter__accordionIcon_open {
   transform: rotate(180deg);
 
   &::after {
@@ -195,40 +260,56 @@ $home-xs: 420px;
   }
 }
 
-.accordionPanel {
+.siteFooter__accordionPanel {
   padding-bottom: 18px;
 }
 
-.mobileContacts {
+.siteFooter__mobileContacts {
   @include flex.flex($fd: column);
 
   gap: var(--space-16);
   padding: 24px 0 8px;
 }
 
-.metaDisclaimer {
+.siteFooter__metaDisclaimer {
   margin: 16px 0 0;
   color: rgb(243 240 233 / 48%);
   font-size: var(--text-12);
   line-height: 1.55;
 }
 
-.contactCards {
+.siteFooter__contactCards {
   @include flex.flex($fd: column);
 
   gap: var(--space-12);
+
+  @include mq.max($home-tablet) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
 }
 
-.contactCards > div {
+.siteFooter__contactCard_wide {
+  @include mq.max($home-tablet) {
+    grid-column: 1 / -1;
+  }
+}
+
+.siteFooter__contactCard {
   padding: 18px 20px;
   border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 22px;
   background:
     radial-gradient(circle at top right, rgb(237 174 36 / 10%), transparent 42%),
     rgb(255 255 255 / 4%);
+
+  @include mq.media(phone) {
+    padding: 14px 16px;
+  }
 }
 
-.contactCards span {
+.siteFooter__contactLabel {
   display: block;
   margin-bottom: 10px;
   color: rgb(243 240 233 / 50%);
@@ -239,14 +320,17 @@ $home-xs: 420px;
   letter-spacing: -0.02em;
 }
 
-.contactCards a,
-.contactCards p {
+.siteFooter__contactValue {
   margin: 0;
   color: rgb(243 240 233 / 72%);
   font-family: var(--font-body);
   font-size: var(--text-16);
   line-height: 1.5;
   text-decoration: none;
+
+  @include mq.media(phone) {
+    font-size: var(--text-16);
+  }
 }
 
 .footerBanner {
@@ -258,6 +342,14 @@ $home-xs: 420px;
   border: 1px solid rgb(255 255 255 / 10%);
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, rgb(255 255 255 / 7%), rgb(255 255 255 / 3%));
+
+  @include mq.media(phone, tablet, laptop) {
+    flex-direction: column;
+  }
+
+  @include mq.media(phone) {
+    padding: 18px;
+  }
 }
 
 .footerBanner > div:first-child {
@@ -282,6 +374,10 @@ $home-xs: 420px;
   font-weight: 500;
   line-height: 1.02;
   letter-spacing: var(--letter-spacing-tight);
+
+  @include mq.media(phone) {
+    font-size: clamp(var(--text-22), 8vw, var(--text-32));
+  }
 }
 
 .footerBanner p {
@@ -289,6 +385,10 @@ $home-xs: 420px;
   color: rgb(243 240 233 / 72%);
   font-size: var(--text-14);
   line-height: 1.8;
+
+  @include mq.media(phone) {
+    font-size: var(--text-16);
+  }
 }
 
 .footerSubscribe {
@@ -297,6 +397,11 @@ $home-xs: 420px;
   flex: 0.8 1 280px;
   gap: 14px;
   min-width: 0;
+
+  @include mq.media(phone, tablet, laptop) {
+    flex: 1 1 100%;
+    align-items: stretch;
+  }
 }
 
 .footerSubscribe input {
@@ -322,6 +427,11 @@ $home-xs: 420px;
   border-radius: 999px;
   background: var(--amber);
   color: var(--ink);
+
+  @include mq.media(phone) {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .footerSubscribe button span {
@@ -340,16 +450,26 @@ $home-xs: 420px;
   stroke-width: 1.5;
 }
 
-.footerBottom {
+.siteFooter__bottom {
   @include flex.flex($fw: wrap, $jc: space-between, $ai: flex-end);
 
   gap: 20px 32px;
   padding-top: 24px;
   color: rgb(243 240 233 / 52%);
   font-size: var(--text-12);
+
+  @include mq.max($home-tablet) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  @include mq.max($home-compact) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
-.footerLegal {
+.siteFooter__legal {
   @include flex.flex($fd: column);
 
   // flex: 1 1 320px;
@@ -357,12 +477,12 @@ $home-xs: 420px;
   min-width: 0;
 }
 
-.footerLegal p {
+.siteFooter__legalText {
   margin: 0;
   line-height: 1.55;
 }
 
-.footerLegal a {
+.siteFooter__legalLink {
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 0.18em;
@@ -372,11 +492,11 @@ $home-xs: 420px;
   }
 }
 
-.footerCopyright {
+.siteFooter__copyright {
   color: rgb(243 240 233 / 62%);
 }
 
-.footerPrivacy {
+.siteFooter__privacy {
   flex: 0 1 auto;
   align-self: flex-end;
   color: inherit;
@@ -386,128 +506,9 @@ $home-xs: 420px;
   &:hover {
     color: rgb(243 240 233 / 78%);
   }
-}
 
-@include mq.max($home-wide) {
-  .footerTop {
-    gap: 28px;
-  }
-
-  .footerColumnsDesktop {
-    gap: 28px;
-  }
-
-  .brandColumn {
-    flex: 1 1 100%;
-    padding-right: 0;
-  }
-
-  .footerColumnsDesktop > .footerColumn {
-    flex: 1 1 calc(50% - 14px);
-  }
-
-  .footerBanner {
-    flex-direction: column;
-  }
-
-  .footerSubscribe {
-    flex: 1 1 100%;
-    align-items: stretch;
-  }
-}
-
-@include mq.max($home-tablet) {
-  .siteFooter {
-    padding-top: 48px;
-  }
-
-  .footerTop {
-    flex-direction: column;
-    gap: 0;
-    padding-bottom: 32px;
-  }
-
-  .brandColumn {
-    padding-bottom: 24px;
-    border-bottom: 1px solid rgb(255 255 255 / 12%);
-  }
-
-  .brandColumn .socials {
-    display: none;
-  }
-
-  .footerColumnsDesktop {
-    display: none;
-  }
-
-  .footerMobile {
-    display: block;
-  }
-
-  .contactCards {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .contactCardWide {
-    grid-column: 1 / -1;
-  }
-
-  .footerBottom {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .footerPrivacy {
+  @include mq.max($home-tablet) {
     align-self: flex-start;
     text-align: left;
-  }
-}
-
-@include mq.max($home-compact) {
-  .footerBottom {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-@include mq.max($home-xs) {
-  .siteFooter {
-    padding-block: 40px 24px;
-  }
-
-  .footerBanner {
-    padding: 18px;
-  }
-
-.footerBanner h3 {
-  font-size: clamp(var(--text-22), 8vw, var(--text-32));
-}
-
-  .footerBanner p,
-  .brandLead {
-    font-size: var(--text-16);
-  }
-
-  .socials a,
-  .mobileSocials a {
-    min-height: 40px;
-    padding: 0 14px;
-  }
-
-  .footerNav a,
-  .contactCards a,
-  .contactCards p {
-    font-size: var(--text-16);
-  }
-
-  .footerSubscribe button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .contactCards > div {
-    padding: 14px 16px;
   }
 }

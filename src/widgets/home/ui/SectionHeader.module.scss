@@ -1,9 +1,10 @@
 @use './section-header' as header;
+@use 'media' as mq;
 
 .sectionHeader {
   @include header.section-head;
 
-  &.dark {
+  &_dark {
     padding-bottom: 0;
   }
 }
@@ -46,13 +47,11 @@
   @include header.section-lead-base;
 }
 
-.dark {
-  .sectionHeaderTitle {
-    color: var(--paper);
-  }
+.sectionHeader_dark .sectionHeaderTitle {
+  color: var(--paper);
 }
 
-@media (width <= 580px) {
+@include mq.max(580px) {
   .sectionHeaderKicker {
     gap: 10px 12px;
     margin-bottom: 18px;

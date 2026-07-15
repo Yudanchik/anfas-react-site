@@ -6,7 +6,7 @@
   height: 14px;
 }
 
-.line {
+.plusIcon__line {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -18,10 +18,10 @@
   border-radius: 1px;
 }
 
-.lineVertical {
+.plusIcon__line_vertical {
   transform: translate(-50%, -50%) rotate(90deg);
 }
 
-.open .lineVertical {
+.plusIcon_open .plusIcon__line_vertical {
   transform: translate(-50%, -50%) rotate(0deg);
 }

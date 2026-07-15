@@ -1,4 +1,6 @@
 @use 'common' as home;
+@use 'flex' as flex;
+@use 'media' as mq;
 
 .hero {
   position: relative;
@@ -7,18 +9,46 @@
   min-height: 720px;
   color: var(--paper);
   background: #17110c;
+
+  @include mq.media(phone, tablet, laptop) {
+    min-height: 660px;
+  }
+
+  @include mq.max(820px) {
+    min-height: auto;
+  }
+
+  @include mq.media(phone) {
+    min-height: auto;
+  }
+
+  @include mq.max(375px) {
+    min-height: auto;
+  }
 }
 
-.sectionpad {
+.hero__sectionPad {
   min-height: inherit;
+
+  @include mq.max(820px) {
+    min-height: auto;
+  }
+
+  @include mq.media(phone) {
+    min-height: auto;
+  }
+
+  @include mq.max(375px) {
+    min-height: auto;
+  }
 }
 
-.media {
+.hero__media {
   position: absolute;
   inset: 0;
 }
 
-.slide {
+.hero__slide {
   position: absolute;
   inset: 0;
   opacity: 0;
@@ -30,12 +60,12 @@
   background-size: cover;
 }
 
-.isActive {
+.hero__slide_active {
   opacity: 1;
   animation: hero-breath 6s ease-in-out forwards;
 }
 
-.overlay {
+.hero__overlay {
   position: absolute;
   inset: 0;
   background:
@@ -43,7 +73,7 @@
     linear-gradient(90deg, rgb(17 11 8 / 56%) 0%, rgb(17 11 8 / 18%) 100%);
 }
 
-.vignette {
+.hero__vignette {
   position: absolute;
   inset: 0;
   background:
@@ -51,25 +81,51 @@
     linear-gradient(180deg, transparent 58%, rgb(17 11 8 / 34%) 100%);
 }
 
-.inner {
+.hero__inner {
   position: relative;
   z-index: 1;
   min-height: inherit;
   padding-block: 132px 40px;
+
+  @include mq.media(phone, tablet, laptop) {
+    padding-block: 118px 34px;
+  }
+
+  @include mq.max(820px) {
+    min-height: auto;
+    padding-block: 82px 18px;
+  }
+
+  @include mq.media(phone) {
+    min-height: auto;
+    padding-block: 76px 12px;
+  }
+
+  @include mq.max(375px) {
+    min-height: auto;
+    padding-block: 70px 10px;
+  }
 }
 
-.copy {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.hero__copy {
+  @include flex.flex($fd: column, $ai: flex-start);
+
   width: 100%;
 }
 
-.textBlock {
+.hero__textBlock {
   max-width: 760px;
+
+  @include mq.media(phone, tablet, laptop) {
+    max-width: 720px;
+  }
+
+  @include mq.max(820px) {
+    max-width: 100%;
+  }
 }
 
-.eyebrow {
+.hero__eyebrow {
   display: inline-flex;
   margin-bottom: 18px;
   font-size: var(--text-12);
@@ -79,7 +135,7 @@
   color: rgb(245 242 236 / 78%);
 }
 
-.title {
+.hero__title {
   margin: 0;
   max-width: 13.8ch;
   font-family: var(--font-heading);
@@ -88,29 +144,68 @@
   line-height: 0.9;
   letter-spacing: -0.06em;
   text-wrap: balance;
+
+  @include mq.max(820px) {
+    max-width: 12.5ch;
+    font-size: clamp(32px, 8vw, 46px);
+    line-height: 0.92;
+  }
+
+  @include mq.media(phone) {
+    max-width: 12ch;
+    font-size: clamp(30px, 8.4vw, 40px);
+  }
+
+  @include mq.max(375px) {
+    max-width: 12.5ch;
+    font-size: 28px;
+  }
 }
 
-.title span {
+.hero__titleAccent {
   color: var(--amber);
 }
 
-.lead {
+.hero__lead {
   margin: 18px 0 0;
   max-width: 36ch;
   font-size: clamp(13px, 0.82vw, 16px);
   line-height: 1.5;
   color: rgb(245 242 236 / 72%);
+
+  @include mq.max(820px) {
+    max-width: 30ch;
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.42;
+  }
+
+  @include mq.media(phone) {
+    max-width: 28ch;
+    font-size: 12px;
+    line-height: 1.38;
+  }
+
+  @include mq.max(375px) {
+    max-width: 26ch;
+    margin-top: 10px;
+    font-size: 11px;
+  }
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+.hero__actions {
+  @include flex.flex($fw: wrap, $jc: flex-start);
+
   gap: 14px;
   margin-top: 28px;
+
+  @include mq.media(phone) {
+    width: 100%;
+    margin-top: 18px;
+  }
 }
 
-.primaryCta {
+.hero__primaryCta {
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
@@ -125,19 +220,33 @@
   transition:
     transform 0.25s ease,
     background 0.25s ease;
+
+  @include mq.max(820px) {
+    min-height: 50px;
+  }
+
+  @include mq.media(phone) {
+    width: 100%;
+    min-height: 48px;
+    padding-left: 18px;
+  }
 }
 
-.primaryCta:hover {
+.hero__primaryCta:hover {
   transform: translateY(-1px);
   background: color-mix(in srgb, var(--amber) 84%, #000 16%);
 }
 
-.primaryCta span {
+.hero__primaryCtaText {
   font-size: var(--text-body-sm);
   font-weight: 600;
+
+  @include mq.media(phone) {
+    font-size: 13px;
+  }
 }
 
-.primaryCta i {
+.hero__primaryCtaIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -145,9 +254,14 @@
   height: 40px;
   border-radius: 50%;
   background: var(--paper);
+
+  @include mq.media(phone) {
+    width: 34px;
+    height: 34px;
+  }
 }
 
-.secondaryCta {
+.hero__secondaryCta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -164,23 +278,48 @@
     transform 0.25s ease,
     background 0.25s ease,
     border-color 0.25s ease;
+
+  @include mq.max(820px) {
+    min-height: 50px;
+  }
+
+  @include mq.media(phone) {
+    display: none;
+  }
 }
 
-.secondaryCta:hover {
+.hero__secondaryCta:hover {
   transform: translateY(-1px);
   border-color: rgb(255 255 255 / 30%);
   background: rgb(255 255 255 / 12%);
 }
 
-.cards {
+.hero__cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   width: 100%;
   margin-top: 42px;
+
+  @include mq.max(820px) {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  @include mq.media(phone) {
+    margin-top: 18px;
+  }
+
+  @include mq.max(375px) {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
 }
 
-.card {
+.hero__card {
   min-height: 152px;
   padding: 22px 24px;
   text-align: left;
@@ -191,9 +330,24 @@
     radial-gradient(circle at top right, rgb(237 174 36 / 10%), transparent 36%);
   box-shadow: 0 18px 46px rgb(0 0 0 / 18%);
   backdrop-filter: blur(16px);
+
+  @include mq.max(820px) {
+    min-height: 0;
+    padding: 16px 18px;
+    border-radius: 22px;
+  }
+
+  @include mq.media(phone) {
+    padding: 14px 16px;
+  }
+
+  @include mq.max(375px) {
+    padding: 12px 14px;
+    border-radius: 18px;
+  }
 }
 
-.card span {
+.hero__cardLabel {
   display: inline-flex;
   margin-bottom: 12px;
   font-size: var(--text-12);
@@ -201,9 +355,13 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--amber);
+
+  @include mq.media(phone) {
+    margin-bottom: 8px;
+  }
 }
 
-.card strong {
+.hero__cardText {
   display: block;
   max-width: 18ch;
   font-family: var(--font-heading);
@@ -212,6 +370,20 @@
   line-height: 1.02;
   letter-spacing: -0.04em;
   color: var(--paper);
+
+  @include mq.max(820px) {
+    max-width: none;
+    font-size: 18px;
+  }
+
+  @include mq.media(phone) {
+    font-size: 16px;
+  }
+
+  @include mq.max(375px) {
+    font-size: 15px;
+    line-height: 1.08;
+  }
 }
 
 @keyframes hero-breath {
@@ -228,179 +400,11 @@
   }
 }
 
-@media (width <= 1180px) {
-  .hero {
-    min-height: 660px;
-  }
-
-  .inner {
-    padding-block: 118px 34px;
-  }
-
-  .textBlock {
-    max-width: 720px;
-  }
-}
-
-@media (width <= 820px) {
-  .hero,
-  .sectionpad {
-    min-height: auto;
-  }
-
-  .inner {
-    min-height: auto;
-    padding-block: 82px 18px;
-  }
-
-  .textBlock {
-    max-width: 100%;
-  }
-
-  .title {
-    max-width: 12.5ch;
-    font-size: clamp(32px, 8vw, 46px);
-    line-height: 0.92;
-  }
-
-  .lead {
-    max-width: 30ch;
-    margin-top: 12px;
-    font-size: 13px;
-    line-height: 1.42;
-  }
-
-  .primaryCta,
-  .secondaryCta {
-    min-height: 50px;
-  }
-
-  .cards {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-top: 24px;
-  }
-
-  .card {
-    min-height: 0;
-    padding: 16px 18px;
-    border-radius: 22px;
-  }
-
-  .card strong {
-    max-width: none;
-    font-size: 18px;
-  }
-}
-
-@media (width <= 480px) {
-  .hero,
-  .sectionpad {
-    min-height: auto;
-  }
-
-  .inner {
-    min-height: auto;
-    padding-block: 76px 12px;
-  }
-
-  .title {
-    max-width: 12ch;
-    font-size: clamp(30px, 8.4vw, 40px);
-  }
-
-  .lead {
-    max-width: 28ch;
-    font-size: 12px;
-    line-height: 1.38;
-  }
-
-  .actions {
-    width: 100%;
-    margin-top: 18px;
-  }
-
-  .primaryCta {
-    width: 100%;
-    min-height: 48px;
-    padding-left: 18px;
-  }
-
-  .primaryCta span {
-    font-size: 13px;
-  }
-
-  .primaryCta i {
-    width: 34px;
-    height: 34px;
-  }
-
-  .secondaryCta {
-    display: none;
-  }
-
-  .cards {
-    margin-top: 18px;
-  }
-
-  .card {
-    padding: 14px 16px;
-  }
-
-  .card span {
-    margin-bottom: 8px;
-  }
-
-  .card strong {
-    font-size: 16px;
-  }
-}
-
-@media (width <= 375px) {
-  .hero,
-  .sectionpad {
-    min-height: auto;
-  }
-
-  .inner {
-    min-height: auto;
-    padding-block: 70px 10px;
-  }
-
-  .title {
-    max-width: 12.5ch;
-    font-size: 28px;
-  }
-
-  .lead {
-    max-width: 26ch;
-    margin-top: 10px;
-    font-size: 11px;
-  }
-
-  .cards {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-top: 16px;
-  }
-
-  .card {
-    padding: 12px 14px;
-    border-radius: 18px;
-  }
-
-  .card strong {
-    font-size: 15px;
-    line-height: 1.08;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .slide,
-  .isActive,
-  .primaryCta,
-  .secondaryCta {
+@include mq.motion-reduce {
+  .hero__slide,
+  .hero__slide_active,
+  .hero__primaryCta,
+  .hero__secondaryCta {
     animation: none !important;
     transition: none !important;
     transform: none !important;

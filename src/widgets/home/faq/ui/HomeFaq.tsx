@@ -12,11 +12,11 @@ export function HomeFaq({
   setOpenFaq: (value: number) => void
 }) {
   return (
-    <section className={styles.section + ' ' + styles.sectionpad}>
-      <div className={styles.bgimage} aria-hidden="true" />
-      <PageWrapper className={styles.content}>
+    <section className={styles.faq + ' ' + styles.faq_sectionPad}>
+      <div className={styles.faq__bgImage} aria-hidden="true" />
+      <PageWrapper className={styles.faq__content}>
         <SectionHeader
-          className={styles.faqtitle}
+          className={styles.faq__title}
           tone="dark"
           number="10"
           label="Частые вопросы"
@@ -29,30 +29,30 @@ export function HomeFaq({
           }
           lead="Здесь собрали короткие ответы про сроки, бюджет, контроль, удалённый ремонт и выбор между дизайн-проектом и пакетным решением."
         />
-        <div className={styles.faqlist}>
+        <div className={styles.faq__list}>
           {faqItems.map((item, index) => {
             const isOpen = openFaq === index
 
             return (
               <article
-                className={`${styles.faqitem} ${isOpen ? styles.isopen : ''}`}
+                className={`${styles.faq__item} ${isOpen ? styles.faq__item_open : ''}`}
                 key={item.question}
               >
                 <button
-                  className={styles.faqtrigger}
+                  className={styles.faq__trigger}
                   type="button"
                   aria-expanded={isOpen}
                   onClick={() => setOpenFaq(isOpen ? -1 : index)}
                 >
-                  <span className={styles.faqnumber}>0{index + 1}</span>
-                  <strong className={styles.faqquestion}>{item.question}</strong>
-                  <span className={styles.faqtoggle}>
+                  <span className={styles.faq__number}>0{index + 1}</span>
+                  <strong className={styles.faq__question}>{item.question}</strong>
+                  <span className={styles.faq__toggle}>
                     <PlusIcon open={isOpen} />
                   </span>
                 </button>
-                <div className={styles.faqanswer}>
-                  <div className={styles.faqanswerinner}>
-                    <p className={styles.faqanswertext}>{item.answer}</p>
+                <div className={styles.faq__answer}>
+                  <div className={styles.faq__answerInner}>
+                    <p className={styles.faq__answerText}>{item.answer}</p>
                   </div>
                 </div>
               </article>

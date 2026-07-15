@@ -6,7 +6,7 @@ $home-tablet: 820px;
 $home-compact: 580px;
 $home-xs: 420px;
 
-.sectionpad {
+.partners_sectionPad {
   @include home.section-pad;
 }
 
@@ -14,7 +14,7 @@ $home-xs: 420px;
   @include home.surface-dark;
 }
 
-.partnerslayout {
+.partners__layout {
   @include flex.flex($fd: column);
 
   gap: 40px;
@@ -24,42 +24,42 @@ $home-xs: 420px;
   }
 }
 
-.partnersheader {
+.partners__header {
   :global(.sectionHeaderLead) {
     max-width: 60ch;
   }
 }
 
-.partnersrail {
+.partners__rail {
   @include flex.flex($fd: column);
 
   gap: 14px;
 }
 
-.marquee {
+.partnersMarquee {
   overflow: hidden;
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 
-.marqueeTrack {
-  display: flex;
+.partnersMarquee__track {
+  @include flex.flex;
+
   width: max-content;
   animation: partners-scroll 34s linear infinite;
 
-  &.reverse {
+  &_reverse {
     animation-direction: reverse;
   }
 }
 
-.marqueeGroup {
-  display: flex;
-  flex-shrink: 0;
+.partnersMarquee__group {
+  @include flex.flex($fs: 0, $ai: center);
+
   gap: 14px;
-  align-items: center;
   padding-right: 14px;
 }
 
-.card {
+.partnerCard {
   @include flex.flex($fd: column, $jc: center, $ai: center);
 
   flex-shrink: 0;
@@ -88,7 +88,7 @@ $home-xs: 420px;
   }
 }
 
-.card span {
+.partnerCard__name {
   font-family: var(--font-heading);
   font-size: 24px;
   font-weight: 500;
@@ -101,7 +101,7 @@ $home-xs: 420px;
   }
 }
 
-.card small {
+.partnerCard__label {
   margin-top: 8px;
   color: rgb(245 242 236 / 62%);
   font-size: 12px;
@@ -116,8 +116,8 @@ $home-xs: 420px;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .marqueeTrack {
+@include mq.motion-reduce {
+  .partnersMarquee__track {
     animation: none;
   }
 }

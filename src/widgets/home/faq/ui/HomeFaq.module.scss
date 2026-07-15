@@ -1,12 +1,14 @@
 @use 'common' as home;
+@use 'flex' as flex;
+@use 'media' as mq;
 
 
-.sectionpad {
+.faq_sectionPad {
   @include home.section-pad;
 }
 
 
-.section {
+.faq {
   position: relative;
   overflow: hidden;
   color: var(--surface-fg-dark);
@@ -17,7 +19,7 @@
 }
 
 
-.bgimage {
+.faq__bgImage {
   position: absolute;
   inset: -30px;
   z-index: 0;
@@ -28,21 +30,22 @@
 }
 
 
-.section:hover .bgimage {
+.faq:hover .faq__bgImage {
   transform: scale(1.025);
 }
 
 
-.content {
+.faq__content {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
+
+  @include flex.flex($fw: wrap);
+
   gap: 9vw;
 }
 
 
-.faqtitle {
+.faq__title {
   flex: 0.75;
   align-self: start;
   position: sticky;
@@ -51,28 +54,28 @@
 }
 
 
-.faqlist {
+.faq__list {
   flex: 1.25;
   min-width: 0;
 
 }
 
 
-.faqitem {
+.faq__item {
   border-bottom: 1px solid var(--section-line);
   transition: background-color 0.3s ease;
   border-radius: 24px;
 }
 
 
-.faqitem:hover {
+.faq__item:hover {
   background: rgb(255 255 255 / 4%);
 }
 
 
-.faqtrigger {
-  display: flex;
-  align-items: center;
+.faq__trigger {
+  @include flex.flex($ai: center);
+
   gap: 20px;
   width: 100%;
   padding: 24px;
@@ -85,10 +88,9 @@
 }
 
 
-.faqnumber {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.faq__number {
+  @include flex.flex($ai: center, $jc: center);
+
   flex-shrink: 0;
   width: 44px;
   height: 44px;
@@ -106,14 +108,14 @@
 }
 
 
-.faqitem.isopen .faqnumber,
-.faqitem:hover .faqnumber {
+.faq__item_open .faq__number,
+.faq__item:hover .faq__number {
   border-color: var(--amber);
   background: rgb(237 174 36 / 12%);
 }
 
 
-.faqquestion {
+.faq__question {
   flex: 1;
   min-width: 0;
   font-family: var(--font-heading);
@@ -125,10 +127,9 @@
 }
 
 
-.faqtoggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.faq__toggle {
+  @include flex.flex($ai: center, $jc: center);
+
   flex-shrink: 0;
   width: 44px;
   height: 44px;
@@ -143,26 +144,26 @@
 }
 
 
-.faqitem.isopen .faqtoggle {
+.faq__item_open .faq__toggle {
   border-color: var(--surface-fg-dark);
   background: var(--surface-fg-dark);
   color: var(--surface-dark);
 }
 
 
-.faqanswer {
+.faq__answer {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.45s cubic-bezier(0.2, 0.7, 0, 1);
 }
 
 
-.faqanswerinner {
+.faq__answerInner {
   overflow: hidden;
 }
 
 
-.faqanswertext {
+.faq__answerText {
   margin: 0 0 0 72px;
   color: color-mix(in srgb, currentcolor 72%, transparent);
   font-size: var(--text-body-sm);
@@ -170,68 +171,68 @@
 }
 
 
-.faqitem.isopen .faqanswer {
+.faq__item_open .faq__answer {
   max-height: 480px;
 }
 
 
-.faqitem.isopen .faqanswertext {
+.faq__item_open .faq__answerText {
   margin-bottom: 28px;
 }
 
 
-@media (width <= 820px) {
-  .content {
+@include mq.max(820px) {
+  .faq__content {
     flex-direction: column;
   }
 
-  .faqtitle {
+  .faq__title {
     flex: 1 1 100%;
     position: static;
 
     // margin-bottom: 56px;
   }
 
-  .faqlist {
+  .faq__list {
     flex: 1 1 100%;
   }
 }
 
 
-@media (width <= 580px) {
-  .faqtrigger {
+@include mq.max(580px) {
+  .faq__trigger {
     gap: 14px;
     padding: 20px 0;
   }
 
-  .faqnumber,
-  .faqtoggle {
+  .faq__number,
+  .faq__toggle {
     width: 40px;
     height: 40px;
   }
 
-  .faqanswertext {
+  .faq__answerText {
     margin-left: 58px;
   }
 }
 
-@media (width <= 420px) {
-  .faqtrigger {
+@include mq.max(420px) {
+  .faq__trigger {
     gap: 10px;
     padding: 18px 0;
   }
 
-  .faqquestion {
+  .faq__question {
     font-size: 1.125rem;
   }
 
-  .faqnumber,
-  .faqtoggle {
+  .faq__number,
+  .faq__toggle {
     width: 36px;
     height: 36px;
   }
 
-  .faqanswertext {
+  .faq__answerText {
     margin-left: 48px;
   }
 }

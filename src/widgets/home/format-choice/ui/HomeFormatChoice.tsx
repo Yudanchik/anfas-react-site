@@ -12,7 +12,7 @@ export function HomeFormatChoice({
 }) {
   return (
     <section className={styles.choice}>
-      <div className={styles.layout}>
+      <div className={styles.choice__layout}>
         <SectionHeader
           number="04"
           label={formatChoice.eyebrow}
@@ -26,21 +26,23 @@ export function HomeFormatChoice({
           lead={formatChoice.lead}
         />
 
-        <div className={styles.options} data-reveal>
+        <div className={styles.choice__options} data-reveal>
           {formatChoice.options.map((option) => (
-            <article className={styles.card} key={option.key}>
-              <p className={styles.badge}>{option.key === 'individual' ? 'Индивидуально' : 'Быстрый старт'}</p>
-              <div className={styles.cardBody}>
-                <h3 className={styles.cardTitle}>{option.title}</h3>
-                <p className={styles.cardText}>{option.text}</p>
+            <article className={styles.choice__card} key={option.key}>
+              <p className={styles.choice__badge}>{option.key === 'individual' ? 'Индивидуально' : 'Быстрый старт'}</p>
+              <div className={styles.choice__cardBody}>
+                <h3 className={styles.choice__cardTitle}>{option.title}</h3>
+                <p className={styles.choice__cardText}>{option.text}</p>
               </div>
-              <ul className={styles.points}>
+              <ul className={styles.choice__points}>
                 {option.points.map((point) => (
-                  <li key={point}>{point}</li>
+                  <li className={styles.choice__point} key={point}>
+                    {point}
+                  </li>
                 ))}
               </ul>
               <button
-                className={styles.action}
+                className={styles.choice__action}
                 type="button"
                 onClick={option.key === 'individual' ? onOpenBrief : onScrollToCalculator}
               >
@@ -50,8 +52,8 @@ export function HomeFormatChoice({
           ))}
         </div>
 
-        <div className={styles.footer} data-reveal>
-          <p className={styles.footerText}>
+        <div className={styles.choice__footer} data-reveal>
+          <p className={styles.choice__footerText}>
             Если не хотите гадать, на следующем шаге можно перейти к мини-калькулятору пакетного
             решения или сразу оставить заявку на консультацию по дизайн-проекту.
           </p>

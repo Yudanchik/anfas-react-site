@@ -1,6 +1,8 @@
 @use 'common' as home;
+@use 'flex' as flex;
+@use 'media' as mq;
 
-.sectionpad {
+.services_sectionPad {
   @include home.section-pad;
 }
 
@@ -9,21 +11,21 @@
   background: var(--ink);
 }
 
-.servicelist {
+.services__list {
   border-top: 1px solid rgb(255 255 255 / 20%);
 }
 
-.servicecard {
+.services__card {
   position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+
+  @include flex.flex($fw: wrap, $ai: center);
+
   gap: 28px;
   padding: 40px 36px;
   border-bottom: 1px solid rgb(255 255 255 / 20%);
 }
 
-.servicecard::before {
+.services__card::before {
   position: absolute;
   z-index: 0;
   inset: 0;
@@ -34,16 +36,16 @@
   background: var(--amber);
 }
 
-.servicecard:hover::before {
+.services__card:hover::before {
   transform: scaleY(1);
 }
 
-.servicecard > * {
+.services__card > * {
   position: relative;
   z-index: 1;
 }
 
-.servicenumber {
+.services__number {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -62,12 +64,12 @@
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 10%);
 }
 
-.servicecardbody {
+.services__cardBody {
   flex: 1.2;
   min-width: 0;
 }
 
-.servicecardtitle {
+.services__cardTitle {
   margin: 0 0 20px;
   font-family: var(--font-heading);
   font-size: var(--text-card-title);
@@ -76,19 +78,19 @@
   letter-spacing: -0.04em;
 }
 
-.servicecardtext {
+.services__cardText {
   margin: 0;
   color: rgb(243 240 233 / 68%);
   font-size: var(--text-card-description);
   line-height: var(--line-height-body);
 }
 
-.servicecard:hover,
-.servicecard:hover .servicecardtext {
+.services__card:hover,
+.services__card:hover .services__cardText {
   color: var(--ink);
 }
 
-.servicecardtags {
+.services__tags {
   flex: 0.8;
   min-width: 180px;
   margin: 0;
@@ -96,21 +98,20 @@
   list-style: none;
 }
 
-.servicecardtag {
+.services__tag {
   padding: 10px 0;
   font-size: var(--text-body-sm);
   line-height: var(--line-height-body);
   border-bottom: 1px solid rgb(255 255 255 / 20%);
 }
 
-.servicecard:hover .servicecardtag {
+.services__card:hover .services__tag {
   border-color: rgb(22 23 19 / 25%);
 }
 
-.servicecard > a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.services__link {
+  @include flex.flex($ai: center, $jc: center);
+
   flex-shrink: 0;
   width: 60px;
   height: 60px;
@@ -123,71 +124,71 @@
   background: transparent;
 }
 
-.servicecard:hover > a {
+.services__card:hover .services__link {
   transform: rotate(-28deg);
   border-color: var(--ink);
 }
 
-.servicecard > a svg {
+.services__link svg {
   width: 18px;
   fill: none;
   stroke: currentcolor;
 }
 
-@media (width <= 1100px) {
-  .servicecard {
+@include mq.max(1100px) {
+  .services__card {
     gap: 22px;
   }
 
-  .servicenumber {
+  .services__number {
     min-width: 64px;
   }
 
-  .servicecardtags {
+  .services__tags {
     min-width: 160px;
   }
 }
 
-@media (width <= 820px) {
-  .servicecard {
+@include mq.max(820px) {
+  .services__card {
     padding: 32px 24px;
   }
 
-  .servicenumber {
+  .services__number {
     min-width: 44px;
   }
 
-  .servicecardtags {
+  .services__tags {
     display: none;
   }
 
-  .servicecardtext {
+  .services__cardText {
     padding-right: 20px;
   }
 }
 
-@media (width <= 580px) {
-  .servicecard {
+@include mq.max(580px) {
+  .services__card {
     gap: 14px;
     padding: 28px 0;
   }
 
-  .servicenumber {
+  .services__number {
     flex: 1 1 100%;
     min-width: 56px;
     padding: 14px 16px;
     font-size: var(--text-18);
   }
 
-  .servicecardtitle {
-  font-size: var(--text-card-title);
+  .services__cardTitle {
+    font-size: var(--text-card-title);
   }
 
-  .servicecardtext {
+  .services__cardText {
     padding: 0;
   }
 
-  .servicecard > a {
+  .services__link {
     width: 46px;
     height: 46px;
   }

@@ -1,3 +1,6 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+
 .ticker {
   position: relative;
   z-index: 2;
@@ -10,20 +13,20 @@
   border-bottom: 1px solid rgb(22 23 19 / 8%);
 }
 
-.tickertrack {
-  display: flex;
+.ticker__track {
+  @include flex.flex;
+
   width: max-content;
   animation: ticker-scroll 46s linear infinite;
 }
 
-.tickergroup {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
+.ticker__group {
+  @include flex.flex($fs: 0, $ai: center);
+
   white-space: nowrap;
 }
 
-.tickerItem {
+.ticker__item {
   position: relative;
   padding: 0 34px;
   font-size: var(--text-12);
@@ -55,14 +58,14 @@
   }
 }
 
-@media (width <= 580px) {
-  .tickerItem {
+@include mq.max(580px) {
+  .ticker__item {
     padding: 0 24px;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .tickertrack {
+@include mq.motion-reduce {
+  .ticker__track {
     animation: none;
   }
 }

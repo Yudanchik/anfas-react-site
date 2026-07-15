@@ -6,24 +6,28 @@ import styles from './HomeContact.module.scss'
 export function HomeContact({ onOpenBrief }: { onOpenBrief: () => void }) {
   return (
     <section id="contacts" className={styles.contact}>
-      <div className={styles.contactorbit} aria-hidden="true">
-        <span />
-        <i />
+      <div className={styles.contact__orbit} aria-hidden="true">
+        <span className={styles.contact__orbitDot} />
+        <i className={styles.contact__orbitSpinner} />
       </div>
       <p
-        className={styles.eyebrow}
+        className={styles.contact__eyebrow}
         data-reveal
         style={{ '--reveal-delay': '0ms' } as CSSProperties}
       >
-        <span /> Есть идея?
+        <span className={styles.contact__eyebrowLine} /> Есть идея?
       </p>
-      <h2 data-reveal style={{ '--reveal-delay': '80ms' } as CSSProperties}>
+      <h2
+        className={styles.contact__title}
+        data-reveal
+        style={{ '--reveal-delay': '80ms' } as CSSProperties}
+      >
         Давайте посмотрим,
         <br />
-        <em>что из неё получится.</em>
+        <em className={styles.contact__titleAccent}>что из неё получится.</em>
       </h2>
       <p
-        className={styles.contactlead}
+        className={styles.contact__lead}
         data-reveal
         style={{ '--reveal-delay': '160ms' } as CSSProperties}
       >
@@ -31,14 +35,14 @@ export function HomeContact({ onOpenBrief }: { onOpenBrief: () => void }) {
         следующий шаг.
       </p>
       <button
-        className={styles.contactbutton}
+        className={styles.contact__button}
         type="button"
         onClick={() => onOpenBrief()}
         data-reveal
         style={{ '--reveal-delay': '240ms' } as CSSProperties}
       >
-        <span>Заполнить короткий бриф</span>
-        <i>
+        <span className={styles.contact__buttonText}>Заполнить короткий бриф</span>
+        <i className={styles.contact__buttonIcon}>
           <ArrowIcon size={16} />
         </i>
       </button>

@@ -48,48 +48,50 @@ export function HomeHero({ onOpenBrief }: { onOpenBrief: () => void }) {
 
   return (
     <section className={styles.hero} id="top">
-      <div className={styles.media} aria-hidden="true">
+      <div className={styles.hero__media} aria-hidden="true">
         {slides.map((slide, index) => (
           <div
             key={slide.image}
-            className={`${styles.slide} ${index === activeIndex ? styles.isActive : ''}`}
+            className={`${styles.hero__slide} ${index === activeIndex ? styles.hero__slide_active : ''}`}
             style={{ backgroundImage: `url(${slide.image})` }}
           />
         ))}
-        <div className={styles.overlay} />
-        <div className={styles.vignette} />
+        <div className={styles.hero__overlay} />
+        <div className={styles.hero__vignette} />
       </div>
 
-      <div className={styles.sectionpad}>
+      <div className={styles.hero__sectionPad}>
         <PageWrapper>
-          <div className={styles.inner}>
-            <div className={styles.copy}>
-              <div className={styles.textBlock}>
-                <span className={styles.eyebrow}>{activeSlide.eyebrow}</span>
-                <h1 className={styles.title}>
-                  {heroContent.title.start} <span>{heroContent.title.accent}</span> {heroContent.title.end}
+          <div className={styles.hero__inner}>
+            <div className={styles.hero__copy}>
+              <div className={styles.hero__textBlock}>
+                <span className={styles.hero__eyebrow}>{activeSlide.eyebrow}</span>
+                <h1 className={styles.hero__title}>
+                  {heroContent.title.start}{' '}
+                  <span className={styles.hero__titleAccent}>{heroContent.title.accent}</span>{' '}
+                  {heroContent.title.end}
                 </h1>
-                <p className={styles.lead}>{heroContent.lead}</p>
+                <p className={styles.hero__lead}>{heroContent.lead}</p>
 
-                <div className={styles.actions}>
-                  <button className={styles.primaryCta} type="button" onClick={() => onOpenBrief()}>
-                    <span>Обсудить проект</span>
-                    <i>
+                <div className={styles.hero__actions}>
+                  <button className={styles.hero__primaryCta} type="button" onClick={() => onOpenBrief()}>
+                    <span className={styles.hero__primaryCtaText}>Обсудить проект</span>
+                    <i className={styles.hero__primaryCtaIcon}>
                       <ArrowIcon size={16} />
                     </i>
                   </button>
 
-                  <Link className={styles.secondaryCta} to="/projects">
+                  <Link className={styles.hero__secondaryCta} to="/projects">
                     Смотреть проекты
                   </Link>
                 </div>
               </div>
 
-              <div className={styles.cards}>
+              <div className={styles.hero__cards}>
                 {heroContent.cards.map((card) => (
-                  <article className={styles.card} key={card.label}>
-                    <span>{card.label}</span>
-                    <strong>{card.text}</strong>
+                  <article className={styles.hero__card} key={card.label}>
+                    <span className={styles.hero__cardLabel}>{card.label}</span>
+                    <strong className={styles.hero__cardText}>{card.text}</strong>
                   </article>
                 ))}
               </div>

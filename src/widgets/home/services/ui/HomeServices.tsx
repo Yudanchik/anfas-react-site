@@ -8,7 +8,7 @@ import styles from './HomeServices.module.scss'
 
 export function HomeServices() {
   return (
-    <section id="services" className={styles.services + ' ' + styles.sectionpad}>
+    <section id="services" className={styles.services + ' ' + styles.services_sectionPad}>
       <PageWrapper className={styles.container}>
         <SectionHeader
           tone="dark"
@@ -24,22 +24,26 @@ export function HomeServices() {
           lead="От первой линии на плане до последней лампы: одна команда отвечает за результат целиком."
         />
 
-        <div className={styles.servicelist}>
+        <div className={styles.services__list}>
           {services.map((service) => (
-            <article className={styles.servicecard} key={service.id} data-reveal="scale">
-              <span className={styles.servicenumber}>{service.number}</span>
-              <div className={styles.servicecardbody}>
-                <h3 className={styles.servicecardtitle}>{service.title}</h3>
-                <p className={styles.servicecardtext}>{service.text}</p>
+            <article className={styles.services__card} key={service.id} data-reveal="scale">
+              <span className={styles.services__number}>{service.number}</span>
+              <div className={styles.services__cardBody}>
+                <h3 className={styles.services__cardTitle}>{service.title}</h3>
+                <p className={styles.services__cardText}>{service.text}</p>
               </div>
-              <ul className={styles.servicecardtags}>
+              <ul className={styles.services__tags}>
                 {service.tags.map((tag) => (
-                  <li className={styles.servicecardtag} key={tag}>
+                  <li className={styles.services__tag} key={tag}>
                     {tag}
                   </li>
                 ))}
               </ul>
-              <Link to={`/services#${service.id}`} aria-label={`Подробнее: ${service.title}`}>
+              <Link
+                className={styles.services__link}
+                to={`/services#${service.id}`}
+                aria-label={`Подробнее: ${service.title}`}
+              >
                 <ArrowIcon size={16} />
               </Link>
             </article>

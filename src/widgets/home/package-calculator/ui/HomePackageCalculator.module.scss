@@ -1,23 +1,29 @@
 @use 'common' as home;
+@use 'flex' as flex;
+@use 'media' as mq;
 
-.calculator {
+.packageCalculator {
   @include home.section-pad;
   @include home.surface-light;
 }
 
-.layout {
-  display: flex;
-  flex-direction: column;
+.packageCalculator__layout {
+  @include flex.flex($fd: column);
+
   gap: 28px;
 }
 
-.switchRow {
+.packageCalculator__switchRow {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 10px;
+
+  @include mq.max(700px) {
+    width: 100%;
+  }
 }
 
-.switchButton {
+.packageCalculator__switchButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -40,53 +46,69 @@
     transform: translateY(-1px);
     border-color: rgb(197 160 102 / 34%);
   }
+
+  @include mq.max(700px) {
+    flex: 1 1 100%;
+  }
 }
 
-.switchButtonActive {
+.packageCalculator__switchButton_active {
   color: var(--paper);
   border-color: var(--ink);
   background: var(--ink);
 }
 
-.grid {
+.packageCalculator__grid {
   display: grid;
   grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.98fr);
   gap: 18px;
+
+  @include mq.media(phone, tablet, laptop) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.form,
-.result {
-  display: flex;
+.packageCalculator__form,
+.packageCalculator__result {
+  @include flex.flex($fd: column);
+
   min-width: 0;
-  flex-direction: column;
   gap: 20px;
   padding: 28px;
   border: 1px solid var(--glass-border-light);
   border-radius: 30px;
   box-shadow: var(--shadow-card);
+
+  @include mq.max(700px) {
+    padding: 22px;
+  }
+
+  @include mq.media(phone) {
+    padding: 18px 16px;
+  }
 }
 
-.form {
+.packageCalculator__form {
   background:
     radial-gradient(circle at 90% 0%, rgb(197 160 102 / 10%), transparent 24%),
     linear-gradient(180deg, rgb(255 255 255 / 88%), rgb(251 248 243 / 96%));
 }
 
-.result {
+.packageCalculator__result {
   color: var(--paper);
   background:
     radial-gradient(circle at 82% 8%, rgb(197 160 102 / 18%), transparent 30%),
     linear-gradient(135deg, rgb(20 20 17), rgb(28 27 24));
 }
 
-.formHead,
-.resultTop {
+.packageCalculator__formHead,
+.packageCalculator__resultTop {
   display: grid;
   gap: 10px;
 }
 
-.formKicker,
-.resultEyebrow {
+.packageCalculator__formKicker,
+.packageCalculator__resultEyebrow {
   margin: 0;
   color: var(--amber);
   font-size: var(--text-caption);
@@ -95,21 +117,25 @@
   text-transform: uppercase;
 }
 
-.formHint,
-.resultSummary {
+.packageCalculator__formHint,
+.packageCalculator__resultSummary {
   margin: 0;
   color: rgb(22 23 19 / 70%);
   font-size: var(--text-14);
   line-height: 1.75;
+
+  @include mq.media(phone) {
+    font-size: 14px;
+  }
 }
 
-.resultSummary {
+.packageCalculator__resultSummary {
   color: rgb(245 242 236 / 72%);
 }
 
-.formGroup {
-  display: flex;
-  flex-direction: column;
+.packageCalculator__formGroup {
+  @include flex.flex($fd: column);
+
   gap: 10px;
   min-width: 0;
   padding: 0;
@@ -117,7 +143,7 @@
   border: 0;
 }
 
-.formGroup > legend {
+.packageCalculator__legend {
   padding: 0;
   margin: 0 0 2px;
   color: rgb(22 23 19 / 62%);
@@ -127,25 +153,24 @@
   text-transform: uppercase;
 }
 
-.labelRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.packageCalculator__labelRow {
+  @include flex.flex($ai: center, $jc: space-between);
+
   gap: 12px;
 }
 
-.labelRow label,
-.formGroup > label {
+.packageCalculator__label,
+.packageCalculator__fieldLabel {
   font-size: 14px;
   font-weight: 600;
 }
 
-.helper {
+.packageCalculator__helper {
   color: rgb(22 23 19 / 60%);
   font-size: var(--text-caption);
 }
 
-.range {
+.packageCalculator__range {
   width: 100%;
   min-height: 52px;
   padding: 0;
@@ -155,13 +180,13 @@
   accent-color: var(--amber);
 }
 
-.areaMarks {
-  display: flex;
-  flex-wrap: wrap;
+.packageCalculator__areaMarks {
+  @include flex.flex($fw: wrap);
+
   gap: 8px;
 }
 
-.areaMark {
+.packageCalculator__areaMark {
   display: inline-flex;
   align-items: center;
   min-height: 34px;
@@ -185,22 +210,25 @@
   }
 }
 
-.areaMarkActive {
+.packageCalculator__areaMark_active {
   color: var(--ink);
   border-color: rgb(197 160 102 / 45%);
   background: rgb(197 160 102 / 14%);
 }
 
-.typeGrid {
+.packageCalculator__typeGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+
+  @include mq.max(700px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.typeCard {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.packageCalculator__typeCard {
+  @include flex.flex($fd: column, $ai: flex-start);
+
   gap: 8px;
   min-height: 112px;
   padding: 18px;
@@ -221,36 +249,48 @@
     border-color: rgb(197 160 102 / 34%);
     box-shadow: 0 16px 28px rgb(22 23 19 / 8%);
   }
+
+  @include mq.media(phone) {
+    padding: 14px;
+  }
 }
 
-.typeCardActive {
+.packageCalculator__typeCard_active {
   border-color: rgb(197 160 102 / 52%);
   background:
     radial-gradient(circle at 100% 0%, rgb(197 160 102 / 14%), transparent 42%),
     linear-gradient(180deg, rgb(255 248 237 / 92%), rgb(255 244 223 / 84%));
 }
 
-.typeCardLabel {
+.packageCalculator__typeCardLabel {
   color: var(--ink);
   font-size: 15px;
   font-weight: 700;
 }
 
-.typeCardHelper {
+.packageCalculator__typeCardHelper {
   color: rgb(22 23 19 / 60%);
   font-size: 12px;
   line-height: 1.55;
 }
 
-.variantGrid {
+.packageCalculator__variantGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+
+  @include mq.max(700px) {
+    grid-template-columns: 1fr;
+  }
+
+  @include mq.media(phone) {
+    gap: 10px;
+  }
 }
 
-.variantCard {
-  display: flex;
-  flex-direction: column;
+.packageCalculator__variantCard {
+  @include flex.flex($fd: column);
+
   gap: 8px;
   min-width: 0;
   padding: 16px;
@@ -269,45 +309,53 @@
     border-color: rgb(197 160 102 / 36%);
     box-shadow: 0 16px 28px rgb(22 23 19 / 8%);
   }
+
+  @include mq.media(phone) {
+    padding: 14px;
+  }
 }
 
-.variantCardActive {
+.packageCalculator__variantCard_active {
   border-color: rgb(197 160 102 / 52%);
   background: rgb(197 160 102 / 12%);
 }
 
-.variantCardLabel {
+.packageCalculator__variantCardLabel {
   color: var(--ink);
   font-size: 14px;
   font-weight: 700;
   line-height: 1.35;
 }
 
-.variantCardHelper {
+.packageCalculator__variantCardHelper {
   color: rgb(22 23 19 / 58%);
   font-size: 12px;
   line-height: 1.5;
 }
 
-.variantCardRate {
+.packageCalculator__variantCardRate {
   color: rgb(22 23 19 / 88%);
   font-size: 12px;
   font-weight: 700;
 }
 
-.compactGrid {
+.packageCalculator__compactGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+
+  @include mq.max(700px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.choiceGrid {
-  display: flex;
-  flex-wrap: wrap;
+.packageCalculator__choiceGrid {
+  @include flex.flex($fw: wrap);
+
   gap: 8px;
 }
 
-.choiceButton {
+.packageCalculator__choiceButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -332,21 +380,29 @@
   }
 }
 
-.choiceButtonActive {
+.packageCalculator__choiceButton_active {
   color: var(--ink);
   border-color: rgb(197 160 102 / 48%);
   background: rgb(197 160 102 / 14%);
 }
 
-.optionGrid {
+.packageCalculator__optionGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+
+  @include mq.max(700px) {
+    grid-template-columns: 1fr;
+  }
+
+  @include mq.media(phone) {
+    gap: 10px;
+  }
 }
 
-.optionCard {
-  display: flex;
-  flex-direction: column;
+.packageCalculator__optionCard {
+  @include flex.flex($fd: column);
+
   gap: 8px;
   min-width: 0;
   padding: 16px;
@@ -364,37 +420,41 @@
     border-color: rgb(197 160 102 / 36%);
     box-shadow: 0 16px 28px rgb(22 23 19 / 8%);
   }
+
+  @include mq.media(phone) {
+    padding: 14px;
+  }
 }
 
-.optionCardHeader {
-  display: flex;
-  align-items: flex-start;
+.packageCalculator__optionCardHeader {
+  @include flex.flex($ai: flex-start);
+
   gap: 10px;
-
-  input {
-    width: 16px;
-    height: 16px;
-    margin-top: 2px;
-    flex: 0 0 auto;
-    accent-color: var(--amber);
-  }
-
-  span {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.35;
-  }
 }
 
-.optionCard small {
+.packageCalculator__optionCheckbox {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex: 0 0 auto;
+  accent-color: var(--amber);
+}
+
+.packageCalculator__optionLabel {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.packageCalculator__optionHelper {
   color: rgb(22 23 19 / 58%);
   font-size: 12px;
   line-height: 1.45;
 }
 
-.resultPanel {
-  display: flex;
-  flex-direction: column;
+.packageCalculator__resultPanel {
+  @include flex.flex($fd: column);
+
   gap: 10px;
   padding: 20px;
   border: 1px solid rgb(255 255 255 / 12%);
@@ -402,7 +462,7 @@
   background: rgb(255 255 255 / 6%);
 }
 
-.resultCaption {
+.packageCalculator__resultCaption {
   color: rgb(245 242 236 / 52%);
   font-size: var(--text-caption);
   font-weight: 700;
@@ -410,17 +470,21 @@
   text-transform: uppercase;
 }
 
-.resultPrice {
+.packageCalculator__resultPrice {
   font-family: var(--font-heading);
   font-size: clamp(28px, 4vw, 52px);
   font-weight: 400;
   line-height: 1;
   letter-spacing: -0.05em;
+
+  @include mq.media(phone) {
+    font-size: clamp(24px, 9vw, 40px);
+  }
 }
 
-.resultMetaLine {
-  display: flex;
-  flex-wrap: wrap;
+.packageCalculator__resultMetaLine {
+  @include flex.flex($fw: wrap);
+
   gap: 12px;
   color: rgb(245 242 236 / 68%);
   font-size: var(--text-14);
@@ -433,25 +497,33 @@
   }
 }
 
-.metrics {
+.packageCalculator__metrics {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+
+  @include mq.max(700px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.metric {
+.packageCalculator__metric {
   padding: 16px;
   border: 1px solid rgb(255 255 255 / 12%);
   border-radius: 20px;
   background: rgb(255 255 255 / 6%);
+
+  @include mq.media(phone) {
+    padding: 14px;
+  }
 }
 
-.metric span,
-.metric strong {
+.packageCalculator__metricLabel,
+.packageCalculator__metricValue {
   display: block;
 }
 
-.metric span {
+.packageCalculator__metricLabel {
   color: rgb(245 242 236 / 56%);
   font-size: 12px;
   font-weight: 700;
@@ -459,32 +531,36 @@
   text-transform: uppercase;
 }
 
-.metric strong {
+.packageCalculator__metricValue {
   margin-top: 6px;
   font-size: 16px;
   font-weight: 500;
   line-height: 1.35;
 }
 
-.notes {
-  display: flex;
-  flex-direction: column;
+.packageCalculator__notes {
+  @include flex.flex($fd: column);
+
   gap: 10px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.notes li {
-  display: flex;
+.packageCalculator__note {
+  @include flex.flex($ai: flex-start);
+
   gap: 10px;
-  align-items: flex-start;
   color: rgb(245 242 236 / 72%);
   font-size: 14px;
   line-height: 1.7;
+
+  @include mq.media(phone) {
+    font-size: 14px;
+  }
 }
 
-.notes li::before {
+.packageCalculator__note::before {
   width: 8px;
   height: 8px;
   margin-top: 8px;
@@ -494,14 +570,18 @@
   flex: 0 0 auto;
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
+.packageCalculator__actions {
+  @include flex.flex($fw: wrap);
+
   gap: 12px;
+
+  @include mq.max(700px) {
+    @include flex.flex($fd: column);
+  }
 }
 
-.button,
-.buttonAlt {
+.packageCalculator__button,
+.packageCalculator__buttonAlt {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -517,87 +597,24 @@
     background-color 0.3s cubic-bezier(0.2, 0.7, 0, 1),
     color 0.3s cubic-bezier(0.2, 0.7, 0, 1),
     border-color 0.3s cubic-bezier(0.2, 0.7, 0, 1);
+
+  @include mq.max(700px) {
+    width: 100%;
+  }
 }
 
-.button {
+.packageCalculator__button {
   color: var(--ink);
   background: var(--amber);
 }
 
-.buttonAlt {
+.packageCalculator__buttonAlt {
   color: var(--paper);
   border: 1px solid rgb(255 255 255 / 14%);
   background: rgb(255 255 255 / 8%);
 }
 
-.button:hover,
-.buttonAlt:hover {
+.packageCalculator__button:hover,
+.packageCalculator__buttonAlt:hover {
   transform: translateY(-1px);
-}
-
-@media (width <= 1100px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (width <= 700px) {
-  .form,
-  .result {
-    padding: 22px;
-  }
-
-  .typeGrid,
-  .variantGrid,
-  .compactGrid,
-  .optionGrid,
-  .metrics {
-    grid-template-columns: 1fr;
-  }
-
-  .switchRow {
-    width: 100%;
-  }
-
-  .switchButton {
-    flex: 1 1 100%;
-  }
-
-  .actions {
-    flex-direction: column;
-  }
-
-  .button,
-  .buttonAlt {
-    width: 100%;
-  }
-}
-
-@media (width <= 420px) {
-  .form,
-  .result {
-    padding: 18px 16px;
-  }
-
-  .formHint,
-  .resultSummary,
-  .notes li {
-    font-size: 14px;
-  }
-
-  .resultPrice {
-    font-size: clamp(24px, 9vw, 40px);
-  }
-
-  .variantGrid,
-  .optionGrid {
-    gap: 10px;
-  }
-
-  .optionCard,
-  .metric,
-  .variantCard,
-  .typeCard {
-    padding: 14px;
-  }
 }

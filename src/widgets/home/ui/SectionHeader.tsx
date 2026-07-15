@@ -40,7 +40,7 @@ export function SectionHeader({
   const headerClassName = [
     styles.sectionHeader,
     sectionHeaderClassNames.root,
-    tone === 'dark' ? styles.dark : '',
+    tone === 'dark' ? styles.sectionHeader_dark : '',
     className,
   ]
     .filter(Boolean)

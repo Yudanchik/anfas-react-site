@@ -1,11 +1,14 @@
-.button {
+@use 'flex' as flex;
+@use 'themes/default/colors' as c;
+
+.scrollToTop {
   position: fixed;
   z-index: 110;
   right: max(16px, 2.4vw);
   bottom: max(20px, 2.8vw);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  @include flex.flex($jc: center, $ai: center);
+
   width: 44px;
   height: 44px;
   cursor: pointer;
@@ -21,19 +24,19 @@
   background: rgb(255 255 255 / 92%);
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(8px);
-}
 
-.button:hover {
-  transform: translateY(-2px) rotate(-90deg);
-  border-color: var(--amber);
-}
+  &:hover {
+    transform: translateY(-2px) rotate(-90deg);
+    border-color: c.$amber;
+  }
 
-.visible {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0) rotate(-90deg);
-}
+  &_visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) rotate(-90deg);
 
-.visible:hover {
-  transform: translateY(-2px) rotate(-90deg);
+    &:hover {
+      transform: translateY(-2px) rotate(-90deg);
+    }
+  }
 }

@@ -4,24 +4,24 @@ import styles from './HomeManifesto.module.scss'
 
 export function HomeManifesto() {
   return (
-    <section className={styles.manifesto + ' ' + styles.sectionpad}>
+    <section className={styles.manifesto + ' ' + styles.manifesto_sectionPad}>
       <PageWrapper>
-        <div className={styles.statsrow} data-reveal>
-          <div className={styles.metaitem}>
-            <span className={styles.metanum}>13</span>
-            <span className={styles.metalabel}>лет на рынке</span>
+        <div className={styles.manifesto__statsRow} data-reveal>
+          <div className={styles.manifesto__metaItem}>
+            <span className={styles.manifesto__metaNumber}>13</span>
+            <span className={styles.manifesto__metaLabel}>лет на рынке</span>
           </div>
-          <div className={styles.metaitem}>
-            <span className={styles.metanum}>100+</span>
-            <span className={styles.metalabel}>сданных объектов</span>
+          <div className={styles.manifesto__metaItem}>
+            <span className={styles.manifesto__metaNumber}>100+</span>
+            <span className={styles.manifesto__metaLabel}>сданных объектов</span>
           </div>
-          <div className={styles.metaitem}>
-            <span className={styles.metanum}>36&nbsp;мес</span>
-            <span className={styles.metalabel}>гарантия на инженерку</span>
+          <div className={styles.manifesto__metaItem}>
+            <span className={styles.manifesto__metaNumber}>36&nbsp;мес</span>
+            <span className={styles.manifesto__metaLabel}>гарантия на инженерку</span>
           </div>
-          <div className={styles.metaitem}>
-            <span className={styles.metanum}>0&nbsp;₽</span>
-            <span className={styles.metalabel}>скрытых расходов</span>
+          <div className={styles.manifesto__metaItem}>
+            <span className={styles.manifesto__metaNumber}>0&nbsp;₽</span>
+            <span className={styles.manifesto__metaLabel}>скрытых расходов</span>
           </div>
         </div>
       </PageWrapper>

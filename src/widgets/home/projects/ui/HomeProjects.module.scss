@@ -1,7 +1,8 @@
 @use 'common' as home;
+@use 'flex' as flex;
+@use 'media' as mq;
 
-
-.sectionpad {
+.projects_sectionPad {
   @include home.section-pad;
 }
 
@@ -12,20 +13,20 @@
 }
 
 
-.projectgrid {
-  display: flex;
-  flex-wrap: wrap;
+.projects__grid {
+  @include flex.flex($fw: wrap);
+
   gap: 56px 28px;
 }
 
 
-.projectcard {
+.projects__card {
   flex: 1 1 calc(50% - 14px);
   min-width: 0;
 }
 
 
-.projectimagewrap {
+.projects__imageWrap {
   position: relative;
   height: min(67vw, 760px);
   max-height: 760px;
@@ -35,17 +36,17 @@
 }
 
 
-.projectwide .projectimagewrap {
+.projects__card_wide .projects__imageWrap {
   height: min(49vw, 570px);
 }
 
 
-.projectstandard .projectimagewrap {
+.projects__card_standard .projects__imageWrap {
   height: min(52vw, 630px);
 }
 
 
-.projectimagewrap img {
+.projects__image {
   width: 100%;
   height: 100%;
   transition:
@@ -55,19 +56,19 @@
 }
 
 
-.projectcard:hover .projectimagewrap img {
+.projects__card:hover .projects__image {
   transform: scale(1.05);
   filter: saturate(0.82);
 }
 
 
-.projectindex {
+.projects__index {
   position: absolute;
   top: 20px;
   left: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  @include flex.flex($jc: center, $ai: center);
+
   width: 35px;
   height: 35px;
   font-size: var(--text-caption);
@@ -78,13 +79,13 @@
 }
 
 
-.projectaction {
+.projects__action {
   position: absolute;
   right: 20px;
   bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  @include flex.flex($jc: center, $ai: center);
+
   width: 68px;
   height: 68px;
   transition: transform 0.45s cubic-bezier(0.2, 0.7, 0, 1);
@@ -95,33 +96,32 @@
 }
 
 
-.projectcard:hover .projectaction {
+.projects__card:hover .projects__action {
   transform: translateY(0) rotate(-28deg);
 }
 
 
-.projectaction svg {
+.projects__action svg {
   width: 22px;
   fill: none;
   stroke: currentcolor;
 }
 
 
-.projectcopy {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+.projects__copy {
+  @include flex.flex($fw: wrap, $jc: space-between);
+
   gap: 16px 24px;
   padding-top: 20px;
 }
 
 
-.projectcopymain {
+.projects__copyMain {
   min-width: 0;
 }
 
 
-.projecttype {
+.projects__type {
   margin: 0 0 10px;
   color: rgb(243 240 233 / 55%);
   font-size: var(--text-caption);
@@ -130,7 +130,7 @@
 }
 
 
-.projecttitle {
+.projects__title {
   margin: 0;
   font-family: var(--font-heading);
   font-size: var(--text-card-title);
@@ -140,38 +140,38 @@
 }
 
 
-.projectmeta {
-  display: flex;
-  flex-wrap: wrap;
+.projects__meta {
+  @include flex.flex($fw: wrap);
+
   gap: 16px 20px;
   margin: 0;
 }
 
 
-.projectmetaitem {
-  display: flex;
-  flex-direction: column;
+.projects__metaItem {
+  @include flex.flex($fd: column);
+
   gap: 6px;
 }
 
 
-.projectmetalabel {
+.projects__metaLabel {
   color: rgb(243 240 233 / 48%);
   font-size: var(--text-caption);
   text-transform: uppercase;
 }
 
 
-.projectmetavalue {
+.projects__metaValue {
   margin: 0;
   font-size: var(--text-body-sm);
   line-height: var(--line-height-body);
 }
 
 
-.textlink {
-  display: flex;
-  align-items: center;
+.projects__textLink {
+  @include flex.flex($ai: center);
+
   width: max-content;
   gap: 70px;
   margin: 120px auto 0;
@@ -183,7 +183,7 @@
 }
 
 
-.textlink svg {
+.projects__textLink svg {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
@@ -191,74 +191,74 @@
 }
 
 
-.textlink:hover svg {
+.projects__textLink:hover svg {
   transform: translateX(7px);
 }
 
 
-@media (width <= 1100px) {
-  .projectgrid {
+@include mq.max(1100px) {
+  .projects__grid {
     gap: 48px 22px;
   }
 }
 
 
-@media (width <= 820px) {
-  .projectmeta {
+@include mq.max(820px) {
+  .projects__meta {
     gap: 14px 16px;
   }
 }
 
 
-@media (width <= 580px) {
-  .projectgrid {
-    flex-direction: column;
+@include mq.max(580px) {
+  .projects__grid {
+    @include flex.flex($fd: column);
   }
 
-  .projectcard {
+  .projects__card {
     flex: 1 1 100%;
     margin: 0 0 76px;
   }
 
-  .projectimagewrap,
-  .projectwide .projectimagewrap,
-  .projectstandard .projectimagewrap {
+  .projects__imageWrap,
+  .projects__card_wide .projects__imageWrap,
+  .projects__card_standard .projects__imageWrap {
     height: 122vw;
     max-height: 660px;
   }
 
-  .projectmeta {
-    display: flex;
-    flex-wrap: wrap;
+  .projects__meta {
+    @include flex.flex($fw: wrap);
   }
 
-  .projectmetaitem {
+  .projects__metaItem {
     flex: 1 1 calc(33.333% - 14px);
     min-width: 0;
   }
 
-  .textlink {
+  .projects__textLink {
     width: 100%;
     justify-content: space-between;
     margin-top: 0;
   }
 }
 
-@media (width <= 420px) {
-  .projectcopy {
-    flex-direction: column;
+@include mq.max(420px) {
+  .projects__copy {
+    @include flex.flex($fd: column);
+
     gap: 16px;
   }
 
-  .projectmetaitem {
+  .projects__metaItem {
     flex: 1 1 calc(50% - 6px);
   }
 
-  .projectmetavalue {
+  .projects__metaValue {
     white-space: normal;
   }
 
-  .textlink {
+  .projects__textLink {
     gap: 24px;
   }
 }
