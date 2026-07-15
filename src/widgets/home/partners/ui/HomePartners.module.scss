@@ -1,4 +1,4 @@
-@use 'common' as home;
+﻿@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -90,23 +90,23 @@ $home-xs: 420px;
 
 .partnerCard__name {
   font-family: var(--font-heading);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
   color: var(--paper);
 
   @include mq.max($home-compact) {
-    font-size: 20px;
+    font-size: var(--type-heading-xs);
   }
 }
 
 .partnerCard__label {
   margin-top: 8px;
   color: rgb(245 242 236 / 62%);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 

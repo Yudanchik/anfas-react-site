@@ -1,5 +1,4 @@
-@use 'fonts' as f;
-@use 'flex' as flex;
+﻿@use 'flex' as flex;
 @use 'media' as mq;
 
 .siteHeader {
@@ -51,14 +50,17 @@
 
   flex: 1;
   gap: clamp(24px, 3vw, 56px);
-
-  @include f.body-font(14, 1.35, 500, 0.02em);
+  font-family: var(--font-body);
+  font-size: var(--type-nav);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-control);
+  letter-spacing: var(--tracking-body);
 }
 
 .siteHeader__nav a {
   position: relative;
   padding: 8px 0;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--tracking-body);
 }
 
 .siteHeader__nav a::after {
@@ -87,14 +89,18 @@
   color: inherit;
   border: 0;
   background: transparent;
-
-  @include f.uppercase-label(12, 600, var(--letter-spacing-wide));
+  font-family: var(--font-body);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-control);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .siteHeader__phone b {
-  font-size: var(--text-14);
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: var(--type-nav);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-body);
 }
 
 .siteHeader__menuButton {
@@ -155,24 +161,24 @@
 
   gap: 18px;
   padding: 18px 0;
-  font-size: clamp(var(--text-32), 10vw, var(--text-56));
-  line-height: 0.96;
+  font-size: var(--type-display-lg);
+  line-height: var(--leading-display);
   border-bottom: 1px solid rgb(255 255 255 / 18%);
   font-family: var(--font-heading);
-  font-weight: 500;
-  letter-spacing: var(--letter-spacing-tight);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-heading);
 }
 
 .siteHeader__mobileNav span {
   font-family: var(--font-body);
-  font-size: var(--text-12);
+  font-size: var(--type-caption);
   color: var(--amber);
 }
 
 .siteHeader__mobileFooter {
   @include flex.flex($jc: space-between);
 
-  font-size: var(--text-14);
+  font-size: var(--type-body-md);
 }
 
 @include mq.max(1100px) {
@@ -204,7 +210,7 @@
 
   .siteHeader__mobileNav a {
     gap: 16px;
-    font-size: clamp(var(--text-28), 12vw, var(--text-44));
+    font-size: var(--type-heading-xl);
   }
 
   .siteHeader__mobileFooter {

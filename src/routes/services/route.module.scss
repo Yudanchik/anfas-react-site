@@ -1,4 +1,4 @@
-@use 'media' as mq;
+﻿@use 'media' as mq;
 @use 'flex' as flex;
 
 $tablet: 820px;
@@ -80,9 +80,9 @@ $xs: 420px;
   gap: 12px;
   margin: 0 0 18px;
   color: rgb(245 242 236 / 72%);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 
   &::before {
@@ -97,10 +97,10 @@ $xs: 420px;
   max-width: 12ch;
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(42px, 5vw, 72px);
-  font-weight: 500;
-  line-height: 0.95;
-  letter-spacing: -0.05em;
+  font-size: var(--type-display-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
 
   em {
     color: var(--amber);
@@ -109,7 +109,6 @@ $xs: 420px;
 
   @include mq.media(phone) {
     max-width: 11ch;
-    font-size: clamp(32px, 10vw, 52px);
   }
 }
 
@@ -117,12 +116,11 @@ $xs: 420px;
   max-width: 42ch;
   margin: 24px 0 0;
   color: rgb(245 242 236 / 76%);
-  font-size: 16px;
-  line-height: 1.75;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 
   @include mq.media(phone) {
     max-width: 100%;
-    font-size: 14px;
   }
 }
 
@@ -146,17 +144,17 @@ $xs: 420px;
   display: inline-flex;
   margin-bottom: 12px;
   color: var(--amber);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .servicesPage__heroCardText {
   margin: 0;
   color: rgb(245 242 236 / 82%);
-  font-size: 16px;
-  line-height: 1.68;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }
 
 .servicesPage__surfaceLight,
@@ -193,9 +191,9 @@ $xs: 420px;
   gap: 12px;
   margin: 0 0 14px;
   color: rgb(22 23 19 / 56%);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 
   &::before {
@@ -209,10 +207,10 @@ $xs: 420px;
 .servicesPage__sectionTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(32px, 4vw, 48px);
-  font-weight: 500;
-  line-height: 0.98;
-  letter-spacing: -0.04em;
+  font-size: var(--type-heading-xl);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
   color: var(--ink);
 
   em {
@@ -225,8 +223,8 @@ $xs: 420px;
   max-width: 58ch;
   margin: 18px 0 0;
   color: rgb(22 23 19 / 68%);
-  font-size: 16px;
-  line-height: 1.74;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }
 
 .servicesPage__surfaceDark .servicesPage__sectionLabel {
@@ -326,9 +324,9 @@ $xs: 420px;
   border: 1px solid rgb(255 255 255 / 12%);
   border-radius: 999px;
   color: rgb(245 242 236 / 86%);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   background: rgb(255 255 255 / 6%);
   backdrop-filter: blur(8px);
@@ -339,9 +337,9 @@ $xs: 420px;
   bottom: 20px;
   color: rgb(245 242 236 / 92%);
   font-family: var(--font-heading);
-  font-size: 44px;
-  font-weight: 500;
-  letter-spacing: -0.05em;
+  font-size: var(--type-heading-xl);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-display);
 }
 
 .servicesPage__serviceBody {
@@ -358,10 +356,10 @@ $xs: 420px;
 .servicesPage__serviceTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1.04;
-  letter-spacing: -0.03em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
   color: var(--ink);
 }
 
@@ -369,8 +367,8 @@ $xs: 420px;
 .servicesPage__serviceLead {
   margin: 0;
   color: rgb(22 23 19 / 70%);
-  font-size: 15px;
-  line-height: 1.66;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }
 
 .servicesPage__serviceTags,
@@ -387,9 +385,9 @@ $xs: 420px;
   padding: 10px 14px;
   border: 1px solid rgb(22 23 19 / 10%);
   border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: rgb(22 23 19 / 58%);
 }
@@ -404,8 +402,8 @@ $xs: 420px;
   position: relative;
   padding-left: 18px;
   color: rgb(22 23 19 / 72%);
-  font-size: 15px;
-  line-height: 1.58;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body-sm);
 
   &::before {
     position: absolute;
@@ -434,10 +432,10 @@ $xs: 420px;
 .servicesPage__serviceMetricValue {
   display: block;
   font-family: var(--font-heading);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.03em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
   color: var(--ink);
 }
 
@@ -445,8 +443,8 @@ $xs: 420px;
   display: block;
   margin-top: 6px;
   color: rgb(22 23 19 / 56%);
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
 }
 
 .servicesPage__serviceFoot {
@@ -463,18 +461,18 @@ $xs: 420px;
 
 .servicesPage__servicePrice {
   font-family: var(--font-heading);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.03em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
 }
 
 .servicesPage__serviceDuration {
   color: rgb(22 23 19 / 56%);
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-label);
 }
 
 .servicesPage__serviceButton,
@@ -488,8 +486,8 @@ $xs: 420px;
   border: 0;
   border-radius: 999px;
   color: var(--ink);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
   background: var(--amber);
 
   @include mq.media(phone) {
@@ -520,27 +518,27 @@ $xs: 420px;
   display: inline-flex;
   margin-bottom: 12px;
   color: var(--amber);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .servicesPage__compareTitle {
   margin: 0 0 12px;
   font-family: var(--font-heading);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1.04;
-  letter-spacing: -0.03em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
   color: var(--paper);
 }
 
 .servicesPage__compareText {
   margin: 0;
   color: rgb(245 242 236 / 70%);
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }
 
 .servicesPage__formSection {
@@ -562,18 +560,18 @@ $xs: 420px;
 .servicesPage__formTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(28px, 4vw, 40px);
-  font-weight: 500;
-  line-height: 0.98;
-  letter-spacing: -0.04em;
+  font-size: var(--type-heading-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
 }
 
 .servicesPage__formLead {
   max-width: 52ch;
   margin: 14px 0 0;
   color: rgb(22 23 19 / 68%);
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }
 
 .servicesPage__form {
@@ -594,9 +592,9 @@ $xs: 420px;
   display: block;
   margin-bottom: 10px;
   color: rgb(22 23 19 / 56%);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -626,8 +624,8 @@ $xs: 420px;
   border: 1px solid rgb(22 23 19 / 10%);
   border-radius: 999px;
   color: rgb(22 23 19 / 68%);
-  font-size: 14px;
-  letter-spacing: 0;
+  font-size: var(--type-body-sm);
+  letter-spacing: var(--tracking-body);
   text-transform: none;
   background: rgb(22 23 19 / 3%);
 }
@@ -654,7 +652,7 @@ $xs: 420px;
   padding: 0 18px;
   color: var(--ink);
   font: inherit;
-  font-size: 16px;
+  font-size: var(--type-body-md);
   border: 1px solid rgb(22 23 19 / 10%);
   border-radius: 16px;
   outline: none;
@@ -665,8 +663,8 @@ $xs: 420px;
   display: block;
   margin-top: 6px;
   color: #a43c27;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
 }
 
 .servicesPage__formFooter {
@@ -679,13 +677,13 @@ $xs: 420px;
   max-width: 40ch;
   margin: 0;
   color: rgb(22 23 19 / 52%);
-  font-size: 12px;
-  line-height: 1.6;
+  font-size: var(--type-caption);
+  line-height: var(--leading-body);
 }
 
 .servicesPage__success {
   margin-top: 20px;
   color: rgb(22 23 19 / 74%);
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }

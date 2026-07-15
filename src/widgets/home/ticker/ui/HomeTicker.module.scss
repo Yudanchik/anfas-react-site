@@ -1,4 +1,4 @@
-@use 'flex' as flex;
+﻿@use 'flex' as flex;
 @use 'media' as mq;
 
 .ticker {
@@ -29,9 +29,9 @@
 .ticker__item {
   position: relative;
   padding: 0 34px;
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 
   &::after {

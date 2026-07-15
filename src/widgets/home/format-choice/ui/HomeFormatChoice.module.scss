@@ -38,9 +38,9 @@
   margin: 0;
   padding: 8px 12px;
   border-radius: 999px;
-  font-size: var(--text-caption);
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--paper);
   background: var(--ink);
@@ -53,16 +53,16 @@
 .choice__cardTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: var(--text-card-title);
-  font-weight: 400;
-  line-height: var(--line-height-tight);
-  letter-spacing: -0.04em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 .choice__cardText {
   margin: 0;
-  font-size: var(--text-card-description);
-  line-height: var(--line-height-body);
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }
 
 .choice__points {
@@ -78,8 +78,8 @@
   @include flex.flex($ai: flex-start);
 
   gap: 10px;
-  font-size: var(--text-body-sm);
-  line-height: var(--line-height-body);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
 }
 
 .choice__point::before {
@@ -102,8 +102,8 @@
   cursor: pointer;
   border: 0;
   border-radius: 100px;
-  font-size: var(--text-body-sm);
-  font-weight: 600;
+  font-size: var(--type-body-sm);
+  font-weight: var(--weight-semibold);
   color: var(--paper);
   background: var(--ink);
   transition: transform 0.3s ease;
@@ -119,8 +119,8 @@
 
 .choice__footerText {
   margin: 0;
-  font-size: var(--text-card-description);
-  line-height: var(--line-height-body);
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
   color: rgb(22 23 19 / 72%);
 }
 
@@ -143,10 +143,10 @@
 
   .choice__cardText,
   .choice__footerText {
-    font-size: var(--text-body-sm);
+    font-size: var(--type-body-sm);
   }
 
   .choice__point {
-    font-size: var(--text-body-sm);
+    font-size: var(--type-body-sm);
   }
 }

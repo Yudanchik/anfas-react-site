@@ -1,4 +1,4 @@
-@use 'common' as home;
+﻿@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -71,7 +71,7 @@
 
   width: 35px;
   height: 35px;
-  font-size: var(--text-caption);
+  font-size: var(--type-caption);
   border: 1px solid rgb(255 255 255 / 55%);
   border-radius: 50%;
   background: rgb(20 20 17 / 15%);
@@ -124,8 +124,8 @@
 .projects__type {
   margin: 0 0 10px;
   color: rgb(243 240 233 / 55%);
-  font-size: var(--text-caption);
-  letter-spacing: 0.1em;
+  font-size: var(--type-caption);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -133,10 +133,10 @@
 .projects__title {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: var(--text-card-title);
-  font-weight: 400;
-  line-height: var(--line-height-tight);
-  letter-spacing: -0.04em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 
@@ -157,15 +157,15 @@
 
 .projects__metaLabel {
   color: rgb(243 240 233 / 48%);
-  font-size: var(--text-caption);
+  font-size: var(--type-caption);
   text-transform: uppercase;
 }
 
 
 .projects__metaValue {
   margin: 0;
-  font-size: var(--text-body-sm);
-  line-height: var(--line-height-body);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
 }
 
 
@@ -176,8 +176,8 @@
   gap: 70px;
   margin: 120px auto 0;
   padding-bottom: 12px;
-  font-size: var(--text-caption);
-  letter-spacing: 0.08em;
+  font-size: var(--type-caption);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   border-bottom: 1px solid rgb(255 255 255 / 40%);
 }

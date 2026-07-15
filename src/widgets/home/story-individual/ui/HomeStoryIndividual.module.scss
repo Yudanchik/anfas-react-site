@@ -1,4 +1,4 @@
-@use 'common' as home;
+﻿@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -64,9 +64,9 @@ $mobile: 640px;
 .stepLabel {
   display: inline-flex;
   margin-bottom: 10px;
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--amber);
 }
@@ -74,16 +74,16 @@ $mobile: 640px;
 .stepTitle {
   margin: 0 0 8px;
   font-family: var(--font-heading);
-  font-size: clamp(18px, 1.4vw, 24px);
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-card);
 }
 
 .stepText {
   margin: 0;
-  font-size: var(--text-body-sm);
-  line-height: 1.5;
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body-sm);
   color: rgb(245 242 236 / 72%);
 }
 
@@ -147,9 +147,9 @@ $mobile: 640px;
   padding: 10px 14px;
   border: 1px solid rgb(255 255 255 / 12%);
   border-radius: 999px;
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: rgb(245 242 236 / 82%);
   background: rgb(255 255 255 / 6%);
@@ -168,9 +168,9 @@ $mobile: 640px;
 }
 
 .heroOverline {
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--amber);
 }
@@ -179,22 +179,22 @@ $mobile: 640px;
   margin: 0;
   max-width: 24ch;
   font-family: var(--font-heading);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 0.98;
-  letter-spacing: -0.04em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
 
   @include mq.max($tablet) {
     max-width: 100%;
-    font-size: 24px;
+    font-size: var(--type-heading-sm);
   }
 }
 
 .heroText {
   margin: 0;
   max-width: 44ch;
-  font-size: var(--text-body-sm);
-  line-height: 1.58;
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body-sm);
   color: rgb(245 242 236 / 74%);
 }
 
@@ -215,16 +215,16 @@ $mobile: 640px;
 .metric strong {
   display: block;
   font-family: var(--font-heading);
-  font-size: clamp(18px, 1.4vw, 24px);
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-card);
 }
 
 .metric span {
   display: block;
   margin-top: 4px;
-  font-size: var(--text-12);
-  line-height: 1.4;
+  font-size: var(--type-caption);
+  line-height: var(--leading-caption);
   color: rgb(245 242 236 / 58%);
 }
 
@@ -251,8 +251,8 @@ $mobile: 640px;
   }
 
   > span {
-    font-size: var(--text-body-sm);
-    font-weight: 600;
+    font-size: var(--type-button);
+    font-weight: var(--weight-semibold);
   }
 
   i {
@@ -292,9 +292,9 @@ $mobile: 640px;
 .highlightLabel {
   display: inline-flex;
   margin-bottom: 10px;
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--amber);
 }
@@ -302,15 +302,15 @@ $mobile: 640px;
 .highlightTitle {
   margin: 0 0 8px;
   font-family: var(--font-heading);
-  font-size: clamp(18px, 1.45vw, 24px);
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-card);
 }
 
 .highlightText {
   margin: 0;
-  font-size: var(--text-body-sm);
-  line-height: 1.5;
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body-sm);
   color: rgb(245 242 236 / 72%);
 }
