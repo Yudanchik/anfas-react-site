@@ -11,23 +11,20 @@ import {
 import { briefSchema, type BriefFormValues } from '@/features/brief/model/brief.schema'
 import { services } from '@/entities/service/model/services.data'
 import { innerHeroImages } from '@/shared/config/hero-media'
+import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './route.module.scss'
 
-export const meta = () => [
-  { title: 'Услуги ремонта квартир под ключ | Анфас' },
-  {
-    name: 'description',
-    content:
+export const meta = () =>
+  createSeoMeta({
+    title: 'Услуги ремонта квартир под ключ | Анфас',
+    description:
       'Индивидуальный и пакетный ремонт квартир под ключ в Санкт-Петербурге. Понятные сроки, прозрачная смета, комплектация и одна команда на весь проект.',
-  },
-  {
-    name: 'keywords',
-    content:
+    keywords:
       'ремонт квартир под ключ спб, индивидуальный ремонт, пакетный ремонт, дизайн и ремонт квартиры, ремонт квартиры с комплектацией',
-  },
-]
+    path: '/services',
+  })
 
 const heroCards = [
   {

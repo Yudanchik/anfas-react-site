@@ -1,13 +1,16 @@
 import { Link } from 'react-router'
 
+import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from '../_shared/InnerPage.module.scss'
 
-export const meta = () => [
-  { title: 'Страница не найдена — Анфас' },
-  { name: 'robots', content: 'noindex, nofollow' },
-]
+export const meta = () =>
+  createSeoMeta({
+    title: 'Страница не найдена — Анфас',
+    path: '/',
+    robots: 'noindex, nofollow',
+  })
 
 export default function NotFoundRoute() {
   return (

@@ -1,3 +1,60 @@
+export const siteUrl = 'https://anfas-art.ru'
+
+export const defaultSeoImage = '/images/hero/hero-living.png'
+
+type SeoMetaOptions = {
+  title: string
+  description?: string
+  path: string
+  keywords?: string
+  image?: string
+  robots?: string
+  type?: 'website' | 'article'
+}
+
+export function absoluteUrl(path = '/') {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  return new URL(normalizedPath, siteUrl).toString()
+}
+
+export function createSeoMeta({
+  title,
+  description,
+  path,
+  keywords,
+  image = defaultSeoImage,
+  robots = 'index, follow',
+  type = 'website',
+}: SeoMetaOptions) {
+  const canonical = absoluteUrl(path)
+  const imageUrl = absoluteUrl(image)
+  const meta = [
+    { title },
+    { name: 'robots', content: robots },
+    { tagName: 'link', rel: 'canonical', href: canonical },
+    { property: 'og:title', content: title },
+    { property: 'og:type', content: type },
+    { property: 'og:url', content: canonical },
+    { property: 'og:image', content: imageUrl },
+    { property: 'og:locale', content: 'ru_RU' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: title },
+    { name: 'twitter:image', content: imageUrl },
+  ]
+
+  if (description) {
+    meta.splice(1, 0, { name: 'description', content: description })
+    meta.splice(6, 0, { property: 'og:description', content: description })
+    meta.push({ name: 'twitter:description', content: description })
+  }
+
+  if (keywords) {
+    meta.splice(2, 0, { name: 'keywords', content: keywords })
+  }
+
+  return meta
+}
+
 export const seoQueryClusters = {
   home: [
     'ремонт квартир под ключ',

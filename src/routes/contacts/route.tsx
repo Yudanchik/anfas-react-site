@@ -1,6 +1,7 @@
 import { useBrief } from '@/features/brief/model/BriefContext'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { company } from '@/shared/config/company'
+import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from '../_shared/InnerPage.module.scss'
@@ -59,25 +60,15 @@ const legalRows = [
   ['Юридический адрес', company.legalAddress],
 ] as const
 
-export const meta = () => [
-  { title: 'Контакты Анфас — ремонт квартир под ключ в Санкт-Петербурге' },
-  {
-    name: 'description',
-    content:
+export const meta = () =>
+  createSeoMeta({
+    title: 'Контакты Анфас — ремонт квартир под ключ в Санкт-Петербурге',
+    description:
       'Контакты Анфас: телефон, почта, офис в Санкт-Петербурге и реквизиты компании. Обсудим ремонт квартиры под ключ, дизайн-проект или капсульный формат.',
-  },
-  {
-    name: 'keywords',
-    content:
+    keywords:
       'контакты анфас, ремонт квартир спб контакты, ремонт под ключ санкт-петербург, дизайн проект квартиры спб, капсульный ремонт',
-  },
-  { property: 'og:title', content: 'Контакты Анфас — ремонт квартир под ключ в Санкт-Петербурге' },
-  {
-    property: 'og:description',
-    content:
-      'Телефон, почта, офис и реквизиты Анфас. Поможем выбрать формат ремонта и обсудим ваш проект.',
-  },
-]
+    path: '/contacts',
+  })
 
 export default function ContactsRoute() {
   const { openBrief } = useBrief()

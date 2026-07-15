@@ -3,6 +3,7 @@ import { Link, useLoaderData } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
 import { innerHeroImages } from '@/shared/config/hero-media'
+import { createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
@@ -15,25 +16,15 @@ export async function loader() {
   }
 }
 
-export const meta = () => [
-  { title: 'Проекты ремонта квартир в Санкт-Петербурге | Анфас' },
-  {
-    name: 'description',
-    content:
+export const meta = () =>
+  createSeoMeta({
+    title: 'Проекты ремонта квартир в Санкт-Петербурге | Анфас',
+    description:
       'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге. Портфолио с примерами работ, площадью и типом объекта.',
-  },
-  {
-    name: 'keywords',
-    content:
+    keywords:
       'проекты ремонта квартир, портфолио ремонта, дизайн интерьера спб, реализованные проекты, примеры ремонта квартир',
-  },
-  { property: 'og:title', content: 'Проекты ремонта квартир в Санкт-Петербурге | Анфас' },
-  {
-    property: 'og:description',
-    content:
-      'Реализованные проекты дизайна и ремонта квартир в Санкт-Петербурге. Портфолио с примерами работ, площадью и типом объекта.',
-  },
-]
+    path: '/projects',
+  })
 
 const projectStats = [
   { label: 'Реальные объекты', value: 'квартиры и частные интерьеры без постановочных рендеров' },
