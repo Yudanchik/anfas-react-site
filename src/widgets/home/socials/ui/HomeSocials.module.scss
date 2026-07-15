@@ -20,6 +20,10 @@ $home-xs: 420px;
 
   flex-wrap: wrap;
   gap: 32px;
+
+  @include mq.media(phone, tablet, laptop) {
+    flex-direction: column-reverse;
+  }
 }
 
 .socials__left {
@@ -28,6 +32,11 @@ $home-xs: 420px;
   flex: 1.08;
   gap: 24px;
   min-width: min(100%, 520px);
+
+  @include mq.media(phone, tablet, laptop) {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
 }
 
 .socials__intro {
@@ -81,6 +90,10 @@ $home-xs: 420px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .socials__spotlightStatValue {
@@ -139,6 +152,10 @@ $home-xs: 420px;
     padding: 20px;
     border-radius: 22px;
   }
+
+  @include mq.media(phone) {
+    padding: 18px;
+  }
 }
 
 .socials__cardMain {
@@ -157,6 +174,10 @@ $home-xs: 420px;
   line-height: 1;
   letter-spacing: -0.04em;
   color: var(--ink);
+
+  @include mq.media(phone) {
+    font-size: 24px;
+  }
 }
 
 .socials__cardText {
@@ -214,6 +235,12 @@ $home-xs: 420px;
 
   flex: 0.92;
   min-width: min(100%, 360px);
+
+  @include mq.media(phone, tablet, laptop) {
+    order: -1;
+    flex: 1 1 100%;
+    min-width: 0;
+  }
 }
 
 .socials__phonePanel {
@@ -313,34 +340,4 @@ $home-xs: 420px;
   text-transform: uppercase;
   color: rgb(22 23 19 / 62%);
   background: rgb(255 255 255 / 54%);
-}
-
-@include mq.max($home-wide) {
-  .socials__layout {
-    flex-direction: column-reverse;
-  }
-
-  .socials__left,
-  .socials__phoneStage {
-    flex: 1 1 100%;
-    min-width: 0;
-  }
-
-  .socials__phoneStage {
-    order: -1;
-  }
-}
-
-@include mq.max($home-xs) {
-  .socials__spotlightStats {
-    grid-template-columns: 1fr;
-  }
-
-  .socials__card {
-    padding: 18px;
-  }
-
-  .socials__cardTitle {
-    font-size: 24px;
-  }
 }
