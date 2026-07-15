@@ -1,30 +1,21 @@
 import { Link } from 'react-router'
 
 import { innerHeroImages } from '@/shared/config/hero-media'
+import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
 
 import styles from '../_shared/InnerPage.module.scss'
 
-export const meta = () => [
-  { title: 'О компании Анфас — дизайн и ремонт квартир в Санкт-Петербурге' },
-  {
-    name: 'description',
-    content:
+export const meta = () =>
+  createSeoMeta({
+    title: 'О компании Анфас — дизайн и ремонт квартир в Санкт-Петербурге',
+    description:
       'Команда Анфас проектирует и ведёт ремонт квартир в Санкт-Петербурге. Прозрачный процесс, понятные сроки и аккуратный результат.',
-  },
-  {
-    name: 'keywords',
-    content:
+    keywords:
       'о компании анфас, ремонт квартир спб, дизайн интерьера, ремонт под ключ, команда дизайнеров и строителей',
-  },
-  { property: 'og:title', content: 'О компании Анфас — дизайн и ремонт квартир в Санкт-Петербурге' },
-  {
-    property: 'og:description',
-    content:
-      'Команда Анфас проектирует и ведёт ремонт квартир в Санкт-Петербурге. Прозрачный процесс, понятные сроки и аккуратный результат.',
-  },
-]
+    path: '/about',
+  })
 
 const aboutStats = [
   { label: 'С 2012 года', value: 'ведём дизайн и ремонт в одной системе' },

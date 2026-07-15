@@ -15,26 +15,17 @@ import { HomePains } from '@/widgets/home/pains'
 import { HomeProjectControl } from '@/widgets/home/project-control'
 import { HomeStoryIndividual } from '@/widgets/home/story-individual'
 import { HomeStoryCapsule } from '@/widgets/home/story-capsule'
+import { createSeoMeta } from '@/shared/config/seo'
 
-export const meta = () => [
-  { title: 'Ремонт квартир под ключ в Санкт-Петербурге | Анфас' },
-  {
-    name: 'description',
-    content:
+export const meta = () =>
+  createSeoMeta({
+    title: 'Ремонт квартир под ключ в Санкт-Петербурге | Анфас',
+    description:
       'Ремонт квартир под ключ, дизайн-проект и пакетные решения в Санкт-Петербурге. Прозрачные сроки, понятный бюджет и контроль на каждом этапе.',
-  },
-  {
-    name: 'keywords',
-    content:
+    keywords:
       'ремонт квартир под ключ, ремонт квартиры спб, дизайн-проект квартиры, пакетный ремонт квартиры, ремонт с фиксированной ценой, ремонт с понятными сроками',
-  },
-  { property: 'og:title', content: 'Ремонт квартир под ключ в Санкт-Петербурге | Анфас' },
-  {
-    property: 'og:description',
-    content:
-      'Ремонт квартир под ключ, дизайн-проект и пакетные решения в Санкт-Петербурге. Прозрачные сроки, понятный бюджет и контроль на каждом этапе.',
-  },
-]
+    path: '/',
+  })
 
 export default function HomeRoute() {
   const { openBrief } = useBrief()

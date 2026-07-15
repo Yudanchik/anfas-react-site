@@ -1,4 +1,5 @@
 import { company } from '@/shared/config/company'
+import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from '../_shared/InnerPage.module.scss'
@@ -69,15 +70,14 @@ const privacySections = [
   },
 ] as const
 
-export const meta = () => [
-  { title: 'Политика конфиденциальности — Анфас' },
-  {
-    name: 'description',
-    content:
+export const meta = () =>
+  createSeoMeta({
+    title: 'Политика конфиденциальности — Анфас',
+    description:
       'Политика обработки персональных данных Анфас: какие данные собирает сайт, зачем они нужны, как защищаются и как отозвать согласие.',
-  },
-  { name: 'robots', content: 'noindex, nofollow' },
-]
+    path: '/privacy',
+    robots: 'noindex, nofollow',
+  })
 
 export default function PrivacyRoute() {
   return (

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
+import { createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
@@ -20,22 +21,21 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
   if (!data) {
-    return [
-      { title: 'Проект не найден — Анфас' },
-      { name: 'robots', content: 'noindex, nofollow' },
-    ]
+    return createSeoMeta({
+      title: 'Проект не найден — Анфас',
+      path: '/projects',
+      robots: 'noindex, nofollow',
+    })
   }
 
-  return [
-    { title: `${data.project.title} — Анфас` },
-    { name: 'description', content: data.project.description },
-    {
-      name: 'keywords',
-      content: `${data.project.title}, ремонт квартир спб, дизайн интерьера, портфолио ремонта`,
-    },
-    { property: 'og:title', content: `${data.project.title} — Анфас` },
-    { property: 'og:description', content: data.project.description },
-  ]
+  return createSeoMeta({
+    title: `${data.project.title} — Анфас`,
+    description: data.project.description,
+    keywords: `${data.project.title}, ремонт квартир спб, дизайн интерьера, портфолио ремонта`,
+    path: `/projects/${data.project.slug}`,
+    image: `/${data.project.image}`,
+    type: 'article',
+  })
 }
 
 export default function ProjectRoute() {
