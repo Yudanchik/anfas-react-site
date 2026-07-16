@@ -161,7 +161,6 @@ export function SiteFooter() {
             </FooterAccordion>
 
             <div className={styles.siteFooter__mobileContacts}>
-              <span className={styles.siteFooter__title}>Контакты</span>
               <FooterContactCards />
             </div>
 

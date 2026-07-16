@@ -45,6 +45,7 @@ export function HomePackageCalculator({
   const [finish, setFinish] = useState<FinishType>('standard')
   const [complexity, setComplexity] = useState<ComplexityType>('normal')
   const [selectedOptions, setSelectedOptions] = useState<OptionType[]>([])
+  const [showMobileResultDetails, setShowMobileResultDetails] = useState(false)
 
   const visibleOptions = packageCalculator.options
 
@@ -303,7 +304,12 @@ export function HomePackageCalculator({
             )}
           </div>
 
-          <aside className={styles.packageCalculator__result} data-reveal>
+          <aside
+            className={`${styles.packageCalculator__result} ${
+              showMobileResultDetails ? styles.packageCalculator__result_detailsOpen : ''
+            }`}
+            data-reveal
+          >
             <div className={styles.packageCalculator__resultTop}>
               <p className={styles.packageCalculator__resultEyebrow}>{estimate.label}</p>
               <p className={styles.packageCalculator__resultSummary}>{estimate.summary}</p>
@@ -321,6 +327,15 @@ export function HomePackageCalculator({
                 <span>{estimate.note}</span>
               </div>
             </div>
+
+            <button
+              className={styles.packageCalculator__detailsToggle}
+              type="button"
+              aria-expanded={showMobileResultDetails}
+              onClick={() => setShowMobileResultDetails((current) => !current)}
+            >
+              {showMobileResultDetails ? 'Скрыть детали' : 'Подробнее'}
+            </button>
 
             <div className={styles.packageCalculator__metrics}>
               <div className={styles.packageCalculator__metric}>
