@@ -14,7 +14,7 @@ import { HomeTicker } from '@/widgets/home/ticker'
 import { HomePains } from '@/widgets/home/pains'
 import { HomeProjectControl } from '@/widgets/home/project-control'
 import { HomeStoryIndividual } from '@/widgets/home/story-individual'
-import { HomeStoryCapsule } from '@/widgets/home/story-capsule'
+import { HomeStoryPackage } from '@/widgets/home/story-package'
 import { createSeoMeta } from '@/shared/config/seo'
 
 export const meta = () =>
@@ -49,7 +49,7 @@ export default function HomeRoute() {
       <HomeStoryIndividual onOpenBrief={openBrief} />
 
       {/* 04: пакетный путь */}
-      <HomeStoryCapsule onOpenBrief={openBrief} />
+      <HomeStoryPackage onOpenBrief={openBrief} />
 
       {/* 05: выбор тарифов */}
       <HomePaths onOpenBrief={openBrief} />

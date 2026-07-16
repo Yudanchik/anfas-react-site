@@ -1,4 +1,4 @@
-export const storyCapsule = {
+export const storyPackage = {
   eyebrow: 'Пакетный ремонт',
   title: 'Пакетный ремонт.\nПонятный путь без лишних решений.',
   lead:
