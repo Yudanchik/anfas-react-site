@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -112,7 +112,7 @@
   }
 }
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .manifesto {
     padding-block: 18px 24px;
   }
@@ -137,7 +137,7 @@
   }
 }
 
-@include mq.max(420px) {
+@include mq.media(phone) {
   .manifesto__statsRow {
     grid-template-columns: 1fr;
   }

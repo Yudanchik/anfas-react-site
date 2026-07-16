@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -130,13 +130,13 @@
   }
 }
 
-@include mq.max(700px) {
+@include mq.media(phone, tablet) {
   .choice__card {
     padding: 22px;
   }
 }
 
-@include mq.max(420px) {
+@include mq.media(phone) {
   .choice__card {
     padding: 18px 16px;
   }

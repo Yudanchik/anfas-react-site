@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
@@ -41,6 +41,9 @@ export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
 
 export default function ProjectRoute() {
   const { project } = useLoaderData<typeof loader>()
+  const lastGalleryTriggerRef = useRef<HTMLButtonElement | null>(null)
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
+  const swipeStartRef = useRef<{ x: number; y: number; pointerId: number } | null>(null)
   const [galleryCount, setGalleryCount] = useState(() => {
     if (typeof window === 'undefined') {
       return 6
@@ -49,6 +52,18 @@ export default function ProjectRoute() {
     return window.matchMedia('(width <= 700px)').matches ? 3 : 6
   })
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null)
+
+  const openLightbox = (index: number, trigger: HTMLButtonElement) => {
+    lastGalleryTriggerRef.current = trigger
+    setActiveImageIndex(index)
+  }
+
+  const closeLightbox = useCallback(() => {
+    setActiveImageIndex(null)
+    requestAnimationFrame(() => {
+      lastGalleryTriggerRef.current?.focus()
+    })
+  }, [])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(width <= 700px)')
@@ -73,7 +88,7 @@ export default function ProjectRoute() {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setActiveImageIndex(null)
+        closeLightbox()
       }
 
       if (event.key === 'ArrowLeft') {
@@ -90,12 +105,15 @@ export default function ProjectRoute() {
     }
 
     window.addEventListener('keydown', handleKeyDown)
+    requestAnimationFrame(() => {
+      closeButtonRef.current?.focus()
+    })
 
     return () => {
       document.body.style.overflow = previousOverflow
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [activeImageIndex, project.gallery.length])
+  }, [activeImageIndex, closeLightbox, project.gallery.length])
 
   const visibleGallery = useMemo(() => project.gallery.slice(0, galleryCount), [galleryCount, project.gallery])
   const activeImage = activeImageIndex === null ? null : project.gallery[activeImageIndex]
@@ -103,6 +121,55 @@ export default function ProjectRoute() {
   const loadMoreGallery = () => {
     const step = window.matchMedia('(width <= 700px)').matches ? 3 : 6
     setGalleryCount((current) => Math.min(current + step, project.gallery.length))
+  }
+
+  const showPreviousImage = () => {
+    setActiveImageIndex((current) =>
+      current === null ? current : (current - 1 + project.gallery.length) % project.gallery.length,
+    )
+  }
+
+  const showNextImage = () => {
+    setActiveImageIndex((current) =>
+      current === null ? current : (current + 1) % project.gallery.length,
+    )
+  }
+
+  const handleOverlayPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse') {
+      return
+    }
+
+    swipeStartRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+      pointerId: event.pointerId,
+    }
+  }
+
+  const handleOverlayPointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    const start = swipeStartRef.current
+    swipeStartRef.current = null
+
+    if (!start || start.pointerId !== event.pointerId) {
+      return
+    }
+
+    const deltaX = event.clientX - start.x
+    const deltaY = event.clientY - start.y
+    const absX = Math.abs(deltaX)
+    const absY = Math.abs(deltaY)
+
+    if (absX < 48 || absX < absY * 1.4) {
+      return
+    }
+
+    if (deltaX < 0) {
+      showNextImage()
+      return
+    }
+
+    showPreviousImage()
   }
 
   return (
@@ -182,7 +249,7 @@ export default function ProjectRoute() {
                   className={styles.projectDetailGalleryButton}
                   key={image}
                   type="button"
-                  onClick={() => setActiveImageIndex(index)}
+                  onClick={(event) => openLightbox(index, event.currentTarget)}
                   aria-label={`Открыть фото ${index + 1} проекта ${project.title}`}
                 >
                   <figure className={styles.projectDetailGalleryItem}>
@@ -208,19 +275,22 @@ export default function ProjectRoute() {
 
           {activeImage ? (
             <div className={styles.projectDetailOverlay} role="dialog" aria-modal="true" aria-label="Просмотр фотографии">
-              <button className={styles.projectDetailOverlayBackdrop} type="button" onClick={() => setActiveImageIndex(null)} aria-label="Закрыть просмотр" />
-              <div className={styles.projectDetailOverlayPanel}>
-                <button className={styles.projectDetailOverlayClose} type="button" onClick={() => setActiveImageIndex(null)} aria-label="Закрыть">
+              <button className={styles.projectDetailOverlayBackdrop} type="button" onClick={closeLightbox} aria-label="Закрыть просмотр" />
+              <div
+                className={styles.projectDetailOverlayPanel}
+                onPointerDown={handleOverlayPointerDown}
+                onPointerUp={handleOverlayPointerUp}
+                onPointerCancel={() => {
+                  swipeStartRef.current = null
+                }}
+              >
+                <button ref={closeButtonRef} className={styles.projectDetailOverlayClose} type="button" onClick={closeLightbox} aria-label="Закрыть">
                   ×
                 </button>
                 <button
                   className={`${styles.projectDetailOverlayNav} ${styles.projectDetailOverlayNav_prev}`}
                   type="button"
-                  onClick={() =>
-                    setActiveImageIndex((current) =>
-                      current === null ? current : (current - 1 + project.gallery.length) % project.gallery.length,
-                    )
-                  }
+                  onClick={showPreviousImage}
                   aria-label="Предыдущее фото"
                 >
                   <ArrowIcon size={18} />
@@ -229,11 +299,7 @@ export default function ProjectRoute() {
                 <button
                   className={`${styles.projectDetailOverlayNav} ${styles.projectDetailOverlayNav_next}`}
                   type="button"
-                  onClick={() =>
-                    setActiveImageIndex((current) =>
-                      current === null ? current : (current + 1) % project.gallery.length,
-                    )
-                  }
+                  onClick={showNextImage}
                   aria-label="Следующее фото"
                 >
                   <ArrowIcon size={18} />

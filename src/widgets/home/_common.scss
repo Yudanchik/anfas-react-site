@@ -1,11 +1,11 @@
-﻿@forward 'flex';
+@forward 'flex';
 @forward 'media';
 @use 'media' as mq;
 
 @mixin section-pad {
   padding-block: var(--section-pad-y);
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     padding-block: var(--section-pad-y-tight);
   }
 }

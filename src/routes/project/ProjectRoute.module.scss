@@ -67,6 +67,7 @@
 .projectDetailTitle {
   max-width: 12.8ch;
   margin: 0;
+  color: var(--surface-fg-dark);
   font-size: var(--type-display-lg);
   font-weight: var(--weight-medium);
   line-height: var(--leading-display);
@@ -94,14 +95,14 @@
     min-width: 0;
     min-height: 86px;
     padding: var(--space-16) var(--space-20);
-    border: 1px solid rgb(255 255 255 / 14%);
+    border: 1px solid var(--glass-border-dark);
     border-radius: var(--radius-md);
-    background: rgb(255 255 255 / 7%);
+    background: var(--glass-dark);
     backdrop-filter: var(--glass-blur);
   }
 
   dt {
-    color: rgb(245 242 236 / 58%);
+    color: var(--section-kicker);
     font-size: var(--type-caption);
     font-weight: var(--weight-bold);
     letter-spacing: var(--tracking-label);
@@ -110,6 +111,7 @@
 
   dd {
     margin: 0;
+    color: var(--surface-fg-dark);
     font-size: var(--type-body-md);
     font-weight: var(--weight-semibold);
     line-height: var(--leading-body-sm);
@@ -462,7 +464,7 @@
   line-height: var(--leading-display);
 }
 
-@include mq.max(700px) {
+@include mq.media(phone, tablet) {
   .projectDetailHero {
     min-height: 0;
   }
@@ -538,7 +540,7 @@
   }
 }
 
-@include mq.max(420px) {
+@include mq.media(phone) {
   .projectDetailPage {
     padding-top: var(--section-pad-y);
     padding-bottom: var(--section-pad-y);

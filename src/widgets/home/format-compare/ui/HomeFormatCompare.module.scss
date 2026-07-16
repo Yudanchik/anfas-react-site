@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -225,7 +225,7 @@
   }
 }
 
-@include mq.max(700px) {
+@include mq.media(phone, tablet) {
   .card,
   .tableTitle,
   .tableHeader,
@@ -245,7 +245,7 @@
   }
 }
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .tableWrap {
     overflow-x: auto;
   }
@@ -255,7 +255,7 @@
   }
 }
 
-@include mq.max(420px) {
+@include mq.media(phone) {
   .card {
     padding: 18px 16px;
   }

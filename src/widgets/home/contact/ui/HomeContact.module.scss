@@ -1,8 +1,7 @@
-﻿@use 'flex' as flex;
+@use 'flex' as flex;
 @use 'media' as mq;
 @use 'common' as home;
 
-$home-compact: 580px;
 
 .contact {
   position: relative;
@@ -20,7 +19,7 @@ $home-compact: 580px;
 
   padding-block: clamp(88px, 14vh, 160px);
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     min-height: clamp(480px, 64vh, 680px);
     padding-block: clamp(72px, 12vh, 120px);
   }
@@ -148,7 +147,7 @@ $home-compact: 580px;
   border-radius: 50%;
   pointer-events: none;
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     width: 120vw;
 
     .contact__orbitDot {

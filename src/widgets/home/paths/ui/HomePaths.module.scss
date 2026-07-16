@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -306,7 +306,7 @@
   }
 }
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .paths__card {
     padding: 20px;
   }

@@ -32,6 +32,8 @@ export function HomeFaq({
         <div className={styles.faq__list}>
           {faqItems.map((item, index) => {
             const isOpen = openFaq === index
+            const triggerId = `faq-trigger-${index + 1}`
+            const answerId = `faq-answer-${index + 1}`
 
             return (
               <article
@@ -39,9 +41,11 @@ export function HomeFaq({
                 key={item.question}
               >
                 <button
+                  id={triggerId}
                   className={styles.faq__trigger}
                   type="button"
                   aria-expanded={isOpen}
+                  aria-controls={answerId}
                   onClick={() => setOpenFaq(isOpen ? -1 : index)}
                 >
                   <span className={styles.faq__number}>0{index + 1}</span>
@@ -50,7 +54,12 @@ export function HomeFaq({
                     <PlusIcon open={isOpen} />
                   </span>
                 </button>
-                <div className={styles.faq__answer}>
+                <div
+                  className={styles.faq__answer}
+                  id={answerId}
+                  role="region"
+                  aria-labelledby={triggerId}
+                >
                   <div className={styles.faq__answerInner}>
                     <p className={styles.faq__answerText}>{item.answer}</p>
                   </div>

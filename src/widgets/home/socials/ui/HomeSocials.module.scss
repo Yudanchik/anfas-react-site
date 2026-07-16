@@ -1,11 +1,8 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
 $home-wide: 1100px;
-$home-tablet: 820px;
-$home-compact: 580px;
-$home-xs: 420px;
 
 .socials_sectionPad {
   @include home.section-pad;
@@ -50,7 +47,7 @@ $home-xs: 420px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     grid-template-columns: 1fr;
   }
 }
@@ -80,7 +77,7 @@ $home-xs: 420px;
     box-shadow: 0 22px 50px rgb(22 23 19 / 12%);
   }
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     min-height: 0;
     padding: 20px;
     border-radius: 22px;
@@ -118,6 +115,11 @@ $home-xs: 420px;
   color: rgb(22 23 19 / 72%);
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
+
+  @include mq.media(phone) {
+    font-size: var(--type-caption);
+    line-height: var(--leading-body-sm);
+  }
 }
 
 .socials__cardAction {
@@ -190,7 +192,7 @@ $home-xs: 420px;
     linear-gradient(150deg, rgb(22 23 19 / 7%), rgb(22 23 19 / 3%));
   box-shadow: 0 22px 56px rgb(22 23 19 / 10%);
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     gap: 20px;
     padding: 20px;
     border-radius: 24px;
@@ -209,6 +211,11 @@ $home-xs: 420px;
   color: rgb(22 23 19 / 72%);
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
+
+  @include mq.media(phone) {
+    font-size: var(--type-caption);
+    line-height: var(--leading-body-sm);
+  }
 }
 
 .socials__phonePanelTag {

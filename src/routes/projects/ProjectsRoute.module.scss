@@ -418,7 +418,7 @@
   }
 }
 
-@include mq.max(700px) {
+@include mq.media(phone, tablet) {
   .projectsPage {
     padding: 0;
   }
@@ -465,7 +465,7 @@
 
 }
 
-@include mq.max(420px) {
+@include mq.media(phone) {
   .projectsHeroWrap {
     padding-top: 96px;
     padding-bottom: var(--space-40);

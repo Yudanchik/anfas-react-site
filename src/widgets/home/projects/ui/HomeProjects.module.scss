@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -203,14 +203,14 @@
 }
 
 
-@include mq.max(820px) {
+@include mq.media(phone, tablet) {
   .projects__meta {
     gap: 14px 16px;
   }
 }
 
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .projects__grid {
     @include flex.flex($fd: column);
   }
@@ -243,7 +243,7 @@
   }
 }
 
-@include mq.max(420px) {
+@include mq.media(phone) {
   .projects__copy {
     @include flex.flex($fd: column);
 

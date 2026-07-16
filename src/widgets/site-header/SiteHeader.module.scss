@@ -1,4 +1,4 @@
-﻿@use 'flex' as flex;
+@use 'flex' as flex;
 @use 'media' as mq;
 
 .siteHeader {
@@ -187,7 +187,7 @@
   }
 }
 
-@include mq.max(820px) {
+@include mq.media(phone, tablet) {
   .siteHeader {
     position: absolute;
     height: 76px;
@@ -203,7 +203,7 @@
   }
 }
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .siteHeader__mobileMenu {
     padding: 130px var(--page-gutter-mobile) 40px;
   }

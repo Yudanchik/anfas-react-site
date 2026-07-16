@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -30,8 +30,10 @@
 }
 
 
-.faq:hover .faq__bgImage {
-  transform: scale(1.025);
+@media (hover: hover) and (pointer: fine) {
+  .faq:hover .faq__bgImage {
+    transform: scale(1.025);
+  }
 }
 
 
@@ -88,6 +90,12 @@
   transition: color 0.25s ease;
 }
 
+.faq__trigger:focus-visible {
+  border-radius: 18px;
+  outline: 2px solid var(--amber);
+  outline-offset: 4px;
+}
+
 
 .faq__number {
   @include flex.flex($ai: center, $jc: center);
@@ -109,10 +117,16 @@
 }
 
 
-.faq__item_open .faq__number,
-.faq__item:hover .faq__number {
+.faq__item_open .faq__number {
   border-color: var(--amber);
   background: rgb(237 174 36 / 12%);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .faq__item:hover .faq__number {
+    border-color: var(--amber);
+    background: rgb(237 174 36 / 12%);
+  }
 }
 
 
@@ -183,7 +197,7 @@
 }
 
 
-@include mq.max(820px) {
+@include mq.media(phone, tablet) {
   .faq__content {
     flex-direction: column;
   }
@@ -201,10 +215,14 @@
 }
 
 
-@include mq.max(580px) {
+@include mq.media(phone) {
+  .faq__item {
+    padding: var(--space-12);
+  }
+
   .faq__trigger {
     gap: 14px;
-    padding: 20px 0;
+    padding: 0;
   }
 
   .faq__number,
@@ -218,10 +236,9 @@
   }
 }
 
-@include mq.max(420px) {
+@include mq.media(phone) {
   .faq__trigger {
     gap: 10px;
-    padding: 18px 0;
   }
 
   .faq__question {
@@ -236,5 +253,16 @@
 
   .faq__answerText {
     margin-left: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq__bgImage,
+  .faq__item,
+  .faq__trigger,
+  .faq__number,
+  .faq__toggle,
+  .faq__answer {
+    transition-duration: 1ms;
   }
 }

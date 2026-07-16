@@ -4,7 +4,7 @@ import { innerHeroImages } from '@/shared/config/hero-media'
 import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
-import styles from '../_shared/InnerPage.module.scss'
+import styles from './route.module.scss'
 
 export const meta = () =>
   createSeoMeta({
@@ -83,8 +83,9 @@ export default function AboutRoute() {
             <p>
               Мы берём на себя дизайн и ремонт квартиры под ключ. Клиент не должен разбираться в
               стройке, координировать подрядчиков и ездить на объект каждый день. Поэтому внутри
-              Анфас проект, смета, комплектация и контроль качества собраны в один процесс, который
-              легко читать и контролировать.
+              Анфас путь от первой идеи и планов до финального результата ведёт один подрядчик:
+              проект, смета, комплектация и контроль качества собраны в процесс, который легко
+              читать и контролировать.
             </p>
           </div>
         </PageWrapper>

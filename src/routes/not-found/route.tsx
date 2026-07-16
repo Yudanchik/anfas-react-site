@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
-import styles from '../_shared/InnerPage.module.scss'
+import styles from './route.module.scss'
 
 export const meta = () =>
   createSeoMeta({

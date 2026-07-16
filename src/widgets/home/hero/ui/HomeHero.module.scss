@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -14,7 +14,7 @@
     min-height: 660px;
   }
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     min-height: auto;
   }
 
@@ -30,7 +30,7 @@
 .hero__sectionPad {
   min-height: inherit;
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     min-height: auto;
   }
 
@@ -91,7 +91,7 @@
     padding-block: 118px 34px;
   }
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     min-height: auto;
     padding-block: 82px 18px;
   }
@@ -120,7 +120,7 @@
     max-width: 720px;
   }
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     max-width: 100%;
   }
 }
@@ -145,7 +145,7 @@
   letter-spacing: var(--tracking-display);
   text-wrap: balance;
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     max-width: 12.5ch;
     line-height: var(--leading-display);
   }
@@ -170,7 +170,7 @@
   line-height: var(--leading-body);
   color: rgb(245 242 236 / 72%);
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     max-width: 30ch;
     margin-top: 12px;
   }
@@ -215,7 +215,7 @@
     transform 0.25s ease,
     background 0.25s ease;
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     min-height: 50px;
   }
 
@@ -269,7 +269,7 @@
     background 0.25s ease,
     border-color 0.25s ease;
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     min-height: 50px;
   }
 
@@ -291,7 +291,7 @@
   width: 100%;
   margin-top: 42px;
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     grid-template-columns: 1fr;
     gap: 10px;
     margin-top: 24px;
@@ -321,7 +321,7 @@
   box-shadow: 0 18px 46px rgb(0 0 0 / 18%);
   backdrop-filter: blur(16px);
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     min-height: 0;
     padding: 16px 18px;
     border-radius: 22px;
@@ -361,7 +361,7 @@
   letter-spacing: var(--tracking-heading);
   color: var(--paper);
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     max-width: none;
   }
 
