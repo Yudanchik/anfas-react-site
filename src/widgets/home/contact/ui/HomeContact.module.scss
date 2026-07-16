@@ -2,7 +2,6 @@
 @use 'media' as mq;
 @use 'common' as home;
 
-
 .contact {
   position: relative;
 
@@ -28,14 +27,24 @@
 .contact::before {
   position: absolute;
   top: 0;
-  right: -16%;
-  width: 55%;
+  right: 0;
+  width: 100%;
   height: 100%;
   content: '';
   opacity: 0.13;
-  background: url('/images/project-coffee.jpg') center / cover;
+  background-image: url('/images/contact/contact-background.webp');
+  background-position: 58% center;
+  background-repeat: no-repeat;
+  background-size: cover;
   mix-blend-mode: luminosity;
-  mask-image: linear-gradient(90deg, transparent, #000 50%);
+
+  @include mq.media(tablet) {
+    background-position: 62% center;
+  }
+
+  @include mq.media(phone) {
+    background-position: 68% center;
+  }
 }
 
 .contact__eyebrow,
@@ -44,6 +53,10 @@
 .contact__button {
   position: relative;
   z-index: 2;
+}
+
+.contact__center {
+  @include flex.flex($fd: column, $jc: center, $ai: center);
 }
 
 .contact__eyebrow {
