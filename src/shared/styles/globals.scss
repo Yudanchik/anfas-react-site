@@ -1,5 +1,6 @@
-﻿@use './design-tokens';
+@use './design-tokens';
 @use './reset';
+@use 'media' as mq;
 
 body.menu-open,
 body.modal-open {
@@ -123,7 +124,7 @@ main {
   }
 }
 
-@media (width <= 820px) {
+@include mq.media(phone, tablet) {
   .brand-logo {
     height: 26px;
   }

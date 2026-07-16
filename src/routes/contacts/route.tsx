@@ -4,32 +4,26 @@ import { company } from '@/shared/config/company'
 import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
-import styles from '../_shared/InnerPage.module.scss'
+import styles from './ContactsRoute.module.scss'
 
-const contactCards = [
+const contactDetails = [
   {
-    mark: '01',
     label: 'Телефон',
-    title: company.phone,
-    action: 'Позвонить',
-    text: 'Быстрый способ обсудить ремонт квартиры под ключ, сроки, бюджет и подходящий формат работы.',
+    value: company.phone,
     href: company.phoneHref,
   },
   {
-    mark: '02',
     label: 'Почта',
-    title: company.email,
-    action: 'Написать',
-    text: 'Подходит для планировок, референсов, смет, технических заданий и подробных вопросов по проекту.',
+    value: company.email,
     href: company.emailHref,
   },
   {
-    mark: '03',
-    label: 'Офис',
-    title: company.addressShort,
-    action: 'Открыть карту',
-    text: `${company.office}. Встречу лучше согласовать заранее, чтобы команда подготовилась к вашему объекту.`,
-    href: company.mapHref,
+    label: 'Адрес',
+    value: `${company.addressShort}, ${company.office}`,
+  },
+  {
+    label: 'График',
+    value: company.workHours,
   },
 ] as const
 
@@ -41,8 +35,8 @@ const contactSteps = [
 
 const heroMeta = [
   { label: 'Город', value: 'Санкт-Петербург' },
-  { label: 'Форматы', value: 'индивидуальный и пакетный ремонт' },
-  { label: 'Ответ', value: 'в рабочее время' },
+  { label: 'Старт', value: 'короткая консультация' },
+  { label: 'Форматы', value: 'ремонт под ключ' },
 ] as const
 
 const socialLinks = [
@@ -123,67 +117,57 @@ export default function ContactsRoute() {
 
       <section className={styles.darkSection}>
         <PageWrapper>
-          <section className={styles.contactCards} aria-label="Способы связи">
-            {contactCards.map((card) => {
-              const isExternal = card.href.startsWith('http')
+          <section className={styles.contactPanel} aria-labelledby="contacts-main-title">
+            <div className={styles.contactPanel__content}>
+              <div className={styles.contactPanel__details}>
+                <span>Связаться с Анфас</span>
+                <h2 id="contacts-main-title">Один блок для звонка, письма и встречи.</h2>
+                <dl>
+                  {contactDetails.map((item) => (
+                    <div key={item.label}>
+                      <dt>{item.label}</dt>
+                      <dd>
+                        {'href' in item ? (
+                          <a href={item.href}>{item.value}</a>
+                        ) : (
+                          <span>{item.value}</span>
+                        )}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
 
-              return (
-                <a
-                  className={styles.contactCard}
-                  href={card.href}
-                  key={card.label}
-                  target={isExternal ? '_blank' : undefined}
-                  rel={isExternal ? 'noreferrer' : undefined}
-                >
-                  <b className={styles.contactCardMark}>{card.mark}</b>
-                  <span>{card.label}</span>
-                  <h2>{card.title}</h2>
-                  <p>{card.text}</p>
-                  <strong className={styles.contactCardAction}>{card.action}</strong>
-                </a>
-              )
-            })}
-          </section>
+                <nav className={styles.contactPanel__socials} aria-label="Социальные сети Анфас">
+                  {socialLinks.map((link) => (
+                    <a href={link.href} key={link.label} target="_blank" rel="noreferrer">
+                      {link.label}
+                    </a>
+                  ))}
+                </nav>
 
-          <section className={styles.contactInfoGrid}>
-            <article className={styles.contactDarkCard}>
-              <span>Как начать</span>
-              <h2>Три шага до понятного разговора.</h2>
-              <ol>
-                {contactSteps.map((step) => (
-                  <li key={step}>{step}</li>
-                ))}
-              </ol>
-              <button className={styles.buttonLight} type="button" onClick={() => openBrief('general')}>
-                Заполнить короткий бриф
-              </button>
-            </article>
+                <button className={styles.buttonLight} type="button" onClick={() => openBrief('general')}>
+                  Заполнить короткий бриф
+                </button>
+              </div>
 
-            <article className={styles.contactMapCard}>
-              <span>Офис Анфас</span>
-              <h2>{company.addressShort}</h2>
-              <p>
-                {company.office}. Приезжайте на встречу после согласования времени: так мы заранее
-                подготовим вопросы по вашей квартире, ремонту и бюджету.
-              </p>
+              <div className={styles.contactPanel__steps}>
+                <span>Как начать</span>
+                <ol>
+                  {contactSteps.map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+
+            <article className={styles.contactPanel__map} aria-label="Карта офиса Анфас">
+              <span>Карта</span>
+              <h2>Маршрут до офиса</h2>
+              <p>Откройте карту и согласуйте время встречи, чтобы команда заранее подготовилась к вашему объекту.</p>
               <a href={company.mapHref} target="_blank" rel="noreferrer">
                 Открыть маршрут
               </a>
             </article>
-          </section>
-
-          <section className={styles.contactSocials} aria-label="Социальные сети">
-            <div>
-              <span>Соцсети</span>
-              <h2>Показываем проекты, процессы и детали ремонта.</h2>
-            </div>
-            <nav aria-label="Социальные сети Анфас">
-              {socialLinks.map((link) => (
-                <a href={link.href} key={link.label} target="_blank" rel="noreferrer">
-                  {link.label}
-                </a>
-              ))}
-            </nav>
           </section>
         </PageWrapper>
       </section>

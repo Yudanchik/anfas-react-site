@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -113,6 +113,12 @@
 
   gap: 16px 24px;
   padding-top: 20px;
+
+  @include mq.media(phone) {
+    @include flex.flex($fd: column);
+
+    gap: 16px;
+  }
 }
 
 
@@ -152,6 +158,10 @@
   @include flex.flex($fd: column);
 
   gap: 6px;
+
+  @include mq.media(phone) {
+    flex: 1 1 calc(50% - 6px);
+  }
 }
 
 
@@ -166,6 +176,10 @@
   margin: 0;
   font-size: var(--type-body-sm);
   line-height: var(--leading-body);
+
+  @include mq.media(phone) {
+    white-space: normal;
+  }
 }
 
 
@@ -180,6 +194,10 @@
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   border-bottom: 1px solid rgb(255 255 255 / 40%);
+
+  @include mq.media(phone) {
+    gap: 24px;
+  }
 }
 
 
@@ -196,21 +214,21 @@
 }
 
 
-@include mq.max(1100px) {
+@include mq.media(laptop) {
   .projects__grid {
     gap: 48px 22px;
   }
 }
 
 
-@include mq.max(820px) {
+@include mq.media(phone, tablet) {
   .projects__meta {
     gap: 14px 16px;
   }
 }
 
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .projects__grid {
     @include flex.flex($fd: column);
   }
@@ -240,25 +258,5 @@
     width: 100%;
     justify-content: space-between;
     margin-top: 0;
-  }
-}
-
-@include mq.max(420px) {
-  .projects__copy {
-    @include flex.flex($fd: column);
-
-    gap: 16px;
-  }
-
-  .projects__metaItem {
-    flex: 1 1 calc(50% - 6px);
-  }
-
-  .projects__metaValue {
-    white-space: normal;
-  }
-
-  .projects__textLink {
-    gap: 24px;
   }
 }

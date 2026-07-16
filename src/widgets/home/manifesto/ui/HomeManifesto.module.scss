@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -32,6 +32,10 @@
   align-items: stretch;
   gap: 0;
   animation: manifesto-float 9s ease-in-out infinite;
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .manifesto__metaItem {
@@ -42,6 +46,12 @@
   padding-inline: 18px;
   border-right: 2px solid var(--section-line, var(--line));
   animation: manifesto-rise 0.9s cubic-bezier(0.2, 0.7, 0, 1) both;
+
+  @include mq.media(phone) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 .manifesto__metaItem:last-child {
@@ -75,9 +85,14 @@
   text-transform: uppercase;
   letter-spacing: var(--tracking-label);
   color: color-mix(in srgb, currentcolor 64%, transparent);
+
+  @include mq.media(phone) {
+    max-width: 150px;
+    text-align: right;
+  }
 }
 
-@include mq.max(1100px) {
+@include mq.media(laptop) {
   .manifesto__statsRow {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -112,7 +127,7 @@
   }
 }
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .manifesto {
     padding-block: 18px 24px;
   }
@@ -137,22 +152,6 @@
   }
 }
 
-@include mq.max(420px) {
-  .manifesto__statsRow {
-    grid-template-columns: 1fr;
-  }
-
-  .manifesto__metaItem {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .manifesto__metaLabel {
-    max-width: 150px;
-    text-align: right;
-  }
-}
 
 @keyframes manifesto-rise {
   from {

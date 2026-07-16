@@ -1,4 +1,4 @@
-﻿@use 'flex' as flex;
+@use 'flex' as flex;
 @use 'media' as mq;
 
 .briefModal {
@@ -13,7 +13,7 @@
   visibility: hidden;
   transition: visibility 0.45s;
 
-  @include mq.max(580px) {
+  @include mq.media(phone) {
     padding: 10px;
   }
 }
@@ -73,7 +73,7 @@
       var(--paper);
   }
 
-  @include mq.max(580px) {
+  @include mq.media(phone) {
     width: 100%;
     padding: 20px 16px 18px;
     border-radius: 24px;
@@ -85,7 +85,7 @@
   opacity: 1;
   transform: translateY(0) scale(1);
 
-  @include mq.max(580px) {
+  @include mq.media(phone) {
     transform: translateY(0);
   }
 }
@@ -142,7 +142,7 @@
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
 
-  @include mq.max(580px) {
+  @include mq.media(phone) {
     max-width: 270px;
     padding-right: 48px;
     font-size: var(--type-display-md);
@@ -157,7 +157,7 @@
   font-size: var(--type-body-md);
   line-height: var(--leading-body-sm);
 
-  @include mq.max(580px) {
+  @include mq.media(phone) {
     max-width: 100%;
     font-size: var(--type-body-sm);
     line-height: var(--leading-body-sm);
@@ -178,7 +178,7 @@
   border-radius: 18px;
   background: rgb(255 255 255 / 58%);
 
-  @include mq.max(580px) {
+  @include mq.media(phone) {
     padding: 10px 12px;
     border-radius: 16px;
   }
@@ -235,7 +235,7 @@
   background: transparent;
   transition: border-color 0.25s ease;
 
-  @include mq.max(580px) {
+  @include mq.media(phone) {
     min-height: 48px;
     font-size: var(--type-body-md);
   }
@@ -310,7 +310,7 @@
   font-size: var(--type-caption);
   line-height: var(--leading-body-sm);
 
-  @include mq.max(580px) {
+  @include mq.media(phone) {
     font-size: var(--type-caption);
   }
 }

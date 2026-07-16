@@ -68,7 +68,7 @@ export function HomePaths({
             type="button"
             onClick={() => onOpenBrief('package')}
           >
-            <h3 className={styles.paths__title}>Капсульный ремонт</h3>
+            <h3 className={styles.paths__title}>Пакетный ремонт</h3>
             <p className={styles.paths__description}>
               Готовый формат для тех, кто хочет быстро получить стильный интерьер: цена,
               материалы, сроки и сценарий комплектации понятны ещё до старта работ.
