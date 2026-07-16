@@ -12,6 +12,10 @@
   color: var(--paper);
   background: var(--ink);
 
+  @include mq.media(phone, tablet) {
+    min-height: 0;
+  }
+
   &::after {
     position: absolute;
     inset: 0;
@@ -38,6 +42,17 @@
   min-height: 700px;
   padding-top: 146px;
   padding-bottom: 72px;
+
+  @include mq.media(phone, tablet) {
+    min-height: 0;
+    padding-top: 112px;
+    padding-bottom: var(--space-48);
+  }
+
+  @include mq.media(phone) {
+    padding-top: 96px;
+    padding-bottom: var(--space-40);
+  }
 }
 
 .projectDetailHeroContent {
@@ -71,6 +86,10 @@
   font-weight: var(--weight-medium);
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
+
+  @include mq.media(phone, tablet) {
+    max-width: none;
+  }
 }
 
 .projectDetailLead {
@@ -79,6 +98,10 @@
   color: rgb(245 242 236 / 78%);
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
+
+  @include mq.media(phone, tablet) {
+    max-width: 100%;
+  }
 }
 
 .projectDetailHeroMeta {
@@ -87,6 +110,16 @@
   gap: var(--space-12);
   width: min(100%, 720px);
   margin-top: var(--space-32);
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-12);
+  }
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+  }
 
   div {
     display: grid;
@@ -98,6 +131,11 @@
     border-radius: var(--radius-md);
     background: rgb(255 255 255 / 7%);
     backdrop-filter: var(--glass-blur);
+
+    @include mq.media(phone, tablet) {
+      min-height: 78px;
+      padding: var(--space-16);
+    }
   }
 
   dt {
@@ -113,12 +151,22 @@
     font-size: var(--type-body-md);
     font-weight: var(--weight-semibold);
     line-height: var(--leading-body-sm);
+
+    @include mq.media(phone) {
+      font-size: var(--type-body-sm);
+      white-space: normal;
+    }
   }
 }
 
 .projectDetailPage {
   padding: var(--section-pad-y) 0;
   background: var(--paper);
+
+  @include mq.media(phone) {
+    padding-top: var(--section-pad-y);
+    padding-bottom: var(--section-pad-y);
+  }
 }
 
 .projectDetailIntro {
@@ -128,6 +176,11 @@
   align-items: start;
   padding-top: var(--space-32);
   padding-bottom: var(--space-32);
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+    gap: var(--space-32);
+  }
 
   h2 {
     margin: 0;
@@ -196,6 +249,10 @@
   border-radius: var(--radius-card);
   background: var(--glass-light);
   box-shadow: var(--shadow-card);
+
+  @include mq.media(phone, tablet) {
+    padding: var(--space-20);
+  }
 }
 
 .projectDetailIntroEyebrow {
@@ -229,6 +286,10 @@
   gap: var(--space-12);
   margin-top: var(--space-24);
 
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+  }
+
   div {
     min-width: 0;
     padding: var(--space-16) 0 0;
@@ -256,6 +317,12 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-20);
   margin-top: var(--space-56);
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+    gap: var(--space-16);
+    margin-top: var(--space-32);
+  }
 }
 
 .projectDetailGalleryButton {
@@ -263,6 +330,10 @@
   cursor: pointer;
   border: 0;
   background: transparent;
+
+  @include mq.media(phone, tablet) {
+    width: 100%;
+  }
 
   &:focus-visible {
     outline: 2px solid var(--amber);
@@ -276,6 +347,11 @@
   border-radius: 28px;
   background: var(--paper-deep);
   aspect-ratio: 4 / 3;
+
+  @include mq.media(phone, tablet) {
+    border-radius: 22px;
+    aspect-ratio: 1 / 1;
+  }
 
   img {
     display: block;
@@ -318,6 +394,11 @@
     transform 0.35s cubic-bezier(0.2, 0.7, 0, 1),
     background 0.35s cubic-bezier(0.2, 0.7, 0, 1);
 
+  @include mq.media(phone) {
+    width: 100%;
+    justify-content: center;
+  }
+
   &:hover {
     transform: translateY(-2px);
     background: rgb(38 38 33);
@@ -358,6 +439,10 @@
   background: rgb(20 20 17 / 96%);
   box-shadow: 0 28px 72px rgb(0 0 0 / 36%);
 
+  @include mq.media(phone, tablet) {
+    padding: var(--space-12);
+  }
+
   img {
     display: block;
     width: 100%;
@@ -365,6 +450,10 @@
     object-fit: contain;
     border-radius: 20px;
     background: #111;
+
+    @include mq.media(phone, tablet) {
+      border-radius: 16px;
+    }
   }
 }
 
@@ -383,6 +472,12 @@
   border-radius: 50%;
   background: rgb(255 255 255 / 10%);
   transform: translateY(-50%);
+
+  @include mq.media(phone, tablet) {
+    top: auto;
+    bottom: var(--space-16);
+    transform: none;
+  }
 
   svg {
     width: 18px;
@@ -460,107 +555,4 @@
   background: rgb(255 255 255 / 10%);
   font-size: var(--type-heading-md);
   line-height: var(--leading-display);
-}
-
-@include mq.max(700px) {
-  .projectDetailHero {
-    min-height: 0;
-  }
-
-  .projectDetailWrapper {
-    min-height: 0;
-    padding-top: 112px;
-    padding-bottom: var(--space-48);
-  }
-
-  .projectDetailTitle {
-    max-width: none;
-  }
-
-  .projectDetailLead {
-    max-width: 100%;
-  }
-
-  .projectDetailHeroMeta {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-12);
-  }
-
-  .projectDetailHeroMeta div {
-    min-height: 78px;
-    padding: var(--space-16);
-  }
-
-  .projectDetailIntro {
-    grid-template-columns: 1fr;
-    gap: var(--space-32);
-  }
-
-  .projectDetailIntroMeta {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .projectDetailGallery {
-    grid-template-columns: 1fr;
-    gap: var(--space-16);
-    margin-top: var(--space-32);
-  }
-
-  .projectDetailGalleryButton {
-    width: 100%;
-  }
-
-  .projectDetailGalleryItem {
-    border-radius: 22px;
-    aspect-ratio: 1 / 1;
-  }
-
-  .projectDetailIntroAside {
-    padding: var(--space-20);
-  }
-
-  .projectDetailIntroMeta {
-    grid-template-columns: 1fr;
-  }
-
-  .projectDetailOverlayPanel {
-    padding: var(--space-12);
-
-    img {
-      border-radius: 16px;
-    }
-  }
-
-  .projectDetailOverlayNav {
-    top: auto;
-    bottom: var(--space-16);
-    transform: none;
-  }
-}
-
-@include mq.max(420px) {
-  .projectDetailPage {
-    padding-top: var(--section-pad-y);
-    padding-bottom: var(--section-pad-y);
-  }
-
-  .projectDetailWrapper {
-    padding-top: 96px;
-    padding-bottom: var(--space-40);
-  }
-
-  .projectDetailHeroMeta {
-    grid-template-columns: 1fr;
-    gap: var(--space-12);
-  }
-
-  .projectDetailHeroMeta dd {
-    font-size: var(--type-body-sm);
-    white-space: normal;
-  }
-
-  .projectDetailMoreButton {
-    width: 100%;
-    justify-content: center;
-  }
 }

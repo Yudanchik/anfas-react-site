@@ -1,32 +1,23 @@
-﻿@use './themes/default/colors' as c;
+@use './themes/default/colors' as c;
 @use './themes/default/fonts' as f;
 @use './media' as mq;
 
 /*
-  Дизайн-токены Анфас.
+  Project design tokens.
 
-  Это единая точка управления стилем сайта:
-  - цвета и поверхности;
-  - типографика;
-  - отступы и сетка;
-  - радиусы, тени и blur;
-  - единая финальная система без временных алиасов.
-
-  Как использовать:
-  - главный hero: var(--type-display-xl)
-  - hero внутренней страницы: var(--type-display-lg)
-  - заголовок секции: var(--type-heading-lg)
-  - заголовок карточки: var(--type-heading-sm)
-  - обычный текст: var(--type-body-md)
-  - подпись или тег: var(--type-caption)
-  - карточка: var(--radius-card), var(--card-padding), var(--shadow-card)
+  This file keeps shared values for:
+  - colors and surfaces;
+  - typography;
+  - spacing and rhythm;
+  - radii, shadows, and blur;
+  - reusable sizing tokens.
 */
 
 :root {
   color: var(--ink);
   background: var(--paper);
 
-  /* Брендовые цвета */
+  /* Brand colors */
   --ink: #{c.$ink};
   --paper: #{c.$paper};
   --paper-deep: #{c.$paper-deep};
@@ -34,7 +25,7 @@
   --sage: #{c.$sage};
   --line: #{c.$line};
 
-  /* Семантические цвета. Используем в новом коде, когда важна роль цвета, а не конкретный оттенок. */
+  /* Semantic colors */
   --color-text: var(--ink);
   --color-bg: var(--paper);
   --color-bg-muted: var(--paper-deep);
@@ -42,7 +33,7 @@
   --color-muted: var(--sage);
   --color-line: var(--line);
 
-  /* Поверхности секций: светлое/тёмное чередование блоков. */
+  /* Surface pairs */
   --surface-light: var(--paper);
   --surface-dark: var(--ink);
   --surface-fg-light: var(--ink);
@@ -52,19 +43,19 @@
   --section-kicker: var(--amber);
   --section-lead: color-mix(in srgb, var(--amber) 82%, var(--sage) 18%);
 
-  /* Glass-поверхности: теги, floating cards, премиальные blur-плашки. */
+  /* Glass surfaces */
   --glass-light: rgb(255 255 255 / 52%);
   --glass-dark: rgb(22 23 19 / 46%);
   --glass-border-light: rgb(22 23 19 / 10%);
   --glass-border-dark: rgb(255 255 255 / 16%);
   --glass-blur: blur(18px);
 
-  /* Шрифты */
+  /* Fonts */
   --font-body: #{f.$font-body};
   --font-heading: #{f.$font-heading};
   --font-display: #{f.$font-heading};
 
-  /* Типографика: одна финальная система ролей. */
+  /* Typography scale */
   --type-display-xl: 72px;
   --type-display-lg: 64px;
   --type-display-md: 52px;
@@ -81,7 +72,7 @@
   --type-nav: 14px;
   --type-stat: 44px;
 
-  /* Высота строки */
+  /* Line heights */
   --leading-display: 0.98;
   --leading-heading: 1.06;
   --leading-heading-compact: 1.14;
@@ -90,20 +81,20 @@
   --leading-caption: 1.3;
   --leading-control: 1.15;
 
-  /* Насыщенность */
+  /* Font weights */
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
   --weight-bold: 700;
 
-  /* Межбуквенные интервалы. Значения смягчены для кириллицы Montserrat. */
+  /* Letter spacing */
   --tracking-display: -0.03em;
   --tracking-heading: -0.02em;
   --tracking-card: -0.01em;
   --tracking-body: 0;
   --tracking-label: 0.12em;
 
-  /* Отступы и сетка */
+  /* Spacing and layout */
   --space-4: 4px;
   --space-8: 8px;
   --space-12: 12px;
@@ -126,7 +117,7 @@
   --section-gap-tight: 40px;
   --content-max: 1200px;
 
-  /* Карточки, кнопки и тени */
+  /* Radius, controls, and shadows */
   --radius-sm: #{c.$radius-sm};
   --radius-md: #{c.$radius-md};
   --radius-lg: #{c.$radius-lg};
@@ -196,7 +187,7 @@ small {
   font-size: var(--type-caption);
 }
 
-@include mq.max(820px) {
+@include mq.media(phone, tablet) {
   :root {
     --type-display-xl: 52px;
     --type-display-lg: 44px;

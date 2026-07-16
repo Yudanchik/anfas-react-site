@@ -1,4 +1,4 @@
-﻿@use 'sass:map';
+@use 'sass:map';
 
 $phone: 480px;
 $tablet: 768px;
@@ -34,18 +34,6 @@ $bkp-max: (
         @content;
       }
     }
-  }
-}
-
-@mixin min($width) {
-  @media (width >= $width) {
-    @content;
-  }
-}
-
-@mixin max($width) {
-  @media (width <= $width) {
-    @content;
   }
 }
 

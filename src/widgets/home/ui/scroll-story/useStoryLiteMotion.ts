@@ -1,7 +1,7 @@
 import { useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
-const LITE_MOTION_QUERY = '(max-width: 900px), (pointer: coarse)'
+const LITE_MOTION_QUERY = '(max-width: 768px), (pointer: coarse)'
 
 export function useStoryLiteMotion() {
   const reduceMotion = useReducedMotion()

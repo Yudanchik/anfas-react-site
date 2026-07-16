@@ -1,4 +1,4 @@
-﻿@use 'flex' as flex;
+@use 'flex' as flex;
 @use 'media' as mq;
 
 .ticker {
@@ -58,7 +58,7 @@
   }
 }
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .ticker__item {
     padding: 0 24px;
   }

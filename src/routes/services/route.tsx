@@ -5,7 +5,7 @@ import { createSeoMeta } from '@/shared/config/seo'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
-import styles from './route.module.scss'
+import styles from './ServicesRoute.module.scss'
 
 export const meta = () =>
   createSeoMeta({

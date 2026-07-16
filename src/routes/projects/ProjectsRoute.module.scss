@@ -4,6 +4,10 @@
 .projectsPage {
   padding: 0;
   background: var(--paper);
+
+  @include mq.media(phone, tablet) {
+    padding: 0;
+  }
 }
 
 .projectsHero {
@@ -12,6 +16,10 @@
   overflow: hidden;
   color: var(--paper);
   background: var(--ink);
+
+  @include mq.media(phone, tablet) {
+    min-height: 0;
+  }
 
   &::after {
     position: absolute;
@@ -41,6 +49,19 @@
   min-height: 700px;
   padding-top: 146px;
   padding-bottom: 72px;
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+    gap: var(--space-32);
+    min-height: 0;
+    padding-top: 112px;
+    padding-bottom: var(--space-48);
+  }
+
+  @include mq.media(phone) {
+    padding-top: 96px;
+    padding-bottom: var(--space-40);
+  }
 }
 
 .projectsHeroCopy {
@@ -74,6 +95,10 @@
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
 
+  @include mq.media(phone, tablet) {
+    max-width: none;
+  }
+
   em {
     color: var(--amber);
     font-family: inherit;
@@ -88,6 +113,10 @@
   color: rgb(245 242 236 / 78%);
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
+
+  @include mq.media(phone, tablet) {
+    max-width: 100%;
+  }
 }
 
 .projectsHeroStats {
@@ -95,6 +124,11 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-12);
   margin-top: var(--space-32);
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+    gap: var(--space-32);
+  }
 
   div {
     padding: var(--space-16) var(--space-20);
@@ -180,6 +214,12 @@
   gap: var(--space-32);
   margin-top: var(--space-12);
   padding-bottom: var(--space-32);
+
+  @include mq.media(phone, tablet) {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-bottom: var(--space-24);
+  }
 }
 
 .projectsIntroCopy {
@@ -225,6 +265,11 @@
   margin: var(--space-40) 0 0;
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
+
+  @include mq.media(phone) {
+    margin-top: var(--space-24);
+    font-size: var(--type-body-sm);
+  }
 }
 
 .projectsIntroAside {
@@ -234,6 +279,10 @@
   border-radius: var(--radius-card);
   background: var(--glass-light);
   box-shadow: var(--shadow-card);
+
+  @include mq.media(phone, tablet) {
+    max-width: 100%;
+  }
 
   span {
     display: block;
@@ -257,6 +306,17 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-20);
   margin-top: var(--space-40);
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-16);
+    margin-top: var(--space-32);
+  }
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+    gap: var(--space-16);
+  }
 }
 
 .projectsCard {
@@ -306,6 +366,10 @@
   flex: 1;
   gap: var(--space-20);
   padding: var(--space-24);
+
+  @include mq.media(phone) {
+    padding: var(--space-20);
+  }
 }
 
 .projectsCardBodyTop {
@@ -325,6 +389,10 @@
   letter-spacing: var(--tracking-heading);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+
+  @include mq.media(phone) {
+    min-height: auto;
+  }
 }
 
 .projectsCardDescription {
@@ -339,6 +407,10 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-12);
   margin-top: auto;
+
+  @include mq.media(phone) {
+    gap: var(--space-12);
+  }
 
   div {
     min-width: 0;
@@ -407,6 +479,11 @@
     transform 0.35s cubic-bezier(0.2, 0.7, 0, 1),
     background 0.35s cubic-bezier(0.2, 0.7, 0, 1);
 
+  @include mq.media(phone) {
+    width: 100%;
+    justify-content: center;
+  }
+
   &:hover {
     transform: translateY(-2px);
     background: rgb(38 38 33);
@@ -415,86 +492,5 @@
   svg {
     width: 16px;
     height: 16px;
-  }
-}
-
-@include mq.max(700px) {
-  .projectsPage {
-    padding: 0;
-  }
-
-  .projectsHero {
-    min-height: 0;
-  }
-
-  .projectsHeroWrap,
-  .projectsHeroStats {
-    grid-template-columns: 1fr;
-    gap: var(--space-32);
-  }
-
-  .projectsHeroWrap {
-    min-height: 0;
-    padding-top: 112px;
-    padding-bottom: var(--space-48);
-  }
-
-  .projectsHeroTitle {
-    max-width: none;
-  }
-
-  .projectsHeroLead {
-    max-width: 100%;
-  }
-
-  .projectsIntro {
-    align-items: flex-start;
-    flex-direction: column;
-    padding-bottom: var(--space-24);
-  }
-
-  .projectsIntroAside {
-    max-width: 100%;
-  }
-
-  .projectsGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-16);
-    margin-top: var(--space-32);
-  }
-
-}
-
-@include mq.max(420px) {
-  .projectsHeroWrap {
-    padding-top: 96px;
-    padding-bottom: var(--space-40);
-  }
-
-  .projectsLead {
-    margin-top: var(--space-24);
-    font-size: var(--type-body-sm);
-  }
-
-  .projectsGrid {
-    grid-template-columns: 1fr;
-    gap: var(--space-16);
-  }
-
-  .projectsCardBody {
-    padding: var(--space-20);
-  }
-
-  .projectsCardTitle {
-    min-height: auto;
-  }
-
-  .projectsCardMeta {
-    gap: var(--space-12);
-  }
-
-  .projectsMoreButton {
-    width: 100%;
-    justify-content: center;
   }
 }

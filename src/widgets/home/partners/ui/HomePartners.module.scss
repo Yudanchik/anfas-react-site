@@ -1,10 +1,7 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
-$home-tablet: 820px;
-$home-compact: 580px;
-$home-xs: 420px;
 
 .partners_sectionPad {
   @include home.section-pad;
@@ -19,7 +16,7 @@ $home-xs: 420px;
 
   gap: 40px;
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     gap: 28px;
   }
 }
@@ -74,14 +71,14 @@ $home-xs: 420px;
   box-shadow: 0 18px 42px rgb(0 0 0 / 14%);
   white-space: nowrap;
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     min-width: 156px;
     min-height: 84px;
     padding: 16px 18px;
     border-radius: 20px;
   }
 
-  @include mq.max($home-xs) {
+  @include mq.media(phone) {
     min-width: 146px;
     min-height: 78px;
     padding: 14px 16px;
@@ -96,7 +93,7 @@ $home-xs: 420px;
   letter-spacing: var(--tracking-heading);
   color: var(--paper);
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     font-size: var(--type-heading-xs);
   }
 }

@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -14,7 +14,7 @@
   padding-top: 40px;
   border-top: 1px solid var(--line);
 
-  @include mq.max(820px) {
+  @include mq.media(phone, tablet) {
     margin-top: 56px;
     padding-top: 24px;
   }
@@ -128,13 +128,13 @@
   height: 16px;
 }
 
-@include mq.max(900px) {
+@include mq.media(phone, tablet) {
   .seoContent__card {
     min-height: 240px;
   }
 }
 
-@include mq.max(700px) {
+@include mq.media(phone, tablet) {
   .seoContent_embedded {
     margin-top: 56px;
   }

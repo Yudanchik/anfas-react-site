@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -135,7 +135,7 @@
   stroke: currentcolor;
 }
 
-@include mq.max(1100px) {
+@include mq.media(laptop) {
   .services__card {
     gap: 22px;
   }
@@ -149,7 +149,7 @@
   }
 }
 
-@include mq.max(820px) {
+@include mq.media(phone, tablet) {
   .services__card {
     padding: 32px 24px;
   }
@@ -167,7 +167,7 @@
   }
 }
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .services__card {
     gap: 14px;
     padding: 28px 0;

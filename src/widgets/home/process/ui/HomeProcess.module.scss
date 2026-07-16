@@ -1,10 +1,7 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
-$home-tablet: 820px;
-$home-compact: 580px;
-$home-xs: 420px;
 
 .process_sectionPad {
   @include home.section-pad;
@@ -43,7 +40,7 @@ $home-xs: 420px;
     radial-gradient(circle at top right, rgb(237 174 36 / 12%), transparent 40%);
   box-shadow: 0 22px 54px rgb(0 0 0 / 16%);
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     grid-template-columns: 1fr;
     border-radius: 24px;
   }
@@ -60,7 +57,7 @@ $home-xs: 420px;
     order: 1;
   }
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     grid-template-columns: 1fr;
 
     .process__cardMedia,
@@ -74,7 +71,7 @@ $home-xs: 420px;
   position: relative;
   min-height: 320px;
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     min-height: 240px;
   }
 }
@@ -135,7 +132,7 @@ $home-xs: 420px;
   gap: 16px;
   padding: 26px 28px;
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     padding: 20px;
   }
 }
@@ -181,7 +178,7 @@ $home-xs: 420px;
   gap: 14px;
   padding-top: 4px;
 
-  @include mq.max($home-xs) {
+  @include mq.media(phone) {
     grid-template-columns: 1fr;
   }
 }
@@ -217,7 +214,7 @@ $home-xs: 420px;
   color: var(--ink);
   background: var(--amber);
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     width: 100%;
     align-self: stretch;
   }

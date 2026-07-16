@@ -1,4 +1,4 @@
-﻿@use './section-header' as header;
+@use './section-header' as header;
 @use 'media' as mq;
 
 .sectionHeader {
@@ -51,7 +51,7 @@
   color: var(--paper);
 }
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .sectionHeaderKicker {
     gap: 10px 12px;
     margin-bottom: 18px;

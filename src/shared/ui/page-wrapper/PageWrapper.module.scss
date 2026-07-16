@@ -1,15 +1,7 @@
-﻿@use 'media' as mq;
-
 .pageWrapper {
   box-sizing: border-box;
   width: 100%;
   max-width: 1200px;
   margin-inline: auto;
-  padding-inline: 15px;
-}
-
-@include mq.max(820px) {
-  .pageWrapper {
-    padding-inline: var(--page-gutter-mobile);
-  }
+  padding-inline: 16px;
 }

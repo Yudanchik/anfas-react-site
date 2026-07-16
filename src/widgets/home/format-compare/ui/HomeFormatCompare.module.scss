@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -34,6 +34,10 @@
   border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--paper) 86%, #fff 14%);
   box-shadow: var(--shadow-soft);
+
+  @include mq.media(phone) {
+    padding: 18px 16px;
+  }
 }
 
 .cardAccent {
@@ -79,6 +83,11 @@
   background: rgb(255 255 255 / 42%);
   font-size: var(--type-body-sm);
   line-height: var(--leading-body);
+
+  @include mq.media(phone) {
+    padding: 10px 12px;
+    font-size: var(--type-body-sm);
+  }
 }
 
 .cardNote {
@@ -104,6 +113,11 @@
   gap: 16px;
   padding: 22px 26px 0;
   color: var(--paper);
+
+  @include mq.media(phone) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
 .tableTitle h4 {
@@ -144,17 +158,32 @@
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: rgb(243 240 233 / 72%);
+
+  @include mq.media(phone) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
 .tableRowLabel {
   font-size: var(--type-body-md);
   font-weight: var(--weight-semibold);
+
+  @include mq.media(phone) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
 .tableCell {
   font-size: var(--type-body-sm);
   line-height: var(--leading-body);
   color: rgb(243 240 233 / 88%);
+
+  @include mq.media(phone) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
 .footer {
@@ -169,12 +198,20 @@
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
   color: rgb(22 23 19 / 72%);
+
+  @include mq.media(phone) {
+    font-size: var(--type-body-sm);
+  }
 }
 
 .footerActions {
   @include flex.flex($fw: wrap);
 
   gap: 12px;
+
+  @include mq.media(phone) {
+    gap: 10px;
+  }
 }
 
 .action,
@@ -208,7 +245,7 @@
   transform: translateY(-1px);
 }
 
-@include mq.max(900px) {
+@include mq.media(phone, tablet) {
   .card {
     flex: 1 1 100%;
   }
@@ -225,7 +262,7 @@
   }
 }
 
-@include mq.max(700px) {
+@include mq.media(phone, tablet) {
   .card,
   .tableTitle,
   .tableHeader,
@@ -245,39 +282,12 @@
   }
 }
 
-@include mq.max(580px) {
+@include mq.media(phone) {
   .tableWrap {
     overflow-x: auto;
   }
 
   .table {
     min-width: 560px;
-  }
-}
-
-@include mq.max(420px) {
-  .card {
-    padding: 18px 16px;
-  }
-
-  .cardList li {
-    padding: 10px 12px;
-    font-size: var(--type-body-sm);
-  }
-
-  .tableTitle,
-  .tableHeader,
-  .tableCell,
-  .tableRowLabel {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-
-  .footerText {
-    font-size: var(--type-body-sm);
-  }
-
-  .footerActions {
-    gap: 10px;
   }
 }

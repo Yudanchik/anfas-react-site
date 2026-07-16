@@ -46,12 +46,12 @@ export default function ProjectRoute() {
       return 6
     }
 
-    return window.matchMedia('(width <= 700px)').matches ? 3 : 6
+    return window.matchMedia('(width <= 768px)').matches ? 3 : 6
   })
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null)
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(width <= 700px)')
+    const mediaQuery = window.matchMedia('(width <= 768px)')
 
     const updateGalleryCount = () => {
       setGalleryCount(mediaQuery.matches ? 3 : 6)
@@ -101,7 +101,7 @@ export default function ProjectRoute() {
   const activeImage = activeImageIndex === null ? null : project.gallery[activeImageIndex]
   const canLoadMore = project.gallery.length > galleryCount
   const loadMoreGallery = () => {
-    const step = window.matchMedia('(width <= 700px)').matches ? 3 : 6
+    const step = window.matchMedia('(width <= 768px)').matches ? 3 : 6
     setGalleryCount((current) => Math.min(current + step, project.gallery.length))
   }
 

@@ -1,8 +1,6 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'media' as mq;
 
-$tablet: 1023px;
-$mobile: 640px;
 
 .section {
   @include home.section-pad;
@@ -19,7 +17,7 @@ $mobile: 640px;
   gap: clamp(28px, 3vw, 44px);
   align-items: stretch;
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     grid-template-columns: 1fr;
     gap: var(--space-32);
   }
@@ -32,7 +30,7 @@ $mobile: 640px;
   max-width: 590px;
   padding-bottom: var(--space-20);
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     max-width: 760px;
     padding-bottom: 0;
   }
@@ -118,7 +116,7 @@ $mobile: 640px;
     box-shadow: none;
   }
 
-  @include mq.max($mobile) {
+  @include mq.media(phone, tablet) {
     gap: 8px 16px;
   }
 }
@@ -135,7 +133,7 @@ $mobile: 640px;
   box-shadow: 0 28px 80px rgb(22 23 19 / 9%);
   backdrop-filter: var(--glass-blur);
 
-  @include mq.max($mobile) {
+  @include mq.media(phone, tablet) {
     padding: var(--space-12);
     border-radius: var(--radius-card);
   }
@@ -168,7 +166,7 @@ $mobile: 640px;
   border-radius: 24px;
   background: rgb(255 255 255 / 72%);
 
-  @include mq.max($mobile) {
+  @include mq.media(phone, tablet) {
     border-radius: 18px;
   }
 }
@@ -292,7 +290,7 @@ $mobile: 640px;
   display: none;
 }
 
-@include mq.max($mobile) {
+@include mq.media(phone, tablet) {
   .title {
     max-width: 19ch;
   }

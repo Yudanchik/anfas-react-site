@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -18,7 +18,7 @@
   flex-wrap: wrap;
   gap: 10px;
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     width: 100%;
   }
 }
@@ -47,7 +47,7 @@
     border-color: rgb(197 160 102 / 34%);
   }
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     flex: 1 1 100%;
   }
 }
@@ -79,7 +79,7 @@
   border-radius: 30px;
   box-shadow: var(--shadow-card);
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     padding: 22px;
   }
 
@@ -100,7 +100,7 @@
     radial-gradient(circle at 82% 8%, rgb(197 160 102 / 18%), transparent 30%),
     linear-gradient(135deg, rgb(20 20 17), rgb(28 27 24));
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     order: -1;
   }
 }
@@ -225,7 +225,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     grid-template-columns: 1fr;
   }
 }
@@ -283,7 +283,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     grid-template-columns: 1fr;
   }
 
@@ -348,7 +348,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     grid-template-columns: 1fr;
   }
 }
@@ -395,7 +395,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     grid-template-columns: 1fr;
   }
 
@@ -492,7 +492,7 @@
 
   span + span::before {
     margin-right: 12px;
-    content: '·';
+    content: '/';
     opacity: 0.7;
   }
 }
@@ -502,7 +502,7 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     grid-template-columns: 1fr;
   }
 }
@@ -575,7 +575,7 @@
 
   gap: 12px;
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     @include flex.flex($fd: column);
   }
 }
@@ -598,7 +598,7 @@
     color 0.3s cubic-bezier(0.2, 0.7, 0, 1),
     border-color 0.3s cubic-bezier(0.2, 0.7, 0, 1);
 
-  @include mq.max(700px) {
+  @include mq.media(phone, tablet) {
     width: 100%;
   }
 }

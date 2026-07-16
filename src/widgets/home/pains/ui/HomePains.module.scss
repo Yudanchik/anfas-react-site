@@ -1,16 +1,14 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
-$tablet: 1023px;
-$mobile: 640px;
 
 .sectionpad {
   @include home.section-pad;
 
   padding-block: 40px;
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     padding-block: 28px;
   }
 }
@@ -22,13 +20,13 @@ $mobile: 640px;
 .header {
   margin-bottom: 28px;
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     margin-bottom: 20px;
   }
 }
 
 .headerTitle {
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     max-width: 13ch;
   }
 }
@@ -37,7 +35,7 @@ $mobile: 640px;
   max-width: min(100%, 58ch);
   text-wrap: balance;
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     max-width: 44ch;
     font-size: var(--type-body-sm);
   }
@@ -67,7 +65,7 @@ $mobile: 640px;
 }
 
 .itemOffset {
-  @include mq.min($tablet + 1px) {
+  @include mq.media(laptop, desktop) {
     margin-left: clamp(72px, 8vw, 152px);
     margin-top: 18px;
   }
@@ -79,7 +77,7 @@ $mobile: 640px;
   margin-bottom: 22px;
   background: linear-gradient(90deg, rgb(237 174 36 / 28%), rgb(255 255 255 / 10%));
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     margin-bottom: 18px;
   }
 }
@@ -90,7 +88,7 @@ $mobile: 640px;
   gap: 32px;
   align-items: stretch;
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     grid-template-columns: 1fr;
     gap: 16px;
   }
@@ -106,7 +104,7 @@ $mobile: 640px;
     transform 0.3s ease,
     box-shadow 0.3s ease;
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     min-height: 0;
     aspect-ratio: 1.35 / 1;
     border-radius: 22px;
@@ -173,7 +171,7 @@ $mobile: 640px;
   letter-spacing: var(--tracking-heading);
   text-wrap: balance;
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     font-size: var(--type-heading-xs);
     line-height: var(--leading-heading);
   }
@@ -189,7 +187,7 @@ $mobile: 640px;
     radial-gradient(circle at top right, rgb(237 174 36 / 16%), transparent 36%),
     linear-gradient(160deg, rgb(26 24 22 / 98%), rgb(18 17 15 / 98%));
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     padding: 18px;
     border-radius: 22px;
   }
@@ -221,7 +219,7 @@ $mobile: 640px;
   letter-spacing: var(--tracking-heading);
   text-wrap: balance;
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     max-width: 100%;
     font-size: var(--type-heading-xs);
     line-height: var(--leading-heading);
@@ -252,7 +250,7 @@ $mobile: 640px;
   line-height: var(--leading-control);
   letter-spacing: var(--tracking-card);
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     max-width: 100%;
     font-size: var(--type-heading-xs);
   }
@@ -265,7 +263,7 @@ $mobile: 640px;
   line-height: var(--leading-body-sm);
   color: rgb(245 242 236 / 72%);
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     max-width: 100%;
     line-height: var(--leading-body-sm);
   }
@@ -279,7 +277,7 @@ $mobile: 640px;
   padding-top: 18px;
   border-top: 1px solid rgb(255 255 255 / 10%);
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     margin-top: 18px;
     padding-top: 14px;
   }
@@ -298,7 +296,7 @@ $mobile: 640px;
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-card);
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     font-size: var(--type-heading-xs);
   }
 }
@@ -316,7 +314,7 @@ $mobile: 640px;
 
   margin-top: 28px;
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     margin-top: 20px;
   }
 }
@@ -357,7 +355,7 @@ $mobile: 640px;
     background: var(--ink);
   }
 
-  @include mq.max($tablet) {
+  @include mq.media(phone, tablet, laptop) {
     width: 100%;
     min-height: 48px;
     padding-left: 18px;

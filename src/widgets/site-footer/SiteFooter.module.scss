@@ -1,10 +1,6 @@
-﻿@use 'flex' as flex;
+@use 'flex' as flex;
 @use 'media' as mq;
 
-$home-wide: 1100px;
-$home-tablet: 820px;
-$home-compact: 580px;
-$home-xs: 420px;
 
 .siteFooter {
   padding-block: 74px 28px;
@@ -13,7 +9,7 @@ $home-xs: 420px;
     radial-gradient(circle at top left, rgb(237 174 36 / 10%), transparent 34%),
     linear-gradient(180deg, rgb(25 25 22), rgb(17 17 15));
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     padding-top: 48px;
   }
 
@@ -33,7 +29,7 @@ $home-xs: 420px;
     gap: 28px;
   }
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     flex-direction: column;
     gap: 0;
     padding-bottom: 32px;
@@ -53,14 +49,14 @@ $home-xs: 420px;
     padding-right: 0;
   }
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     padding-bottom: 24px;
     border-bottom: 1px solid rgb(255 255 255 / 12%);
   }
 }
 
 .siteFooter__brandColumn .siteFooter__socials {
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     display: none;
   }
 }
@@ -141,7 +137,7 @@ $home-xs: 420px;
     gap: 28px;
   }
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     display: none;
   }
 }
@@ -150,7 +146,7 @@ $home-xs: 420px;
   display: none;
   width: 100%;
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     display: block;
   }
 }
@@ -282,7 +278,7 @@ $home-xs: 420px;
 
   gap: var(--space-12);
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
@@ -294,7 +290,7 @@ $home-xs: 420px;
 }
 
 .siteFooter__contactCard_wide {
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     grid-column: 1 / -1;
   }
 }
@@ -453,12 +449,12 @@ $home-xs: 420px;
   color: rgb(243 240 233 / 52%);
   font-size: var(--type-caption);
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  @include mq.max($home-compact) {
+  @include mq.media(phone) {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -502,7 +498,7 @@ $home-xs: 420px;
     color: rgb(243 240 233 / 78%);
   }
 
-  @include mq.max($home-tablet) {
+  @include mq.media(phone, tablet) {
     align-self: flex-start;
     text-align: left;
   }

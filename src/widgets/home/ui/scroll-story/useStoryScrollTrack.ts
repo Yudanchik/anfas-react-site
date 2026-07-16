@@ -15,8 +15,8 @@ import {
   storyTrackHeight,
 } from './model/story-scroll'
 
-const DESKTOP_INTRO_QUERY = '(min-width: 901px)'
-const MOBILE_SCROLL_QUERY = '(max-width: 900px)'
+const DESKTOP_INTRO_QUERY = '(min-width: 769px)'
+const MOBILE_SCROLL_QUERY = '(max-width: 768px)'
 
 function getScrollHeaderOffset() {
   if (typeof window === 'undefined') {

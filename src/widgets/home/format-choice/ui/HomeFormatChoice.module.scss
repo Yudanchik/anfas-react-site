@@ -1,4 +1,4 @@
-﻿@use 'common' as home;
+@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -31,6 +31,10 @@
   border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--paper) 88%, #fff 12%);
   box-shadow: var(--shadow-soft);
+
+  @include mq.media(phone) {
+    padding: 18px 16px;
+  }
 }
 
 .choice__badge {
@@ -63,6 +67,10 @@
   margin: 0;
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
+
+  @include mq.media(phone) {
+    font-size: var(--type-body-sm);
+  }
 }
 
 .choice__points {
@@ -80,6 +88,10 @@
   gap: 10px;
   font-size: var(--type-body-sm);
   line-height: var(--leading-body);
+
+  @include mq.media(phone) {
+    font-size: var(--type-body-sm);
+  }
 }
 
 .choice__point::before {
@@ -122,31 +134,20 @@
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
   color: rgb(22 23 19 / 72%);
+
+  @include mq.media(phone) {
+    font-size: var(--type-body-sm);
+  }
 }
 
-@include mq.max(900px) {
+@include mq.media(phone, tablet) {
   .choice__card {
     flex: 1 1 100%;
   }
 }
 
-@include mq.max(700px) {
+@include mq.media(phone, tablet) {
   .choice__card {
     padding: 22px;
-  }
-}
-
-@include mq.max(420px) {
-  .choice__card {
-    padding: 18px 16px;
-  }
-
-  .choice__cardText,
-  .choice__footerText {
-    font-size: var(--type-body-sm);
-  }
-
-  .choice__point {
-    font-size: var(--type-body-sm);
   }
 }
