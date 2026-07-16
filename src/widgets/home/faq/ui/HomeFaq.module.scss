@@ -11,65 +11,63 @@
 .faq {
   position: relative;
   overflow: hidden;
-  color: var(--surface-fg-dark);
 
-  --section-bg: transparent;
-  --section-fg: var(--surface-fg-dark);
-  --section-line: var(--line-on-dark);
-}
+  @include home.surface-light;
 
-
-.faq__bgImage {
-  position: absolute;
-  inset: -30px;
-  z-index: 0;
-  transition: transform 0.9s ease;
   background:
-    linear-gradient(0deg, rgb(18 18 15 / 72%), rgb(18 18 15 / 48%)),
-    url('/images/project-grafika.jpeg') center 58% / cover no-repeat;
-}
-
-
-.faq:hover .faq__bgImage {
-  transform: scale(1.025);
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-light) 94%, var(--amber) 6%), var(--surface-light));
 }
 
 
 .faq__content {
   position: relative;
   z-index: 1;
-
-  @include flex.flex($fw: wrap);
-
-  gap: 9vw;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 48px);
 }
 
 
 .faq__title {
-  flex: 0.75;
-  align-self: start;
-  position: sticky;
-  top: 70px;
-  min-width: 0;
+  max-width: 660px;
 }
 
 
 .faq__list {
-  flex: 1.25;
   min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  margin-inline: auto;
 
 }
 
 
 .faq__item {
-  border-bottom: 1px solid var(--section-line);
-  border-radius: 24px;
-  transition: background-color 0.3s ease;
+  --faq-control-size: 44px;
+  --faq-trigger-gap: 20px;
+  --faq-trigger-padding-x: 24px;
+
+  overflow: clip;
+  border: 1px solid color-mix(in srgb, var(--section-line) 80%, var(--amber) 20%);
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-light) 96%, #fff 4%), color-mix(in srgb, var(--surface-light) 84%, var(--paper-deep) 16%));
+  box-shadow: 0 10px 24px rgb(22 23 19 / 5%);
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.7, 0, 1),
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    background-color 0.35s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .faq__item:hover {
-    background: rgb(255 255 255 / 4%);
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--amber) 38%, var(--section-line) 62%);
+    box-shadow: 0 16px 34px rgb(22 23 19 / 8%);
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--surface-light) 94%, var(--amber) 6%), color-mix(in srgb, var(--surface-light) 80%, var(--paper-deep) 20%));
   }
 }
 
@@ -77,7 +75,7 @@
 .faq__trigger {
   @include flex.flex($ai: center);
 
-  gap: 20px;
+  gap: var(--faq-trigger-gap);
   width: 100%;
   padding: 24px;
   cursor: pointer;
@@ -98,15 +96,15 @@
   @include flex.flex($ai: center, $jc: center);
 
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
+  width: var(--faq-control-size);
+  height: var(--faq-control-size);
   font-family: var(--font-heading);
   font-size: var(--type-body-sm);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card);
-  border: 1px solid var(--section-line);
+  border: 1px solid color-mix(in srgb, var(--section-line) 72%, var(--amber) 28%);
   border-radius: 50%;
-  background: rgb(255 255 255 / 8%);
+  background: color-mix(in srgb, var(--surface-light) 90%, var(--amber) 10%);
   transition:
     border-color 0.3s ease,
     background-color 0.3s ease,
@@ -122,7 +120,7 @@
 .faq__item_open .faq__number,
 .faq__item:hover .faq__number {
   border-color: var(--amber);
-  background: rgb(237 174 36 / 12%);
+  background: color-mix(in srgb, var(--surface-light) 76%, var(--amber) 24%);
 }
 
 
@@ -146,12 +144,12 @@
   @include flex.flex($ai: center, $jc: center);
 
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
+  width: var(--faq-control-size);
+  height: var(--faq-control-size);
   color: inherit;
-  border: 1px solid var(--section-line);
+  border: 1px solid color-mix(in srgb, var(--section-line) 78%, var(--amber) 22%);
   border-radius: 50%;
-  background: rgb(255 255 255 / 10%);
+  background: color-mix(in srgb, var(--surface-light) 76%, var(--amber) 24%);
   transition:
     transform 0.35s cubic-bezier(0.2, 0.7, 0, 1),
     border-color 0.3s ease,
@@ -165,34 +163,38 @@
 
 
 .faq__item_open .faq__toggle {
-  border-color: var(--surface-fg-dark);
-  background: var(--surface-fg-dark);
-  color: var(--surface-dark);
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--surface-light);
 }
 
 
 .faq__answer {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.45s cubic-bezier(0.2, 0.7, 0, 1);
+  transition: grid-template-rows 0.55s cubic-bezier(0.2, 0.7, 0, 1);
 }
 
 
 .faq__answerInner {
   min-height: 0;
   overflow: hidden;
+  padding-inline:
+    calc(var(--faq-trigger-padding-x) + var(--faq-control-size) + var(--faq-trigger-gap))
+    calc(var(--faq-trigger-padding-x) + var(--faq-control-size) + 12px);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.55s cubic-bezier(0.2, 0.7, 0, 1);
 }
 
 
 .faq__answerText {
-  margin: 0 0 0 72px;
-  color: color-mix(in srgb, currentcolor 72%, transparent);
+  margin: 0;
+  color: color-mix(in srgb, var(--surface-fg-light) 72%, transparent);
   font-size: var(--type-body-sm);
   line-height: var(--leading-body);
-
-  @include mq.media(phone) {
-    margin-left: 48px;
-  }
 }
 
 
@@ -201,42 +203,66 @@
 }
 
 
+.faq__item_open .faq__answerInner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
 .faq__item_open .faq__answerText {
-  margin-bottom: 28px;
+  margin-bottom: 26px;
 }
 
 
 @include mq.media(phone, tablet) {
   .faq__content {
-    flex-direction: column;
+    gap: 24px;
   }
 
   .faq__title {
-    flex: 1 1 100%;
-    position: static;
-
-    // margin-bottom: 56px;
+    max-width: none;
   }
 
   .faq__list {
-    flex: 1 1 100%;
+    max-width: none;
   }
 }
 
 
 @include mq.media(phone) {
+  .faq__item {
+    --faq-control-size: 40px;
+    --faq-trigger-gap: 14px;
+    --faq-trigger-padding-x: 20px;
+  }
+
+  .faq {
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--surface-light) 96%, var(--amber) 4%), var(--surface-light));
+  }
+
   .faq__trigger {
-    gap: 14px;
-    padding: 20px 0;
+    padding: 20px;
   }
 
-  .faq__number,
-  .faq__toggle {
-    width: 40px;
-    height: 40px;
+  .faq__number {
+    display: none;
   }
 
-  .faq__answerText {
-    margin-left: 58px;
+  .faq__answerInner {
+    padding-inline:
+      var(--faq-trigger-padding-x)
+      calc(var(--faq-trigger-padding-x) + var(--faq-control-size) + 12px);
+  }
+}
+
+
+@include mq.media(laptop, desktop) {
+  .faq__content {
+    gap: clamp(32px, 4vw, 56px);
+  }
+
+  .faq__list {
+    gap: 18px;
   }
 }
