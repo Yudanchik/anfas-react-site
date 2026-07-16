@@ -1,4 +1,4 @@
-@use 'common' as home;
+﻿@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -111,9 +111,9 @@ $home-xs: 420px;
   border: 1px solid rgb(255 255 255 / 12%);
   border-radius: 999px;
   color: rgb(245 242 236 / 88%);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   background: rgb(255 255 255 / 6%);
   backdrop-filter: blur(8px);
@@ -124,9 +124,9 @@ $home-xs: 420px;
   bottom: 20px;
   color: rgb(245 242 236 / 92%);
   font-family: var(--font-heading);
-  font-size: 44px;
-  font-weight: 500;
-  letter-spacing: -0.05em;
+  font-size: var(--type-heading-xl);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-display);
 }
 
 .process__cardBody {
@@ -141,9 +141,9 @@ $home-xs: 420px;
 }
 
 .process__cardKicker {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--amber);
 }
@@ -152,10 +152,10 @@ $home-xs: 420px;
 .process__cardDetailTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1.06;
-  letter-spacing: -0.03em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
   color: var(--paper);
 }
 
@@ -163,8 +163,8 @@ $home-xs: 420px;
 .process__cardDetailText {
   margin: 0;
   color: rgb(243 240 233 / 74%);
-  font-size: 15px;
-  line-height: 1.66;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }
 
 .process__cardDetail {
@@ -189,10 +189,10 @@ $home-xs: 420px;
 .process__cardStatValue {
   display: block;
   font-family: var(--font-heading);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.03em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
   color: var(--paper);
 }
 
@@ -200,8 +200,8 @@ $home-xs: 420px;
   display: block;
   margin-top: 6px;
   color: rgb(243 240 233 / 58%);
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
 }
 
 .process__cta {
@@ -224,8 +224,8 @@ $home-xs: 420px;
 }
 
 .process__ctaText {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
 }
 
 .process__ctaIcon {

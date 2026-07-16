@@ -26,9 +26,9 @@
   gap: var(--space-16);
   width: max-content;
   margin-bottom: var(--space-40);
-  font-size: var(--text-caption);
-  font-weight: 600;
-  letter-spacing: var(--letter-spacing-eyebrow);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 

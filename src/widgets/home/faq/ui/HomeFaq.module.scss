@@ -1,4 +1,4 @@
-@use 'common' as home;
+﻿@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -95,9 +95,9 @@
   width: 44px;
   height: 44px;
   font-family: var(--font-heading);
-  font-size: var(--text-body-sm);
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-size: var(--type-body-sm);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--tracking-card);
   border: 1px solid var(--section-line);
   border-radius: 50%;
   background: rgb(255 255 255 / 8%);
@@ -119,10 +119,10 @@
   flex: 1;
   min-width: 0;
   font-family: var(--font-heading);
-  font-size: var(--text-card-title);
-  font-weight: 400;
-  line-height: var(--line-height-tight);
-  letter-spacing: -0.03em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
   color: inherit;
 }
 
@@ -166,8 +166,8 @@
 .faq__answerText {
   margin: 0 0 0 72px;
   color: color-mix(in srgb, currentcolor 72%, transparent);
-  font-size: var(--text-body-sm);
-  line-height: var(--line-height-body);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
 }
 
 
@@ -223,7 +223,7 @@
   }
 
   .faq__question {
-    font-size: 1.125rem;
+    font-size: var(--type-heading-xs);
   }
 
   .faq__number,

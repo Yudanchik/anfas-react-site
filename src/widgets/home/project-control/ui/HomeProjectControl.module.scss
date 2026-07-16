@@ -1,4 +1,4 @@
-@use 'common' as home;
+﻿@use 'common' as home;
 @use 'media' as mq;
 
 $tablet: 1023px;
@@ -44,9 +44,9 @@ $mobile: 640px;
   gap: 12px;
   margin-bottom: var(--space-20);
   color: var(--section-kicker);
-  font-size: var(--text-caption);
-  font-weight: 600;
-  letter-spacing: var(--letter-spacing-eyebrow);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -59,16 +59,16 @@ $mobile: 640px;
   border: 1px solid color-mix(in srgb, var(--section-kicker) 52%, transparent);
   border-radius: 50%;
   font-family: var(--font-heading);
-  font-size: var(--text-14);
-  font-weight: 500;
-  letter-spacing: 0;
+  font-size: var(--type-body-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-body);
 }
 
 .title {
   max-width: none;
-  font-size: var(--text-section-title);
-  line-height: 1.08;
-  letter-spacing: -0.04em;
+  font-size: var(--type-heading-lg);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 
   em {
     color: var(--color-accent);
@@ -80,8 +80,8 @@ $mobile: 640px;
   max-width: 48ch;
   margin-top: var(--space-24);
   color: color-mix(in srgb, var(--color-text) 68%, transparent);
-  font-size: var(--text-body);
-  line-height: 1.62;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }
 
 .legend {
@@ -95,8 +95,8 @@ $mobile: 640px;
     align-items: center;
     gap: 10px;
     color: color-mix(in srgb, var(--color-text) 72%, transparent);
-    font-size: var(--text-caption);
-    line-height: 1.4;
+    font-size: var(--type-caption);
+    line-height: var(--leading-caption);
 
     &::before {
       width: 8px;
@@ -150,9 +150,9 @@ $mobile: 640px;
   margin-bottom: var(--space-12);
   padding-inline: 4px;
   color: color-mix(in srgb, var(--color-text) 56%, transparent);
-  font-size: var(--text-caption);
-  font-weight: 600;
-  letter-spacing: var(--letter-spacing-wide);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 
   span:last-child {
@@ -240,9 +240,9 @@ $mobile: 640px;
     display: block;
     margin-bottom: 5px;
     color: var(--amber);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: var(--letter-spacing-wide);
+    font-size: var(--type-caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
   }
 
@@ -250,15 +250,15 @@ $mobile: 640px;
     display: block;
     margin-bottom: 6px;
     font-family: var(--font-heading);
-    font-size: var(--text-18);
-    font-weight: 500;
-    line-height: 1.1;
+    font-size: var(--type-body-lg);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-control);
   }
 
   p {
     color: color-mix(in srgb, var(--ink) 68%, transparent);
-    font-size: var(--text-caption);
-    line-height: 1.45;
+    font-size: var(--type-caption);
+    line-height: var(--leading-body-sm);
   }
 }
 
@@ -299,8 +299,8 @@ $mobile: 640px;
 
   .lead {
     margin-top: var(--space-16);
-    font-size: var(--text-body-sm);
-    line-height: 1.55;
+    font-size: var(--type-body-sm);
+    line-height: var(--leading-body-sm);
   }
 
   .demoHeader {

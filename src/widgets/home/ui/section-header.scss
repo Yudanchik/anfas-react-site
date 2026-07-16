@@ -1,4 +1,4 @@
-@use 'common' as home;
+﻿@use 'common' as home;
 
 @mixin section-head {
   display: flex;
@@ -17,9 +17,9 @@
   max-width: 100%;
   margin-bottom: var(--space-20);
   color: var(--section-kicker);
-  font-size: var(--text-caption);
-  font-weight: 600;
-  letter-spacing: var(--letter-spacing-eyebrow);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -30,25 +30,25 @@
 @mixin section-title-base {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: var(--text-section-title);
-  font-weight: 500;
-  line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
+  font-size: var(--type-heading-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 @mixin section-title-em {
   color: var(--amber);
   font-family: var(--font-heading);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   font-style: normal;
-  letter-spacing: -0.03em;
+  letter-spacing: var(--tracking-heading);
 }
 
 @mixin section-lead-base {
   margin: var(--space-16) 0 0;
   color: var(--section-lead);
-  font-size: var(--text-section-lead);
-  line-height: var(--line-height-body);
+  font-size: var(--type-body-lg);
+  line-height: var(--leading-body);
 }
 
 @mixin section-lead-on-dark {

@@ -1,5 +1,4 @@
-@use 'fonts' as f;
-@use 'flex' as flex;
+﻿@use 'flex' as flex;
 @use 'media' as mq;
 
 $home-wide: 1100px;
@@ -73,11 +72,11 @@ $home-xs: 420px;
 .siteFooter__brandLead {
   margin: 0;
   color: rgb(243 240 233 / 72%);
-  font-size: var(--text-16);
-  line-height: 1.7;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 
   @include mq.media(phone) {
-    font-size: var(--text-16);
+    font-size: var(--type-body-md);
   }
 }
 
@@ -91,8 +90,8 @@ $home-xs: 420px;
   border: 0;
   border-radius: 999px;
   color: var(--ink);
-  font-size: var(--text-16);
-  font-weight: 600;
+  font-size: var(--type-body-md);
+  font-weight: var(--weight-semibold);
   background: var(--amber);
 }
 
@@ -113,8 +112,8 @@ $home-xs: 420px;
   border-radius: 999px;
   background: rgb(255 255 255 / 4%);
   color: inherit;
-  font-size: var(--text-16);
-  font-weight: 600;
+  font-size: var(--type-body-md);
+  font-weight: var(--weight-semibold);
   text-decoration: none;
   transition:
     border-color 0.25s ease,
@@ -181,10 +180,10 @@ $home-xs: 420px;
 .siteFooter__title {
   color: var(--paper);
   font-family: var(--font-heading);
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-size: var(--type-heading-xs);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-control);
+  letter-spacing: var(--tracking-card);
 }
 
 .siteFooter__nav {
@@ -195,8 +194,8 @@ $home-xs: 420px;
 
 .siteFooter__nav a {
   color: rgb(243 240 233 / 62%);
-  font-size: var(--text-16);
-  line-height: 1.4;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-caption);
   text-decoration: none;
 
   &:hover {
@@ -204,7 +203,7 @@ $home-xs: 420px;
   }
 
   @include mq.media(phone) {
-    font-size: var(--text-16);
+    font-size: var(--type-body-md);
   }
 }
 
@@ -220,10 +219,10 @@ $home-xs: 420px;
   cursor: pointer;
   color: inherit;
   font-family: var(--font-heading);
-  font-size: clamp(var(--text-22), 5vw, var(--text-28));
-  font-weight: 500;
-  line-height: 0.98;
-  letter-spacing: var(--letter-spacing-tight);
+  font-size: var(--type-heading-md);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
   border: 0;
   background: transparent;
 }
@@ -274,8 +273,8 @@ $home-xs: 420px;
 .siteFooter__metaDisclaimer {
   margin: 16px 0 0;
   color: rgb(243 240 233 / 48%);
-  font-size: var(--text-12);
-  line-height: 1.55;
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
 }
 
 .siteFooter__contactCards {
@@ -314,22 +313,22 @@ $home-xs: 420px;
   margin-bottom: 10px;
   color: rgb(243 240 233 / 50%);
   font-family: var(--font-heading);
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-size: var(--type-heading-xs);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-control);
+  letter-spacing: var(--tracking-card);
 }
 
 .siteFooter__contactValue {
   margin: 0;
   color: rgb(243 240 233 / 72%);
   font-family: var(--font-body);
-  font-size: var(--text-16);
-  line-height: 1.5;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body-sm);
   text-decoration: none;
 
   @include mq.media(phone) {
-    font-size: var(--text-16);
+    font-size: var(--type-body-md);
   }
 }
 
@@ -361,34 +360,26 @@ $home-xs: 420px;
   display: inline-flex;
   margin-bottom: 14px;
   color: var(--amber);
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: var(--letter-spacing-wide);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .footerBanner h3 {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(var(--text-28), 3vw, var(--text-44));
-  font-weight: 500;
-  line-height: 1.02;
-  letter-spacing: var(--letter-spacing-tight);
-
-  @include mq.media(phone) {
-    font-size: clamp(var(--text-22), 8vw, var(--text-32));
-  }
+  font-size: var(--type-heading-xl);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 .footerBanner p {
   margin: 18px 0 0;
   color: rgb(243 240 233 / 72%);
-  font-size: var(--text-14);
-  line-height: 1.8;
-
-  @include mq.media(phone) {
-    font-size: var(--text-16);
-  }
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }
 
 .footerSubscribe {
@@ -409,7 +400,7 @@ $home-xs: 420px;
   padding: 16px 18px;
   color: var(--paper);
   font-family: var(--font-body);
-  font-size: var(--text-14);
+  font-size: var(--type-body-md);
   border: 1px solid rgb(255 255 255 / 14%);
   border-radius: var(--radius-md);
   outline: none;
@@ -435,9 +426,9 @@ $home-xs: 420px;
 }
 
 .footerSubscribe button span {
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -456,7 +447,7 @@ $home-xs: 420px;
   gap: 20px 32px;
   padding-top: 24px;
   color: rgb(243 240 233 / 52%);
-  font-size: var(--text-12);
+  font-size: var(--type-caption);
 
   @include mq.max($home-tablet) {
     flex-direction: column;
@@ -479,7 +470,7 @@ $home-xs: 420px;
 
 .siteFooter__legalText {
   margin: 0;
-  line-height: 1.55;
+  line-height: var(--leading-body-sm);
 }
 
 .siteFooter__legalLink {

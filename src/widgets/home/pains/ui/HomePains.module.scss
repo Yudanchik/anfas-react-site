@@ -1,4 +1,4 @@
-@use 'common' as home;
+﻿@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -39,7 +39,7 @@ $mobile: 640px;
 
   @include mq.max($tablet) {
     max-width: 44ch;
-    font-size: var(--text-body-sm);
+    font-size: var(--type-body-sm);
   }
 }
 
@@ -149,15 +149,15 @@ $mobile: 640px;
 
 .number {
   font-family: var(--font-heading);
-  font-size: var(--text-18);
-  font-weight: 500;
+  font-size: var(--type-body-lg);
+  font-weight: var(--weight-medium);
   color: var(--paper);
 }
 
 .label {
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: rgb(246 243 238 / 82%);
 }
@@ -167,15 +167,15 @@ $mobile: 640px;
   max-width: 11ch;
   color: var(--paper);
   font-family: var(--font-heading);
-  font-size: clamp(22px, 2vw, 34px);
-  font-weight: 500;
-  line-height: 0.98;
-  letter-spacing: -0.04em;
+  font-size: var(--type-heading-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
   text-wrap: balance;
 
   @include mq.max($tablet) {
-    font-size: 18px;
-    line-height: 1.02;
+    font-size: var(--type-heading-xs);
+    line-height: var(--leading-heading);
   }
 }
 
@@ -203,9 +203,9 @@ $mobile: 640px;
 }
 
 .kicker {
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--amber);
 }
@@ -215,16 +215,16 @@ $mobile: 640px;
   max-width: 15ch;
   color: var(--paper);
   font-family: var(--font-heading);
-  font-size: clamp(28px, 2.4vw, 42px);
-  font-weight: 500;
-  line-height: 0.96;
-  letter-spacing: -0.045em;
+  font-size: var(--type-heading-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
   text-wrap: balance;
 
   @include mq.max($tablet) {
     max-width: 100%;
-    font-size: 22px;
-    line-height: 1;
+    font-size: var(--type-heading-xs);
+    line-height: var(--leading-heading);
   }
 }
 
@@ -235,9 +235,9 @@ $mobile: 640px;
 }
 
 .solutionTag {
-  font-size: var(--text-12);
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: rgb(245 242 236 / 54%);
 }
@@ -247,27 +247,27 @@ $mobile: 640px;
   max-width: 22ch;
   color: var(--paper);
   font-family: var(--font-heading);
-  font-size: clamp(18px, 1.45vw, 26px);
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-control);
+  letter-spacing: var(--tracking-card);
 
   @include mq.max($tablet) {
     max-width: 100%;
-    font-size: 18px;
+    font-size: var(--type-heading-xs);
   }
 }
 
 .solutionText {
   margin: 0;
   max-width: 54ch;
-  font-size: var(--text-body-sm);
-  line-height: 1.55;
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body-sm);
   color: rgb(245 242 236 / 72%);
 
   @include mq.max($tablet) {
     max-width: 100%;
-    line-height: 1.45;
+    line-height: var(--leading-body-sm);
   }
 }
 
@@ -294,20 +294,20 @@ $mobile: 640px;
   display: block;
   color: var(--paper);
   font-family: var(--font-heading);
-  font-size: clamp(18px, 1.4vw, 24px);
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-card);
 
   @include mq.max($tablet) {
-    font-size: 18px;
+    font-size: var(--type-heading-xs);
   }
 }
 
 .stat span {
   display: block;
   margin-top: 4px;
-  font-size: var(--text-12);
-  line-height: 1.4;
+  font-size: var(--type-caption);
+  line-height: var(--leading-caption);
   color: rgb(245 242 236 / 52%);
 }
 
@@ -343,8 +343,8 @@ $mobile: 640px;
   }
 
   > span {
-    font-size: var(--text-body-sm);
-    font-weight: 600;
+    font-size: var(--type-button);
+    font-weight: var(--weight-semibold);
   }
 
   i {

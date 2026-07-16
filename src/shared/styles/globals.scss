@@ -1,4 +1,4 @@
-@use './design-tokens';
+﻿@use './design-tokens';
 @use './reset';
 
 body.menu-open,
@@ -87,18 +87,18 @@ main {
 }
 
 .brand-word {
-  font-size: var(--text-32);
-  font-weight: 600;
-  line-height: 0.96;
-  letter-spacing: var(--letter-spacing-display);
+  font-size: var(--type-heading-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
 }
 
 .brand-caption {
   padding-left: 12px;
-  font-size: var(--text-12);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: var(--letter-spacing-wide);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-control);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   border-left: 1px solid currentcolor;
 }

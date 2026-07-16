@@ -8,7 +8,7 @@ import { assetUrl } from '@/shared/lib/asset-url'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
-import styles from '../_shared/InnerPage.module.scss'
+import styles from './ProjectsRoute.module.scss'
 
 export async function loader() {
   return {
@@ -44,24 +44,24 @@ export default function ProjectsRoute() {
   const hasMoreProjects = projects.length > visibleProjects.length
 
   return (
-    <main className={styles.heroPage}>
-      <section className={styles.heroSection}>
-        <img className={styles.heroMedia} src={hero.image} alt={hero.alt} />
-        <PageWrapper className={styles.heroWrap}>
-          <div className={styles.heroCopy}>
-            <p className={styles.heroEyebrow}>Реализованные проекты</p>
-            <h1 className={styles.heroTitle}>
+    <main className={styles.projectsPage}>
+      <section className={styles.projectsHero}>
+        <img className={styles.projectsHeroMedia} src={hero.image} alt={hero.alt} />
+        <PageWrapper className={styles.projectsHeroWrap}>
+          <div className={styles.projectsHeroCopy}>
+            <p className={styles.projectsHeroEyebrow}>Реализованные проекты</p>
+            <h1 className={styles.projectsHeroTitle}>
               Пространства,
               <br />
               которые уже <em>живут</em>
             </h1>
-            <p className={styles.heroLead}>
+            <p className={styles.projectsHeroLead}>
               Здесь собраны реальные квартиры и коммерческие пространства. Можно посмотреть
               эстетику, масштаб, ритм материалов и то, как мы доводим интерьер до готового
               состояния.
             </p>
 
-            <div className={styles.heroStats}>
+            <div className={styles.projectsHeroStats}>
               {projectStats.map((item) => (
                 <div key={item.label}>
                   <span>{item.label}</span>
@@ -71,13 +71,13 @@ export default function ProjectsRoute() {
             </div>
           </div>
 
-          <aside className={styles.heroAside}>
-            <article className={styles.heroCard}>
-              <span className={styles.heroCardEyebrow}>Портфолио Анфас</span>
-              <strong className={styles.heroCardTitle}>
+          <aside className={styles.projectsHeroAside}>
+            <article className={styles.projectsHeroCard}>
+              <span className={styles.projectsHeroCardEyebrow}>Портфолио Анфас</span>
+              <strong className={styles.projectsHeroCardTitle}>
                 Каждый проект можно разобрать не только по картинке, но и по логике решений.
               </strong>
-              <p className={styles.heroCardText}>
+              <p className={styles.projectsHeroCardText}>
                 Мы показываем фактуру интерьера, планировочную дисциплину и качество итоговой
                 реализации, а не просто красивые кадры.
               </p>
@@ -86,17 +86,17 @@ export default function ProjectsRoute() {
         </PageWrapper>
       </section>
 
-      <section className={styles.lightSection}>
+      <section className={styles.projectsSection}>
         <PageWrapper>
           <div className={styles.projectsIntro}>
             <div className={styles.projectsIntroCopy}>
-              <p className={styles.eyebrow}>Живое портфолио</p>
-              <h2 className={styles.title}>
+              <p className={styles.projectsEyebrow}>Живое портфолио</p>
+              <h2 className={styles.projectsTitle}>
                 Проекты, которые можно
                 <br />
                 разобрать <em>по решениям</em>.
               </h2>
-              <p className={styles.lead}>
+              <p className={styles.projectsLead}>
                 Здесь собраны реальные объекты Анфас: от компактных квартир до более масштабных
                 интерьеров. Мы показываем не только картинку, но и логику пространства, материалы,
                 сроки и результат.
@@ -115,21 +115,21 @@ export default function ProjectsRoute() {
           <div className={styles.projectsGrid}>
             {visibleProjects.map((project) => (
               <Link
-                className={styles.projectCard}
+                className={styles.projectsCard}
                 key={project.slug}
                 to={`/projects/${project.slug}`}
               >
-                <div className={styles.projectImageWrap}>
+                <div className={styles.projectsCardImage}>
                   <img src={assetUrl(project.image)} alt={project.title} />
                 </div>
 
-                <div className={styles.projectBody}>
-                  <div className={styles.projectBodyTop}>
-                    <h3 className={styles.projectTitle}>{project.title}</h3>
-                    <p className={styles.projectDescription}>{project.description}</p>
+                <div className={styles.projectsCardBody}>
+                  <div className={styles.projectsCardBodyTop}>
+                    <h3 className={styles.projectsCardTitle}>{project.title}</h3>
+                    <p className={styles.projectsCardDescription}>{project.description}</p>
                   </div>
 
-                  <dl className={styles.projectMeta}>
+                  <dl className={styles.projectsCardMeta}>
                     <div>
                       <dt>Площадь</dt>
                       <dd>{project.area}</dd>
@@ -144,7 +144,7 @@ export default function ProjectsRoute() {
                     </div>
                   </dl>
 
-                  <div className={styles.projectFooter}>
+                  <div className={styles.projectsCardFooter}>
                     <span>Открыть проект</span>
                     <ArrowIcon size={16} />
                   </div>
@@ -154,8 +154,8 @@ export default function ProjectsRoute() {
           </div>
 
           {hasMoreProjects ? (
-            <div className={styles.moreRow}>
-              <button className={styles.moreButton} type="button" onClick={() => setShowAll(true)}>
+            <div className={styles.projectsMoreRow}>
+              <button className={styles.projectsMoreButton} type="button" onClick={() => setShowAll(true)}>
                 Показать ещё
                 <ArrowIcon size={16} />
               </button>

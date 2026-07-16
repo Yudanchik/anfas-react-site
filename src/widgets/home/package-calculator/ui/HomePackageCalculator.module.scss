@@ -1,4 +1,4 @@
-@use 'common' as home;
+﻿@use 'common' as home;
 @use 'flex' as flex;
 @use 'media' as mq;
 
@@ -34,8 +34,8 @@
   border-radius: 999px;
   background: rgb(255 255 255 / 64%);
   color: var(--ink);
-  font-size: var(--text-14);
-  font-weight: 600;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
   transition:
     transform 0.3s cubic-bezier(0.2, 0.7, 0, 1),
     background-color 0.3s cubic-bezier(0.2, 0.7, 0, 1),
@@ -111,9 +111,9 @@
 .packageCalculator__resultEyebrow {
   margin: 0;
   color: var(--amber);
-  font-size: var(--text-caption);
-  font-weight: 700;
-  letter-spacing: var(--letter-spacing-eyebrow);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -121,11 +121,11 @@
 .packageCalculator__resultSummary {
   margin: 0;
   color: rgb(22 23 19 / 70%);
-  font-size: var(--text-14);
-  line-height: 1.75;
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
 
   @include mq.media(phone) {
-    font-size: 14px;
+    font-size: var(--type-body-sm);
   }
 }
 
@@ -147,9 +147,9 @@
   padding: 0;
   margin: 0 0 2px;
   color: rgb(22 23 19 / 62%);
-  font-size: var(--text-caption);
-  font-weight: 700;
-  letter-spacing: var(--letter-spacing-eyebrow);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -161,13 +161,13 @@
 
 .packageCalculator__label,
 .packageCalculator__fieldLabel {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--type-body-sm);
+  font-weight: var(--weight-semibold);
 }
 
 .packageCalculator__helper {
   color: rgb(22 23 19 / 60%);
-  font-size: var(--text-caption);
+  font-size: var(--type-caption);
 }
 
 .packageCalculator__range {
@@ -196,8 +196,8 @@
   border-radius: 999px;
   background: rgb(255 255 255 / 66%);
   color: rgb(22 23 19 / 70%);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
   transition:
     transform 0.28s cubic-bezier(0.2, 0.7, 0, 1),
     border-color 0.28s cubic-bezier(0.2, 0.7, 0, 1),
@@ -264,14 +264,14 @@
 
 .packageCalculator__typeCardLabel {
   color: var(--ink);
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--type-body-md);
+  font-weight: var(--weight-bold);
 }
 
 .packageCalculator__typeCardHelper {
   color: rgb(22 23 19 / 60%);
-  font-size: 12px;
-  line-height: 1.55;
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
 }
 
 .packageCalculator__variantGrid {
@@ -322,21 +322,21 @@
 
 .packageCalculator__variantCardLabel {
   color: var(--ink);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.35;
+  font-size: var(--type-body-sm);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-caption);
 }
 
 .packageCalculator__variantCardHelper {
   color: rgb(22 23 19 / 58%);
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
 }
 
 .packageCalculator__variantCardRate {
   color: rgb(22 23 19 / 88%);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
 }
 
 .packageCalculator__compactGrid {
@@ -366,8 +366,8 @@
   border-radius: 999px;
   background: rgb(255 255 255 / 72%);
   color: rgb(22 23 19 / 72%);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
   transition:
     transform 0.28s cubic-bezier(0.2, 0.7, 0, 1),
     border-color 0.28s cubic-bezier(0.2, 0.7, 0, 1),
@@ -441,15 +441,15 @@
 }
 
 .packageCalculator__optionLabel {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.35;
+  font-size: var(--type-body-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-caption);
 }
 
 .packageCalculator__optionHelper {
   color: rgb(22 23 19 / 58%);
-  font-size: 12px;
-  line-height: 1.45;
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
 }
 
 .packageCalculator__resultPanel {
@@ -464,22 +464,18 @@
 
 .packageCalculator__resultCaption {
   color: rgb(245 242 236 / 52%);
-  font-size: var(--text-caption);
-  font-weight: 700;
-  letter-spacing: var(--letter-spacing-eyebrow);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .packageCalculator__resultPrice {
   font-family: var(--font-heading);
-  font-size: clamp(28px, 4vw, 52px);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.05em;
-
-  @include mq.media(phone) {
-    font-size: clamp(24px, 9vw, 40px);
-  }
+  font-size: var(--type-stat);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
 }
 
 .packageCalculator__resultMetaLine {
@@ -487,8 +483,8 @@
 
   gap: 12px;
   color: rgb(245 242 236 / 68%);
-  font-size: var(--text-14);
-  line-height: 1.5;
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body-sm);
 
   span + span::before {
     margin-right: 12px;
@@ -525,17 +521,17 @@
 
 .packageCalculator__metricLabel {
   color: rgb(245 242 236 / 56%);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: var(--letter-spacing-eyebrow);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .packageCalculator__metricValue {
   margin-top: 6px;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.35;
+  font-size: var(--type-body-md);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-caption);
 }
 
 .packageCalculator__notes {
@@ -552,11 +548,11 @@
 
   gap: 10px;
   color: rgb(245 242 236 / 72%);
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
 
   @include mq.media(phone) {
-    font-size: 14px;
+    font-size: var(--type-body-sm);
   }
 }
 
@@ -590,8 +586,8 @@
   cursor: pointer;
   border: 0;
   border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
   transition:
     transform 0.3s cubic-bezier(0.2, 0.7, 0, 1),
     background-color 0.3s cubic-bezier(0.2, 0.7, 0, 1),

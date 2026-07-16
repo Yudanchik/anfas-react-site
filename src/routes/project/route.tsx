@@ -7,7 +7,7 @@ import { assetUrl } from '@/shared/lib/asset-url'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
-import styles from '../_shared/InnerPage.module.scss'
+import styles from './ProjectRoute.module.scss'
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const project = await projectRepository.getBySlug(params.slug ?? '')
@@ -92,15 +92,15 @@ export default function ProjectRoute() {
   }
 
   return (
-    <main>
-      <section className={styles.projectHero}>
-        <img className={styles.projectImage} src={assetUrl(project.image)} alt={project.type} />
-        <PageWrapper className={styles.projectWrapper}>
-          <div className={styles.projectContent}>
-            <p className={styles.eyebrow}>{project.location}</p>
-            <h1 className={styles.title}>{project.type}</h1>
-            <p className={styles.projectLead}>{project.description}</p>
-            <dl className={styles.projectMeta}>
+    <main className={styles.projectDetail}>
+      <section className={styles.projectDetailHero}>
+        <img className={styles.projectDetailImage} src={assetUrl(project.image)} alt={project.type} />
+        <PageWrapper className={styles.projectDetailWrapper}>
+          <div className={styles.projectDetailHeroContent}>
+            <p className={styles.projectDetailEyebrow}>{project.location}</p>
+            <h1 className={styles.projectDetailTitle}>{project.type}</h1>
+            <p className={styles.projectDetailLead}>{project.description}</p>
+            <dl className={styles.projectDetailHeroMeta}>
               <div>
                 <dt>Площадь</dt>
                 <dd>{project.area}</dd>
@@ -118,33 +118,33 @@ export default function ProjectRoute() {
         </PageWrapper>
       </section>
 
-      <section className={styles.page}>
+      <section className={styles.projectDetailPage}>
         <PageWrapper>
-          <div className={styles.projectIntro}>
-            <div className={styles.projectIntroCopy}>
-              <p className={styles.eyebrow}>О проекте</p>
+          <div className={styles.projectDetailIntro}>
+            <div className={styles.projectDetailIntroCopy}>
+              <p className={styles.projectDetailEyebrowDark}>О проекте</p>
               <h2>{project.title}</h2>
-              <p className={styles.projectIntroLead}>
+              <p className={styles.projectDetailIntroLead}>
                 Превращаем пространство в готовый интерьер с понятной логикой решений, прозрачными этапами и
                 спокойным контролем бюджета.
               </p>
-              <div className={styles.projectIntroTags}>
+              <div className={styles.projectDetailTags}>
                 <span>Планировка</span>
                 <span>Комплектация</span>
                 <span>Реализация</span>
               </div>
             </div>
 
-            <aside className={styles.projectIntroAside}>
-              <p className={styles.projectIntroEyebrow}>Ключевые параметры</p>
-              <strong className={styles.projectIntroAsideTitle}>
+            <aside className={styles.projectDetailIntroAside}>
+              <p className={styles.projectDetailIntroEyebrow}>Ключевые параметры</p>
+              <strong className={styles.projectDetailIntroAsideTitle}>
                 Ремонт квартиры под ключ без лишнего шума и хаоса.
               </strong>
-              <p className={styles.projectIntroAsideText}>
+              <p className={styles.projectDetailIntroAsideText}>
                 Мы соединяем планировку, отделку и организацию работ так, чтобы проект оставался управляемым,
                 а результат выглядел цельно и современно.
               </p>
-              <dl className={styles.projectIntroMeta}>
+              <dl className={styles.projectDetailIntroMeta}>
                 <div>
                   <dt>Площадь</dt>
                   <dd>{project.area}</dd>
@@ -162,16 +162,16 @@ export default function ProjectRoute() {
           </div>
 
           {visibleGallery.length > 0 ? (
-            <div className={styles.projectGallery} aria-label={`Галерея проекта ${project.title}`}>
+            <div className={styles.projectDetailGallery} aria-label={`Галерея проекта ${project.title}`}>
               {visibleGallery.map((image, index) => (
                 <button
-                  className={styles.galleryButton}
+                  className={styles.projectDetailGalleryButton}
                   key={image}
                   type="button"
                   onClick={() => setActiveImage(image)}
                   aria-label={`Открыть фото ${index + 1} проекта ${project.title}`}
                 >
-                  <figure className={styles.galleryItem}>
+                  <figure className={styles.projectDetailGalleryItem}>
                     <img
                       src={assetUrl(image)}
                       alt={`${project.title}: фото ${index + 1}`}
@@ -184,8 +184,8 @@ export default function ProjectRoute() {
           ) : null}
 
           {canLoadMore ? (
-            <div className={styles.moreRow}>
-              <button className={styles.moreButton} type="button" onClick={loadMoreGallery}>
+            <div className={styles.projectDetailMoreRow}>
+              <button className={styles.projectDetailMoreButton} type="button" onClick={loadMoreGallery}>
                 Показать ещё фото
                 <ArrowIcon size={16} />
               </button>
@@ -193,10 +193,10 @@ export default function ProjectRoute() {
           ) : null}
 
           {activeImage ? (
-            <div className={styles.galleryOverlay} role="dialog" aria-modal="true" aria-label="Просмотр фотографии">
-              <button className={styles.galleryOverlayBackdrop} type="button" onClick={() => setActiveImage(null)} aria-label="Закрыть просмотр" />
-              <div className={styles.galleryOverlayPanel}>
-                <button className={styles.galleryOverlayClose} type="button" onClick={() => setActiveImage(null)} aria-label="Закрыть">
+            <div className={styles.projectDetailOverlay} role="dialog" aria-modal="true" aria-label="Просмотр фотографии">
+              <button className={styles.projectDetailOverlayBackdrop} type="button" onClick={() => setActiveImage(null)} aria-label="Закрыть просмотр" />
+              <div className={styles.projectDetailOverlayPanel}>
+                <button className={styles.projectDetailOverlayClose} type="button" onClick={() => setActiveImage(null)} aria-label="Закрыть">
                   ×
                 </button>
                 <img src={assetUrl(activeImage)} alt={`${project.title}: увеличенное фото`} />
