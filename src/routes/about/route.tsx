@@ -3,7 +3,6 @@ import { Link } from 'react-router'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
-import { SeoContentBlock, seoContentPages } from '@/widgets/seo-content'
 
 import styles from '../_shared/InnerPage.module.scss'
 
@@ -74,12 +73,6 @@ export default function AboutRoute() {
               </p>
             </article>
           </aside>
-        </PageWrapper>
-      </section>
-
-      <section className={styles.lightSection}>
-        <PageWrapper>
-          <SeoContentBlock embedded {...seoContentPages.about} />
         </PageWrapper>
       </section>
 

@@ -208,7 +208,7 @@
   margin: 0;
   padding-block: 0.06em;
   overflow: visible;
-  font-size: var(--type-display-lg);
+  font-size: var(--type-display-md);
   font-weight: var(--weight-medium);
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
@@ -328,15 +328,10 @@
 }
 
 .projectsCardDescription {
-  display: -webkit-box;
-  min-height: calc(1.8em * 4);
   margin: 0;
-  overflow: hidden;
   color: rgb(22 23 19 / 70%);
   font-size: var(--type-body-sm);
   line-height: var(--leading-body);
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
 }
 
 .projectsCardMeta {
@@ -445,7 +440,7 @@
   }
 
   .projectsHeroTitle {
-    max-width: 12ch;
+    max-width: none;
   }
 
   .projectsHeroLead {
@@ -468,10 +463,6 @@
     margin-top: var(--space-32);
   }
 
-  .projectsCardDescription {
-    min-height: calc(1.8em * 3);
-    -webkit-line-clamp: 3;
-  }
 }
 
 @include mq.max(420px) {
@@ -496,11 +487,6 @@
 
   .projectsCardTitle {
     min-height: auto;
-  }
-
-  .projectsCardDescription {
-    min-height: calc(1.8em * 3);
-    -webkit-line-clamp: 3;
   }
 
   .projectsCardMeta {

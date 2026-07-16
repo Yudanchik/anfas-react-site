@@ -304,6 +304,9 @@ $mobile: 640px;
   }
 
   .demoHeader {
+    align-items: center;
+    margin-bottom: var(--space-8);
+
     span:last-child {
       display: none;
     }

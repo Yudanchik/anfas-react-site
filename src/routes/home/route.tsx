@@ -48,7 +48,7 @@ export default function HomeRoute() {
       {/* 03: индивидуальный путь */}
       <HomeStoryIndividual onOpenBrief={openBrief} />
 
-      {/* 04: капсула */}
+      {/* 04: пакетный путь */}
       <HomeStoryCapsule onOpenBrief={openBrief} />
 
       {/* 05: выбор тарифов */}

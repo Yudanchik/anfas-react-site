@@ -287,6 +287,10 @@ $home-xs: 420px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .siteFooter__contactCard_wide {

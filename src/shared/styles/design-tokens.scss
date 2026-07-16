@@ -120,10 +120,10 @@
   --space-120: 120px;
   --page-gutter: clamp(15px, 2.2vw, 24px);
   --page-gutter-mobile: clamp(16px, 6vw, 24px);
-  --section-pad-y: clamp(72px, 7vw, 96px);
-  --section-pad-y-tight: clamp(72px, 7vw, 96px);
-  --section-gap: clamp(72px, 7vw, 96px);
-  --section-gap-tight: clamp(72px, 7vw, 96px);
+  --section-pad-y: 40px;
+  --section-pad-y-tight: 40px;
+  --section-gap: 40px;
+  --section-gap-tight: 40px;
   --content-max: 1200px;
 
   /* Карточки, кнопки и тени */
@@ -237,5 +237,9 @@ small {
     --card-padding: var(--space-20);
     --radius-card: 22px;
     --radius-panel: 26px;
+    --section-pad-y: 24px;
+    --section-pad-y-tight: 24px;
+    --section-gap: 24px;
+    --section-gap-tight: 24px;
   }
 }

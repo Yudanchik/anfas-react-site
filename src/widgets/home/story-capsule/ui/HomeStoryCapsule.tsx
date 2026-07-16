@@ -52,11 +52,11 @@ export function HomeStoryCapsule({
         <div className={styles.intro}>
           <div className={styles.summaryCard}>
             <div className={styles.summaryVisual}>
-              <div className={styles.summaryBadge}>Капсульный формат</div>
+              <div className={styles.summaryBadge}>Пакетный формат</div>
               <img
                 className={styles.summaryImage}
                 src="/images/project-murinskiy.jpeg"
-                alt="Капсульный интерьер с готовыми решениями по отделке и комплектации"
+                alt="Пакетный интерьер с готовыми решениями по отделке и комплектации"
               />
             </div>
             <span className={styles.summaryOverline}>{storyCapsule.summary.overline}</span>
@@ -72,7 +72,7 @@ export function HomeStoryCapsule({
             </ul>
 
             <button className={styles.cta} type="button" onClick={() => onOpenBrief('package')}>
-              <span>Обсудить капсульный формат</span>
+              <span>Обсудить пакетный формат</span>
               <i>
                 <ArrowIcon size={16} />
               </i>

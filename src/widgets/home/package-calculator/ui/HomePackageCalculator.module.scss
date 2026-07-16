@@ -99,6 +99,10 @@
   background:
     radial-gradient(circle at 82% 8%, rgb(197 160 102 / 18%), transparent 30%),
     linear-gradient(135deg, rgb(20 20 17), rgb(28 27 24));
+
+  @include mq.max(700px) {
+    order: -1;
+  }
 }
 
 .packageCalculator__formHead,

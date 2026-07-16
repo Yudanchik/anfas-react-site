@@ -6,16 +6,8 @@ $compact: 580px;
 $xs: 420px;
 
 .servicesPage {
-  padding: 0 0 120px;
+  padding: 0;
   background: var(--paper);
-
-  @include mq.max($tablet) {
-    padding: 0 0 88px;
-  }
-
-  @include mq.media(phone) {
-    padding-bottom: 80px;
-  }
 }
 
 .servicesPage__hero {
@@ -108,7 +100,7 @@ $xs: 420px;
   }
 
   @include mq.media(phone) {
-    max-width: 11ch;
+    max-width: none;
   }
 }
 
@@ -159,10 +151,10 @@ $xs: 420px;
 
 .servicesPage__surfaceLight,
 .servicesPage__surfaceDark {
-  padding: 40px 0;
+  padding: var(--section-pad-y) 0;
 
   @include mq.media(phone) {
-    padding: 28px 0;
+    padding: var(--section-pad-y) 0;
   }
 }
 
@@ -286,6 +278,7 @@ $xs: 420px;
 
 .servicesPage__serviceMedia {
   position: relative;
+  overflow: hidden;
   min-height: 360px;
 
   @include mq.max($compact) {
@@ -305,6 +298,7 @@ $xs: 420px;
 .servicesPage__serviceMedia::after {
   position: absolute;
   inset: 0;
+  z-index: 1;
   content: '';
   background:
     linear-gradient(180deg, rgb(17 17 15 / 10%), rgb(17 17 15 / 16%)),
@@ -475,8 +469,7 @@ $xs: 420px;
   letter-spacing: var(--tracking-label);
 }
 
-.servicesPage__serviceButton,
-.servicesPage__formButton {
+.servicesPage__serviceButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -543,147 +536,4 @@ $xs: 420px;
 
 .servicesPage__formSection {
   margin-top: 0;
-  padding: 28px;
-  border: 1px solid rgb(22 23 19 / 10%);
-  border-radius: 32px;
-  background:
-    radial-gradient(circle at top right, rgb(237 174 36 / 10%), transparent 34%),
-    linear-gradient(145deg, rgb(255 255 255 / 96%), rgb(255 255 255 / 88%));
-  box-shadow: 0 22px 54px rgb(22 23 19 / 8%);
-
-  @include mq.max($compact) {
-    padding: 20px;
-    border-radius: 24px;
-  }
-}
-
-.servicesPage__formTitle {
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: var(--type-heading-lg);
-  font-weight: var(--weight-medium);
-  line-height: var(--leading-display);
-  letter-spacing: var(--tracking-heading);
-}
-
-.servicesPage__formLead {
-  max-width: 52ch;
-  margin: 14px 0 0;
-  color: rgb(22 23 19 / 68%);
-  font-size: var(--type-body-md);
-  line-height: var(--leading-body);
-}
-
-.servicesPage__form {
-  @include flex.flex($fd: column);
-
-  gap: 18px;
-  margin-top: 22px;
-}
-
-.servicesPage__servicePicker {
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
-.servicesPage__servicePickerLegend,
-.servicesPage__fieldLabel {
-  display: block;
-  margin-bottom: 10px;
-  color: rgb(22 23 19 / 56%);
-  font-size: var(--type-caption);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-.servicesPage__serviceOptions {
-  @include flex.flex($fw: wrap);
-
-  gap: 10px;
-}
-
-.servicesPage__serviceOption {
-  position: relative;
-  cursor: pointer;
-}
-
-.servicesPage__serviceOptionInput {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.servicesPage__serviceOptionText {
-  display: inline-flex;
-  align-items: center;
-  min-height: 42px;
-  margin: 0;
-  padding: 0 16px;
-  border: 1px solid rgb(22 23 19 / 10%);
-  border-radius: 999px;
-  color: rgb(22 23 19 / 68%);
-  font-size: var(--type-body-sm);
-  letter-spacing: var(--tracking-body);
-  text-transform: none;
-  background: rgb(22 23 19 / 3%);
-}
-
-.servicesPage__serviceOption_active .servicesPage__serviceOptionText {
-  border-color: rgb(237 174 36 / 36%);
-  color: var(--ink);
-  background: rgb(237 174 36 / 12%);
-}
-
-.servicesPage__fields {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-
-  @include mq.max($compact) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.servicesPage__fieldInput {
-  width: 100%;
-  min-height: 52px;
-  padding: 0 18px;
-  color: var(--ink);
-  font: inherit;
-  font-size: var(--type-body-md);
-  border: 1px solid rgb(22 23 19 / 10%);
-  border-radius: 16px;
-  outline: none;
-  background: rgb(255 255 255 / 8%);
-}
-
-.servicesPage__error {
-  display: block;
-  margin-top: 6px;
-  color: #a43c27;
-  font-size: var(--type-caption);
-  line-height: var(--leading-body-sm);
-}
-
-.servicesPage__formFooter {
-  @include flex.flex($fw: wrap, $ai: center, $jc: space-between);
-
-  gap: 14px 20px;
-}
-
-.servicesPage__privacy {
-  max-width: 40ch;
-  margin: 0;
-  color: rgb(22 23 19 / 52%);
-  font-size: var(--type-caption);
-  line-height: var(--leading-body);
-}
-
-.servicesPage__success {
-  margin-top: 20px;
-  color: rgb(22 23 19 / 74%);
-  font-size: var(--type-body-md);
-  line-height: var(--leading-body);
 }

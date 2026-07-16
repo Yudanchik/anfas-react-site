@@ -5,6 +5,7 @@ import { projectRepository } from '@/entities/project/api'
 import { createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './ProjectRoute.module.scss'
@@ -47,7 +48,7 @@ export default function ProjectRoute() {
 
     return window.matchMedia('(width <= 700px)').matches ? 3 : 6
   })
-  const [activeImage, setActiveImage] = useState<string | null>(null)
+  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(width <= 700px)')
@@ -63,7 +64,7 @@ export default function ProjectRoute() {
   }, [])
 
   useEffect(() => {
-    if (!activeImage) {
+    if (activeImageIndex === null) {
       return
     }
 
@@ -72,7 +73,19 @@ export default function ProjectRoute() {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setActiveImage(null)
+        setActiveImageIndex(null)
+      }
+
+      if (event.key === 'ArrowLeft') {
+        setActiveImageIndex((current) =>
+          current === null ? current : (current - 1 + project.gallery.length) % project.gallery.length,
+        )
+      }
+
+      if (event.key === 'ArrowRight') {
+        setActiveImageIndex((current) =>
+          current === null ? current : (current + 1) % project.gallery.length,
+        )
       }
     }
 
@@ -82,9 +95,10 @@ export default function ProjectRoute() {
       document.body.style.overflow = previousOverflow
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [activeImage])
+  }, [activeImageIndex, project.gallery.length])
 
   const visibleGallery = useMemo(() => project.gallery.slice(0, galleryCount), [galleryCount, project.gallery])
+  const activeImage = activeImageIndex === null ? null : project.gallery[activeImageIndex]
   const canLoadMore = project.gallery.length > galleryCount
   const loadMoreGallery = () => {
     const step = window.matchMedia('(width <= 700px)').matches ? 3 : 6
@@ -168,7 +182,7 @@ export default function ProjectRoute() {
                   className={styles.projectDetailGalleryButton}
                   key={image}
                   type="button"
-                  onClick={() => setActiveImage(image)}
+                  onClick={() => setActiveImageIndex(index)}
                   aria-label={`Открыть фото ${index + 1} проекта ${project.title}`}
                 >
                   <figure className={styles.projectDetailGalleryItem}>
@@ -194,15 +208,57 @@ export default function ProjectRoute() {
 
           {activeImage ? (
             <div className={styles.projectDetailOverlay} role="dialog" aria-modal="true" aria-label="Просмотр фотографии">
-              <button className={styles.projectDetailOverlayBackdrop} type="button" onClick={() => setActiveImage(null)} aria-label="Закрыть просмотр" />
+              <button className={styles.projectDetailOverlayBackdrop} type="button" onClick={() => setActiveImageIndex(null)} aria-label="Закрыть просмотр" />
               <div className={styles.projectDetailOverlayPanel}>
-                <button className={styles.projectDetailOverlayClose} type="button" onClick={() => setActiveImage(null)} aria-label="Закрыть">
+                <button className={styles.projectDetailOverlayClose} type="button" onClick={() => setActiveImageIndex(null)} aria-label="Закрыть">
                   ×
                 </button>
+                <button
+                  className={`${styles.projectDetailOverlayNav} ${styles.projectDetailOverlayNav_prev}`}
+                  type="button"
+                  onClick={() =>
+                    setActiveImageIndex((current) =>
+                      current === null ? current : (current - 1 + project.gallery.length) % project.gallery.length,
+                    )
+                  }
+                  aria-label="Предыдущее фото"
+                >
+                  <ArrowIcon size={18} />
+                </button>
                 <img src={assetUrl(activeImage)} alt={`${project.title}: увеличенное фото`} />
+                <button
+                  className={`${styles.projectDetailOverlayNav} ${styles.projectDetailOverlayNav_next}`}
+                  type="button"
+                  onClick={() =>
+                    setActiveImageIndex((current) =>
+                      current === null ? current : (current + 1) % project.gallery.length,
+                    )
+                  }
+                  aria-label="Следующее фото"
+                >
+                  <ArrowIcon size={18} />
+                </button>
               </div>
             </div>
           ) : null}
+
+          <section className={styles.projectDetailReview} aria-labelledby="project-review-title">
+            <p className={styles.projectDetailReviewEyebrow}>Черновой отзыв</p>
+            <h2 id="project-review-title">Отзыв клиента будет подтверждён перед публикацией.</h2>
+            <p>
+              Здесь подготовлено место для реального комментария по проекту: впечатления от процесса,
+              сроков, коммуникации и результата. Текст не содержит вымышленного имени и требует
+              подтверждения заказчика.
+            </p>
+          </section>
+
+          <OpenLeadForm
+            className={styles.projectDetailForm}
+            defaultService="individual"
+            title="Хотите похожий результат в своей квартире?"
+            lead="Оставьте имя и телефон. Мы посмотрим задачу, зададим несколько уточняющих вопросов и подскажем, какой формат ремонта подходит лучше."
+            submitLabel="Обсудить проект"
+          />
         </PageWrapper>
       </section>
     </main>

@@ -260,8 +260,8 @@
 }
 
 .contactLightSection:last-child {
-  padding-top: var(--space-56);
-  padding-bottom: var(--section-gap);
+  padding-top: var(--section-pad-y);
+  padding-bottom: var(--section-pad-y);
 }
 
 .eyebrow {
@@ -367,7 +367,7 @@
   @include flex.flex;
 
   gap: 8vw;
-  margin-top: 90px;
+  margin-top: 0;
   padding-top: 40px;
   border-top: 1px solid var(--line);
 
@@ -1007,7 +1007,7 @@
   }
 
   .heroTitle {
-    max-width: 12ch;
+    max-width: none;
   }
 
   .heroLead {
@@ -1016,12 +1016,7 @@
 
   .contactLightSection,
   .contactDarkSection {
-    padding: 64px 0;
-  }
-
-  .contactLightSection:last-child {
-    padding-top: 48px;
-    padding-bottom: 80px;
+    padding: var(--section-pad-y) 0;
   }
 
   .documentHero,
@@ -1125,8 +1120,8 @@
 
   .page,
   .heroPage {
-    padding-top: 72px;
-    padding-bottom: 80px;
+    padding-top: var(--section-pad-y);
+    padding-bottom: var(--section-pad-y);
   }
 
   .contactPage {
@@ -1153,12 +1148,7 @@
 
   .contactLightSection,
   .contactDarkSection {
-    padding: 52px 0;
-  }
-
-  .contactLightSection:last-child {
-    padding-top: 40px;
-    padding-bottom: 64px;
+    padding: var(--section-pad-y) 0;
   }
 
   .lead {

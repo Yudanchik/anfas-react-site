@@ -117,7 +117,7 @@
 }
 
 .projectDetailPage {
-  padding: var(--section-gap-tight) 0 var(--section-gap);
+  padding: var(--section-pad-y) 0;
   background: var(--paper);
 }
 
@@ -368,6 +368,81 @@
   }
 }
 
+.projectDetailOverlayNav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  cursor: pointer;
+  color: var(--paper);
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 10%);
+  transform: translateY(-50%);
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.projectDetailOverlayNav_prev {
+  left: var(--space-20);
+
+  svg {
+    transform: rotate(180deg);
+  }
+}
+
+.projectDetailOverlayNav_next {
+  right: var(--space-20);
+}
+
+.projectDetailReview {
+  margin-top: var(--space-40);
+  padding: var(--card-padding);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(circle at top right, rgb(197 160 102 / 12%), transparent 30%),
+    var(--glass-light);
+  box-shadow: var(--shadow-card);
+
+  h2 {
+    max-width: 760px;
+    margin: var(--space-12) 0 0;
+    font-size: var(--type-heading-lg);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-heading);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  p:last-child {
+    max-width: 68ch;
+    margin: var(--space-16) 0 0;
+    color: rgb(22 23 19 / 70%);
+    font-size: var(--type-body-md);
+    line-height: var(--leading-body);
+  }
+}
+
+.projectDetailReviewEyebrow {
+  margin: 0;
+  color: var(--amber);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.projectDetailForm {
+  margin-top: var(--space-20);
+}
+
 .projectDetailOverlayClose {
   position: absolute;
   top: var(--space-20);
@@ -399,7 +474,7 @@
   }
 
   .projectDetailTitle {
-    max-width: 12ch;
+    max-width: none;
   }
 
   .projectDetailLead {
@@ -428,7 +503,7 @@
   .projectDetailGallery {
     grid-template-columns: 1fr;
     gap: var(--space-16);
-    margin-top: var(--space-48);
+    margin-top: var(--space-32);
   }
 
   .projectDetailGalleryButton {
@@ -455,12 +530,18 @@
       border-radius: 16px;
     }
   }
+
+  .projectDetailOverlayNav {
+    top: auto;
+    bottom: var(--space-16);
+    transform: none;
+  }
 }
 
 @include mq.max(420px) {
   .projectDetailPage {
-    padding-top: 72px;
-    padding-bottom: 80px;
+    padding-top: var(--section-pad-y);
+    padding-bottom: var(--section-pad-y);
   }
 
   .projectDetailWrapper {

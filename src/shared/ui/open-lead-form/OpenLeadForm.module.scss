@@ -1,0 +1,190 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+
+$compact: 580px;
+
+.openLeadForm {
+  padding: 28px;
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(circle at top right, rgb(237 174 36 / 10%), transparent 34%),
+    linear-gradient(145deg, rgb(255 255 255 / 96%), rgb(255 255 255 / 88%));
+  box-shadow: var(--shadow-card);
+
+  @include mq.max($compact) {
+    padding: var(--space-20);
+  }
+}
+
+.openLeadForm__title {
+  margin: 0;
+  font-size: var(--type-heading-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
+}
+
+.openLeadForm__lead {
+  max-width: 58ch;
+  margin: var(--space-16) 0 0;
+  color: rgb(22 23 19 / 68%);
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
+}
+
+.openLeadForm__form {
+  @include flex.flex($fd: column);
+
+  gap: var(--space-20);
+  margin-top: var(--space-24);
+}
+
+.openLeadForm__servicePicker {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.openLeadForm__legend,
+.openLeadForm__fieldLabel {
+  display: block;
+  margin-bottom: 10px;
+  color: rgb(22 23 19 / 56%);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.openLeadForm__serviceOptions {
+  @include flex.flex($fw: wrap);
+
+  gap: 10px;
+}
+
+.openLeadForm__serviceOption {
+  position: relative;
+  cursor: pointer;
+}
+
+.openLeadForm__serviceOptionInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.openLeadForm__serviceOptionText {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 var(--space-16);
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: var(--radius-pill);
+  color: rgb(22 23 19 / 68%);
+  font-size: var(--type-body-sm);
+  background: rgb(22 23 19 / 3%);
+}
+
+.openLeadForm__serviceOptionInput:focus-visible + .openLeadForm__serviceOptionText {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+.openLeadForm__serviceOption_active .openLeadForm__serviceOptionText {
+  border-color: rgb(237 174 36 / 36%);
+  color: var(--ink);
+  background: rgb(237 174 36 / 12%);
+}
+
+.openLeadForm__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-16);
+
+  @include mq.max($compact) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.openLeadForm__fieldInput {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 var(--space-20);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--type-body-md);
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: var(--radius-md);
+  outline: none;
+  background: rgb(255 255 255 / 18%);
+}
+
+.openLeadForm__fieldInput:focus-visible {
+  border-color: rgb(237 174 36 / 56%);
+  box-shadow: 0 0 0 3px rgb(237 174 36 / 14%);
+}
+
+.openLeadForm__error {
+  display: block;
+  margin-top: 6px;
+  color: #a43c27;
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
+}
+
+.openLeadForm__footer {
+  @include flex.flex($fw: wrap, $ai: center, $jc: space-between);
+
+  gap: var(--space-16) var(--space-20);
+}
+
+.openLeadForm__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 var(--space-24);
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
+  background: var(--amber);
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.68;
+  }
+
+  @include mq.media(phone) {
+    width: 100%;
+  }
+}
+
+.openLeadForm__privacy {
+  max-width: 43ch;
+  margin: 0;
+  color: rgb(22 23 19 / 56%);
+  font-size: var(--type-caption);
+  line-height: var(--leading-body);
+}
+
+.openLeadForm__privacyLink {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+
+  &:hover,
+  &:focus-visible {
+    color: color-mix(in srgb, var(--ink) 76%, var(--amber) 24%);
+  }
+}
+
+.openLeadForm__success {
+  margin-top: var(--space-20);
+  color: rgb(22 23 19 / 74%);
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
+}

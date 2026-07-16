@@ -63,13 +63,14 @@
 
 .faq__item {
   border-bottom: 1px solid var(--section-line);
-  transition: background-color 0.3s ease;
   border-radius: 24px;
+  transition: background-color 0.3s ease;
 }
 
-
-.faq__item:hover {
-  background: rgb(255 255 255 / 4%);
+@media (hover: hover) and (pointer: fine) {
+  .faq__item:hover {
+    background: rgb(255 255 255 / 4%);
+  }
 }
 
 
@@ -152,13 +153,14 @@
 
 
 .faq__answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.45s cubic-bezier(0.2, 0.7, 0, 1);
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s cubic-bezier(0.2, 0.7, 0, 1);
 }
 
 
 .faq__answerInner {
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -172,7 +174,7 @@
 
 
 .faq__item_open .faq__answer {
-  max-height: 480px;
+  grid-template-rows: 1fr;
 }
 
 

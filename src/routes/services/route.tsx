@@ -1,17 +1,8 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
-
 import { useBrief } from '@/features/brief/model/BriefContext'
-import {
-  briefServiceOptions,
-  formatPhoneValue,
-  sanitizeNameValue,
-} from '@/features/brief/model/brief.form'
-import { briefSchema, type BriefFormValues } from '@/features/brief/model/brief.schema'
 import { services } from '@/entities/service/model/services.data'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { createSeoMeta } from '@/shared/config/seo'
+import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './route.module.scss'
@@ -39,34 +30,7 @@ const heroCards = [
 
 export default function ServicesRoute() {
   const { openBrief } = useBrief()
-  const [submitted, setSubmitted] = useState(false)
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    register,
-    setValue,
-    reset,
-  } = useForm<BriefFormValues>({
-    defaultValues: {
-      name: '',
-      phone: '',
-      service: 'individual',
-    },
-    resolver: zodResolver(briefSchema),
-  })
-
-  const selectedService = useWatch({ control, name: 'service' })
   const hero = innerHeroImages.services
-
-  const submit = (_values: BriefFormValues) => {
-    setSubmitted(true)
-    reset({
-      name: '',
-      phone: '',
-      service: selectedService,
-    })
-  }
 
   return (
     <main className={styles.servicesPage}>
@@ -222,93 +186,13 @@ export default function ServicesRoute() {
 
       <section className={styles.servicesPage__surfaceLight}>
         <PageWrapper>
-          <section className={styles.servicesPage__formSection} data-reveal>
-            <div className={styles.servicesPage__formHeader}>
-              <h2 className={styles.servicesPage__formTitle}>Оставьте заявку и мы поможем выбрать формат</h2>
-              <p className={styles.servicesPage__formLead}>
-                Если пока неясно, что лучше для вашей квартиры, оставьте имя и телефон. Мы
-                свяжемся, уточним задачу и подскажем, с чего лучше начать: с индивидуального
-                проекта или с пакетного ремонта.
-              </p>
-            </div>
-
-            <form className={styles.servicesPage__form} onSubmit={handleSubmit(submit)} noValidate>
-              <fieldset className={styles.servicesPage__servicePicker}>
-                <legend className={styles.servicesPage__servicePickerLegend}>Что интересует сейчас</legend>
-                <div className={styles.servicesPage__serviceOptions}>
-                  {briefServiceOptions.map((option) => (
-                    <label
-                      className={`${styles.servicesPage__serviceOption} ${
-                        selectedService === option.value ? styles.servicesPage__serviceOption_active : ''
-                      }`}
-                      key={option.value}
-                    >
-                      <input
-                        className={styles.servicesPage__serviceOptionInput}
-                        type="radio"
-                        value={option.value}
-                        {...register('service')}
-                      />
-                      <span className={styles.servicesPage__serviceOptionText}>{option.label}</span>
-                    </label>
-                  ))}
-                </div>
-                {errors.service && <small className={styles.servicesPage__error}>{errors.service.message}</small>}
-              </fieldset>
-
-              <div className={styles.servicesPage__fields}>
-                <label className={styles.servicesPage__field}>
-                  <span className={styles.servicesPage__fieldLabel}>Имя</span>
-                  <input
-                    className={styles.servicesPage__fieldInput}
-                    type="text"
-                    placeholder="Ваше имя"
-                    autoComplete="name"
-                    maxLength={48}
-                    {...register('name')}
-                    onChange={(event) =>
-                      setValue('name', sanitizeNameValue(event.target.value), { shouldValidate: true })
-                    }
-                  />
-                  {errors.name && <small className={styles.servicesPage__error}>{errors.name.message}</small>}
-                </label>
-
-                <label className={styles.servicesPage__field}>
-                  <span className={styles.servicesPage__fieldLabel}>Телефон</span>
-                  <input
-                    className={styles.servicesPage__fieldInput}
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    maxLength={18}
-                    placeholder="+7 (999) 000-00-00"
-                    {...register('phone')}
-                    onChange={(event) =>
-                      setValue('phone', formatPhoneValue(event.target.value), { shouldValidate: true })
-                    }
-                  />
-                  {errors.phone && <small className={styles.servicesPage__error}>{errors.phone.message}</small>}
-                </label>
-              </div>
-
-              <div className={styles.servicesPage__formFooter}>
-                <button className={styles.servicesPage__formButton} type="submit">
-                  Отправить заявку
-                </button>
-                <p className={styles.servicesPage__privacy}>
-                  Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности и на обработку
-                  персональных данных.
-                </p>
-              </div>
-            </form>
-
-            {submitted ? (
-              <p className={styles.servicesPage__success}>
-                Спасибо. Форма уже проходит клиентскую валидацию. Следующим шагом можно подключить
-                отправку заявок в Telegram, почту или CRM.
-              </p>
-            ) : null}
-          </section>
+          <OpenLeadForm
+            className={styles.servicesPage__formSection}
+            defaultService="individual"
+            title="Оставьте заявку и мы поможем выбрать формат"
+            lead="Если пока неясно, что лучше для вашей квартиры, оставьте имя и телефон. Мы свяжемся, уточним задачу и подскажем, с чего лучше начать: с индивидуального проекта или с пакетного ремонта."
+            successMessage="Спасибо. Форма прошла клиентскую валидацию. Следующим шагом можно подключить отправку заявок в Telegram, почту или CRM."
+          />
         </PageWrapper>
       </section>
     </main>

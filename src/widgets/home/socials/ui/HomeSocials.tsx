@@ -29,25 +29,6 @@ export function HomeSocials() {
             lead="Показываем реальные объекты, решения по интерьеру, подбор материалов и то, как идёт ремонт квартиры под ключ вживую. Это помогает быстрее понять наш стиль работы и уровень детализации."
           />
 
-          <article className={styles.socials__spotlight} data-reveal>
-            <div className={styles.socials__spotlightTop}>
-              <span className={styles.socials__spotlightTag}>Анфас media</span>
-              <strong className={styles.socials__spotlightTitle}>
-                Реальный процесс, а не витрина без контекста.
-              </strong>
-            </div>
-            <div className={styles.socials__spotlightStats}>
-              <div className={styles.socials__spotlightStat}>
-                <b className={styles.socials__spotlightStatValue}>3+</b>
-                <span className={styles.socials__spotlightStatLabel}>ключевых канала с живым контентом</span>
-              </div>
-              <div className={styles.socials__spotlightStat}>
-                <b className={styles.socials__spotlightStatValue}>Объекты</b>
-                <span className={styles.socials__spotlightStatLabel}>показываем этапы, а не только финал</span>
-              </div>
-            </div>
-          </article>
-
           <div className={styles.socials__links} data-reveal>
             {socialLinks.map((social) => (
               <a
