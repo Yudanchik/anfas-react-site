@@ -22,7 +22,7 @@ export const processSteps: ReadonlyArray<ProcessStep> = [
     visualTitle: 'Понимаем задачу ещё до старта дизайна.',
     visualText:
       'На первой встрече собираем сценарий жизни, ограничения по срокам, бюджету и пожеланиям к интерьеру. Это убирает хаос и делает дальнейшие решения точнее.',
-    visualImage: '/images/project-coffee.jpg',
+    visualImage: '/images/home//process/process-start.webp',
     visualPosition: 'center center',
     stats: [
       { value: '1 встреча', label: 'чтобы собрать исходные данные' },
@@ -37,7 +37,7 @@ export const processSteps: ReadonlyArray<ProcessStep> = [
     visualTitle: 'Собираем интерьер в понятную систему.',
     visualText:
       'Вы заранее видите, каким станет пространство и почему каждое решение работает именно для вашего ритма жизни, а не просто выглядит красиво на картинке.',
-    visualImage: '/images/project-grafika.jpeg',
+    visualImage: '/images/home//process/process-concept.webp',
     visualPosition: 'center center',
     stats: [
       { value: '1 логика', label: 'планировка, стиль и свет в связке' },
@@ -52,7 +52,7 @@ export const processSteps: ReadonlyArray<ProcessStep> = [
     visualTitle: 'Сроки и бюджет понятны до запуска работ.',
     visualText:
       'Мы заранее собираем состав работ, ключевые поставки и последовательность этапов, чтобы у проекта был понятный темп и предсказуемая финансовая рамка.',
-    visualImage: '/images/project-slavy.jpg',
+    visualImage: '/images/home//process/process-estimate.webp',
     visualPosition: 'center center',
     stats: [
       { value: '1 смета', label: 'собрана под весь проект' },
@@ -67,7 +67,7 @@ export const processSteps: ReadonlyArray<ProcessStep> = [
     visualTitle: 'Комплектация без десятков хаотичных поездок.',
     visualText:
       'Команда держит ведомости, позиции и сроки поставок под контролем. Вы не тратите недели на бесконечные поиски и не собираете проект вручную.',
-    visualImage: '/images/project-murinskiy.jpeg',
+    visualImage: '/images/home//process/process-supply.webp',
     visualPosition: 'center center',
     stats: [
       { value: '1 команда', label: 'ведёт стройку и комплектацию вместе' },
@@ -82,7 +82,7 @@ export const processSteps: ReadonlyArray<ProcessStep> = [
     visualTitle: 'Финальный результат совпадает с замыслом.',
     visualText:
       'На этапе реализации проверяем качество исполнения, закрываем вопросы по ходу работ и приводим квартиру к состоянию, в которое можно спокойно заезжать.',
-    visualImage: '/images/hero/hero-living.png',
+    visualImage: '/images/home//process/process-delivery.webp',
     visualPosition: 'center center',
     stats: [
       { value: 'до сдачи', label: 'сопровождаем объект без потерь' },

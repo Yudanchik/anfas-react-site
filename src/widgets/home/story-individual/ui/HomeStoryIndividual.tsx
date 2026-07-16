@@ -51,7 +51,7 @@ export function HomeStoryIndividual({
           <div className={styles.heroVisual}>
             <img
               className={styles.heroImage}
-              src="/images/project-grafika.jpeg"
+              src="/images/formats/individual-format.webp"
               alt="Премиальный интерьер для индивидуального проекта"
             />
             <div className={styles.heroGlow} aria-hidden="true" />

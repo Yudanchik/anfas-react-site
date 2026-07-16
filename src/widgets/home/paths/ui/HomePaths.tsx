@@ -64,7 +64,7 @@ export function HomePaths({
           </button>
 
           <button
-            className={`${styles.paths__card} ${styles.paths__card_capsule}`}
+            className={`${styles.paths__card} ${styles.paths__card_package}`}
             type="button"
             onClick={() => onOpenBrief('package')}
           >
@@ -90,7 +90,7 @@ export function HomePaths({
                 </i>
               </span>
             </div>
-            <div className={`${styles.paths__photo} ${styles.paths__photo_capsule}`} aria-hidden="true">
+            <div className={`${styles.paths__photo} ${styles.paths__photo_package}`} aria-hidden="true">
               <span className={styles.paths__photoBadge}>Готовый формат</span>
               <div className={styles.paths__photoContent}>
                 <strong>Сроки, смета и комплектация понятны ещё до старта ремонта.</strong>

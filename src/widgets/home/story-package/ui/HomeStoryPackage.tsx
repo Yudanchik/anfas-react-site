@@ -1,9 +1,9 @@
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
-import { storyCapsule } from '../model/story-capsule.data'
+import { storyPackage } from '../model/story-package.data'
 
-import styles from './HomeStoryCapsule.module.scss'
+import styles from './HomeStoryPackage.module.scss'
 
 function renderMultiline(text: string) {
   const lines = text.split('\n')
@@ -17,7 +17,7 @@ function renderMultiline(text: string) {
   ))
 }
 
-export function HomeStoryCapsule({
+export function HomeStoryPackage({
   onOpenBrief,
 }: {
   onOpenBrief: (service?: 'individual' | 'package') => void
@@ -29,14 +29,14 @@ export function HomeStoryCapsule({
           <SectionHeader
             className={styles.storyHeader}
             number="04"
-            label={storyCapsule.eyebrow}
-            title={<>{renderMultiline(storyCapsule.title)}</>}
-            lead={storyCapsule.lead}
+            label={storyPackage.eyebrow}
+            title={<>{renderMultiline(storyPackage.title)}</>}
+            lead={storyPackage.lead}
             reveal={false}
           />
 
           <div className={styles.process}>
-            {storyCapsule.steps.map((step) => (
+            {storyPackage.steps.map((step) => (
               <article className={styles.stepCard} key={step.number}>
                 <div className={styles.stepTop}>
                   <span className={styles.stepNumber}>{step.number}</span>
@@ -55,16 +55,16 @@ export function HomeStoryCapsule({
               <div className={styles.summaryBadge}>Пакетный формат</div>
               <img
                 className={styles.summaryImage}
-                src="/images/project-murinskiy.jpeg"
+                src="/images/formats/package-format.webp"
                 alt="Пакетный интерьер с готовыми решениями по отделке и комплектации"
               />
             </div>
-            <span className={styles.summaryOverline}>{storyCapsule.summary.overline}</span>
-            <h3 className={styles.summaryTitle}>{storyCapsule.summary.title}</h3>
-            <p className={styles.summaryText}>{storyCapsule.summary.text}</p>
+            <span className={styles.summaryOverline}>{storyPackage.summary.overline}</span>
+            <h3 className={styles.summaryTitle}>{storyPackage.summary.title}</h3>
+            <p className={styles.summaryText}>{storyPackage.summary.text}</p>
 
             <ul className={styles.summaryList}>
-              {storyCapsule.summary.bullets.map((bullet) => (
+              {storyPackage.summary.bullets.map((bullet) => (
                 <li className={styles.summaryItem} key={bullet}>
                   {bullet}
                 </li>

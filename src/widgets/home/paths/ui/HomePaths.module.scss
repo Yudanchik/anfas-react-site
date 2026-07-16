@@ -241,11 +241,11 @@
 }
 
 .paths__photo_individual::before {
-  background-image: url('/images/project-grafika.jpeg');
+  background-image: url('/images/formats/individual-format.webp');
 }
 
-.paths__photo_capsule::before {
-  background-image: url('/images/project-murinskiy.jpeg');
+.paths__photo_package::before {
+  background-image: url('/images/formats/package-format.webp');
 }
 
 .paths__card_individual {
@@ -272,7 +272,7 @@
   }
 }
 
-.paths__card_capsule {
+.paths__card_package {
   color: var(--surface-fg-light);
   background: color-mix(in srgb, var(--surface-light) 92%, var(--amber) 8%);
   border-color: var(--line-on-light);
