@@ -1,4 +1,4 @@
-import cookiePolicyRaw from '../../../anfas_cookie_policy.txt?raw'
+import cookiePolicyRaw from '@/shared/content/legal/anfas_cookie_policy.txt?raw'
 
 import { company } from '@/shared/config/company'
 import { createSeoMeta } from '@/shared/config/seo'
