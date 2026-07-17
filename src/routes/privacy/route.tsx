@@ -1,4 +1,4 @@
-import privacyPolicyRaw from '../../../anfas_privacy_policy.txt?raw'
+import privacyPolicyRaw from '@/shared/content/legal/anfas_privacy_policy.txt?raw'
 
 import { company } from '@/shared/config/company'
 import { createSeoMeta } from '@/shared/config/seo'
