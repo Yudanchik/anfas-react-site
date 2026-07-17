@@ -15,7 +15,11 @@ const footerPages = [
   { label: 'Проекты', to: '/projects' },
   { label: 'О нас', to: '/about' },
   { label: 'Контакты', to: '/contacts' },
-  { label: 'Политика', to: '/privacy' },
+] as const
+
+const footerLegalLinks = [
+  { label: 'Политика обработки персональных данных', to: '/privacy' },
+  { label: 'Политика использования cookie', to: '/cookies' },
 ] as const
 
 const footerSocials = [
@@ -188,9 +192,13 @@ export function SiteFooter() {
               {company.legalRegLabel} {company.legalRegNumber}
             </p>
           </div>
-          <Link className={styles.siteFooter__privacy} to="/privacy">
-            Политика конфиденциальности
-          </Link>
+          <nav className={styles.siteFooter__legalNav} aria-label="Юридические документы">
+            {footerLegalLinks.map((link) => (
+              <Link className={styles.siteFooter__privacy} key={link.to} to={link.to}>
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </PageWrapper>
     </footer>

@@ -315,6 +315,22 @@
   }
 }
 
+.briefModal__privacyLink {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+
+  &:hover,
+  &:focus-visible {
+    color: color-mix(in srgb, var(--ink) 76%, var(--amber) 24%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+  }
+}
+
 .briefModal__success {
   @include flex.flex($fd: column, $jc: center, $ai: flex-start);
 
