@@ -487,9 +487,18 @@
   color: rgb(243 240 233 / 62%);
 }
 
+.siteFooter__legalNav {
+  @include flex.flex($fd: column, $ai: flex-end);
+
+  gap: 8px;
+
+  @include mq.media(phone, tablet) {
+    align-items: flex-start;
+  }
+}
+
 .siteFooter__privacy {
   flex: 0 1 auto;
-  align-self: flex-end;
   color: inherit;
   text-align: right;
   text-decoration: none;

@@ -4,6 +4,7 @@ export default [
   index('./routes/home/route.tsx'),
   route('about', './routes/about/route.tsx'),
   route('contacts', './routes/contacts/route.tsx'),
+  route('cookies', './routes/cookies/route.tsx'),
   route('privacy', './routes/privacy/route.tsx'),
   route('projects', './routes/projects/route.tsx'),
   route('projects/:slug', './routes/project/route.tsx'),

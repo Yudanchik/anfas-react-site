@@ -8,6 +8,7 @@ import { company } from '@/shared/config/company'
 import { absoluteUrl } from '@/shared/config/seo'
 import { useScrollEffects } from '@/shared/hooks/useScrollEffects'
 import { ScrollToTop } from '@/shared/ui/scroll-to-top/ScrollToTop'
+import { CookieBanner } from '@/widgets/cookie-banner'
 import { SiteFooter } from '@/widgets/site-footer/SiteFooter'
 import { SiteHeader } from '@/widgets/site-header/SiteHeader'
 
@@ -73,6 +74,7 @@ export default function Root() {
           <SiteFooter />
           <BriefModal />
           <ScrollToTop />
+          <CookieBanner />
         </div>
       </BriefProvider>
     </AppProviders>

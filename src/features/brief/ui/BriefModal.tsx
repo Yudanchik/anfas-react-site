@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
+import { Link } from 'react-router'
 
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 
@@ -139,7 +140,11 @@ export function BriefModal() {
                 </i>
               </button>
               <small className={styles.briefModal__privacy}>
-                Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности.
+                Нажимая кнопку, вы соглашаетесь с{' '}
+                <Link className={styles.briefModal__privacyLink} to="/privacy">
+                  политикой обработки персональных данных
+                </Link>
+                .
               </small>
             </form>
           </>

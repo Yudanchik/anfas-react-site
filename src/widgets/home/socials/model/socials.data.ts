@@ -1,7 +1,7 @@
 import { company } from '@/shared/config/company'
 
 export const SOCIALS_VIDEO_SRC =
-  'https://cdn.vidzflow.com/v/8UW6JPwAo1_720p_1696949430.mp4' as const
+  '/videos/hero.mp4' as const
 
 export const SOCIALS_PHONE_MOCKUP_SRC = '/images/Phone%20Mockup.png' as const
 
