@@ -499,39 +499,6 @@
 
 .projectDetailReview {
   margin-top: var(--space-40);
-  padding: var(--card-padding);
-  border: 1px solid var(--glass-border-light);
-  border-radius: var(--radius-card);
-  background:
-    radial-gradient(circle at top right, rgb(197 160 102 / 12%), transparent 30%),
-    var(--glass-light);
-  box-shadow: var(--shadow-card);
-
-  h2 {
-    max-width: 760px;
-    margin: var(--space-12) 0 0;
-    font-size: var(--type-heading-lg);
-    font-weight: var(--weight-medium);
-    line-height: var(--leading-heading);
-    letter-spacing: var(--tracking-heading);
-  }
-
-  p:last-child {
-    max-width: 68ch;
-    margin: var(--space-16) 0 0;
-    color: rgb(22 23 19 / 70%);
-    font-size: var(--type-body-md);
-    line-height: var(--leading-body);
-  }
-}
-
-.projectDetailReviewEyebrow {
-  margin: 0;
-  color: var(--amber);
-  font-size: var(--type-caption);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
 }
 
 .projectDetailForm {

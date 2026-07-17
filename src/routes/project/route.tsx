@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } 
 import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
+import { ProjectReview } from '@/entities/project/ui/project-review'
 import { createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
@@ -304,15 +305,9 @@ export default function ProjectRoute() {
             </div>
           ) : null}
 
-          <section className={styles.projectDetailReview} aria-labelledby="project-review-title">
-            <p className={styles.projectDetailReviewEyebrow}>Черновой отзыв</p>
-            <h2 id="project-review-title">Отзыв клиента будет подтверждён перед публикацией.</h2>
-            <p>
-              Здесь подготовлено место для реального комментария по проекту: впечатления от процесса,
-              сроков, коммуникации и результата. Текст не содержит вымышленного имени и требует
-              подтверждения заказчика.
-            </p>
-          </section>
+          {project.review ? (
+            <ProjectReview className={styles.projectDetailReview} review={project.review} />
+          ) : null}
 
           <OpenLeadForm
             className={styles.projectDetailForm}
