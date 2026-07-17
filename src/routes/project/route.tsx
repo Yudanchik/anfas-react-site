@@ -317,7 +317,13 @@ export default function ProjectRoute() {
           <OpenLeadForm
             className={styles.projectDetailForm}
             defaultService="individual"
-            title="Хотите похожий результат в своей квартире?"
+            title={
+              <>
+                Хотите похожий результат
+                <br />
+                <em>в своей квартире?</em>
+              </>
+            }
             lead="Оставьте имя и телефон. Мы посмотрим задачу, зададим несколько уточняющих вопросов и подскажем, какой формат ремонта подходит лучше."
             submitLabel="Обсудить проект"
           />
