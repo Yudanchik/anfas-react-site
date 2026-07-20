@@ -2,7 +2,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from 're
 import type { ReactNode } from 'react'
 
 import { AppProviders } from '@/app/providers/AppProviders'
-import { BriefProvider } from '@/features/brief/model/BriefContext'
+import { LeadModalProvider } from '@/features/brief/model/LeadModalContext'
 import { BriefModal } from '@/features/brief/ui/BriefModal'
 import { company } from '@/shared/config/company'
 import { absoluteUrl } from '@/shared/config/seo'
@@ -66,7 +66,7 @@ export default function Root() {
 
   return (
     <AppProviders>
-      <BriefProvider>
+      <LeadModalProvider>
         <div className="site-shell">
           <div className="scroll-progress" aria-hidden="true" />
           <SiteHeader />
@@ -76,7 +76,7 @@ export default function Root() {
           <ScrollToTop />
           <CookieBanner />
         </div>
-      </BriefProvider>
+      </LeadModalProvider>
     </AppProviders>
   )
 }

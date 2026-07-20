@@ -1,4 +1,4 @@
-import { useBrief } from '@/features/brief/model/BriefContext'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { services } from '@/entities/service/model/services.data'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { createSeoMeta } from '@/shared/config/seo'
@@ -29,7 +29,6 @@ const heroCards = [
 ] as const
 
 export default function ServicesRoute() {
-  const { openBrief } = useBrief()
   const hero = innerHeroImages.services
 
   return (
@@ -132,13 +131,13 @@ export default function ServicesRoute() {
                         <strong className={styles.servicesPage__servicePrice}>{service.price}</strong>
                         <span className={styles.servicesPage__serviceDuration}>{service.duration}</span>
                       </div>
-                      <button
+                      <ModalTriggerButton
                         className={styles.servicesPage__serviceButton}
-                        type="button"
-                        onClick={() => openBrief(service.id)}
+                        intent={service.id}
+                        source={`services-${service.id}`}
                       >
                         {service.ctaLabel}
-                      </button>
+                      </ModalTriggerButton>
                     </div>
                   </div>
                 </article>

@@ -1,9 +1,9 @@
 import type { CSSProperties } from 'react'
 
-import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import styles from './HomeContact.module.scss'
 
-export function HomeContact({ onOpenBrief }: { onOpenBrief: () => void }) {
+export function HomeContact() {
   return (
     <section id="contacts" className={styles.contact}>
       <div className={styles.contact__orbit} aria-hidden="true">
@@ -34,18 +34,17 @@ export function HomeContact({ onOpenBrief }: { onOpenBrief: () => void }) {
         Расскажите немного о будущем интерьере. Мы свяжемся, зададим правильные вопросы и предложим
         следующий шаг.
       </p>
-      <button
+      <ModalTriggerButton
         className={styles.contact__button}
-        type="button"
-        onClick={() => onOpenBrief()}
+        intent="brief"
+        size="lg"
+        source="home-contact"
+        variant="inverse"
         data-reveal
         style={{ '--reveal-delay': '240ms' } as CSSProperties}
       >
-        <span className={styles.contact__buttonText}>Заполнить короткий бриф</span>
-        <i className={styles.contact__buttonIcon}>
-          <ArrowIcon size={16} />
-        </i>
-      </button>
+        Заполнить короткий бриф
+      </ModalTriggerButton>
     </section>
   )
 }

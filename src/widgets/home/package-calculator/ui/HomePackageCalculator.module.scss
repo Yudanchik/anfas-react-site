@@ -610,41 +610,9 @@
 
 .packageCalculator__button,
 .packageCalculator__buttonAlt {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 54px;
-  padding: 0 22px;
-  cursor: pointer;
-  border: 0;
-  border-radius: 999px;
-  font-size: var(--type-button);
-  font-weight: var(--weight-semibold);
-  transition:
-    transform 0.3s cubic-bezier(0.2, 0.7, 0, 1),
-    background-color 0.3s cubic-bezier(0.2, 0.7, 0, 1),
-    color 0.3s cubic-bezier(0.2, 0.7, 0, 1),
-    border-color 0.3s cubic-bezier(0.2, 0.7, 0, 1);
-
   @include mq.media(phone, tablet) {
     width: 100%;
   }
-}
-
-.packageCalculator__button {
-  color: var(--ink);
-  background: var(--amber);
-}
-
-.packageCalculator__buttonAlt {
-  color: var(--paper);
-  border: 1px solid rgb(255 255 255 / 14%);
-  background: rgb(255 255 255 / 8%);
-}
-
-.packageCalculator__button:hover,
-.packageCalculator__buttonAlt:hover {
-  transform: translateY(-1px);
 }
 
 @include mq.media(phone, tablet) {

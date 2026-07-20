@@ -1,4 +1,4 @@
-import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 import { storyPackage } from '../model/story-package.data'
@@ -17,11 +17,7 @@ function renderMultiline(text: string) {
   ))
 }
 
-export function HomeStoryPackage({
-  onOpenBrief,
-}: {
-  onOpenBrief: (service?: 'individual' | 'package') => void
-}) {
+export function HomeStoryPackage() {
   return (
     <section className={styles.story + ' ' + styles.sectionpad}>
       <PageWrapper className={styles.layout}>
@@ -71,12 +67,13 @@ export function HomeStoryPackage({
               ))}
             </ul>
 
-            <button className={styles.cta} type="button" onClick={() => onOpenBrief('package')}>
-              <span>Обсудить пакетный формат</span>
-              <i>
-                <ArrowIcon size={16} />
-              </i>
-            </button>
+            <ModalTriggerButton
+              className={styles.cta}
+              intent="package"
+              source="home-package-story"
+            >
+              Хочу пакетный ремонт
+            </ModalTriggerButton>
           </div>
         </div>
       </PageWrapper>

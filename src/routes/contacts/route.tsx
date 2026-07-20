@@ -1,4 +1,4 @@
-import { useBrief } from '@/features/brief/model/BriefContext'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { company } from '@/shared/config/company'
 import { createSeoMeta } from '@/shared/config/seo'
@@ -25,12 +25,6 @@ const contactDetails = [
     label: 'График',
     value: company.workHours,
   },
-] as const
-
-const contactSteps = [
-  'Расскажите, какая квартира, какой метраж и на каком этапе объект.',
-  'Пришлите планировку, фото или референсы, если они уже есть.',
-  'Мы подскажем, подходит ли индивидуальный ремонт или пакетный ремонт.',
 ] as const
 
 const heroMeta = [
@@ -65,7 +59,6 @@ export const meta = () =>
   })
 
 export default function ContactsRoute() {
-  const { openBrief } = useBrief()
   const hero = innerHeroImages.contacts
 
   return (
@@ -86,9 +79,14 @@ export default function ContactsRoute() {
             </p>
 
             <div className={styles.heroActions}>
-              <button className={styles.heroPrimaryAction} type="button" onClick={() => openBrief('general')}>
+              <ModalTriggerButton
+                className={styles.heroPrimaryAction}
+                intent="consultation"
+                size="lg"
+                source="contacts-hero"
+              >
                 Оставить заявку
-              </button>
+              </ModalTriggerButton>
               <a className={styles.heroSecondaryAction} href={company.phoneHref}>
                 Позвонить
               </a>
@@ -145,18 +143,13 @@ export default function ContactsRoute() {
                   ))}
                 </nav>
 
-                <button className={styles.buttonLight} type="button" onClick={() => openBrief('general')}>
+                <ModalTriggerButton
+                  className={styles.buttonLight}
+                  intent="brief"
+                  source="contacts-panel"
+                >
                   Заполнить короткий бриф
-                </button>
-              </div>
-
-              <div className={styles.contactPanel__steps}>
-                <span>Как начать</span>
-                <ol>
-                  {contactSteps.map((step) => (
-                    <li key={step}>{step}</li>
-                  ))}
-                </ol>
+                </ModalTriggerButton>
               </div>
             </div>
 

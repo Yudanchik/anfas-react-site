@@ -200,54 +200,8 @@
 }
 
 .hero__primaryCta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 56px;
-  padding: 6px 6px 6px 24px;
-  border: 0;
-  border-radius: 999px;
-  cursor: pointer;
-  color: var(--ink);
-  background: var(--amber);
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease;
-
-  @include mq.media(phone, tablet) {
-    min-height: 50px;
-  }
-
   @include mq.media(phone) {
     width: 100%;
-    min-height: 48px;
-    padding-left: 18px;
-  }
-}
-
-.hero__primaryCta:hover {
-  transform: translateY(-1px);
-  background: color-mix(in srgb, var(--amber) 84%, #000 16%);
-}
-
-.hero__primaryCtaText {
-  font-size: var(--type-button);
-  font-weight: var(--weight-semibold);
-}
-
-.hero__primaryCtaIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--paper);
-
-  @include mq.media(phone) {
-    width: 34px;
-    height: 34px;
   }
 }
 

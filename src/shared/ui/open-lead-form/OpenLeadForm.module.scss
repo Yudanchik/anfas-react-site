@@ -331,12 +331,9 @@
   border-radius: 999px;
   color: c.$ink;
   background: c.$amber;
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease;
+  transition: transform 0.25s ease;
 
   &:hover:not(:disabled) {
-    background: color-mix(in srgb, c.$amber 84%, c.$ink 16%);
     transform: translateY(-1px);
   }
 

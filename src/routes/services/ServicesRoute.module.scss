@@ -472,19 +472,6 @@
 }
 
 .servicesPage__serviceButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 50px;
-  padding: 0 22px;
-  cursor: pointer;
-  border: 0;
-  border-radius: 999px;
-  color: var(--ink);
-  font-size: var(--type-button);
-  font-weight: var(--weight-semibold);
-  background: var(--amber);
-
   @include mq.media(phone) {
     width: 100%;
   }
