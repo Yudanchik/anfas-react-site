@@ -7,7 +7,6 @@ export function HomeContact() {
   return (
     <section id="contacts" className={styles.contact}>
       <div className={styles.contact__orbit} aria-hidden="true">
-        <span className={styles.contact__orbitDot} />
         <i className={styles.contact__orbitSpinner} />
       </div>
       <p
@@ -31,8 +30,8 @@ export function HomeContact() {
         data-reveal
         style={{ '--reveal-delay': '160ms' } as CSSProperties}
       >
-        Расскажите немного о будущем интерьере. Мы свяжемся, зададим правильные вопросы и предложим
-        следующий шаг.
+        Расскажите немного о будущем интерьере. <br />
+        Мы свяжемся, зададим правильные вопросы и предложим следующий шаг.
       </p>
       <ModalTriggerButton
         className={styles.contact__button}

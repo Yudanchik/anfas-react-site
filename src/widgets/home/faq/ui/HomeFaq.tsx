@@ -3,6 +3,7 @@ import { PlusIcon } from '@/shared/ui/icons/PlusIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 import styles from './HomeFaq.module.scss'
+import { tieRussianShortWords } from '@/shared/lib/tie-russian-short-words'
 
 export function HomeFaq({
   openFaq,
@@ -13,11 +14,10 @@ export function HomeFaq({
 }) {
   return (
     <section className={styles.faq + ' ' + styles.faq_sectionPad}>
-      <div className={styles.faq__bgImage} aria-hidden="true" />
       <PageWrapper className={styles.faq__content}>
         <SectionHeader
           className={styles.faq__title}
-          tone="dark"
+          tone="light"
           number="10"
           label="Частые вопросы"
           title={
@@ -34,6 +34,8 @@ export function HomeFaq({
             const isOpen = openFaq === index
             const triggerId = `faq-trigger-${index + 1}`
             const answerId = `faq-answer-${index + 1}`
+            const question = tieRussianShortWords(item.question)
+            const answer = tieRussianShortWords(item.answer)
 
             return (
               <article
@@ -49,7 +51,7 @@ export function HomeFaq({
                   onClick={() => setOpenFaq(isOpen ? -1 : index)}
                 >
                   <span className={styles.faq__number}>0{index + 1}</span>
-                  <strong className={styles.faq__question}>{item.question}</strong>
+                  <strong className={styles.faq__question}>{question}</strong>
                   <span className={styles.faq__toggle}>
                     <PlusIcon open={isOpen} />
                   </span>
@@ -61,7 +63,7 @@ export function HomeFaq({
                   aria-labelledby={triggerId}
                 >
                   <div className={styles.faq__answerInner}>
-                    <p className={styles.faq__answerText}>{item.answer}</p>
+                    <p className={styles.faq__answerText}>{answer}</p>
                   </div>
                 </div>
               </article>

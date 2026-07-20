@@ -140,7 +140,6 @@ export function SiteFooter() {
             </div>
 
             <div className={styles.siteFooter__column}>
-              <span className={styles.siteFooter__title}>Контакты</span>
               <FooterContactCards />
             </div>
           </div>
