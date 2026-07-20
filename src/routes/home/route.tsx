@@ -1,6 +1,5 @@
 ﻿import { useState } from 'react'
 
-import { useBrief } from '@/features/brief/model/BriefContext'
 import { HomeContact } from '@/widgets/home/contact'
 import { HomeFaq } from '@/widgets/home/faq'
 import { HomeHero } from '@/widgets/home/hero'
@@ -28,41 +27,40 @@ export const meta = () =>
   })
 
 export default function HomeRoute() {
-  const { openBrief } = useBrief()
   const [openFaq, setOpenFaq] = useState(0)
 
   return (
     <main>
-      <HomeHero onOpenBrief={openBrief} />
+      <HomeHero />
       <HomeTicker />
 
       {/* Meta stats: быстрое доверие */}
       <HomeManifesto />
 
       {/* 01: боли → решения */}
-      <HomePains onOpenBrief={openBrief} />
+      <HomePains />
 
       {/* 02: контроль ремонта в личном кабинете */}
       <HomeProjectControl />
 
       {/* 03: индивидуальный путь */}
-      <HomeStoryIndividual onOpenBrief={openBrief} />
+      <HomeStoryIndividual />
 
       {/* 04: пакетный путь */}
-      <HomeStoryPackage onOpenBrief={openBrief} />
+      <HomeStoryPackage />
 
       {/* 05: выбор тарифов */}
-      <HomePaths onOpenBrief={openBrief} />
+      <HomePaths />
 
       {/* 06: калькулятор */}
-      <HomePackageCalculator onOpenBrief={openBrief} />
+      <HomePackageCalculator />
 
       {/* 07–09: хвостовые секции */}
       <HomePartners />
       <HomeSocials />
-      <HomeProcess onOpenBrief={openBrief} />
+      <HomeProcess />
       <HomeFaq openFaq={openFaq} setOpenFaq={setOpenFaq} />
-      <HomeContact onOpenBrief={openBrief} />
+      <HomeContact />
     </main>
   )
 }

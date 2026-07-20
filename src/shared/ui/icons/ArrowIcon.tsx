@@ -12,6 +12,7 @@ export function ArrowIcon({ className, size = 18 }: ArrowIconProps) {
       viewBox="0 0 24 24"
       fill="none"
       aria-hidden="true"
+      focusable="false"
     >
       <path
         d="M5 12h13M13 6l6 6-6 6"

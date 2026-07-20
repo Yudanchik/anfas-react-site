@@ -1,13 +1,12 @@
-﻿import { formatCompare } from '../model/format-compare.data'
-import { SectionHeader } from '../../ui'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 
+import { SectionHeader } from '../../ui'
+import { formatCompare } from '../model/format-compare.data'
 import styles from './HomeFormatCompare.module.scss'
 
 export function HomeFormatCompare({
-  onOpenBrief,
   onScrollToCalculator,
 }: {
-  onOpenBrief: (service?: 'general' | 'individual' | 'package') => void
   onScrollToCalculator: () => void
 }) {
   return (
@@ -40,15 +39,18 @@ export function HomeFormatCompare({
                 ))}
               </ul>
               <p className={styles.cardNote}>{item.bestFor}</p>
-              <button
-                className={item.key === 'individual' ? styles.actionAlt : styles.action}
-                type="button"
-                onClick={
-                  item.key === 'individual' ? () => onOpenBrief('individual') : onScrollToCalculator
-                }
-              >
-                {item.key === 'individual' ? 'Обсудить проект' : 'Перейти к калькулятору'}
-              </button>
+              {item.key === 'individual' ? (
+                <ModalTriggerButton
+                  intent="individual"
+                  source="home-format-compare-card"
+                >
+                  Обсудить проект
+                </ModalTriggerButton>
+              ) : (
+                <button className={styles.action} type="button" onClick={onScrollToCalculator}>
+                  Перейти к калькулятору
+                </button>
+              )}
             </article>
           ))}
         </div>
@@ -81,9 +83,12 @@ export function HomeFormatCompare({
             <button className={styles.actionAlt} type="button" onClick={onScrollToCalculator}>
               Открыть калькулятор
             </button>
-            <button className={styles.action} type="button" onClick={() => onOpenBrief('general')}>
+            <ModalTriggerButton
+              intent="consultation"
+              source="home-format-compare-footer"
+            >
               Обсудить формат
-            </button>
+            </ModalTriggerButton>
           </div>
         </div>
       </div>

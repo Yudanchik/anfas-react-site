@@ -33,7 +33,6 @@
   gap: 16px;
   min-width: 0;
   padding: 26px;
-  cursor: pointer;
   text-align: left;
   border: 1px solid var(--section-line, var(--line));
   border-radius: var(--radius-lg);
@@ -115,52 +114,6 @@
     color: inherit;
     text-transform: none;
   }
-}
-
-.paths__cta {
-  @include flex.flex($ai: center);
-
-  flex-shrink: 0;
-  gap: 12px;
-  min-height: 48px;
-  padding: 5px 5px 5px 18px;
-  border-radius: 999px;
-  font-size: var(--type-button);
-  font-weight: var(--weight-semibold);
-  line-height: var(--leading-display);
-  white-space: nowrap;
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease;
-
-  > span {
-    line-height: var(--leading-display);
-  }
-
-  i {
-    @include flex.flex($jc: center, $ai: center);
-
-    flex-shrink: 0;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    transition: transform 0.35s ease;
-  }
-
-  svg {
-    display: block;
-    width: 16px;
-    height: 16px;
-    fill: none;
-    stroke: currentcolor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 1.5;
-  }
-}
-
-.paths__card:hover .paths__cta i {
-  transform: rotate(-25deg);
 }
 
 .paths__photo {
@@ -257,16 +210,6 @@
     border-top-color: var(--line-on-dark);
   }
 
-  .paths__cta {
-    color: var(--ink);
-    background: var(--amber);
-
-    i {
-      color: var(--ink);
-      background: var(--paper);
-    }
-  }
-
   .paths__photo {
     border-color: var(--line-on-dark);
   }
@@ -279,16 +222,6 @@
 
   .paths__footer {
     border-top-color: var(--line-on-light);
-  }
-
-  .paths__cta {
-    color: var(--paper);
-    background: var(--ink);
-
-    i {
-      color: var(--ink);
-      background: var(--amber);
-    }
   }
 
   .paths__photo {
@@ -321,11 +254,6 @@
 
   .paths__footer {
     @include flex.flex($fd: column, $ai: flex-start);
-  }
-
-  .paths__cta {
-    width: 100%;
-    justify-content: space-between;
   }
 
   .paths__photo {

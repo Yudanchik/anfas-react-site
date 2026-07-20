@@ -1,11 +1,11 @@
 import { processSteps } from '@/entities/process/model/process.data'
-import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import { SectionHeader } from '../../ui'
 import styles from './HomeProcess.module.scss'
 
-export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
+export function HomeProcess() {
   return (
     <section id="process" className={`${styles.process} ${styles.process_sectionPad}`}>
       <PageWrapper className={styles.process__shell}>
@@ -65,12 +65,15 @@ export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
           ))}
         </div>
 
-        <button className={styles.process__cta} type="button" onClick={() => onOpenBrief()} data-reveal>
-          <span className={styles.process__ctaText}>Обсудить свой проект</span>
-          <i className={styles.process__ctaIcon} aria-hidden="true">
-            <ArrowIcon size={16} />
-          </i>
-        </button>
+        <ModalTriggerButton
+          className={styles.process__cta}
+          intent="consultation"
+          size="lg"
+          source="home-process"
+          data-reveal
+        >
+          Обсудить свой проект
+        </ModalTriggerButton>
       </PageWrapper>
     </section>
   )

@@ -15,6 +15,7 @@ export const briefSchema = z.object({
   service: z.enum(['general', 'individual', 'package'], {
     error: 'Выберите услугу',
   }),
+  wishes: z.string().trim().max(600, 'Сократите текст до 600 символов').optional(),
 })
 
 export type BriefFormValues = z.infer<typeof briefSchema>

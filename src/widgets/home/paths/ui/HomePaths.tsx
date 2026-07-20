@@ -1,14 +1,10 @@
-import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 
 import styles from './HomePaths.module.scss'
 
-export function HomePaths({
-  onOpenBrief,
-}: {
-  onOpenBrief: (service?: 'individual' | 'package') => void
-}) {
+export function HomePaths() {
   return (
     <section id="paths" className={`${styles.paths} ${styles.paths_sectionPad}`}>
       <PageWrapper className={styles.container}>
@@ -27,10 +23,8 @@ export function HomePaths({
         />
 
         <div className={styles.paths__grid} data-reveal>
-          <button
+          <article
             className={`${styles.paths__card} ${styles.paths__card_individual}`}
-            type="button"
-            onClick={() => onOpenBrief('individual')}
           >
             <h3 className={styles.paths__title}>Индивидуальный проект</h3>
             <p className={styles.paths__description}>
@@ -47,12 +41,9 @@ export function HomePaths({
               <span className={styles.paths__price}>
                 от <strong>9 000 ₽</strong> / м² · дизайн
               </span>
-              <span className={styles.paths__cta}>
-                <span>Оставить заявку</span>
-                <i>
-                  <ArrowIcon size={16} />
-                </i>
-              </span>
+              <ModalTriggerButton intent="individual" source="home-paths-individual">
+                Хочу индивидуальный ремонт
+              </ModalTriggerButton>
             </div>
             <div className={`${styles.paths__photo} ${styles.paths__photo_individual}`} aria-hidden="true">
               <span className={styles.paths__photoBadge}>Индивидуальный путь</span>
@@ -61,12 +52,10 @@ export function HomePaths({
                 <span>Без шаблонов и типовых сценариев.</span>
               </div>
             </div>
-          </button>
+          </article>
 
-          <button
+          <article
             className={`${styles.paths__card} ${styles.paths__card_package}`}
-            type="button"
-            onClick={() => onOpenBrief('package')}
           >
             <h3 className={styles.paths__title}>Пакетный ремонт</h3>
             <p className={styles.paths__description}>
@@ -83,12 +72,9 @@ export function HomePaths({
               <span className={styles.paths__price}>
                 от <strong>49 000 ₽</strong> / м² · под ключ
               </span>
-              <span className={styles.paths__cta}>
-                <span>Оставить заявку</span>
-                <i>
-                  <ArrowIcon size={16} />
-                </i>
-              </span>
+              <ModalTriggerButton intent="package" source="home-paths-package">
+                Хочу пакетный ремонт
+              </ModalTriggerButton>
             </div>
             <div className={`${styles.paths__photo} ${styles.paths__photo_package}`} aria-hidden="true">
               <span className={styles.paths__photoBadge}>Готовый формат</span>
@@ -97,7 +83,7 @@ export function HomePaths({
                 <span>Быстрее запуск, меньше согласований.</span>
               </div>
             </div>
-          </button>
+          </article>
         </div>
       </PageWrapper>
     </section>

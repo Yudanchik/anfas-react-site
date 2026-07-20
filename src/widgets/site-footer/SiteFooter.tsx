@@ -1,7 +1,7 @@
 import { useId, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 
-import { useBrief } from '@/features/brief/model/BriefContext'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { services } from '@/entities/service/model/services.data'
 import { company } from '@/shared/config/company'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
@@ -94,8 +94,6 @@ function FooterContactCards() {
 }
 
 export function SiteFooter() {
-  const { openBrief } = useBrief()
-
   return (
     <footer className={styles.siteFooter}>
       <PageWrapper>
@@ -108,9 +106,13 @@ export function SiteFooter() {
               Ремонт квартир под ключ в Санкт-Петербурге: дизайн, комплектация и реализация в одной
               системе без хаоса, плавающих сроков и непрозрачных решений.
             </p>
-            <button className={styles.siteFooter__cta} type="button" onClick={() => openBrief('general')}>
+            <ModalTriggerButton
+              className={styles.siteFooter__cta}
+              intent="consultation"
+              source="site-footer"
+            >
               Обсудить проект
-            </button>
+            </ModalTriggerButton>
             <FooterSocials className={styles.siteFooter__socials} />
           </div>
 

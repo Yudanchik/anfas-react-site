@@ -97,7 +97,6 @@
   margin-top: 30px;
 }
 
-.heroPrimaryAction,
 .heroSecondaryAction {
   display: inline-flex;
   align-items: center;
@@ -105,12 +104,6 @@
   min-height: var(--button-height);
   padding: 0 var(--space-24);
   border-radius: var(--radius-pill);
-}
-
-.heroPrimaryAction {
-  color: var(--ink);
-  border: 0;
-  background: var(--amber);
 }
 
 .heroSecondaryAction {
@@ -233,17 +226,7 @@
 }
 
 .buttonLight {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: var(--button-height);
   margin-top: var(--space-24);
-  padding: 0 var(--space-24);
-  cursor: pointer;
-  color: var(--ink);
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: var(--amber);
 }
 
 .contactPanel {
@@ -265,22 +248,17 @@
 }
 
 .contactPanel__content {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(240px, 0.9fr);
-  gap: var(--space-32);
   background:
     radial-gradient(circle at 86% 8%, rgb(197 160 102 / 24%), transparent 34%),
     linear-gradient(135deg, var(--ink), rgb(28 27 24));
 }
 
 .contactPanel__details,
-.contactPanel__steps,
 .contactPanel__map {
   @include flex.flex($fd: column);
 }
 
 .contactPanel__details > span,
-.contactPanel__steps > span,
 .contactPanel__map > span {
   color: var(--amber);
   font-size: var(--type-caption);
@@ -351,45 +329,6 @@
     background: rgb(255 255 255 / 6%);
     font-size: var(--type-body-sm);
     font-weight: var(--weight-bold);
-  }
-}
-
-.contactPanel__steps {
-  min-width: 0;
-
-  ol {
-    display: grid;
-    gap: var(--space-12);
-    margin: var(--space-24) 0 0;
-    padding: 0;
-    list-style: none;
-    counter-reset: contact-step;
-  }
-
-  li {
-    position: relative;
-    min-height: 42px;
-    padding-left: 54px;
-    color: color-mix(in srgb, var(--surface-fg-dark) 72%, transparent);
-    font-size: var(--type-body-sm);
-    line-height: var(--leading-body);
-    counter-increment: contact-step;
-
-    &::before {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: grid;
-      width: 36px;
-      height: 36px;
-      content: counter(contact-step, decimal-leading-zero);
-      place-items: center;
-      color: var(--ink);
-      border-radius: var(--radius-pill);
-      background: var(--amber);
-      font-size: var(--type-caption);
-      font-weight: var(--weight-bold);
-    }
   }
 }
 
@@ -560,8 +499,7 @@
 }
 
 @include mq.media(phone, tablet, laptop) {
-  .contactPanel,
-  .contactPanel__content {
+  .contactPanel {
     grid-template-columns: 1fr;
     gap: 28px;
   }
@@ -621,9 +559,5 @@
 
   .legalPanel h2 {
     font-size: var(--type-heading-lg);
-  }
-
-  .contactPanel__steps li {
-    padding-left: 50px;
   }
 }
