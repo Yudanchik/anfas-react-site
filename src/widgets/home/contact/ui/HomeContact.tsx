@@ -30,8 +30,8 @@ export function HomeContact() {
         data-reveal
         style={{ '--reveal-delay': '160ms' } as CSSProperties}
       >
-        Расскажите немного о будущем интерьере. Мы свяжемся, зададим правильные вопросы и предложим
-        следующий шаг.
+        Расскажите немного о будущем интерьере. <br />
+        Мы свяжемся, зададим правильные вопросы и предложим следующий шаг.
       </p>
       <ModalTriggerButton
         className={styles.contact__button}
