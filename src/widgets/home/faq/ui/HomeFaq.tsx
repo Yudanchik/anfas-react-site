@@ -1,9 +1,9 @@
 import { faqItems } from '@/features/faq/model/faq.data'
-import tieRussianShortWords from '@/shared/lib/tie-russian-short-words'
 import { PlusIcon } from '@/shared/ui/icons/PlusIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 import styles from './HomeFaq.module.scss'
+import { tieRussianShortWords } from '@/shared/lib/tie-russian-short-words'
 
 export function HomeFaq({
   openFaq,
