@@ -1,4 +1,4 @@
-import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 import { storyIndividual } from '../model/story-individual.data'
@@ -17,11 +17,7 @@ function renderMultiline(text: string) {
   ))
 }
 
-export function HomeStoryIndividual({
-  onOpenBrief,
-}: {
-  onOpenBrief: (service?: 'individual' | 'package') => void
-}) {
+export function HomeStoryIndividual() {
   return (
     <section className={styles.story + ' ' + styles.sectionpad}>
       <PageWrapper className={styles.layout}>
@@ -72,12 +68,13 @@ export function HomeStoryIndividual({
               ))}
             </div>
 
-            <button className={styles.cta} type="button" onClick={() => onOpenBrief('individual')}>
-              <span>Хочу проект под себя</span>
-              <i>
-                <ArrowIcon size={16} />
-              </i>
-            </button>
+            <ModalTriggerButton
+              className={styles.cta}
+              intent="individual"
+              source="home-individual-story"
+            >
+              Хочу индивидуальный ремонт
+            </ModalTriggerButton>
           </div>
         </div>
 

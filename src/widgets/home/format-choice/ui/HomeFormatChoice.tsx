@@ -1,13 +1,12 @@
-﻿import { formatChoice } from '../model/format-choice.data'
-import { SectionHeader } from '../../ui'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 
+import { SectionHeader } from '../../ui'
+import { formatChoice } from '../model/format-choice.data'
 import styles from './HomeFormatChoice.module.scss'
 
 export function HomeFormatChoice({
-  onOpenBrief,
   onScrollToCalculator,
 }: {
-  onOpenBrief: () => void
   onScrollToCalculator: () => void
 }) {
   return (
@@ -29,7 +28,9 @@ export function HomeFormatChoice({
         <div className={styles.choice__options} data-reveal>
           {formatChoice.options.map((option) => (
             <article className={styles.choice__card} key={option.key}>
-              <p className={styles.choice__badge}>{option.key === 'individual' ? 'Индивидуально' : 'Быстрый старт'}</p>
+              <p className={styles.choice__badge}>
+                {option.key === 'individual' ? 'Индивидуально' : 'Быстрый старт'}
+              </p>
               <div className={styles.choice__cardBody}>
                 <h3 className={styles.choice__cardTitle}>{option.title}</h3>
                 <p className={styles.choice__cardText}>{option.text}</p>
@@ -41,13 +42,22 @@ export function HomeFormatChoice({
                   </li>
                 ))}
               </ul>
-              <button
-                className={styles.choice__action}
-                type="button"
-                onClick={option.key === 'individual' ? onOpenBrief : onScrollToCalculator}
-              >
-                {option.cta}
-              </button>
+              {option.key === 'individual' ? (
+                <ModalTriggerButton
+                  intent="individual"
+                  source="home-format-choice"
+                >
+                  {option.cta}
+                </ModalTriggerButton>
+              ) : (
+                <button
+                  className={styles.choice__action}
+                  type="button"
+                  onClick={onScrollToCalculator}
+                >
+                  {option.cta}
+                </button>
+              )}
             </article>
           ))}
         </div>

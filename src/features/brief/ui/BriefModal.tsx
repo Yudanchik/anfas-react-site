@@ -1,24 +1,29 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link } from 'react-router'
 
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 
+import { formatPhoneValue, sanitizeNameValue } from '../model/brief.form'
 import { briefSchema, type BriefFormValues } from '../model/brief.schema'
-import {
-  briefServiceOptions,
-  briefServiceCopy,
-  formatPhoneValue,
-  sanitizeNameValue,
-} from '../model/brief.form'
-import { useBrief } from '../model/BriefContext'
+import { useLeadModal } from '../model/LeadModalContext'
 import styles from './BriefModal.module.scss'
 
+const focusableSelector = [
+  'a[href]',
+  'button:not([disabled]):not([tabindex="-1"])',
+  'input:not([disabled]):not([type="hidden"])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',')
+
 export function BriefModal() {
-  const { closeBrief, isOpen, presetService } = useBrief()
+  const { closeLeadModal, isOpen, modalState, preset } = useLeadModal()
+  const panelRef = useRef<HTMLDivElement>(null)
   const [submitted, setSubmitted] = useState(false)
   const {
-    control,
     formState: { errors },
     handleSubmit,
     register,
@@ -29,125 +34,221 @@ export function BriefModal() {
       name: '',
       phone: '',
       service: 'general',
+      wishes: '',
     },
     resolver: zodResolver(briefSchema),
   })
 
-  const selectedService = useWatch({ control, name: 'service' })
-  const activeService = isOpen ? presetService : selectedService
-  const content = briefServiceCopy[activeService]
-  const selectedOption =
-    briefServiceOptions.find((option) => option.value === activeService) ?? briefServiceOptions[0]
+  const close = useCallback(() => {
+    closeLeadModal()
+    setSubmitted(false)
+    reset()
+  }, [closeLeadModal, reset])
 
   useEffect(() => {
-    document.body.classList.toggle('modal-open', isOpen)
+    if (!isOpen) return
 
-    return () => document.body.classList.remove('modal-open')
-  }, [isOpen])
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const focusTimer = window.setTimeout(() => {
+      panelRef.current?.querySelector<HTMLElement>(focusableSelector)?.focus()
+    }, 0)
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        close()
+        return
+      }
+
+      if (event.key !== 'Tab' || !panelRef.current) return
+
+      const focusableElements = Array.from(
+        panelRef.current.querySelectorAll<HTMLElement>(focusableSelector),
+      )
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements.at(-1)
+
+      if (!firstElement || !lastElement) {
+        event.preventDefault()
+        return
+      }
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement.focus()
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement.focus()
+      }
+    }
+
+    document.body.classList.add('modal-open')
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.clearTimeout(focusTimer)
+      document.body.classList.remove('modal-open')
+      document.removeEventListener('keydown', handleKeyDown)
+      previouslyFocused?.focus()
+    }
+  }, [close, isOpen])
 
   useEffect(() => {
     if (isOpen) {
-      setValue('service', presetService, { shouldValidate: true })
+      setValue('service', preset.requestType)
     }
-  }, [isOpen, presetService, setValue])
-
-  const close = () => {
-    closeBrief()
-    setSubmitted(false)
-    reset()
-  }
+  }, [isOpen, preset.requestType, setValue])
 
   const submit = (_values: BriefFormValues) => {
     setSubmitted(true)
   }
 
+  if (!isOpen) return null
+
   return (
-    <div
-      className={`${styles.briefModal} ${isOpen ? styles.briefModal_open : ''}`}
-      aria-hidden={!isOpen}
-      data-service={activeService}
-    >
+    <div className={styles.briefModal} data-intent={modalState.intent} data-source={modalState.source}>
       <button
         className={styles.briefModal__backdrop}
         type="button"
+        tabIndex={-1}
         aria-label="Закрыть форму"
         onClick={close}
       />
       <div
         className={styles.briefModal__panel}
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Обсудить проект"
-        data-service={activeService}
+        aria-labelledby="lead-modal-title"
+        aria-describedby="lead-modal-description"
       >
-        <button className={styles.briefModal__close} type="button" onClick={close} aria-label="Закрыть">
+        <button
+          className={styles.briefModal__close}
+          type="button"
+          onClick={close}
+          aria-label="Закрыть модальное окно"
+        >
           <span className={styles.briefModal__closeLine} />
           <span className={styles.briefModal__closeLine} />
         </button>
 
         {!submitted ? (
           <>
-            <p className={styles.briefModal__eyebrow}>{content.eyebrow}</p>
-            <h2 className={styles.briefModal__title}>{content.title}</h2>
-            <p className={styles.briefModal__lead}>{content.lead}</p>
+            <header className={styles.briefModal__header}>
+              <p className={styles.briefModal__eyebrow}>{preset.eyebrow}</p>
+              <h2 className={styles.briefModal__title} id="lead-modal-title">
+                {preset.title}
+              </h2>
+              <p className={styles.briefModal__lead} id="lead-modal-description">
+                {preset.description}
+              </p>
+            </header>
+
             <form className={styles.briefModal__form} onSubmit={handleSubmit(submit)} noValidate>
-              <input type="hidden" value={activeService} {...register('service')} />
+              <input type="hidden" {...register('service')} />
 
               <div className={styles.briefModal__selected}>
                 <span className={styles.briefModal__selectedLabel}>Выбрано</span>
-                <strong className={styles.briefModal__selectedValue}>{selectedOption.label}</strong>
-                <small className={styles.briefModal__selectedNote}>{content.serviceNote}</small>
+                <strong className={styles.briefModal__selectedValue}>{preset.selectedLabel}</strong>
+                <small className={styles.briefModal__selectedNote}>{preset.selectedDescription}</small>
               </div>
 
-              <label className={styles.briefModal__field}>
-                <span className={styles.briefModal__fieldLabel}>Ваше имя</span>
-                <input
-                  className={styles.briefModal__fieldControl}
-                  type="text"
-                  autoComplete="name"
-                  maxLength={48}
-                  placeholder="Ваше имя"
-                  {...register('name')}
-                  onChange={(event) =>
-                    setValue('name', sanitizeNameValue(event.target.value), { shouldValidate: true })
-                  }
-                />
-                {errors.name && <small className={styles.briefModal__error}>{errors.name.message}</small>}
-              </label>
+              <div className={styles.briefModal__fields}>
+                <label className={styles.briefModal__field}>
+                  <span className={styles.briefModal__fieldLabel}>Ваше имя</span>
+                  <input
+                    className={styles.briefModal__fieldControl}
+                    type="text"
+                    autoComplete="name"
+                    maxLength={48}
+                    placeholder="Ваше имя"
+                    aria-invalid={Boolean(errors.name)}
+                    aria-describedby={errors.name ? 'lead-modal-name-error' : undefined}
+                    {...register('name')}
+                    onChange={(event) =>
+                      setValue('name', sanitizeNameValue(event.target.value), { shouldValidate: true })
+                    }
+                  />
+                  {errors.name && (
+                    <small className={styles.briefModal__error} id="lead-modal-name-error">
+                      {errors.name.message}
+                    </small>
+                  )}
+                </label>
 
-              <label className={styles.briefModal__field}>
-                <span className={styles.briefModal__fieldLabel}>Телефон</span>
-                <input
-                  className={styles.briefModal__fieldControl}
-                  type="tel"
-                  inputMode="tel"
-                  autoComplete="tel"
-                  maxLength={18}
-                  placeholder="+7 (999) 000-00-00"
-                  {...register('phone')}
-                  onChange={(event) =>
-                    setValue('phone', formatPhoneValue(event.target.value), { shouldValidate: true })
-                  }
-                />
-                {errors.phone && <small className={styles.briefModal__error}>{errors.phone.message}</small>}
-              </label>
+                <label className={styles.briefModal__field}>
+                  <span className={styles.briefModal__fieldLabel}>Телефон</span>
+                  <input
+                    className={styles.briefModal__fieldControl}
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    maxLength={18}
+                    placeholder="+7 (999) 000-00-00"
+                    aria-invalid={Boolean(errors.phone)}
+                    aria-describedby={errors.phone ? 'lead-modal-phone-error' : undefined}
+                    {...register('phone')}
+                    onChange={(event) =>
+                      setValue('phone', formatPhoneValue(event.target.value), { shouldValidate: true })
+                    }
+                  />
+                  {errors.phone && (
+                    <small className={styles.briefModal__error} id="lead-modal-phone-error">
+                      {errors.phone.message}
+                    </small>
+                  )}
+                </label>
+              </div>
+
+              {modalState.intent === 'brief' && (
+                <label className={`${styles.briefModal__field} ${styles.briefModal__field_fullWidth}`}>
+                  <span className={styles.briefModal__fieldLabel}>
+                    Немного о пожеланиях
+                    <small className={styles.briefModal__fieldOptional}>Необязательно</small>
+                  </span>
+                  <textarea
+                    className={`${styles.briefModal__fieldControl} ${styles.briefModal__fieldTextarea}`}
+                    rows={4}
+                    maxLength={600}
+                    placeholder="Расскажите о квартире, желаемом стиле, сроках или важных деталях"
+                    aria-invalid={Boolean(errors.wishes)}
+                    aria-describedby={errors.wishes ? 'lead-modal-wishes-error' : undefined}
+                    {...register('wishes')}
+                  />
+                  {errors.wishes && (
+                    <small className={styles.briefModal__error} id="lead-modal-wishes-error">
+                      {errors.wishes.message}
+                    </small>
+                  )}
+                </label>
+              )}
 
               <button className={styles.briefModal__submit} type="submit">
-                <span className={styles.briefModal__submitText}>{content.submitLabel}</span>
-                <i className={styles.briefModal__submitIcon}>
+                <span className={styles.briefModal__submitText}>{preset.submitLabel}</span>
+                <i className={styles.briefModal__submitIcon} aria-hidden="true">
                   <ArrowIcon size={16} />
                 </i>
               </button>
               <small className={styles.briefModal__privacy}>
-                Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности.
+                Нажимая кнопку, вы соглашаетесь с{' '}
+                <Link className={styles.briefModal__privacyLink} to="/privacy">
+                  политикой обработки персональных данных
+                </Link>
+                .
               </small>
             </form>
           </>
         ) : (
           <div className={styles.briefModal__success}>
-            <span className={styles.briefModal__successIcon}>✓</span>
-            <h2 className={styles.briefModal__successTitle}>{content.successTitle}</h2>
-            <p className={styles.briefModal__successText}>{content.successLead}</p>
+            <span className={styles.briefModal__successIcon} aria-hidden="true">
+              ✓
+            </span>
+            <h2 className={styles.briefModal__successTitle} id="lead-modal-title">
+              {preset.successTitle}
+            </h2>
+            <p className={styles.briefModal__successText} id="lead-modal-description">
+              {preset.successDescription}
+            </p>
             <button className={styles.briefModal__successButton} type="button" onClick={close}>
               Закрыть
             </button>

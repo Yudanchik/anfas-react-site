@@ -1,11 +1,11 @@
-import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 import { pains } from '../model/pains.data'
 
 import styles from './HomePains.module.scss'
 
-export function HomePains({ onOpenBrief }: { onOpenBrief: () => void }) {
+export function HomePains() {
   return (
     <section id="pains" className={styles.pains + ' ' + styles.sectionpad}>
       <PageWrapper>
@@ -74,12 +74,14 @@ export function HomePains({ onOpenBrief }: { onOpenBrief: () => void }) {
         </div>
 
         <div className={styles.footer}>
-          <button className={styles.cta} type="button" onClick={() => onOpenBrief()}>
-            <span>Обсудить проект без хаоса и сюрпризов</span>
-            <i>
-              <ArrowIcon size={16} />
-            </i>
-          </button>
+          <ModalTriggerButton
+            className={styles.cta}
+            intent="consultation"
+            size="lg"
+            source="home-pains"
+          >
+            Обсудить проект без хаоса и сюрпризов
+          </ModalTriggerButton>
         </div>
       </PageWrapper>
     </section>

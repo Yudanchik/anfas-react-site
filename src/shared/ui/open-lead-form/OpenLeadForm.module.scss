@@ -1,33 +1,62 @@
 @use 'flex' as flex;
 @use 'media' as mq;
-
+@use 'themes/default/colors' as c;
 
 .openLeadForm {
-  padding: 28px;
-  border: 1px solid rgb(22 23 19 / 10%);
-  border-radius: var(--radius-card);
-  background:
-    radial-gradient(circle at top right, rgb(237 174 36 / 10%), transparent 34%),
-    linear-gradient(145deg, rgb(255 255 255 / 96%), rgb(255 255 255 / 88%));
-  box-shadow: var(--shadow-card);
+  @include flex.flex($fd: column);
+
+  position: relative;
+  gap: clamp(22px, 2.4vw, 32px);
+  padding: clamp(32px, 4vw, 64px);
+  overflow: hidden;
+  border: 1px solid c.$line;
+  border-radius: var(--radius-panel);
+  background: linear-gradient(180deg, c.$paper 0%, c.$paper-deep 100%);
+  box-shadow: var(--shadow-card-strong);
+  color: c.$ink;
+
+  @include mq.media(phone, tablet) {
+    gap: var(--space-20);
+    padding: var(--space-20);
+    border-radius: var(--radius-card);
+  }
 
   @include mq.media(phone) {
-    padding: var(--space-20);
+    padding: var(--space-16);
+  }
+}
+
+.openLeadForm__header {
+  @include flex.flex($fd: column);
+
+  gap: 14px;
+  width: min(62%, 900px);
+  max-width: 900px;
+
+  @include mq.media(phone, tablet) {
+    width: 100%;
   }
 }
 
 .openLeadForm__title {
+  max-width: 900px;
   margin: 0;
-  font-size: var(--type-heading-lg);
+  color: c.$ink;
+  font-size: var(--type-display-lg);
   font-weight: var(--weight-medium);
   line-height: var(--leading-display);
-  letter-spacing: var(--tracking-heading);
+  letter-spacing: var(--tracking-display);
+
+  em {
+    color: c.$amber;
+    font-style: normal;
+  }
 }
 
 .openLeadForm__lead {
-  max-width: 58ch;
-  margin: var(--space-16) 0 0;
-  color: rgb(22 23 19 / 68%);
+  max-width: 760px;
+  margin: 0;
+  color: color-mix(in srgb, c.$ink 72%, c.$paper 28%);
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
 }
@@ -35,155 +64,382 @@
 .openLeadForm__form {
   @include flex.flex($fd: column);
 
-  gap: var(--space-20);
-  margin-top: var(--space-24);
+  gap: 12px;
 }
 
 .openLeadForm__servicePicker {
+  @include flex.flex($fd: column);
+
   margin: 0;
   padding: 0;
   border: 0;
+  min-width: 0;
 }
 
 .openLeadForm__legend,
 .openLeadForm__fieldLabel {
   display: block;
-  margin-bottom: 10px;
-  color: rgb(22 23 19 / 56%);
+  margin: 0;
+  color: c.$amber;
   font-size: var(--type-caption);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
-.openLeadForm__serviceOptions {
-  @include flex.flex($fw: wrap);
+.openLeadForm__legend {
+  margin-bottom: 12px;
+}
 
-  gap: 10px;
+.openLeadForm__serviceOptions {
+  @include flex.flex;
+
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+
+  @include mq.media(phone) {
+    flex-direction: column;
+  }
 }
 
 .openLeadForm__serviceOption {
   position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 42px;
+  overflow: hidden;
   cursor: pointer;
+  border: 1px solid c.$line;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, c.$paper 94%, c.$paper-deep 6%) 0%,
+      color-mix(in srgb, c.$paper 88%, c.$paper-deep 12%) 100%
+    );
+  color: color-mix(in srgb, c.$ink 70%, c.$paper 30%);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease,
+    color 180ms ease;
+  isolation: isolate;
+
+  @include mq.media(phone) {
+    flex-basis: auto;
+    min-height: 44px;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, c.$amber 44%, c.$line 56%);
+    box-shadow: 0 10px 24px color-mix(in srgb, c.$ink 12%, c.$paper 88%);
+  }
+
+  &:focus-within {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
+  }
 }
 
 .openLeadForm__serviceOptionInput {
   position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
   opacity: 0;
-  pointer-events: none;
 }
 
-.openLeadForm__serviceOptionText {
-  display: inline-flex;
-  align-items: center;
+.openLeadForm__serviceOptionContent {
+  @include flex.flex($ai: center);
+
+  position: relative;
+  z-index: 1;
+  gap: 10px;
   min-height: 42px;
-  padding: 0 var(--space-16);
-  border: 1px solid rgb(22 23 19 / 10%);
-  border-radius: var(--radius-pill);
-  color: rgb(22 23 19 / 68%);
-  font-size: var(--type-body-sm);
-  background: rgb(22 23 19 / 3%);
-}
-
-.openLeadForm__serviceOptionInput:focus-visible + .openLeadForm__serviceOptionText {
-  outline: 2px solid var(--amber);
-  outline-offset: 3px;
-}
-
-.openLeadForm__serviceOption_active .openLeadForm__serviceOptionText {
-  border-color: rgb(237 174 36 / 36%);
-  color: var(--ink);
-  background: rgb(237 174 36 / 12%);
-}
-
-.openLeadForm__fields {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-16);
+  padding: 10px 16px;
+  color: inherit;
 
   @include mq.media(phone) {
-    grid-template-columns: 1fr;
+    min-height: 44px;
+    padding: 12px 14px;
   }
 }
 
-.openLeadForm__fieldInput {
-  width: 100%;
-  min-height: 52px;
-  padding: 0 var(--space-20);
-  color: var(--ink);
-  font: inherit;
-  font-size: var(--type-body-md);
-  border: 1px solid rgb(22 23 19 / 10%);
-  border-radius: var(--radius-md);
-  outline: none;
-  background: rgb(255 255 255 / 18%);
+.openLeadForm__serviceOptionIcon {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  color: inherit;
 }
 
-.openLeadForm__fieldInput:focus-visible {
-  border-color: rgb(237 174 36 / 56%);
-  box-shadow: 0 0 0 3px rgb(237 174 36 / 14%);
+.openLeadForm__serviceOptionText {
+  min-width: 0;
+  font-size: var(--type-body-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-control);
+}
+
+.openLeadForm__serviceOption_active {
+  border-color: color-mix(in srgb, c.$amber 48%, c.$line 52%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, c.$paper 78%, c.$amber 22%) 0%,
+      color-mix(in srgb, c.$paper-deep 78%, c.$amber 22%) 100%
+    );
+  color: c.$ink;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, c.$amber 36%, c.$paper 64%),
+    0 12px 24px color-mix(in srgb, c.$ink 10%, c.$paper 90%);
+}
+
+.openLeadForm__serviceOption_active .openLeadForm__serviceOptionIcon {
+  color: c.$amber;
+}
+
+.openLeadForm__fields {
+  @include flex.flex;
+
+  gap: 12px;
+  min-width: 0;
+
+  @include mq.media(phone, tablet) {
+    flex-direction: column;
+  }
+}
+
+.openLeadForm__field {
+  @include flex.flex($fd: column);
+
+  flex: 1 1 0;
+  gap: 8px;
+  min-width: 0;
+}
+
+.openLeadForm__fieldControlWrap {
+  @include flex.flex($ai: center);
+
+  min-width: 0;
+  min-height: clamp(52px, 4vw, 64px);
+  overflow: hidden;
+  border: 1px solid c.$line;
+  border-radius: 24px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, c.$paper 94%, c.$paper-deep 6%) 0%,
+      color-mix(in srgb, c.$paper 88%, c.$paper-deep 12%) 100%
+    );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, c.$paper 82%, c.$paper-deep 18%);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+
+  &:focus-within {
+    border-color: c.$amber;
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, c.$paper 82%, c.$paper-deep 18%),
+      0 0 0 3px color-mix(in srgb, c.$amber 18%, c.$paper 82%);
+  }
+
+  @include mq.media(phone) {
+    min-height: 56px;
+    border-radius: 22px;
+  }
+}
+
+.openLeadForm__fieldIcon {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  margin-inline-start: 18px;
+  color: color-mix(in srgb, c.$ink 46%, c.$paper 54%);
+}
+
+.openLeadForm__fieldInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  padding: 0 18px 0 14px;
+  color: c.$ink;
+  font: inherit;
+  font-size: var(--type-body-lg);
+  line-height: var(--leading-control);
+  border: 0;
+  outline: none;
+  background: c.$paper;
+  appearance: none;
+
+  &::placeholder {
+    color: c.$sage;
+  }
 }
 
 .openLeadForm__error {
   display: block;
-  margin-top: 6px;
-  color: #a43c27;
+  color: color-mix(in srgb, c.$ink 62%, c.$amber 38%);
   font-size: var(--type-caption);
   line-height: var(--leading-body-sm);
 }
 
 .openLeadForm__footer {
-  @include flex.flex($fw: wrap, $ai: center, $jc: space-between);
+  @include flex.flex($ai: center);
 
-  gap: var(--space-16) var(--space-20);
+  gap: 12px;
+
+  @include mq.media(phone, tablet) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.openLeadForm__footerAction,
+.openLeadForm__privacy {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.openLeadForm__footerAction {
+  @include flex.flex($ai: center);
+
+  @include mq.media(phone, tablet) {
+    width: 100%;
+  }
+}
+
+@include mq.media(phone, tablet) {
+  .openLeadForm__privacyText {
+    max-width: 100%;
+  }
 }
 
 .openLeadForm__button {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-height: 50px;
-  padding: 0 var(--space-24);
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding: 6px 6px 6px 24px;
   cursor: pointer;
   border: 0;
-  border-radius: var(--radius-pill);
-  color: var(--ink);
-  font-size: var(--type-button);
-  font-weight: var(--weight-semibold);
-  background: var(--amber);
+  border-radius: 999px;
+  color: c.$ink;
+  background: c.$amber;
+  transition: transform 0.25s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
+  }
 
   &:disabled {
     cursor: default;
-    opacity: 0.68;
+    opacity: 0.72;
+    transform: none;
+  }
+
+  @include mq.media(phone, tablet) {
+    min-height: 50px;
   }
 
   @include mq.media(phone) {
     width: 100%;
+    min-height: 48px;
+    padding-left: 18px;
   }
 }
 
+.openLeadForm__buttonIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: c.$ink;
+  background: c.$paper;
+
+  @include mq.media(phone) {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+  }
+}
+
+.openLeadForm__buttonText {
+  min-width: 0;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-control);
+  text-align: left;
+}
+
 .openLeadForm__privacy {
-  max-width: 43ch;
+  @include flex.flex($ai: flex-start);
+
+  gap: 10px;
+  min-width: 0;
+  color: color-mix(in srgb, c.$ink 56%, c.$paper 44%);
+}
+
+.openLeadForm__privacyIcon {
+  @include flex.flex($jc: center, $ai: center);
+
+  flex: 0 0 30px;
+  width: 28px;
+  height: 28px;
+  color: c.$amber;
+  border-radius: 50%;
+  background: color-mix(in srgb, c.$paper 82%, c.$amber 18%);
+}
+
+.openLeadForm__privacyText {
+  min-width: 0;
+  max-width: 48ch;
   margin: 0;
-  color: rgb(22 23 19 / 56%);
   font-size: var(--type-caption);
   line-height: var(--leading-body);
 }
 
 .openLeadForm__privacyLink {
-  color: var(--ink);
+  color: c.$ink;
   text-decoration: underline;
   text-underline-offset: 0.18em;
+  transition: color 180ms ease;
 
   &:hover,
   &:focus-visible {
-    color: color-mix(in srgb, var(--ink) 76%, var(--amber) 24%);
+    color: color-mix(in srgb, c.$ink 76%, c.$amber 24%);
   }
 }
 
 .openLeadForm__success {
-  margin-top: var(--space-20);
-  color: rgb(22 23 19 / 74%);
+  margin: 0;
+  color: color-mix(in srgb, c.$ink 72%, c.$paper 28%);
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .openLeadForm__serviceOption,
+  .openLeadForm__fieldControlWrap,
+  .openLeadForm__button,
+  .openLeadForm__privacyLink {
+    transition: none;
+  }
 }

@@ -1,5 +1,6 @@
 @use 'flex' as flex;
 @use 'media' as mq;
+@use 'themes/default/colors' as c;
 
 .briefModal {
   position: fixed;
@@ -8,18 +9,8 @@
 
   @include flex.flex($jc: center, $ai: center);
 
-  padding: 20px;
+  padding: 16px;
   overflow: hidden;
-  visibility: hidden;
-  transition: visibility 0.45s;
-
-  @include mq.media(phone) {
-    padding: 10px;
-  }
-}
-
-.briefModal_open {
-  visibility: visible;
 }
 
 .briefModal__backdrop {
@@ -29,15 +20,10 @@
   height: 100%;
   padding: 0;
   cursor: pointer;
-  opacity: 0;
+  opacity: 0.62;
   border: 0;
-  background: rgb(15 15 13 / 62%);
+  background-color: c.$ink;
   backdrop-filter: blur(6px);
-  transition: opacity 0.45s ease;
-}
-
-.briefModal_open .briefModal__backdrop {
-  opacity: 1;
 }
 
 .briefModal__panel {
@@ -46,66 +32,42 @@
 
   @include flex.flex($fd: column);
 
-  width: min(100%, 500px);
-  overflow: visible;
-  padding: 26px;
-  border: 1px solid var(--line);
+  width: min(100%, 700px);
+  max-height: calc(100dvh - 32px);
+  padding: clamp(24px, 4vw, 40px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid c.$line;
   border-radius: 28px;
-  background:
-    linear-gradient(145deg, rgb(196 153 94 / 9%), transparent 34%),
-    var(--paper);
-  box-shadow: 0 24px 80px rgb(15 15 13 / 18%);
-  opacity: 0;
-  transform: translateY(28px) scale(0.97);
-  transition:
-    opacity 0.45s ease,
-    transform 0.55s cubic-bezier(0.2, 0.7, 0, 1);
-
-  &[data-service='individual'] {
-    background:
-      linear-gradient(145deg, rgb(22 23 19 / 9%), transparent 36%),
-      var(--paper);
-  }
-
-  &[data-service='package'] {
-    background:
-      linear-gradient(145deg, rgb(196 153 94 / 16%), transparent 40%),
-      var(--paper);
-  }
-
-  @include mq.media(phone) {
-    width: 100%;
-    padding: 20px 16px 18px;
-    border-radius: 24px;
-    transform: translateY(24px);
-  }
-}
-
-.briefModal_open .briefModal__panel {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-
-  @include mq.media(phone) {
-    transform: translateY(0);
-  }
+  background-color: c.$paper;
+  box-shadow: c.$shadow-soft;
+  animation: modal-in 0.35s cubic-bezier(0.2, 0.7, 0, 1);
 }
 
 .briefModal__close {
   position: absolute;
   z-index: 2;
-  top: 18px;
-  right: 18px;
+  top: 20px;
+  right: 20px;
   width: 40px;
   height: 40px;
   padding: 0;
   cursor: pointer;
-  border: 1px solid var(--line);
+  border: 1px solid c.$line;
   border-radius: 50%;
-  background: rgb(255 255 255 / 70%);
-  transition: background-color 0.25s ease;
+  background-color: c.$paper-deep;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 
   &:hover {
-    background: #fff;
+    border-color: c.$amber;
+    background-color: color-mix(in srgb, c.$paper-deep 84%, c.$amber 16%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
   }
 }
 
@@ -115,7 +77,7 @@
   left: 50%;
   width: 14px;
   height: 1px;
-  background: var(--ink);
+  background-color: c.$ink;
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
@@ -123,203 +85,219 @@
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
+.briefModal__header {
+  padding-right: 52px;
+}
+
 .briefModal__eyebrow {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+  color: c.$amber;
   font-size: var(--type-caption);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: rgb(22 23 19 / 54%);
 }
 
 .briefModal__title {
   margin: 0;
-  max-width: 390px;
-  padding-right: 52px;
   font-family: var(--font-heading);
-  font-size: var(--type-display-md);
-  font-weight: var(--weight-regular);
-  line-height: var(--leading-display);
-  letter-spacing: var(--tracking-display);
-
-  @include mq.media(phone) {
-    max-width: 270px;
-    padding-right: 48px;
-    font-size: var(--type-display-md);
-    line-height: var(--leading-display);
-  }
+  font-size: var(--type-heading-xl);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 .briefModal__lead {
-  max-width: 390px;
-  margin: 12px 0 16px;
-  color: rgb(22 23 19 / 68%);
+  margin: 14px 0 0;
+  color: color-mix(in srgb, c.$ink 72%, c.$paper 28%);
   font-size: var(--type-body-md);
   line-height: var(--leading-body-sm);
-
-  @include mq.media(phone) {
-    max-width: 100%;
-    font-size: var(--type-body-sm);
-    line-height: var(--leading-body-sm);
-  }
 }
 
 .briefModal__form {
   @include flex.flex($fd: column);
 
-  gap: 14px;
+  gap: 18px;
+  margin-top: 24px;
 }
 
 .briefModal__selected {
-  display: grid;
-  gap: 4px;
-  padding: 12px 14px;
-  border: 1px solid rgb(22 23 19 / 10%);
-  border-radius: 18px;
-  background: rgb(255 255 255 / 58%);
+  @include flex.flex($fd: column);
 
-  @include mq.media(phone) {
-    padding: 10px 12px;
-    border-radius: 16px;
-  }
+  gap: 5px;
+  padding: 16px 18px;
+  border: 1px solid c.$line;
+  border-radius: 18px;
+  background-color: c.$paper-deep;
 }
 
-.briefModal__selectedLabel {
+.briefModal__selectedLabel,
+.briefModal__fieldLabel {
+  color: c.$amber;
   font-size: var(--type-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--amber);
 }
 
 .briefModal__selectedValue {
-  color: var(--ink);
+  color: c.$ink;
   font-size: var(--type-body-md);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-control);
 }
 
 .briefModal__selectedNote {
-  color: rgb(22 23 19 / 58%);
+  color: color-mix(in srgb, c.$ink 62%, c.$paper 38%);
   font-size: var(--type-caption);
   line-height: var(--leading-body-sm);
+}
+
+.briefModal__fields {
+  @include flex.flex;
+
+  gap: 20px;
 }
 
 .briefModal__field {
   @include flex.flex($fd: column);
 
-  gap: 5px;
-  opacity: 0;
-  transform: translateY(12px);
+  flex: 1 1 0;
+  gap: 6px;
+  min-width: 0;
+}
+
+.briefModal__field_fullWidth {
+  width: 100%;
 }
 
 .briefModal__fieldLabel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.briefModal__fieldOptional {
+  color: c.$sage;
   font-size: var(--type-caption);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: rgb(22 23 19 / 56%);
+  font-weight: var(--weight-regular);
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .briefModal__fieldControl {
   width: 100%;
-  min-height: 50px;
+  min-height: 52px;
   padding: 0 2px;
-  color: var(--ink);
+  color: c.$ink;
   font-family: var(--font-body);
   font-size: var(--type-body-lg);
   border: 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid c.$line;
   border-radius: 0;
   outline: none;
-  background: transparent;
-  transition: border-color 0.25s ease;
+  background-color: c.$paper;
+  transition: border-color 0.2s ease;
 
-  @include mq.media(phone) {
-    min-height: 48px;
-    font-size: var(--type-body-md);
+  &::placeholder {
+    color: c.$sage;
+  }
+
+  &:focus {
+    border-color: c.$amber;
   }
 }
 
-.briefModal__fieldControl:focus {
-  border-color: var(--amber);
+.briefModal__fieldTextarea {
+  min-height: 104px;
+  padding: 12px 14px;
+  resize: vertical;
+  border: 1px solid c.$line;
+  border-radius: 14px;
+  background-color: c.$paper-deep;
+  line-height: var(--leading-body-sm);
 }
 
 .briefModal__error {
-  color: #a43c27;
+  color: color-mix(in srgb, c.$ink 62%, c.$amber 38%);
   font-size: var(--type-caption);
-}
-
-.briefModal_open .briefModal__field {
-  animation: field-in 0.5s cubic-bezier(0.2, 0.7, 0, 1) forwards;
-
-  &:nth-child(1) {
-    animation-delay: 0.08s;
-  }
-
-  &:nth-child(2) {
-    animation-delay: 0.14s;
-  }
+  line-height: var(--leading-caption);
 }
 
 .briefModal__submit {
   display: inline-flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
   width: 100%;
-  min-height: 48px;
-  margin-top: 2px;
-  padding: 6px 6px 6px 22px;
+  min-height: 56px;
+  padding: 6px 6px 6px 24px;
   cursor: pointer;
-  border: 0;
-  border-radius: 100px;
-  color: var(--paper);
-  background: var(--ink);
-  opacity: 0;
-  transform: translateY(12px);
-  transition: transform 0.25s ease;
+  color: c.$paper;
+  border: 1px solid c.$ink;
+  border-radius: 999px;
+  background-color: c.$ink;
+  transition: transform 0.2s ease;
 
   &:hover {
     transform: translateY(-1px);
   }
-}
 
-.briefModal_open .briefModal__submit {
-  animation: field-in 0.5s cubic-bezier(0.2, 0.7, 0, 1) 0.2s forwards;
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
+  }
 }
 
 .briefModal__submitText {
+  min-width: 0;
   font-size: var(--type-button);
   font-weight: var(--weight-semibold);
+  text-align: left;
 }
 
 .briefModal__submitIcon {
   @include flex.flex($jc: center, $ai: center);
 
-  width: 38px;
-  height: 38px;
-  margin-left: auto;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  color: c.$ink;
   border-radius: 50%;
-  color: var(--ink);
-  background: #fff;
+  background-color: c.$paper;
 }
 
 .briefModal__privacy {
-  max-width: 420px;
-  color: rgb(22 23 19 / 50%);
+  color: color-mix(in srgb, c.$ink 56%, c.$paper 44%);
   font-size: var(--type-caption);
   line-height: var(--leading-body-sm);
+}
 
-  @include mq.media(phone) {
-    font-size: var(--type-caption);
+.briefModal__privacyLink {
+  color: c.$ink;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+
+  &:hover,
+  &:focus-visible {
+    color: color-mix(in srgb, c.$ink 76%, c.$amber 24%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
   }
 }
 
 .briefModal__success {
   @include flex.flex($fd: column, $jc: center, $ai: flex-start);
 
-  flex: 1;
-  padding: 24px 0;
+  min-height: 320px;
 }
 
 .briefModal__successIcon {
@@ -327,54 +305,127 @@
 
   width: 56px;
   height: 56px;
-  font-size: var(--type-body-lg);
-  color: var(--paper);
+  color: c.$ink;
   border-radius: 50%;
-  background: var(--amber);
+  background-color: c.$amber;
 }
 
 .briefModal__successTitle {
   margin: 24px 0 12px;
   font-family: var(--font-heading);
   font-size: var(--type-heading-xl);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-medium);
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-heading);
 }
 
 .briefModal__successText {
-  max-width: 100%;
   margin: 0;
+  color: color-mix(in srgb, c.$ink 72%, c.$paper 28%);
   font-size: var(--type-body-sm);
   line-height: var(--leading-body);
-  color: rgb(22 23 19 / 72%);
 }
 
 .briefModal__successButton {
-  margin-top: 20px;
+  margin-top: 24px;
   padding: 12px 24px;
   cursor: pointer;
+  color: c.$ink;
   font-size: var(--type-button);
   font-weight: var(--weight-semibold);
-  color: var(--paper);
-  border: 0;
-  border-radius: 40px;
-  background: var(--ink);
-}
+  border: 1px solid c.$amber;
+  border-radius: 999px;
+  background-color: c.$amber;
 
-@keyframes field-in {
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  &:focus-visible {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
   }
 }
 
-@include mq.motion-reduce {
-  .briefModal__panel,
-  .briefModal__field,
-  .briefModal__submit {
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  to {
     opacity: 1;
-    transform: none;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@include mq.media(phone) {
+  .briefModal {
+    align-items: flex-end;
+    padding:
+      8px
+      max(8px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left));
+  }
+
+  .briefModal__panel {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+    padding: 24px 18px;
+    border-radius: 24px;
+  }
+
+  .briefModal__close {
+    top: 16px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .briefModal__header {
+    padding-right: 42px;
+  }
+
+  .briefModal__title {
+    font-size: var(--type-heading-lg);
+  }
+
+  .briefModal__lead {
+    font-size: var(--type-body-sm);
+  }
+
+  .briefModal__form {
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .briefModal__selected {
+    padding: 14px;
+  }
+
+  .briefModal__fields {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .briefModal__fieldControl {
+    min-height: 48px;
+    font-size: var(--type-body-md);
+  }
+
+  .briefModal__submit {
+    min-height: 54px;
+    padding-left: 20px;
+  }
+
+  .briefModal__submitIcon {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .briefModal__panel,
+  .briefModal__close,
+  .briefModal__submit {
     animation: none;
     transition: none;
   }

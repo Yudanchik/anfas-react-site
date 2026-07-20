@@ -1,7 +1,7 @@
 import { useId, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 
-import { useBrief } from '@/features/brief/model/BriefContext'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { services } from '@/entities/service/model/services.data'
 import { company } from '@/shared/config/company'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
@@ -15,7 +15,11 @@ const footerPages = [
   { label: 'Проекты', to: '/projects' },
   { label: 'О нас', to: '/about' },
   { label: 'Контакты', to: '/contacts' },
-  { label: 'Политика', to: '/privacy' },
+] as const
+
+const footerLegalLinks = [
+  { label: 'Политика обработки персональных данных', to: '/privacy' },
+  { label: 'Политика использования cookie', to: '/cookies' },
 ] as const
 
 const footerSocials = [
@@ -90,8 +94,6 @@ function FooterContactCards() {
 }
 
 export function SiteFooter() {
-  const { openBrief } = useBrief()
-
   return (
     <footer className={styles.siteFooter}>
       <PageWrapper>
@@ -104,9 +106,13 @@ export function SiteFooter() {
               Ремонт квартир под ключ в Санкт-Петербурге: дизайн, комплектация и реализация в одной
               системе без хаоса, плавающих сроков и непрозрачных решений.
             </p>
-            <button className={styles.siteFooter__cta} type="button" onClick={() => openBrief('general')}>
+            <ModalTriggerButton
+              className={styles.siteFooter__cta}
+              intent="consultation"
+              source="site-footer"
+            >
               Обсудить проект
-            </button>
+            </ModalTriggerButton>
             <FooterSocials className={styles.siteFooter__socials} />
           </div>
 
@@ -188,9 +194,13 @@ export function SiteFooter() {
               {company.legalRegLabel} {company.legalRegNumber}
             </p>
           </div>
-          <Link className={styles.siteFooter__privacy} to="/privacy">
-            Политика конфиденциальности
-          </Link>
+          <nav className={styles.siteFooter__legalNav} aria-label="Юридические документы">
+            {footerLegalLinks.map((link) => (
+              <Link className={styles.siteFooter__privacy} key={link.to} to={link.to}>
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </PageWrapper>
     </footer>

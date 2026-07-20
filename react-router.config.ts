@@ -15,6 +15,7 @@ export default {
     '/',
     '/about',
     '/contacts',
+    '/cookies',
     '/privacy',
     '/projects',
     '/projects/2-murinskiy-37',

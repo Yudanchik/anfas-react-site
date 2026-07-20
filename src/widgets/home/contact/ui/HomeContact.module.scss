@@ -103,51 +103,6 @@
   line-height: var(--leading-body);
 }
 
-.contact__button {
-  @include flex.flex($ai: center);
-
-  gap: 22px;
-  min-height: 62px;
-  padding: 8px 8px 8px 28px;
-  cursor: pointer;
-  border: 0;
-  border-radius: 100px;
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.contact__buttonText {
-  font-size: var(--type-button);
-  font-weight: var(--weight-semibold);
-}
-
-.contact__buttonIcon {
-  @include flex.flex($jc: center, $ai: center);
-
-  width: 48px;
-  height: 48px;
-  transition:
-    transform 0.35s ease,
-    background 0.35s ease;
-  border-radius: 50%;
-  background: var(--paper);
-  color: var(--ink);
-}
-
-.contact__button svg {
-  width: 19px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.5;
-}
-
-.contact__button:hover .contact__buttonIcon {
-  transform: rotate(-25deg);
-  background: var(--paper-deep);
-}
-
 .contact__orbit {
   position: absolute;
   z-index: 1;

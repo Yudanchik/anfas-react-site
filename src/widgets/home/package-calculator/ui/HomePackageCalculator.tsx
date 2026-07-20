@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import { SectionHeader } from '../../ui'
@@ -33,11 +34,7 @@ const finishLabels: Record<FinishType, string> = {
   premium: 'Премиум',
 }
 
-export function HomePackageCalculator({
-  onOpenBrief,
-}: {
-  onOpenBrief: (service?: 'individual' | 'package') => void
-}) {
+export function HomePackageCalculator() {
   const [mode, setMode] = useState<CalculatorMode>('package')
   const [area, setArea] = useState(60)
   const [packageVariant, setPackageVariant] = useState<PackageVariant>('standard')
@@ -365,12 +362,22 @@ export function HomePackageCalculator({
             </ul>
 
             <div className={styles.packageCalculator__actions}>
-              <button className={styles.packageCalculator__button} type="button" onClick={() => onOpenBrief(mode)}>
+              <ModalTriggerButton
+                className={styles.packageCalculator__button}
+                intent="calculation"
+                requestType={mode}
+                source="home-calculator-result"
+              >
                 Получить расчёт
-              </button>
-              <button className={styles.packageCalculator__buttonAlt} type="button" onClick={() => onOpenBrief(mode)}>
+              </ModalTriggerButton>
+              <ModalTriggerButton
+                className={styles.packageCalculator__buttonAlt}
+                intent={mode}
+                source="home-calculator-format"
+                variant="outline"
+              >
                 Обсудить формат
-              </button>
+              </ModalTriggerButton>
             </div>
           </aside>
         </div>

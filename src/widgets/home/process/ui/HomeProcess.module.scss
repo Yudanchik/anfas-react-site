@@ -202,35 +202,10 @@
 }
 
 .process__cta {
-  @include flex.flex($ai: center, $jc: space-between);
-
-  gap: 14px;
   align-self: flex-start;
-  min-height: 52px;
-  padding: 6px 6px 6px 22px;
-  cursor: pointer;
-  border: 0;
-  border-radius: 999px;
-  color: var(--ink);
-  background: var(--amber);
 
   @include mq.media(phone) {
     width: 100%;
     align-self: stretch;
   }
-}
-
-.process__ctaText {
-  font-size: var(--type-button);
-  font-weight: var(--weight-semibold);
-}
-
-.process__ctaIcon {
-  @include flex.flex($jc: center, $ai: center);
-
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  color: var(--ink);
-  background: var(--paper);
 }

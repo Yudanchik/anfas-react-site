@@ -136,30 +136,32 @@
   }
 }
 
-.heroPrimaryAction,
-.heroSecondaryAction {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: var(--button-height);
-  padding: 0 var(--space-24);
-  border-radius: var(--radius-pill);
-
+.heroPrimaryAction {
   @include mq.media(phone) {
     width: 100%;
   }
 }
 
-.heroPrimaryAction {
-  color: var(--ink);
-  background: var(--amber);
-}
-
 .heroSecondaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 0 24px;
   color: var(--paper);
   border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: var(--radius-pill);
   background: rgb(255 255 255 / 6%);
   backdrop-filter: var(--glass-blur);
+
+  @include mq.media(phone, tablet) {
+    display: inline-flex;
+    min-height: 50px;
+  }
+
+  @include mq.media(phone) {
+    width: 100%;
+  }
 }
 
 .heroAside {

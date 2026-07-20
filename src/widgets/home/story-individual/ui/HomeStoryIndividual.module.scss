@@ -227,41 +227,8 @@
 }
 
 .cta {
-  @include flex.flex($ai: center, $jc: space-between);
-
-  gap: 14px;
   align-self: flex-start;
-  min-height: 52px;
   margin-top: 10px;
-  padding: 6px 6px 6px 22px;
-  cursor: pointer;
-  border: 0;
-  border-radius: 999px;
-  color: var(--ink);
-  background: var(--amber);
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease;
-
-  &:hover {
-    transform: translateY(-1px);
-    background: color-mix(in srgb, var(--amber) 82%, #000 18%);
-  }
-
-  > span {
-    font-size: var(--type-button);
-    font-weight: var(--weight-semibold);
-  }
-
-  i {
-    @include flex.flex($jc: center, $ai: center);
-
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    color: var(--ink);
-    background: var(--paper);
-  }
 
   @include mq.media(phone, tablet, laptop) {
     width: 100%;

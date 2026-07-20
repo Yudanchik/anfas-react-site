@@ -37,7 +37,7 @@ export const services: readonly Service[] = [
     ],
     price: 'от 9 000 ₽ / м²',
     duration: 'от 8 до 14 месяцев',
-    ctaLabel: 'Хочу индивидуальный проект',
+    ctaLabel: 'Хочу индивидуальный ремонт',
   },
   {
     id: 'package',

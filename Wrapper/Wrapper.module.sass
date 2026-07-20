@@ -1,9 +1,0 @@
-@use '@/styles/utils/mixin' as m
-@use '@/styles/utils/funcs' as f
-
-.container
-  width: 100%
-  @include m.gap($plr: f.px(15, em))
-  @include m.media(desktop, laptop)
-    max-width: f.px(1200, em)
-    @include m.gap($m: 0 auto)

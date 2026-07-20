@@ -77,18 +77,7 @@
 }
 
 .siteFooter__cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0 22px;
-  cursor: pointer;
-  border: 0;
-  border-radius: 999px;
-  color: var(--ink);
-  font-size: var(--type-body-md);
-  font-weight: var(--weight-semibold);
-  background: var(--amber);
+  align-self: flex-start;
 }
 
 .siteFooter__socials,
@@ -487,9 +476,18 @@
   color: rgb(243 240 233 / 62%);
 }
 
+.siteFooter__legalNav {
+  @include flex.flex($fd: column, $ai: flex-end);
+
+  gap: 8px;
+
+  @include mq.media(phone, tablet) {
+    align-items: flex-start;
+  }
+}
+
 .siteFooter__privacy {
   flex: 0 1 auto;
-  align-self: flex-end;
   color: inherit;
   text-align: right;
   text-decoration: none;

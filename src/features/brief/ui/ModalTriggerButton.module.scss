@@ -1,0 +1,127 @@
+@use 'media' as mq;
+@use 'themes/default/colors' as c;
+
+.modalTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: max-content;
+  max-width: 100%;
+  min-width: 0;
+  padding: 6px 6px 6px 22px;
+  cursor: pointer;
+  border: 1px solid c.$amber;
+  border-radius: 999px;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-control);
+  letter-spacing: 0;
+  transition: transform 0.2s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.56;
+    transform: none;
+  }
+}
+
+.modalTrigger__label {
+  min-width: 0;
+  text-align: left;
+}
+
+.modalTrigger__icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.modalTrigger_sm {
+  min-height: 46px;
+  padding-left: 18px;
+}
+
+.modalTrigger_sm .modalTrigger__icon {
+  width: 34px;
+  height: 34px;
+}
+
+.modalTrigger_md {
+  min-height: 54px;
+}
+
+.modalTrigger_md .modalTrigger__icon {
+  width: 40px;
+  height: 40px;
+}
+
+.modalTrigger_lg {
+  min-height: 64px;
+  padding: 8px 8px 8px 28px;
+}
+
+.modalTrigger_lg .modalTrigger__icon {
+  width: 46px;
+  height: 46px;
+}
+
+.modalTrigger_accent {
+  color: c.$ink;
+  background-color: c.$amber;
+}
+
+.modalTrigger_accent .modalTrigger__icon,
+.modalTrigger_inverse .modalTrigger__icon,
+.modalTrigger_outline .modalTrigger__icon {
+  color: c.$ink;
+  background-color: c.$paper;
+}
+
+.modalTrigger_inverse {
+  color: c.$paper;
+  border-color: c.$ink;
+  background-color: c.$ink;
+}
+
+.modalTrigger_outline {
+  color: c.$paper;
+  background-color: c.$ink;
+}
+
+.modalTrigger_fullWidth {
+  width: 100%;
+}
+
+@include mq.media(phone) {
+  .modalTrigger_lg {
+    min-height: 54px;
+    padding: 6px 6px 6px 20px;
+  }
+
+  .modalTrigger_lg .modalTrigger__icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modalTrigger {
+    transition: none;
+  }
+}

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 
-import { useBrief } from '@/features/brief/model/BriefContext'
 import { company, navigation } from '@/shared/config/company'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
@@ -9,7 +8,6 @@ import styles from './SiteHeader.module.scss'
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const { openBrief } = useBrief()
   const { pathname } = useLocation()
   const isHeroPage =
     pathname === '/' ||
@@ -46,10 +44,14 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <button className={styles.siteHeader__phone} type="button" onClick={() => openBrief('general')}>
+          <a
+            className={styles.siteHeader__phone}
+            href={company.phoneHref}
+            aria-label={`Позвонить по номеру ${company.phone}`}
+          >
             <span>Обсудить проект</span>
             <b>{company.phone}</b>
-          </button>
+          </a>
 
           <button
             className={`${styles.siteHeader__menuButton} ${menuOpen ? styles.siteHeader__menuButton_open : ''}`}

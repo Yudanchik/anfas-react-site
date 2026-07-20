@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { sharedHeroSlides } from '@/shared/config/hero-media'
-import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './HomeHero.module.scss'
@@ -33,7 +33,7 @@ const heroContent = {
   ],
 } as const
 
-export function HomeHero({ onOpenBrief }: { onOpenBrief: () => void }) {
+export function HomeHero() {
   const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
@@ -74,12 +74,14 @@ export function HomeHero({ onOpenBrief }: { onOpenBrief: () => void }) {
                 <p className={styles.hero__lead}>{heroContent.lead}</p>
 
                 <div className={styles.hero__actions}>
-                  <button className={styles.hero__primaryCta} type="button" onClick={() => onOpenBrief()}>
-                    <span className={styles.hero__primaryCtaText}>Обсудить проект</span>
-                    <i className={styles.hero__primaryCtaIcon}>
-                      <ArrowIcon size={16} />
-                    </i>
-                  </button>
+                  <ModalTriggerButton
+                    className={styles.hero__primaryCta}
+                    intent="consultation"
+                    size="lg"
+                    source="home-hero"
+                  >
+                    Обсудить проект
+                  </ModalTriggerButton>
 
                   <Link className={styles.hero__secondaryCta} to="/projects">
                     Смотреть проекты

@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
@@ -43,9 +44,14 @@ export default function AboutRoute() {
             </p>
 
             <div className={styles.heroActions}>
-              <Link className={styles.heroPrimaryAction} to="/contacts">
+              <ModalTriggerButton
+                className={styles.heroPrimaryAction}
+                intent="consultation"
+                size="lg"
+                source="about-hero"
+              >
                 Обсудить проект
-              </Link>
+              </ModalTriggerButton>
               <Link className={styles.heroSecondaryAction} to="/projects">
                 Смотреть проекты
               </Link>
