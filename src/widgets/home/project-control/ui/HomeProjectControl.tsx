@@ -2,6 +2,7 @@ import { useState, type CSSProperties } from 'react'
 
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { SectionHeader } from '../../ui'
 import { projectControlFeatures } from '../model/project-control.data'
 
 import styles from './HomeProjectControl.module.scss'
@@ -23,18 +24,17 @@ export function HomeProjectControl() {
     <section className={styles.section} aria-labelledby="project-control-title">
       <PageWrapper className={styles.layout}>
         <div className={styles.copy}>
-          <span className={styles.eyebrow}>
-            <span className={styles.eyebrowNumber}>02</span>
-            <span>Контроль проекта</span>
-          </span>
-          <h2 className={styles.title} id="project-control-title">
-            Ремонт может быть понятным и <em>спокойным событием</em> в вашей жизни.
-          </h2>
-          <p className={styles.lead}>
-            Всё, что происходит на объекте, вы видите в одном месте. Финансы, фотоотчёты, документы
-            и цены на работы всегда под рукой. Нажмите на разделы в телефоне и посмотрите, как
-            устроен прозрачный контроль ремонта.
-          </p>
+          <SectionHeader
+            titleId="project-control-title"
+            title={
+              <>
+                Ремонт может быть понятным и <em>спокойным событием</em> в вашей жизни.
+              </>
+            }
+            lead="Всё, что происходит на объекте, вы видите в одном месте. Финансы, фотоотчёты, документы и цены на работы всегда под рукой. Нажмите на разделы в телефоне и посмотрите, как устроен прозрачный контроль ремонта."
+            titleClassName={styles.title}
+            leadClassName={styles.lead}
+          />
 
           <div className={styles.legend} aria-label="Возможности личного кабинета">
             <span>Финансы</span>

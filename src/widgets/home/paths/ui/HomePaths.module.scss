@@ -59,7 +59,7 @@
 
 .paths__description {
   margin: 0;
-  max-width: 34ch;
+  max-width: 100%;
   font-size: var(--type-body-md);
   line-height: var(--leading-body-sm);
   color: color-mix(in srgb, currentcolor 74%, transparent);

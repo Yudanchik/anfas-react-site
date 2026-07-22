@@ -60,13 +60,6 @@ export function HomeSocials() {
 
         <div className={styles.socials__phoneStage} data-reveal>
           <div className={styles.socials__phonePanel}>
-            <div className={styles.socials__phonePanelHeader}>
-              <span className={styles.socials__phonePanelTag}>Анфас online</span>
-              <p className={styles.socials__phonePanelText}>
-                Видео с объектов, короткие обзоры интерьеров и понятные апдейты по этапам ремонта.
-              </p>
-            </div>
-
             <div className={styles.socials__phoneShell}>
               <img
                 className={styles.socials__phoneMockup}
@@ -80,12 +73,6 @@ export function HomeSocials() {
                   <source src={SOCIALS_VIDEO_SRC} type="video/mp4" />
                 </video>
               </div>
-            </div>
-
-            <div className={styles.socials__phonePanelFooter} aria-hidden="true">
-              <span className={styles.socials__phonePanelFooterItem}>Объекты в работе</span>
-              <span className={styles.socials__phonePanelFooterItem}>Разборы решений</span>
-              <span className={styles.socials__phonePanelFooterItem}>Реальные сроки</span>
             </div>
           </div>
         </div>
