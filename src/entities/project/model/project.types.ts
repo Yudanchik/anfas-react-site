@@ -23,7 +23,6 @@ export type Project = {
   term: string
   price: string
   size: ProjectSize
-  sourceUrl: string
   gallery: readonly string[]
   details: readonly string[]
   review?: ProjectReviewData
