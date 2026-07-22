@@ -1,4 +1,4 @@
-export const siteUrl = 'https://anfas-art.ru'
+export const siteUrl = 'https://anfas-remont.ru'
 
 export const defaultSeoImage = '/images/hero/hero-living.png'
 

@@ -138,6 +138,17 @@ jobs:
           name: static-site
           path: build/client
 
+      - name: Block search indexing on development
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        run: |
+          printf '%s\n' \
+            'User-agent: *' \
+            'Disallow: /' \
+            '' \
+            'Host: https://dev.anfas-remont.ru' \
+            > build/client/robots.txt
+
       - name: Normalize server directory
         if: steps.secrets.outputs.configured == 'true'
         shell: bash

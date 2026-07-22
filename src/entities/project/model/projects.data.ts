@@ -24,7 +24,6 @@ export const projects: readonly Project[] = [
     term: '8 месяцев',
     price: '3 000 000 ₽',
     size: 'tall',
-    sourceUrl: 'https://anfas-art.ru/finished-projects/2murinskiy/',
     gallery: [
       'images/projects/2-murinskiy-37/01.webp',
       'images/projects/2-murinskiy-37/02.webp',
@@ -99,7 +98,6 @@ export const projects: readonly Project[] = [
     term: '3 месяца',
     price: '1 200 000 ₽',
     size: 'wide',
-    sourceUrl: 'https://anfas-art.ru/finished-projects/%d0%b6%d0%ba-%d0%b3%d1%80%d0%b0%d1%84%d0%b8%d0%ba%d0%b0/',
     gallery: [
       'images/projects/zhk-grafika/01.webp',
       'images/projects/zhk-grafika/02.webp',
@@ -174,7 +172,6 @@ export const projects: readonly Project[] = [
     term: '2 месяца',
     price: '1 200 000 ₽',
     size: 'standard',
-    sourceUrl: 'https://anfas-art.ru/finished-projects/verkhnekamenskaya/',
     gallery: [
       'images/projects/verkhnekamenskaya/01.webp',
       'images/projects/verkhnekamenskaya/02.webp',
@@ -221,7 +218,6 @@ export const projects: readonly Project[] = [
     term: '6 месяцев',
     price: '1 500 000 ₽',
     size: 'standard',
-    sourceUrl: 'https://anfas-art.ru/finished-projects/slavy4/',
     gallery: [
       'images/projects/prospekt-slavy-4/01.webp',
       'images/projects/prospekt-slavy-4/02.webp',
@@ -285,7 +281,6 @@ export const projects: readonly Project[] = [
     term: '5 месяцев',
     price: '1 100 000 ₽',
     size: 'wide',
-    sourceUrl: 'https://anfas-art.ru/finished-projects/forestakvilon/',
     gallery: [
     'images/projects/forest-akvilon/01.webp',
     'images/projects/forest-akvilon/02.webp',
@@ -329,7 +324,6 @@ export const projects: readonly Project[] = [
     term: '3 месяца',
     price: '940 000 ₽',
     size: 'standard',
-    sourceUrl: 'https://anfas-art.ru/finished-projects/idkudrovo/',
     gallery: [
       'images/projects/id-kudrovo/01.webp',
       'images/projects/id-kudrovo/02.webp',
@@ -375,7 +369,6 @@ export const projects: readonly Project[] = [
     term: '4 месяца',
     price: '920 000 ₽',
     size: 'tall',
-    sourceUrl: 'https://anfas-art.ru/finished-projects/grandhouse/',
     gallery: [
       'images/projects/grand-house/01.webp',
       'images/projects/grand-house/02.webp',
