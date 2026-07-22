@@ -1,49 +1,69 @@
-@use '../../shared/styles/themes/default/fonts' as f;
+@use 'flex' as flex;
+@use 'media' as mq;
 
 .siteHeader {
   position: absolute;
   z-index: 50;
   top: 0;
   left: 0;
-  display: grid;
-  grid-template-columns: 240px 1fr 240px;
-  align-items: center;
   width: 100%;
   height: 88px;
-  padding: 0 4.2vw;
   color: var(--paper);
   border-bottom: 1px solid rgb(255 255 255 / 30%);
+  backdrop-filter: blur(8px);
 }
 
-.isInner {
+.siteHeader_glass {
+  color: var(--paper);
+  border-bottom-color: rgb(255 255 255 / 30%);
+  background: linear-gradient(180deg, rgb(18 18 15 / 24%), rgb(18 18 15 / 10%));
+}
+
+.siteHeader__inner {
+  @include flex.flex($ai: center, $jc: space-between);
+
+  height: 100%;
+  gap: 24px;
+}
+
+.siteHeader_innerPage {
   position: relative;
   color: var(--ink);
   border-bottom-color: var(--line);
   background: var(--paper);
 }
 
-.isInner .menuButton {
+.siteHeader_innerPage :global(.brand-logo) {
+  filter: none;
+}
+
+.siteHeader_innerPage .siteHeader__menuButton {
   border-color: var(--line);
 }
 
-.isInner .menuButton span {
+.siteHeader_innerPage .siteHeader__menuLine {
   background: var(--ink);
 }
 
-.desktopNav {
-  display: flex;
-  justify-content: center;
-  gap: clamp(26px, 3.4vw, 58px);
+.siteHeader__nav {
+  @include flex.flex($jc: center);
 
-  @include f.body-font(14, 1.4, 500);
+  flex: 1;
+  gap: clamp(24px, 3vw, 56px);
+  font-family: var(--font-body);
+  font-size: var(--type-nav);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-control);
+  letter-spacing: var(--tracking-body);
 }
 
-.desktopNav a {
+.siteHeader__nav a {
   position: relative;
   padding: 8px 0;
+  letter-spacing: var(--tracking-body);
 }
 
-.desktopNav a::after {
+.siteHeader__nav a::after {
   position: absolute;
   right: 0;
   bottom: 2px;
@@ -56,31 +76,34 @@
   background: currentcolor;
 }
 
-.desktopNav a:hover::after {
+.siteHeader__nav a:hover::after {
   transform: scaleX(1);
   transform-origin: left;
 }
 
-.headerPhone {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+.siteHeader__phone {
+  @include flex.flex($fd: column, $ai: flex-end);
+
   padding: 0;
   cursor: pointer;
   color: inherit;
   border: 0;
   background: transparent;
-
-  @include f.uppercase-label(12, 600, 0.08em);
+  font-family: var(--font-body);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-control);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
-.headerPhone b {
-  font-size: var(--text-14);
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.siteHeader__phone b {
+  font-size: var(--type-nav);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-body);
 }
 
-.menuButton {
+.siteHeader__menuButton {
   display: none;
   width: 46px;
   height: 46px;
@@ -90,7 +113,7 @@
   background: transparent;
 }
 
-.menuButton span {
+.siteHeader__menuLine {
   display: block;
   width: 18px;
   height: 1px;
@@ -99,23 +122,23 @@
   background: var(--paper);
 }
 
-.isOpen.menuButton span:first-child {
+.siteHeader__menuButton_open .siteHeader__menuLine:first-child {
   transform: translateY(3px) rotate(45deg);
 }
 
-.isOpen.menuButton span:last-child {
+.siteHeader__menuButton_open .siteHeader__menuLine:last-child {
   transform: translateY(-3px) rotate(-45deg);
 }
 
-.mobileMenu {
+.siteHeader__mobileMenu {
   position: fixed;
   z-index: 40;
   inset: 0;
-  display: flex;
+
+  @include flex.flex($fd: column, $jc: space-between);
+
   visibility: hidden;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 130px 7vw 40px;
+  padding: 130px var(--page-gutter) 40px;
   transition:
     clip-path 0.6s cubic-bezier(0.77, 0, 0.18, 1),
     visibility 0.6s;
@@ -124,80 +147,75 @@
   background: var(--ink);
 }
 
-.isOpen.mobileMenu {
+.siteHeader__mobileMenu_open {
   visibility: visible;
   clip-path: circle(150% at calc(100% - 50px) 45px);
 }
 
-.mobileMenu nav {
-  display: flex;
-  flex-direction: column;
+.siteHeader__mobileNav {
+  @include flex.flex($fd: column);
 }
 
-.mobileMenu nav a {
-  display: flex;
-  align-items: baseline;
-  gap: 20px;
+.siteHeader__mobileNav a {
+  @include flex.flex($ai: baseline);
+
+  gap: 18px;
   padding: 18px 0;
-  font-size: clamp(38px, 11vw, 62px);
-  line-height: 1;
+  font-size: var(--type-display-lg);
+  line-height: var(--leading-display);
   border-bottom: 1px solid rgb(255 255 255 / 18%);
-
-  @include f.heading-font(38);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-heading);
 }
 
-.mobileMenu nav span {
+.siteHeader__mobileNav span {
   font-family: var(--font-body);
-  font-size: var(--text-12);
+  font-size: var(--type-caption);
   color: var(--amber);
 }
 
-.mobileMenuFooter {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--text-14);
+.siteHeader__mobileFooter {
+  @include flex.flex($jc: space-between);
+
+  font-size: var(--type-body-md);
 }
 
-@media (width <= 1100px) {
-  .siteHeader {
-    grid-template-columns: 200px 1fr 190px;
-  }
-
-  .desktopNav {
+@include mq.media(laptop) {
+  .siteHeader__nav {
     gap: 20px;
   }
 }
 
-@media (width <= 820px) {
+@include mq.media(phone, tablet) {
   .siteHeader {
     position: absolute;
-    grid-template-columns: 1fr auto;
     height: 76px;
-    padding: 0 6vw;
   }
 
-  .desktopNav,
-  .headerPhone {
+  .siteHeader__nav,
+  .siteHeader__phone {
     display: none;
   }
 
-  .menuButton {
+  .siteHeader__menuButton {
     display: block;
   }
 }
 
-@media (width <= 580px) {
-  .mobileMenu {
-    padding: 130px 6vw 40px;
+@include mq.media(phone) {
+  .siteHeader__mobileMenu {
+    padding: 130px var(--page-gutter-mobile) 40px;
   }
 
-  .mobileMenu nav a {
+  .siteHeader__mobileNav a {
     gap: 16px;
-    font-size: clamp(32px, 13vw, 54px);
+    font-size: var(--type-heading-xl);
   }
 
-  .mobileMenuFooter {
-    flex-direction: column;
+  .siteHeader__mobileFooter {
+    @include flex.flex($fd: column);
+
     gap: 12px;
   }
 }

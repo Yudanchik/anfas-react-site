@@ -1,60 +1,30 @@
-import { Counter } from '@/shared/ui/counter/Counter'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
+
 import styles from './HomeManifesto.module.scss'
 
 export function HomeManifesto() {
   return (
-    <section className={styles.manifesto + ' ' + styles.sectionpad}>
-      <div className={styles.sectionkicker} data-reveal>
-        <span>01</span>
-        <p>Наш подход</p>
-      </div>
-      <div className={styles.manifestolayout}>
-        <p className={styles.manifestonote} data-reveal>
-          Не навязываем «модный стиль». Сначала слушаем вас, затем собираем пространство вокруг
-          привычек, задач и характера.
-        </p>
-        <h2 data-reveal>
-          Мы проектируем
-          <br />
-          не <s>красивые картинки.</s>
-          <br />
-          Мы проектируем <em>жизнь</em>
-          <br />
-          внутри.
-        </h2>
-      </div>
-      <div className={styles.statsrow}>
-        <div data-reveal>
-          <strong>
-            <Counter value={10} suffix="+" />
-          </strong>
-          <span>
-            лет создаём
-            <br />
-            интерьеры
-          </span>
+    <section className={styles.manifesto + ' ' + styles.manifesto_sectionPad}>
+      <PageWrapper>
+        <div className={styles.manifesto__statsRow} data-reveal>
+          <div className={styles.manifesto__metaItem}>
+            <span className={styles.manifesto__metaNumber}>13</span>
+            <span className={styles.manifesto__metaLabel}>лет на рынке</span>
+          </div>
+          <div className={styles.manifesto__metaItem}>
+            <span className={styles.manifesto__metaNumber}>100+</span>
+            <span className={styles.manifesto__metaLabel}>сданных объектов</span>
+          </div>
+          <div className={styles.manifesto__metaItem}>
+            <span className={styles.manifesto__metaNumber}>36&nbsp;мес</span>
+            <span className={styles.manifesto__metaLabel}>гарантия на инженерку</span>
+          </div>
+          <div className={styles.manifesto__metaItem}>
+            <span className={styles.manifesto__metaNumber}>0&nbsp;₽</span>
+            <span className={styles.manifesto__metaLabel}>скрытых расходов</span>
+          </div>
         </div>
-        <div data-reveal>
-          <strong>
-            <Counter value={1000} suffix="+" />
-          </strong>
-          <span>
-            реализованных
-            <br />
-            проектов
-          </span>
-        </div>
-        <div data-reveal>
-          <strong>
-            <Counter value={5} />
-          </strong>
-          <span>
-            этапов от идеи
-            <br />
-            до новоселья
-          </span>
-        </div>
-      </div>
+      </PageWrapper>
     </section>
   )
 }

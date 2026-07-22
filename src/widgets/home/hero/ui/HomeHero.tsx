@@ -1,95 +1,105 @@
-﻿import { useRef, type MouseEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 
-import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
+import { sharedHeroSlides } from '@/shared/config/hero-media'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
+
 import styles from './HomeHero.module.scss'
 
-export function HomeHero({ onOpenBrief }: { onOpenBrief: () => void }) {
-  const heroRef = useRef<HTMLElement>(null)
+const slides = sharedHeroSlides
 
-  const handleHeroMove = (event: MouseEvent<HTMLElement>) => {
-    const hero = heroRef.current
+const heroContent = {
+  title: {
+    start: 'Ремонт квартиры под ключ, который',
+    accent: 'не забирает',
+    end: 'вашу жизнь.',
+  },
+  lead:
+    'Собираем дизайн, ремонт и комплектацию в один понятный процесс. Вы видите сроки, бюджет и результат без хаоса и бесконечных согласований.',
+  cards: [
+    {
+      label: 'Дизайн-проект',
+      text: 'Собираем образ пространства до старта работ.',
+    },
+    {
+      label: 'Комплектация',
+      text: 'Материалы, свет и мебель в одной системе.',
+    },
+    {
+      label: 'Реализация',
+      text: 'Одна команда доводит объект до финала.',
+    },
+  ],
+} as const
 
-    if (!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return
-    }
+export function HomeHero() {
+  const [activeIndex, setActiveIndex] = useState(0)
 
-    const rect = hero.getBoundingClientRect()
-    const x = (event.clientX - rect.left) / rect.width - 0.5
-    const y = (event.clientY - rect.top) / rect.height - 0.5
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % slides.length)
+    }, 6000)
 
-    hero.style.setProperty('--mouse-x', `${x * 18}px`)
-    hero.style.setProperty('--mouse-y', `${y * 14}px`)
-  }
+    return () => window.clearInterval(intervalId)
+  }, [])
+
+  const activeSlide = slides[activeIndex]
 
   return (
-    <section id="top" className={styles.hero} ref={heroRef} onMouseMove={handleHeroMove}>
-      <div className={styles.heroimage} aria-hidden="true" />
-      <div className={styles.herowash} aria-hidden="true" />
-      <div className={styles.herogrid}>
-        <div className={styles.herocopy}>
-          <p className={styles.heroeyebrow}>
-            <span />
-            Санкт-Петербург · с 2012 года
-          </p>
-          <h1>
-            Интерьер,
-            <br />
-            который <em>выглядит</em>
-            <br />
-            как вы
-          </h1>
-          <p className={styles.herolead}>
-            Проектируем и реализуем пространства, в которых красиво не только на рендерах, но и
-            каждый день.
-          </p>
-          <div className={styles.herofeatures} aria-label="Ключевые преимущества">
-            <div>
-              <strong>Сроки</strong>
-              <span>Понятный план работ и прозрачные этапы</span>
-            </div>
-            <div>
-              <strong>Контроль</strong>
-              <span>Фото, отчёты и связь с объектом без хаоса</span>
-            </div>
-            <div>
-              <strong>Формат</strong>
-              <span>Дизайн-проект или пакетное решение под задачу</span>
-            </div>
-          </div>
-          <button className={styles.primarybutton} type="button" onClick={onOpenBrief}>
-            <span>Обсудить проект</span>
-            <i>
-              <ArrowIcon />
-            </i>
-          </button>
-        </div>
-
-        <div className={styles.heroside}>
-          <div className={styles.herobadge}>
-            <span>Дизайн</span>
-            <span>Ремонт</span>
-            <span>Комплектация</span>
-          </div>
-          <Link className={styles.herocaselink} to="/projects">
-            <span>
-              Смотреть
-              <br />
-              проекты
-            </span>
-            <i>
-              <ArrowIcon />
-            </i>
-          </Link>
-        </div>
+    <section className={styles.hero} id="top">
+      <div className={styles.hero__media} aria-hidden="true">
+        {slides.map((slide, index) => (
+          <div
+            key={slide.image}
+            className={`${styles.hero__slide} ${index === activeIndex ? styles.hero__slide_active : ''}`}
+            style={{ backgroundImage: `url(${slide.image})` }}
+          />
+        ))}
+        <div className={styles.hero__overlay} />
+        <div className={styles.hero__vignette} />
       </div>
 
-      <div className={styles.herometa}>
-        <span>59.9343° N</span>
-        <span>30.3351° E</span>
-        <span className={styles.scrollnote}>
-          Листайте вниз <i />
-        </span>
+      <div className={styles.hero__sectionPad}>
+        <PageWrapper>
+          <div className={styles.hero__inner}>
+            <div className={styles.hero__copy}>
+              <div className={styles.hero__textBlock}>
+                <span className={styles.hero__eyebrow}>{activeSlide.eyebrow}</span>
+                <h1 className={styles.hero__title}>
+                  {heroContent.title.start}{' '}
+                  <span className={styles.hero__titleAccent}>{heroContent.title.accent}</span>{' '}
+                  {heroContent.title.end}
+                </h1>
+                <p className={styles.hero__lead}>{heroContent.lead}</p>
+
+                <div className={styles.hero__actions}>
+                  <ModalTriggerButton
+                    className={styles.hero__primaryCta}
+                    intent="consultation"
+                    size="lg"
+                    source="home-hero"
+                  >
+                    Обсудить проект
+                  </ModalTriggerButton>
+
+                  <Link className={styles.hero__secondaryCta} to="/projects">
+                    Смотреть проекты
+                  </Link>
+                </div>
+              </div>
+
+              <div className={styles.hero__cards}>
+                {heroContent.cards.map((card) => (
+                  <article className={styles.hero__card} key={card.label}>
+                    <span className={styles.hero__cardLabel}>{card.label}</span>
+                    <strong className={styles.hero__cardText}>{card.text}</strong>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </PageWrapper>
       </div>
     </section>
   )

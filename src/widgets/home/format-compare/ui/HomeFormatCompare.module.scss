@@ -1,104 +1,76 @@
-﻿.compare {
+@use 'common' as home;
+@use 'flex' as flex;
+@use 'media' as mq;
+
+.compare {
   position: relative;
   margin-top: 0;
-  padding: 112px 4.2vw;
+
+  @include home.section-pad;
+
   background: var(--paper);
 }
 
 .layout {
-  display: grid;
+  @include flex.flex($fd: column);
+
   gap: 28px;
 }
 
-.header {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: 24px;
-  align-items: end;
-}
-
-.kicker {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 0 18px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.72;
-}
-
-.kicker::before {
-  width: 40px;
-  height: 1px;
-  content: '';
-  background: currentcolor;
-}
-
-.title {
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: clamp(36px, 5vw, 72px);
-  font-weight: 400;
-  line-height: 0.98;
-  letter-spacing: -0.06em;
-}
-
-.title em {
-  color: var(--amber);
-  font-style: normal;
-}
-
-.lead {
-  max-width: 680px;
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.8;
-  color: rgb(22 23 19 / 72%);
-}
-
 .cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  @include flex.flex($fw: wrap);
+
   gap: 18px;
 }
 
 .card {
-  display: grid;
+  @include flex.flex($fd: column);
+
+  flex: 1 1 calc(50% - 9px);
   gap: 20px;
+  min-width: 0;
   padding: 30px;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--paper) 86%, #fff 14%);
   box-shadow: var(--shadow-soft);
+
+  @include mq.media(phone) {
+    padding: 18px 16px;
+  }
 }
 
 .cardAccent {
   margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--amber);
 }
 
-.card h3 {
+.cardBody {
+  min-width: 0;
+}
+
+.cardTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(24px, 2.6vw, 40px);
-  font-weight: 400;
-  line-height: 1.05;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
 }
 
 .cardText {
   margin: 0;
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
 }
 
 .cardList {
-  display: grid;
+  @include flex.flex($fd: column);
+
   gap: 10px;
   margin: 0;
   padding: 0;
@@ -109,16 +81,21 @@
   padding: 12px 14px;
   border-radius: var(--radius-sm);
   background: rgb(255 255 255 / 42%);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
+
+  @include mq.media(phone) {
+    padding: 10px 12px;
+    font-size: var(--type-body-sm);
+  }
 }
 
 .cardNote {
   margin: 0;
   padding-top: 12px;
   border-top: 1px solid var(--line);
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
   color: rgb(22 23 19 / 72%);
 }
 
@@ -131,80 +108,110 @@
 }
 
 .tableTitle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  @include flex.flex($ai: center, $jc: space-between);
+
   gap: 16px;
   padding: 22px 26px 0;
   color: var(--paper);
+
+  @include mq.media(phone) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
 .tableTitle h4 {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: 22px;
-  font-weight: 400;
+  font-size: var(--type-heading-xs);
+  font-weight: var(--weight-regular);
 }
 
 .tableTitle span {
-  font-size: 12px;
+  font-size: var(--type-caption);
   text-transform: uppercase;
   opacity: 0.6;
 }
 
 .table {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr 1fr;
+  @include flex.flex($fd: column);
+
   margin-top: 18px;
   color: var(--paper);
+}
+
+.tableRow {
+  @include flex.flex($fw: wrap);
 }
 
 .tableHeader,
 .tableCell,
 .tableRowLabel {
+  flex: 1 1 33.333%;
+  min-width: 0;
   padding: 16px 26px;
   border-top: 1px solid rgb(255 255 255 / 12%);
 }
 
 .tableHeader {
-  font-size: 12px;
-  letter-spacing: 0.12em;
+  font-size: var(--type-caption);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: rgb(243 240 233 / 72%);
+
+  @include mq.media(phone) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
 .tableRowLabel {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--type-body-md);
+  font-weight: var(--weight-semibold);
+
+  @include mq.media(phone) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
 .tableCell {
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
   color: rgb(243 240 233 / 88%);
+
+  @include mq.media(phone) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
 .footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  @include flex.flex($fw: wrap, $ai: center, $jc: space-between);
+
   gap: 18px;
   padding-top: 10px;
 }
 
 .footerText {
-  max-width: 640px;
   margin: 0;
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
   color: rgb(22 23 19 / 72%);
+
+  @include mq.media(phone) {
+    font-size: var(--type-body-sm);
+  }
 }
 
 .footerActions {
-  display: flex;
-  flex-wrap: wrap;
+  @include flex.flex($fw: wrap);
+
   gap: 12px;
+
+  @include mq.media(phone) {
+    gap: 10px;
+  }
 }
 
 .action,
@@ -214,9 +221,11 @@
   justify-content: center;
   min-height: 54px;
   padding: 0 22px;
+  cursor: pointer;
+  border: 0;
   border-radius: 100px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--type-body-sm);
+  font-weight: var(--weight-semibold);
   transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -236,11 +245,15 @@
   transform: translateY(-1px);
 }
 
-@media (width <= 900px) {
-  .header,
-  .cards,
-  .table {
-    grid-template-columns: 1fr;
+@include mq.media(phone, tablet) {
+  .card {
+    flex: 1 1 100%;
+  }
+
+  .tableHeader,
+  .tableCell,
+  .tableRowLabel {
+    flex: 1 1 100%;
   }
 
   .tableTitle {
@@ -249,11 +262,7 @@
   }
 }
 
-@media (width <= 700px) {
-  .compare {
-    padding: 96px 6vw 40px;
-  }
-
+@include mq.media(phone, tablet) {
   .card,
   .tableTitle,
   .tableHeader,
@@ -261,10 +270,6 @@
   .tableRowLabel {
     padding-left: 18px;
     padding-right: 18px;
-  }
-
-  .table {
-    gap: 0;
   }
 
   .footerActions {
@@ -277,7 +282,7 @@
   }
 }
 
-@media (width <= 580px) {
+@include mq.media(phone) {
   .tableWrap {
     overflow-x: auto;
   }
@@ -286,35 +291,3 @@
     min-width: 560px;
   }
 }
-
-@media (width <= 420px) {
-  .compare {
-    padding: 80px 16px 28px;
-  }
-
-  .card {
-    padding: 18px 16px;
-  }
-
-  .cardList li {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-
-  .tableTitle,
-  .tableHeader,
-  .tableCell,
-  .tableRowLabel {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-
-  .footerText {
-    font-size: 14px;
-  }
-
-  .footerActions {
-    gap: 10px;
-  }
-}
-

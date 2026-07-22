@@ -1,0 +1,68 @@
+@use './section-header' as header;
+@use 'media' as mq;
+
+.sectionHeader {
+  @include header.section-head;
+
+  &_dark {
+    padding-bottom: 0;
+  }
+}
+
+.sectionHeaderMain {
+  min-width: 0;
+}
+
+.sectionHeaderKicker {
+  @include header.section-kicker-base;
+
+  p {
+    margin: 0;
+  }
+}
+
+.sectionHeaderNumber {
+  @include header.section-kicker-pill;
+
+  flex-shrink: 0;
+}
+
+.sectionHeaderLabel {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  line-height: var(--leading-caption);
+  overflow-wrap: anywhere;
+}
+
+.sectionHeaderTitle {
+  @include header.section-title-base;
+
+  em {
+    @include header.section-title-em;
+  }
+}
+
+.sectionHeaderLead {
+  @include header.section-lead-base;
+}
+
+.sectionHeader_dark .sectionHeaderTitle {
+  color: var(--paper);
+}
+
+@include mq.media(phone) {
+  .sectionHeaderKicker {
+    gap: 10px 12px;
+    margin-bottom: 18px;
+    letter-spacing: var(--tracking-label);
+  }
+
+  .sectionHeaderLabel {
+    letter-spacing: var(--tracking-label);
+  }
+
+  .sectionHeaderLead {
+    margin-top: 16px;
+  }
+}

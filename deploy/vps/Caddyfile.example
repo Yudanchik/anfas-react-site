@@ -1,0 +1,11 @@
+example.ru {
+  reverse_proxy 127.0.0.1:8080
+}
+
+www.example.ru {
+  reverse_proxy 127.0.0.1:8080
+}
+
+dev.example.ru {
+  reverse_proxy 127.0.0.1:8081
+}

@@ -1,0 +1,27 @@
+﻿.plusIcon {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.plusIcon__line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 1.5px;
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0, 1);
+  transform: translate(-50%, -50%);
+  background: currentcolor;
+  border-radius: 1px;
+}
+
+.plusIcon__line_vertical {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.plusIcon_open .plusIcon__line_vertical {
+  transform: translate(-50%, -50%) rotate(0deg);
+}

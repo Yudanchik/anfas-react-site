@@ -1,158 +1,120 @@
-@use '../../_common' as home;
+@use 'common' as home;
+@use 'flex' as flex;
+@use 'media' as mq;
 
-.sectionpad {
+
+.partners_sectionPad {
   @include home.section-pad;
 }
 
-.sectionkicker {
-  @include home.section-kicker;
-}
-
-.sectionkicker span {
-  @include home.section-kicker-pill;
-}
-
-.sectionkicker p {
-  margin: 0;
-}
-
 .partners {
-  background: var(--paper);
+  @include home.surface-dark;
 }
 
-.partnerslayout {
-  display: grid;
-  grid-template-columns: 0.82fr 1.18fr;
-  gap: 8vw;
+.partners__layout {
+  @include flex.flex($fd: column);
+
+  gap: 40px;
+
+  @include mq.media(phone) {
+    gap: 28px;
+  }
 }
 
-.partnersintro {
-  align-self: start;
-  position: sticky;
-  top: 70px;
+.partners__header {
+  :global(.sectionHeaderLead) {
+    max-width: 60ch;
+  }
 }
 
-.partnersintro h2 {
-  margin: 0;
-  font-size: clamp(45px, 5.8vw, 86px);
-  font-weight: 400;
-  line-height: 0.98;
-  letter-spacing: -0.06em;
+.partners__rail {
+  @include flex.flex($fd: column);
+
+  gap: 14px;
 }
 
-.partnersintro h2 em {
-  color: var(--amber);
-  font-family: var(--font-heading);
-  font-weight: 400;
-  letter-spacing: -0.04em;
+.partnersMarquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 
-.partnersintro p {
-  max-width: 390px;
-  margin: 28px 0 0;
-  color: rgb(22 23 19 / 70%);
-  font-size: 13px;
-  line-height: 1.8;
-}
+.partnersMarquee__track {
+  @include flex.flex;
 
-.partnersrail {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.track {
-  display: flex;
   width: max-content;
-  animation: partner-scroll 28s linear infinite;
+  animation: partners-scroll 34s linear infinite;
+
+  &_reverse {
+    animation-direction: reverse;
+  }
 }
 
-.reverse {
-  animation-direction: reverse;
+.partnersMarquee__group {
+  @include flex.flex($fs: 0, $ai: center);
+
+  gap: 14px;
+  padding-right: 14px;
 }
 
-.group {
-  display: flex;
-  align-items: center;
-  gap: 18px;
+.partnerCard {
+  @include flex.flex($fd: column, $jc: center, $ai: center);
+
+  flex-shrink: 0;
+  min-width: 184px;
+  min-height: 96px;
+  padding: 18px 22px;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 24px;
+  background:
+    linear-gradient(150deg, rgb(255 255 255 / 7%), rgb(255 255 255 / 2%)),
+    radial-gradient(circle at top right, rgb(237 174 36 / 10%), transparent 42%);
+  box-shadow: 0 18px 42px rgb(0 0 0 / 14%);
   white-space: nowrap;
+
+  @include mq.media(phone) {
+    min-width: 156px;
+    min-height: 84px;
+    padding: 16px 18px;
+    border-radius: 20px;
+  }
+
+  @include mq.media(phone) {
+    min-width: 146px;
+    min-height: 78px;
+    padding: 14px 16px;
+  }
 }
 
-.card {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  min-width: 168px;
-  min-height: 94px;
-  padding: 18px 24px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: rgb(255 255 255 / 68%);
-  box-shadow: var(--shadow-soft);
+.partnerCard__name {
+  font-family: var(--font-heading);
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
+  color: var(--paper);
+
+  @include mq.media(phone) {
+    font-size: var(--type-heading-xs);
+  }
 }
 
-.card span {
-  font-size: clamp(20px, 2vw, 28px);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.05em;
-}
-
-.card small {
+.partnerCard__label {
   margin-top: 8px;
-  color: rgb(22 23 19 / 62%);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  color: rgb(245 242 236 / 62%);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
-@keyframes partner-scroll {
+@keyframes partners-scroll {
   to {
-    transform: translateX(-50%);
+    transform: translateX(calc(-50% - 7px));
   }
 }
 
-@media (width <= 1100px) {
-  .partnerslayout {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .partnersintro {
-    position: static;
-  }
-}
-
-@media (width <= 580px) {
-  .group {
-    gap: 14px;
-  }
-
-  .card {
-    min-width: 150px;
-    min-height: 88px;
-    padding: 16px 20px;
-  }
-
-  .partnersrail {
-    gap: 14px;
-  }
-}
-
-@media (width <= 420px) {
-  .partnersintro h2 {
-    font-size: clamp(38px, 12vw, 56px);
-  }
-
-  .partnersintro p {
-    font-size: 12px;
-  }
-
-  .card {
-    min-width: 136px;
-    min-height: 84px;
-    padding: 14px 16px;
+@include mq.motion-reduce {
+  .partnersMarquee__track {
+    animation: none;
   }
 }

@@ -1,34 +1,36 @@
-﻿import { Link } from 'react-router'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 
+import { SectionHeader } from '../../ui'
 import { formatCompare } from '../model/format-compare.data'
-
 import styles from './HomeFormatCompare.module.scss'
 
-export function HomeFormatCompare() {
+export function HomeFormatCompare({
+  onScrollToCalculator,
+}: {
+  onScrollToCalculator: () => void
+}) {
   return (
     <section className={styles.compare}>
       <div className={styles.layout}>
-        <div className={styles.header} data-reveal>
-          <div>
-            <div className={styles.kicker}>
-              <span>03</span>
-              <p>{formatCompare.eyebrow}</p>
-            </div>
-            <h2 className={styles.title}>
+        <SectionHeader
+          number="03"
+          label={formatCompare.eyebrow}
+          title={
+            <>
               Два формата.
               <br />
               Один <em>выбор</em>
-            </h2>
-          </div>
-          <p className={styles.lead}>{formatCompare.lead}</p>
-        </div>
+            </>
+          }
+          lead={formatCompare.lead}
+        />
 
         <div className={styles.cards} data-reveal>
           {formatCompare.items.map((item) => (
             <article className={styles.card} key={item.key}>
               <p className={styles.cardAccent}>{item.accent}</p>
-              <div>
-                <h3>{item.name}</h3>
+              <div className={styles.cardBody}>
+                <h3 className={styles.cardTitle}>{item.name}</h3>
                 <p className={styles.cardText}>{item.text}</p>
               </div>
               <ul className={styles.cardList}>
@@ -37,9 +39,18 @@ export function HomeFormatCompare() {
                 ))}
               </ul>
               <p className={styles.cardNote}>{item.bestFor}</p>
-              <Link className={item.key === 'individual' ? styles.actionAlt : styles.action} to={item.href}>
-                {item.key === 'individual' ? 'Посмотреть услуги' : 'Связаться с нами'}
-              </Link>
+              {item.key === 'individual' ? (
+                <ModalTriggerButton
+                  intent="individual"
+                  source="home-format-compare-card"
+                >
+                  Обсудить проект
+                </ModalTriggerButton>
+              ) : (
+                <button className={styles.action} type="button" onClick={onScrollToCalculator}>
+                  Перейти к калькулятору
+                </button>
+              )}
             </article>
           ))}
         </div>
@@ -54,11 +65,11 @@ export function HomeFormatCompare() {
             <div className={styles.tableHeader}>Дизайн-проект</div>
             <div className={styles.tableHeader}>Пакетное решение</div>
             {formatCompare.rows.map((row) => (
-              <>
+              <div className={styles.tableRow} key={row.label}>
                 <div className={styles.tableRowLabel}>{row.label}</div>
                 <div className={styles.tableCell}>{row.individual}</div>
                 <div className={styles.tableCell}>{row.package}</div>
-              </>
+              </div>
             ))}
           </div>
         </div>
@@ -69,12 +80,15 @@ export function HomeFormatCompare() {
             фиксированная логика, выбираем пакетное решение.
           </p>
           <div className={styles.footerActions}>
-            <Link className={styles.actionAlt} to="/services">
-              Подробнее об услугах
-            </Link>
-            <Link className={styles.action} to="/contacts">
+            <button className={styles.actionAlt} type="button" onClick={onScrollToCalculator}>
+              Открыть калькулятор
+            </button>
+            <ModalTriggerButton
+              intent="consultation"
+              source="home-format-compare-footer"
+            >
               Обсудить формат
-            </Link>
+            </ModalTriggerButton>
           </div>
         </div>
       </div>

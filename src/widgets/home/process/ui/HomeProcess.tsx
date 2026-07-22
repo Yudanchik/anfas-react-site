@@ -1,51 +1,80 @@
-﻿import { processSteps } from '@/entities/process/model/process.data'
-import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
-import type { CSSProperties } from 'react'
+import { processSteps } from '@/entities/process/model/process.data'
+import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
+import { PageWrapper } from '@/shared/ui/page-wrapper'
 
+import { SectionHeader } from '../../ui'
 import styles from './HomeProcess.module.scss'
 
-export function HomeProcess({ onOpenBrief }: { onOpenBrief: () => void }) {
+export function HomeProcess() {
   return (
-    <section id="process" className={styles.process + ' ' + styles.sectionpad}>
-      <div className={styles.processintro}>
-        <div className={styles.sectionkicker} data-reveal>
-          <span>04</span>
-          <p>Как всё устроено</p>
-        </div>
-        <h2 data-reveal>
-          Пять понятных
-          <br />
-          шагов до <em>дома.</em>
-        </h2>
-        <p data-reveal>
-          Без туманных формулировок и «разберёмся по ходу». Каждый этап имеет результат, срок и
-          ответственного.
-        </p>
-        <div className={styles.visual} data-reveal aria-label="Плейсхолдер визуала приложения">
-          <span>Здесь будет изображение приложения</span>
-          <p>Скрин интерфейса с этапами, фото, отчётами и комментариями с объекта.</p>
-        </div>
-        <button className={styles.outlinebutton} type="button" onClick={onOpenBrief} data-reveal>
-          <span>Начать с первого шага</span>
-          <ArrowIcon />
-        </button>
-      </div>
+    <section id="process" className={`${styles.process} ${styles.process_sectionPad}`}>
+      <PageWrapper className={styles.process__shell}>
+        <SectionHeader
+          className={styles.process__header}
+          number="09"
+          label="Как идёт ремонт"
+          title={
+            <>
+              Пять этапов
+              <br />
+              ремонта <em>без хаоса</em>
+            </>
+          }
+          lead="Показываем путь проекта целиком: от первой встречи и замера до комплектации, контроля стройки и финальной сдачи квартиры под ключ."
+        />
 
-      <div className={styles.processsteps}>
-        {processSteps.map((step, index) => (
-          <article
-            key={step.title}
-            data-reveal
-            style={{ '--reveal-delay': `${index * 120}ms` } as CSSProperties}
-          >
-            <span>0{index + 1}</span>
-            <div>
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
-            </div>
-          </article>
-        ))}
-      </div>
+        <div className={styles.process__list}>
+          {processSteps.map((step, index) => (
+            <article
+              className={`${styles.process__card} ${index % 2 === 1 ? styles.process__card_reverse : ''}`}
+              key={step.mark}
+              data-reveal
+            >
+              <div className={styles.process__cardMedia}>
+                <img
+                  className={styles.process__cardImage}
+                  src={step.visualImage}
+                  alt={step.visualTitle}
+                  style={{ objectPosition: step.visualPosition }}
+                />
+                <div className={styles.process__cardOverlay} />
+                <span className={styles.process__cardBadge}>{step.label}</span>
+                <span className={styles.process__cardMark}>{step.mark}</span>
+              </div>
+
+              <div className={styles.process__cardBody}>
+                <span className={styles.process__cardKicker}>Этап Анфас</span>
+                <h3 className={styles.process__cardTitle}>{step.title}</h3>
+                <p className={styles.process__cardText}>{step.text}</p>
+
+                <div className={styles.process__cardDetail}>
+                  <h4 className={styles.process__cardDetailTitle}>{step.visualTitle}</h4>
+                  <p className={styles.process__cardDetailText}>{step.visualText}</p>
+                </div>
+
+                <div className={styles.process__cardStats}>
+                  {step.stats.map((stat) => (
+                    <div className={styles.process__cardStat} key={stat.label}>
+                      <strong className={styles.process__cardStatValue}>{stat.value}</strong>
+                      <span className={styles.process__cardStatLabel}>{stat.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <ModalTriggerButton
+          className={styles.process__cta}
+          intent="consultation"
+          size="lg"
+          source="home-process"
+          data-reveal
+        >
+          Обсудить свой проект
+        </ModalTriggerButton>
+      </PageWrapper>
     </section>
   )
 }

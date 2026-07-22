@@ -1,0 +1,88 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+
+.cookieBanner {
+  position: fixed;
+  z-index: 105;
+  right: max(16px, 2.4vw);
+  bottom: calc(max(20px, 2.8vw) + 60px);
+
+  @include flex.flex($ai: center);
+
+  gap: var(--space-16);
+  width: min(calc(100vw - 32px), 560px);
+  padding: 16px 16px 16px 20px;
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(circle at top right, rgb(237 174 36 / 14%), transparent 42%),
+    rgb(246 243 238 / 96%);
+  box-shadow: var(--shadow-card-strong);
+  backdrop-filter: var(--glass-blur);
+
+  @include mq.media(phone, tablet) {
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom) + 58px);
+    left: 16px;
+    width: auto;
+    align-items: stretch;
+  }
+
+  @include mq.media(phone) {
+    flex-direction: column;
+    gap: var(--space-12);
+    padding: var(--space-16);
+  }
+}
+
+.cookieBanner__text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: rgb(22 23 19 / 74%);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body-sm);
+}
+
+.cookieBanner__link {
+  color: var(--ink);
+  font-weight: var(--weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+
+  &:hover,
+  &:focus-visible {
+    color: color-mix(in srgb, var(--ink) 72%, var(--amber) 28%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+  }
+}
+
+.cookieBanner__button {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 var(--space-20);
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
+
+  &:hover {
+    background: color-mix(in srgb, var(--ink) 88%, var(--amber) 12%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+  }
+
+  @include mq.media(phone) {
+    width: 100%;
+  }
+}

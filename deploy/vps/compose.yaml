@@ -1,0 +1,6 @@
+services:
+  web:
+    image: ${DEPLOY_IMAGE}
+    restart: unless-stopped
+    ports:
+      - '${APP_PORT:-8080}:80'

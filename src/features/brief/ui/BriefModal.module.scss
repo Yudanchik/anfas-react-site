@@ -1,182 +1,432 @@
-.modal {
+@use 'flex' as flex;
+@use 'media' as mq;
+@use 'themes/default/colors' as c;
+
+.briefModal {
   position: fixed;
   z-index: 100;
   inset: 0;
-  visibility: hidden;
-  transition: visibility 0.5s;
+
+  @include flex.flex($jc: center, $ai: center);
+
+  padding: 16px;
+  overflow: hidden;
 }
 
-.open {
-  visibility: visible;
-}
-
-.backdrop {
+.briefModal__backdrop {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   padding: 0;
   cursor: pointer;
-  opacity: 0;
+  opacity: 0.62;
   border: 0;
-  background: rgb(15 15 13 / 70%);
-  backdrop-filter: blur(8px);
-  transition: opacity 0.5s ease;
+  background-color: c.$ink;
+  backdrop-filter: blur(6px);
 }
 
-.open .backdrop {
-  opacity: 1;
+.briefModal__panel {
+  position: relative;
+  z-index: 1;
+
+  @include flex.flex($fd: column);
+
+  width: min(100%, 700px);
+  max-height: calc(100dvh - 32px);
+  padding: clamp(24px, 4vw, 40px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid c.$line;
+  border-radius: 28px;
+  background-color: c.$paper;
+  box-shadow: c.$shadow-soft;
+  animation: modal-in 0.35s cubic-bezier(0.2, 0.7, 0, 1);
 }
 
-.panel {
+.briefModal__close {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: min(100%, 670px);
-  height: 100%;
-  overflow-y: auto;
-  padding: 9vh 7vw;
-  background: var(--paper);
-  transform: translateX(100%);
-  transition: transform 0.65s cubic-bezier(0.77, 0, 0.18, 1);
-}
-
-.open .panel {
-  transform: translateX(0);
-}
-
-.close {
-  position: absolute;
-  top: 30px;
-  right: 30px;
-  width: 48px;
-  height: 48px;
+  z-index: 2;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   cursor: pointer;
-  border: 1px solid var(--line);
+  border: 1px solid c.$line;
   border-radius: 50%;
-  background: transparent;
+  background-color: c.$paper-deep;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 
-  span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 18px;
-    height: 1px;
-    background: var(--ink);
-    transform: translate(-50%, -50%) rotate(45deg);
+  &:hover {
+    border-color: c.$amber;
+    background-color: color-mix(in srgb, c.$paper-deep 84%, c.$amber 16%);
   }
 
-  span:last-child {
-    transform: translate(-50%, -50%) rotate(-45deg);
-  }
-}
-
-.title {
-  margin: 0 0 50px;
-  font-size: clamp(45px, 5vw, 70px);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.055em;
-
-  em {
-    color: var(--amber);
-    font-family: Prata, Georgia, serif;
-    font-weight: 400;
+  &:focus-visible {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
   }
 }
 
-.form {
+.briefModal__closeLine {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 1px;
+  background-color: c.$ink;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.briefModal__closeLine:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.briefModal__header {
+  padding-right: 52px;
+}
+
+.briefModal__eyebrow {
+  margin: 0 0 10px;
+  color: c.$amber;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.briefModal__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--type-heading-xl);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+.briefModal__lead {
+  margin: 14px 0 0;
+  color: color-mix(in srgb, c.$ink 72%, c.$paper 28%);
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body-sm);
+}
+
+.briefModal__form {
+  @include flex.flex($fd: column);
+
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.briefModal__selected {
+  @include flex.flex($fd: column);
+
+  gap: 5px;
+  padding: 16px 18px;
+  border: 1px solid c.$line;
+  border-radius: 18px;
+  background-color: c.$paper-deep;
+}
+
+.briefModal__selectedLabel,
+.briefModal__fieldLabel {
+  color: c.$amber;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.briefModal__selectedValue {
+  color: c.$ink;
+  font-size: var(--type-body-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-control);
+}
+
+.briefModal__selectedNote {
+  color: color-mix(in srgb, c.$ink 62%, c.$paper 38%);
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
+}
+
+.briefModal__fields {
+  @include flex.flex;
+
+  gap: 20px;
+}
+
+.briefModal__field {
+  @include flex.flex($fd: column);
+
+  flex: 1 1 0;
+  gap: 6px;
+  min-width: 0;
+}
+
+.briefModal__field_fullWidth {
+  width: 100%;
+}
+
+.briefModal__fieldLabel {
   display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: baseline;
   gap: 8px;
+}
 
-  > span {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+.briefModal__fieldOptional {
+  color: c.$sage;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-regular);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.briefModal__fieldControl {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 2px;
+  color: c.$ink;
+  font-family: var(--font-body);
+  font-size: var(--type-body-lg);
+  border: 0;
+  border-bottom: 1px solid c.$line;
+  border-radius: 0;
+  outline: none;
+  background-color: c.$paper;
+  transition: border-color 0.2s ease;
+
+  &::placeholder {
+    color: c.$sage;
   }
 
-  input,
-  select {
+  &:focus {
+    border-color: c.$amber;
+  }
+}
+
+.briefModal__fieldTextarea {
+  min-height: 104px;
+  padding: 12px 14px;
+  resize: vertical;
+  border: 1px solid c.$line;
+  border-radius: 14px;
+  background-color: c.$paper-deep;
+  line-height: var(--leading-body-sm);
+}
+
+.briefModal__error {
+  color: color-mix(in srgb, c.$ink 62%, c.$amber 38%);
+  font-size: var(--type-caption);
+  line-height: var(--leading-caption);
+}
+
+.briefModal__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  min-height: 56px;
+  padding: 6px 6px 6px 24px;
+  cursor: pointer;
+  color: c.$paper;
+  border: 1px solid c.$ink;
+  border-radius: 999px;
+  background-color: c.$ink;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
+  }
+}
+
+.briefModal__submitText {
+  min-width: 0;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
+  text-align: left;
+}
+
+.briefModal__submitIcon {
+  @include flex.flex($jc: center, $ai: center);
+
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  color: c.$ink;
+  border-radius: 50%;
+  background-color: c.$paper;
+}
+
+.briefModal__privacy {
+  color: color-mix(in srgb, c.$ink 56%, c.$paper 44%);
+  font-size: var(--type-caption);
+  line-height: var(--leading-body-sm);
+}
+
+.briefModal__privacyLink {
+  color: c.$ink;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+
+  &:hover,
+  &:focus-visible {
+    color: color-mix(in srgb, c.$ink 76%, c.$amber 24%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
+  }
+}
+
+.briefModal__success {
+  @include flex.flex($fd: column, $jc: center, $ai: flex-start);
+
+  min-height: 320px;
+}
+
+.briefModal__successIcon {
+  @include flex.flex($jc: center, $ai: center);
+
+  width: 56px;
+  height: 56px;
+  color: c.$ink;
+  border-radius: 50%;
+  background-color: c.$amber;
+}
+
+.briefModal__successTitle {
+  margin: 24px 0 12px;
+  font-family: var(--font-heading);
+  font-size: var(--type-heading-xl);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-heading);
+}
+
+.briefModal__successText {
+  margin: 0;
+  color: color-mix(in srgb, c.$ink 72%, c.$paper 28%);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
+}
+
+.briefModal__successButton {
+  margin-top: 24px;
+  padding: 12px 24px;
+  cursor: pointer;
+  color: c.$ink;
+  font-size: var(--type-button);
+  font-weight: var(--weight-semibold);
+  border: 1px solid c.$amber;
+  border-radius: 999px;
+  background-color: c.$amber;
+
+  &:focus-visible {
+    outline: 2px solid c.$amber;
+    outline-offset: 3px;
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@include mq.media(phone) {
+  .briefModal {
+    align-items: flex-end;
+    padding:
+      8px
+      max(8px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left));
+  }
+
+  .briefModal__panel {
     width: 100%;
-    padding: 14px 0;
-    color: var(--ink);
-    font-family: Prata, Georgia, serif;
-    font-size: 20px;
-    border: 0;
-    border-bottom: 1px solid var(--line);
-    border-radius: 0;
-    outline: none;
-    background: transparent;
+    max-height: calc(100dvh - 16px);
+    padding: 24px 18px;
+    border-radius: 24px;
   }
 
-  input:focus,
-  select:focus {
-    border-color: var(--amber);
-  }
-}
-
-.error {
-  color: #a43c27;
-  font-size: 12px;
-}
-
-.privacy {
-  max-width: 360px;
-  color: rgb(22 23 19 / 50%);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.success {
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 70vh;
-
-  > span {
-    display: grid;
-    width: 70px;
-    height: 70px;
-    color: var(--paper);
-    border-radius: 50%;
-    background: var(--amber);
-    place-items: center;
+  .briefModal__close {
+    top: 16px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
   }
 
-  h2 {
-    margin: 36px 0 20px;
-    font-size: clamp(45px, 5vw, 70px);
-    font-weight: 400;
+  .briefModal__header {
+    padding-right: 42px;
   }
 
-  p {
-    max-width: 440px;
-    line-height: 1.7;
+  .briefModal__title {
+    font-size: var(--type-heading-lg);
   }
 
-  button {
+  .briefModal__lead {
+    font-size: var(--type-body-sm);
+  }
+
+  .briefModal__form {
+    gap: 16px;
     margin-top: 20px;
-    padding: 14px 26px;
-    cursor: pointer;
-    color: var(--paper);
-    border: 0;
-    border-radius: 40px;
-    background: var(--ink);
+  }
+
+  .briefModal__selected {
+    padding: 14px;
+  }
+
+  .briefModal__fields {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .briefModal__fieldControl {
+    min-height: 48px;
+    font-size: var(--type-body-md);
+  }
+
+  .briefModal__submit {
+    min-height: 54px;
+    padding-left: 20px;
+  }
+
+  .briefModal__submitIcon {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
   }
 }
 
-@media (width <= 580px) {
-  .panel {
-    padding: 110px 7vw 50px;
+@media (prefers-reduced-motion: reduce) {
+  .briefModal__panel,
+  .briefModal__close,
+  .briefModal__submit {
+    animation: none;
+    transition: none;
   }
 }

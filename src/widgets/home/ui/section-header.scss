@@ -1,0 +1,68 @@
+﻿@use 'common' as home;
+
+@mixin section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  // padding-bottom: 52px;
+}
+
+@mixin section-kicker-base {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-12) var(--space-16);
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: var(--space-20);
+  color: var(--section-kicker);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+@mixin section-kicker-pill {
+  @include home.section-kicker-pill;
+}
+
+@mixin section-title-base {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--type-heading-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+@mixin section-title-em {
+  color: var(--amber);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-medium);
+  font-style: normal;
+  letter-spacing: var(--tracking-heading);
+}
+
+@mixin section-lead-base {
+  margin: var(--space-16) 0 0;
+  color: var(--section-lead);
+  font-size: var(--type-body-lg);
+  line-height: var(--leading-body);
+}
+
+@mixin section-lead-on-dark {
+  color: rgb(243 240 233 / 74%);
+}
+
+@mixin section-lead-on-light {
+  color: rgb(22 23 19 / 74%);
+}
+
+@mixin section-kicker-on-dark {
+  color: rgb(243 240 233 / 82%);
+}
+
+@mixin section-kicker-on-light {
+  color: rgb(22 23 19 / 82%);
+}

@@ -1,19 +1,8 @@
-@use './themes/default/fonts' as f;
-
-@mixin respond-down($width) {
-  @media (width <= $width) {
-    @content;
-  }
-}
-
 @mixin focus-ring {
   outline: 2px solid var(--amber);
   outline-offset: 2px;
 }
 
-@mixin heading-font {
-  @include f.heading-font;
-}
 
 @mixin surface-card {
   border-radius: var(--radius-md);
