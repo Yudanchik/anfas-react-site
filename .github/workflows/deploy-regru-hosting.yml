@@ -86,6 +86,13 @@ jobs:
           name: static-site
           path: build/client
 
+      - name: Normalize server directory
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        run: |
+          normalized="${SERVER_DIR%/}/"
+          echo "SERVER_DIR=$normalized" >> "$GITHUB_ENV"
+
       - name: Deploy production via FTP
         if: steps.secrets.outputs.configured == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
@@ -130,6 +137,13 @@ jobs:
         with:
           name: static-site
           path: build/client
+
+      - name: Normalize server directory
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        run: |
+          normalized="${SERVER_DIR%/}/"
+          echo "SERVER_DIR=$normalized" >> "$GITHUB_ENV"
 
       - name: Deploy development via FTP
         if: steps.secrets.outputs.configured == 'true'
