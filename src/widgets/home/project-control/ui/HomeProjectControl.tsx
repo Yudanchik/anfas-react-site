@@ -57,7 +57,7 @@ export function HomeProjectControl() {
             >
               <img
                 className={styles.image}
-                src="/images/home/project-control-v2.png"
+                src="/images/home/project-control-v2.webp"
                 alt="Два экрана приложения для контроля ремонта: кабинет проекта и согласование работ"
               />
 

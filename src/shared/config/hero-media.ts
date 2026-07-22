@@ -6,22 +6,22 @@ export type SharedHeroSlide = {
 
 export const sharedHeroSlides: ReadonlyArray<SharedHeroSlide> = [
   {
-    image: '/images/hero/hero-bedroom.png',
+    image: '/images/hero/hero-bedroom.webp',
     alt: 'Спокойная премиальная спальня в тёплых бежевых тонах',
     eyebrow: 'Санкт-Петербург · с 2012 года',
   },
   {
-    image: '/images/hero/hero-living.png',
+    image: '/images/hero/hero-living.webp',
     alt: 'Современная гостиная с мягким светом и дорогими материалами',
     eyebrow: 'Дизайн · ремонт · комплектация',
   },
   {
-    image: '/images/hero/hero-kitchen.png',
+    image: '/images/hero/hero-kitchen.webp',
     alt: 'Минималистичная кухня с акцентным тёплым освещением',
     eyebrow: 'Под ваш ритм жизни',
   },
   {
-    image: '/images/hero/hero-dining.png',
+    image: '/images/hero/hero-dining.webp',
     alt: 'Премиальная столовая зона с мягким вечерним светом и тёплыми материалами',
     eyebrow: 'Премиальный интерьер без визуального шума',
   },
