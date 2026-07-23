@@ -237,7 +237,7 @@
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: rgb(245 242 236 / 54%);
+  color: var(--amber);
 }
 
 .solutionTitle {
@@ -306,7 +306,7 @@
   margin-top: 4px;
   font-size: var(--type-caption);
   line-height: var(--leading-caption);
-  color: rgb(245 242 236 / 52%);
+  color: var(--amber);
 }
 
 .footer {

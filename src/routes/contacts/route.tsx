@@ -113,13 +113,13 @@ export default function ContactsRoute() {
         </PageWrapper>
       </section>
 
-      <section className={styles.darkSection}>
+      <section className={styles.lightSection}>
         <PageWrapper>
           <section className={styles.contactPanel} aria-labelledby="contacts-main-title">
             <div className={styles.contactPanel__content}>
               <div className={styles.contactPanel__details}>
                 <span>Связаться с Анфас</span>
-                <h2 id="contacts-main-title">Один блок для звонка, письма и встречи.</h2>
+                <h2 id="contacts-main-title">Контакты</h2>
                 <dl>
                   {contactDetails.map((item) => (
                     <div key={item.label}>
@@ -162,11 +162,7 @@ export default function ContactsRoute() {
               </a>
             </article>
           </section>
-        </PageWrapper>
-      </section>
 
-      <section className={styles.lightSection}>
-        <PageWrapper>
           <section className={styles.legalPanel} aria-label="Реквизиты компании">
             <div>
               <p className={styles.eyebrow}>Реквизиты</p>

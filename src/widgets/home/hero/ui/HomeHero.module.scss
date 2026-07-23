@@ -139,7 +139,7 @@
   margin: 0;
   max-width: 13.8ch;
   font-family: var(--font-heading);
-  font-size: var(--type-display-xl);
+  font-size: var(--type-display-lg);
   font-weight: var(--weight-medium);
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
@@ -307,13 +307,13 @@
 
 .hero__cardText {
   display: block;
-  max-width: 18ch;
+  max-width: 24ch;
   font-family: var(--font-heading);
-  font-size: var(--type-heading-md);
+  font-size: var(--type-body-md);
   font-weight: var(--weight-medium);
-  line-height: var(--leading-heading);
+  line-height: var(--leading-body);
   letter-spacing: var(--tracking-heading);
-  color: var(--paper);
+  color: rgba(245, 242, 236, 0.82);
 
   @include mq.media(phone, tablet) {
     max-width: none;
