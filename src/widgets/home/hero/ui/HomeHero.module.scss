@@ -85,10 +85,10 @@
   position: relative;
   z-index: 1;
   min-height: inherit;
-  padding-block: 132px 40px;
+  padding-block: 130px 40px;
 
   @include mq.media(phone, tablet, laptop) {
-    padding-block: 118px 34px;
+    padding-block: 110px 34px;
   }
 
   @include mq.media(phone, tablet) {
@@ -103,7 +103,7 @@
 
   @include mq.media(phone) {
     min-height: auto;
-    padding-block: 70px 10px;
+    padding-block: 90px 10px;
   }
 }
 

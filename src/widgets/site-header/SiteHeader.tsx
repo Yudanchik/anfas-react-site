@@ -71,9 +71,9 @@ export function SiteHeader() {
         aria-hidden={!menuOpen}
       >
         <nav className={styles.siteHeader__mobileNav}>
-          {navigation.map((item, index) => (
+          {navigation.map((item) => (
             <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)}>
-              <span>0{index + 1}</span>
+              {/* <span>0{index + 1}</span> */}
               {item.label}
             </Link>
           ))}
