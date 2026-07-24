@@ -1,10 +1,11 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from 'react-router'
+import { Links, Meta, Outlet, Scripts, useLocation } from 'react-router'
 import { lazy, Suspense, type ReactNode } from 'react'
 
 import { AppProviders } from '@/app/providers/AppProviders'
 import { LeadModalProvider, useLeadModal } from '@/features/brief/model/LeadModalContext'
 import { company } from '@/shared/config/company'
 import { absoluteUrl } from '@/shared/config/seo'
+import { useRouteScrollRestoration } from '@/shared/hooks/useRouteScrollRestoration'
 import { useScrollEffects } from '@/shared/hooks/useScrollEffects'
 import { ScrollToTop } from '@/shared/ui/scroll-to-top/ScrollToTop'
 import { CookieBanner } from '@/widgets/cookie-banner'
@@ -51,7 +52,6 @@ export function Layout({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
-        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
@@ -73,6 +73,7 @@ function LazyLeadModalMount() {
 export default function Root() {
   const { pathname } = useLocation()
 
+  useRouteScrollRestoration()
   useScrollEffects(pathname)
 
   return (
