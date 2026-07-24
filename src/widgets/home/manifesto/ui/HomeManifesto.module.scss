@@ -107,7 +107,7 @@
   display: block;
   min-width: 0;
   color: color-mix(in srgb, var(--ink) 52%, transparent);
-  font-size: clamp(9px, 0.72vw, 12px);
+  font-size: var(--type-caption);
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: 0.14em;
@@ -195,7 +195,7 @@
   }
 
   .manifesto__label {
-    font-size: 9px;
+    font-size: var(--type-caption);
     line-height: 1.25;
     letter-spacing: 0.12em;
   }
