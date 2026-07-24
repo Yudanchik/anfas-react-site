@@ -33,7 +33,13 @@ export function SiteHeader() {
             aria-label={`${company.name} — на главную`}
             onClick={() => setMenuOpen(false)}
           >
-            <img className="brand-logo" src="/images/anfas-logo-official.svg" alt={company.name} />
+            <img
+              className="brand-logo"
+              src="/images/anfas-logo-official.svg"
+              alt={company.name}
+              width="24460"
+              height="3341"
+            />
           </Link>
 
           <nav className={styles.siteHeader__nav} aria-label="Основная навигация">
