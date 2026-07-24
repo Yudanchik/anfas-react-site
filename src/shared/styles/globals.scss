@@ -1,6 +1,11 @@
+@use './fonts';
 @use './design-tokens';
 @use './reset';
 @use 'media' as mq;
+
+html {
+  scrollbar-gutter: stable;
+}
 
 body.menu-open,
 body.modal-open {
