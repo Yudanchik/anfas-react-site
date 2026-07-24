@@ -1,29 +1,46 @@
+import heroBedroom from '@/assets/images/hero/hero-bedroom.webp'
+import heroDining from '@/assets/images/hero/hero-dining.webp'
+import heroKitchen from '@/assets/images/hero/hero-kitchen.webp'
+import heroLiving from '@/assets/images/hero/hero-living.webp'
+
 export type SharedHeroSlide = {
   image: string
   alt: string
   eyebrow: string
+  width: number
+  height: number
 }
+
+export const HERO_LCP_IMAGE = heroBedroom
 
 export const sharedHeroSlides: ReadonlyArray<SharedHeroSlide> = [
   {
-    image: '/images/hero/hero-bedroom.webp',
+    image: heroBedroom,
     alt: 'Спокойная премиальная спальня в тёплых бежевых тонах',
     eyebrow: 'Санкт-Петербург · с 2012 года',
+    width: 1672,
+    height: 941,
   },
   {
-    image: '/images/hero/hero-living.webp',
+    image: heroLiving,
     alt: 'Современная гостиная с мягким светом и дорогими материалами',
     eyebrow: 'Дизайн · ремонт · комплектация',
+    width: 1672,
+    height: 941,
   },
   {
-    image: '/images/hero/hero-kitchen.webp',
+    image: heroKitchen,
     alt: 'Минималистичная кухня с акцентным тёплым освещением',
     eyebrow: 'Под ваш ритм жизни',
+    width: 1672,
+    height: 941,
   },
   {
-    image: '/images/hero/hero-dining.webp',
+    image: heroDining,
     alt: 'Премиальная столовая зона с мягким вечерним светом и тёплыми материалами',
     eyebrow: 'Премиальный интерьер без визуального шума',
+    width: 1692,
+    height: 929,
   },
 ] as const
 

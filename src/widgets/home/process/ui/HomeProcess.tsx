@@ -83,6 +83,10 @@ export function HomeProcess() {
                       className={styles.process__cardImage}
                       src={step.visualImage}
                       alt={step.visualTitle}
+                      width={step.visualWidth}
+                      height={step.visualHeight}
+                      loading="lazy"
+                      decoding="async"
                       style={{ objectPosition: step.visualPosition }}
                     />
                     <div className={styles.process__cardOverlay} />

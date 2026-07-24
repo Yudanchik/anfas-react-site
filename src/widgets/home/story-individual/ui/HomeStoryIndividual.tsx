@@ -1,4 +1,5 @@
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
+import individualFormatImage from '@/assets/images/formats/individual-format.webp'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 import { storyIndividual } from '../model/story-individual.data'
@@ -47,8 +48,12 @@ export function HomeStoryIndividual() {
           <div className={styles.heroVisual}>
             <img
               className={styles.heroImage}
-              src="/images/formats/individual-format.webp"
+              src={individualFormatImage}
               alt="Премиальный интерьер для индивидуального проекта"
+              width={1448}
+              height={1086}
+              loading="lazy"
+              decoding="async"
             />
             <div className={styles.heroGlow} aria-hidden="true" />
             <div className={styles.heroBadge}>Индивидуальный путь</div>
