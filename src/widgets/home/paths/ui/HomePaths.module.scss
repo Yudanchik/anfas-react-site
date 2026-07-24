@@ -59,7 +59,7 @@
 
 .paths__description {
   margin: 0;
-  max-width: 34ch;
+  max-width: 100%;
   font-size: var(--type-body-md);
   line-height: var(--leading-body-sm);
   color: color-mix(in srgb, currentcolor 74%, transparent);
@@ -203,7 +203,9 @@
 
 .paths__card_individual {
   color: var(--surface-fg-dark);
-  background: var(--surface-dark);
+  background:
+    radial-gradient(circle at 82% 8%, rgb(197 160 102 / 18%), transparent 30%),
+    linear-gradient(135deg, rgb(20 20 17), rgb(28 27 24));
   border-color: var(--line-on-dark);
 
   .paths__footer {

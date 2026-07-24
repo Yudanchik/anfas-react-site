@@ -173,7 +173,7 @@
 }
 
 .socials__phonePanel {
-  @include flex.flex($fd: column, $jc: space-between);
+  @include flex.flex($fd: column, $jc: center);
 
   width: 100%;
   min-height: 100%;

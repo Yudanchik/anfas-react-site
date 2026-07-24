@@ -47,10 +47,6 @@ export function HomePaths() {
             </div>
             <div className={`${styles.paths__photo} ${styles.paths__photo_individual}`} aria-hidden="true">
               <span className={styles.paths__photoBadge}>Индивидуальный путь</span>
-              <div className={styles.paths__photoContent}>
-                <strong>Планировка, материалы и свет собираются под ваш образ жизни.</strong>
-                <span>Без шаблонов и типовых сценариев.</span>
-              </div>
             </div>
           </article>
 
@@ -78,10 +74,6 @@ export function HomePaths() {
             </div>
             <div className={`${styles.paths__photo} ${styles.paths__photo_package}`} aria-hidden="true">
               <span className={styles.paths__photoBadge}>Готовый формат</span>
-              <div className={styles.paths__photoContent}>
-                <strong>Сроки, смета и комплектация понятны ещё до старта ремонта.</strong>
-                <span>Быстрее запуск, меньше согласований.</span>
-              </div>
             </div>
           </article>
         </div>
