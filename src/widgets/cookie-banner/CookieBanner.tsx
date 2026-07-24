@@ -50,7 +50,8 @@ export function CookieBanner() {
         <Link className={styles.cookieBanner__link} to="/cookies">
           cookies
         </Link>
-        , это помогает улучшить его работу
+        , это <br />
+        помогает улучшить его работу
       </p>
       <button className={styles.cookieBanner__button} type="button" onClick={handleClose}>
         Понятно

@@ -1,9 +1,8 @@
 import { company } from '@/shared/config/company'
 
-export const SOCIALS_VIDEO_SRC =
-  '/videos/hero.mp4' as const
+export const SOCIALS_VIDEO_SRC = '/videos/hero.mp4' as const
 
-export const SOCIALS_PHONE_MOCKUP_SRC = '/images/Phone%20Mockup.png' as const
+export const SOCIALS_PHONE_MOCKUP_SRC = '/images/phone-mockup.png' as const
 
 export const META_DISCLAIMER =
   'Деятельность Meta, включая Facebook и Instagram, признана экстремистской и запрещена на территории России.' as const

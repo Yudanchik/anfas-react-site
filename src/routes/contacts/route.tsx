@@ -64,7 +64,15 @@ export default function ContactsRoute() {
   return (
     <main className={styles.heroPage}>
       <section className={styles.heroSection}>
-        <img className={styles.heroMedia} src={hero.image} alt={hero.alt} />
+        <img
+          className={styles.heroMedia}
+          src={hero.image}
+          alt={hero.alt}
+          width={hero.width}
+          height={hero.height}
+          loading="eager"
+          decoding="sync"
+        />
         <PageWrapper className={styles.heroWrap}>
           <div className={styles.heroCopy}>
             <p className={styles.heroEyebrow}>Контакты</p>

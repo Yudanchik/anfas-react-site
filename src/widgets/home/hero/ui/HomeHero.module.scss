@@ -55,9 +55,17 @@
   transform: scale(1.04);
   transform-origin: center;
   transition: opacity 0.9s ease;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+}
+
+.hero__slideImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__slideImage {
+  object-fit: cover;
+  object-position: center;
 }
 
 .hero__slide_active {

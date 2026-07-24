@@ -84,7 +84,15 @@ export function HomePains() {
               <SwiperSlide className={styles.slide} key={item.number}>
                 <article className={styles.item}>
                   <div className={styles.visual}>
-                    <img className={styles.visualImage} src={item.image} alt={item.imageAlt} />
+                    <img
+                      className={styles.visualImage}
+                      src={item.image}
+                      alt={item.imageAlt}
+                      width={item.imageWidth}
+                      height={item.imageHeight}
+                      loading="lazy"
+                      decoding="async"
+                    />
                     <div className={styles.visualOverlay}>
                       <div className={styles.visualMeta}>
                         <span className={styles.number}>{item.number}</span>

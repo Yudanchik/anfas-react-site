@@ -1,11 +1,22 @@
 import type { CSSProperties } from 'react'
 
+import contactBackground from '@/assets/images/contact/contact-background.webp'
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import styles from './HomeContact.module.scss'
 
 export function HomeContact() {
   return (
     <section id="contacts" className={styles.contact}>
+      <img
+        className={styles.contact__background}
+        src={contactBackground}
+        alt=""
+        width={1983}
+        height={793}
+        loading="lazy"
+        decoding="async"
+        aria-hidden="true"
+      />
       <div className={styles.contact__orbit} aria-hidden="true">
         <i className={styles.contact__orbitSpinner} />
       </div>

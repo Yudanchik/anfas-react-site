@@ -34,7 +34,15 @@ export default function ServicesRoute() {
   return (
     <main className={styles.servicesPage}>
       <section className={styles.servicesPage__hero}>
-        <img className={styles.servicesPage__heroMedia} src={hero.image} alt={hero.alt} />
+        <img
+          className={styles.servicesPage__heroMedia}
+          src={hero.image}
+          alt={hero.alt}
+          width={hero.width}
+          height={hero.height}
+          loading="eager"
+          decoding="sync"
+        />
         <div className={styles.servicesPage__heroOverlay} />
 
         <PageWrapper className={styles.servicesPage__heroShell}>
@@ -91,7 +99,15 @@ export default function ServicesRoute() {
                   data-reveal
                 >
                   <div className={styles.servicesPage__serviceMedia}>
-                    <img className={styles.servicesPage__serviceImage} src={service.image} alt={service.title} />
+                    <img
+                      className={styles.servicesPage__serviceImage}
+                      src={service.image}
+                      alt={service.title}
+                      width={service.imageWidth}
+                      height={service.imageHeight}
+                      loading="lazy"
+                      decoding="async"
+                    />
                     <span className={styles.servicesPage__serviceBadge}>{service.tags[0]}</span>
                     <span className={styles.servicesPage__serviceNumber}>{service.number}</span>
                   </div>

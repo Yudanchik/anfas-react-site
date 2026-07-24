@@ -65,11 +65,12 @@ export function HomeSocials() {
                 className={styles.socials__phoneMockup}
                 src={SOCIALS_PHONE_MOCKUP_SRC}
                 alt=""
+                loading="lazy"
                 aria-hidden="true"
                 decoding="async"
               />
               <div className={styles.socials__phoneScreen}>
-                <video autoPlay loop muted playsInline preload="metadata" aria-label="Видео с объектов Анфас">
+                <video autoPlay loop muted playsInline preload="auto" aria-label="Видео с объектов Анфас">
                   <source src={SOCIALS_VIDEO_SRC} type="video/mp4" />
                 </video>
               </div>

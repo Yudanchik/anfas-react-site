@@ -15,8 +15,7 @@ const heroContent = {
     accent: 'не забирает',
     end: 'вашу жизнь.',
   },
-  lead:
-    'Собираем дизайн, ремонт и комплектацию в один понятный процесс. Вы видите сроки, бюджет и результат без хаоса и бесконечных согласований.',
+  lead: 'Собираем дизайн, ремонт и комплектацию в один понятный процесс. Вы видите сроки, бюджет и результат без хаоса и бесконечных согласований.',
   cards: [
     {
       label: 'Дизайн-проект',
@@ -48,14 +47,30 @@ export function HomeHero() {
 
   return (
     <section className={styles.hero} id="top">
-      <div className={styles.hero__media} aria-hidden="true">
-        {slides.map((slide, index) => (
-          <div
-            key={slide.image}
-            className={`${styles.hero__slide} ${index === activeIndex ? styles.hero__slide_active : ''}`}
-            style={{ backgroundImage: `url(${slide.image})` }}
-          />
-        ))}
+      <div className={styles.hero__media}>
+        {slides.map((slide, index) => {
+          const isActive = index === activeIndex
+          const isLcpSlide = index === 0
+
+          return (
+            <div
+              key={slide.image}
+              className={`${styles.hero__slide} ${isActive ? styles.hero__slide_active : ''}`}
+              aria-hidden={!isActive}
+            >
+              <img
+                className={styles.hero__slideImage}
+                src={slide.image}
+                alt={isActive ? slide.alt : ''}
+                width={slide.width}
+                height={slide.height}
+                loading={isLcpSlide ? 'eager' : 'lazy'}
+                fetchPriority={isLcpSlide ? 'high' : 'auto'}
+                decoding={isLcpSlide ? 'sync' : 'async'}
+              />
+            </div>
+          )
+        })}
         <div className={styles.hero__overlay} />
         <div className={styles.hero__vignette} />
       </div>
@@ -64,8 +79,8 @@ export function HomeHero() {
         <PageWrapper>
           <div className={styles.hero__inner}>
             <div className={styles.hero__copy}>
+              <span className={styles.hero__eyebrow}>{activeSlide.eyebrow}</span>
               <div className={styles.hero__textBlock}>
-                <span className={styles.hero__eyebrow}>{activeSlide.eyebrow}</span>
                 <h1 className={styles.hero__title}>
                   {heroContent.title.start}{' '}
                   <span className={styles.hero__titleAccent}>{heroContent.title.accent}</span>{' '}

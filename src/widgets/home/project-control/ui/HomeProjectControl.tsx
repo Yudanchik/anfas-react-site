@@ -4,6 +4,7 @@ import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 import { projectControlFeatures } from '../model/project-control.data'
+import projectControlImage from '@/assets/images/home/project-control-v2.webp'
 
 import styles from './HomeProjectControl.module.scss'
 
@@ -57,8 +58,12 @@ export function HomeProjectControl() {
             >
               <img
                 className={styles.image}
-                src="/images/home/project-control-v2.webp"
+                src={projectControlImage}
                 alt="Два экрана приложения для контроля ремонта: кабинет проекта и согласование работ"
+                width={1270}
+                height={1239}
+                loading="lazy"
+                decoding="async"
               />
 
               <div className={styles.hotspots} aria-label="Разделы личного кабинета">

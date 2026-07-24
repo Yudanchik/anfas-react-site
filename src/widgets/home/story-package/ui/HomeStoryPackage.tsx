@@ -1,4 +1,5 @@
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
+import packageFormatImage from '@/assets/images/formats/package-format.webp'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 import { storyPackage } from '../model/story-package.data'
@@ -51,8 +52,12 @@ export function HomeStoryPackage() {
               <div className={styles.summaryBadge}>Пакетный формат</div>
               <img
                 className={styles.summaryImage}
-                src="/images/formats/package-format.webp"
+                src={packageFormatImage}
                 alt="Пакетный интерьер с готовыми решениями по отделке и комплектации"
+                width={1448}
+                height={1086}
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <span className={styles.summaryOverline}>{storyPackage.summary.overline}</span>
