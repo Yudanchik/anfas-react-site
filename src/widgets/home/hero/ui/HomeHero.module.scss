@@ -313,7 +313,7 @@
   font-weight: var(--weight-medium);
   line-height: var(--leading-body);
   letter-spacing: var(--tracking-heading);
-  color: rgba(245, 242, 236, 0.82);
+  color: rgb(245 242 236 / 82%);
 
   @include mq.media(phone, tablet) {
     max-width: none;
