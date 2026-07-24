@@ -100,7 +100,13 @@ export function SiteFooter() {
         <div className={styles.siteFooter__top}>
           <div className={styles.siteFooter__brandColumn}>
             <Link className={`brand ${styles.siteFooter__brand}`} to="/" aria-label={`${company.name} — на главную`}>
-              <img className="brand-logo" src="/images/anfas-logo-official.svg" alt={company.name} />
+              <img
+                className="brand-logo"
+                src="/images/anfas-logo-official.svg"
+                alt={company.name}
+                width="24460"
+                height="3341"
+              />
             </Link>
             <p className={styles.siteFooter__brandLead}>
               Ремонт квартир под ключ в Санкт-Петербурге: дизайн, комплектация и реализация в одной
