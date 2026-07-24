@@ -114,14 +114,15 @@ export function BriefModal() {
         aria-label="Закрыть форму"
         onClick={close}
       />
-      <div
-        className={styles.briefModal__panel}
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="lead-modal-title"
-        aria-describedby="lead-modal-description"
-      >
+      <div className={styles.briefModal__viewport}>
+        <div
+          className={styles.briefModal__panel}
+          ref={panelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="lead-modal-title"
+          aria-describedby="lead-modal-description"
+        >
         <button
           className={styles.briefModal__close}
           type="button"
@@ -254,6 +255,7 @@ export function BriefModal() {
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
   )
