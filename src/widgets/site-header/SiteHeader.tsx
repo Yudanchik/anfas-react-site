@@ -33,7 +33,13 @@ export function SiteHeader() {
             aria-label={`${company.name} — на главную`}
             onClick={() => setMenuOpen(false)}
           >
-            <img className="brand-logo" src="/images/anfas-logo-official.svg" alt={company.name} />
+            <img
+              className="brand-logo"
+              src="/images/anfas-logo-official.svg"
+              alt={company.name}
+              width="24460"
+              height="3341"
+            />
           </Link>
 
           <nav className={styles.siteHeader__nav} aria-label="Основная навигация">
@@ -71,9 +77,9 @@ export function SiteHeader() {
         aria-hidden={!menuOpen}
       >
         <nav className={styles.siteHeader__mobileNav}>
-          {navigation.map((item, index) => (
+          {navigation.map((item) => (
             <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)}>
-              <span>0{index + 1}</span>
+              {/* <span>0{index + 1}</span> */}
               {item.label}
             </Link>
           ))}

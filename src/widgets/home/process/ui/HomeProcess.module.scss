@@ -23,15 +23,98 @@
   }
 }
 
-.process__list {
+.process__sliderWrap {
   @include flex.flex($fd: column);
 
   gap: 18px;
+  min-width: 0;
+}
+
+.process__slider {
+  order: 1;
+  width: 100%;
+  overflow: visible;
+
+  :global(.swiper-wrapper) {
+    align-items: stretch;
+  }
+
+  :global(.swiper-slide) {
+    display: flex;
+    height: auto;
+    align-self: stretch;
+  }
+}
+
+.process__slide {
+  display: flex;
+  height: auto;
+  align-self: stretch;
+}
+
+.process__sliderControls {
+  @include flex.flex($ai: center, $jc: flex-end);
+
+  order: 2;
+  min-height: 42px;
+}
+
+.process__sliderButtons {
+  @include flex.flex($ai: center);
+
+  gap: 10px;
+}
+
+.process__sliderButton {
+  @include flex.flex($ai: center, $jc: center);
+
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 50%;
+  color: var(--paper);
+  background: rgb(255 255 255 / 8%);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    opacity 180ms ease;
+
+  &:hover {
+    border-color: rgb(255 255 255 / 28%);
+    background: rgb(255 255 255 / 14%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+  }
+
+  svg {
+    display: block;
+  }
+
+  @include mq.media(phone) {
+    width: 38px;
+    height: 38px;
+  }
+
+  &:global(.swiper-button-disabled) {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+}
+
+.process__sliderButton_prev svg {
+  transform: rotate(180deg);
 }
 
 .process__card {
   display: grid;
   grid-template-columns: minmax(320px, 0.88fr) minmax(0, 1.12fr);
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 32px;
@@ -46,33 +129,16 @@
   }
 }
 
-.process__card_reverse {
-  grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
-
-  .process__cardMedia {
-    order: 2;
-  }
-
-  .process__cardBody {
-    order: 1;
-  }
-
-  @include mq.media(phone, tablet) {
-    grid-template-columns: 1fr;
-
-    .process__cardMedia,
-    .process__cardBody {
-      order: initial;
-    }
-  }
-}
-
 .process__cardMedia {
   position: relative;
-  min-height: 320px;
+  min-height: clamp(300px, 26vw, 380px);
+
+  @include mq.media(tablet) {
+    min-height: 300px;
+  }
 
   @include mq.media(phone) {
-    min-height: 240px;
+    min-height: 220px;
   }
 }
 
@@ -130,6 +196,7 @@
   @include flex.flex($fd: column);
 
   gap: 16px;
+  height: 100%;
   padding: 26px 28px;
 
   @include mq.media(phone) {
@@ -176,10 +243,12 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+  margin-top: auto;
   padding-top: 4px;
 
-  @include mq.media(phone) {
+  @include mq.media(phone, tablet) {
     grid-template-columns: 1fr;
+    margin-top: 0;
   }
 }
 

@@ -1,3 +1,8 @@
+import painsBudget from '@/assets/images/pains/pains-budget.webp'
+import painsDeadlines from '@/assets/images/pains/pains-deadlines.webp'
+import painsMaterials from '@/assets/images/pains/pains-materials.webp'
+import painsQuality from '@/assets/images/pains/pains-quality.webp'
+
 export const pains = {
   eyebrow: 'Основные боли',
   lead:
@@ -15,7 +20,9 @@ export const pains = {
         { value: '0 ₽', label: 'скрытых платежей' },
         { value: '100%', label: 'смета в договоре' },
       ],
-      image: '/images/pains/pains-budget.webp',
+      image: painsBudget,
+      imageWidth: 1536,
+      imageHeight: 1024,
       imageAlt: 'Премиальный интерьер и фиксированная смета ремонта',
     },
     {
@@ -30,7 +37,9 @@ export const pains = {
         { value: '92%', label: 'объектов в срок' },
         { value: '0,1%', label: 'штраф за просрочку в день' },
       ],
-      image: '/images/pains/pains-deadlines.webp',
+      image: painsDeadlines,
+      imageWidth: 1536,
+      imageHeight: 1024,
       imageAlt: 'Планирование этапов ремонта и контроль сроков',
     },
     {
@@ -45,7 +54,9 @@ export const pains = {
         { value: '36 мес', label: 'гарантия на инженерку' },
         { value: '3', label: 'уровня контроля качества' },
       ],
-      image: '/images/pains/pains-quality.webp',
+      image: painsQuality,
+      imageWidth: 1536,
+      imageHeight: 1024,
       imageAlt: 'Контроль качества отделки в современном интерьере',
     },
     {
@@ -60,7 +71,9 @@ export const pains = {
         { value: '10 мин', label: 'чтобы понять сценарий' },
         { value: '0', label: 'лишних поездок по салонам' },
       ],
-      image: '/images/pains/pains-materials.webp',
+      image: painsMaterials,
+      imageWidth: 1536,
+      imageHeight: 1024,
       imageAlt: 'Комплектация интерьера и подбор материалов под проект',
     },
   ],

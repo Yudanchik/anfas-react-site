@@ -46,10 +46,12 @@ export function CookieBanner() {
   return (
     <section className={styles.cookieBanner} aria-label="Уведомление о локальном хранении данных">
       <p className={styles.cookieBanner__text}>
-        Сайт использует локальное хранилище браузера для корректной работы интерфейса.{' '}
+        Сайт использует{' '}
         <Link className={styles.cookieBanner__link} to="/cookies">
-          Подробнее
+          cookies
         </Link>
+        , это <br />
+        помогает улучшить его работу
       </p>
       <button className={styles.cookieBanner__button} type="button" onClick={handleClose}>
         Понятно

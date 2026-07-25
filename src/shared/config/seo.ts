@@ -1,6 +1,6 @@
 export const siteUrl = 'https://anfas-remont.ru'
 
-export const defaultSeoImage = '/images/hero/hero-living.png'
+export const defaultSeoImage = '/images/og/anfas-remont-og.webp'
 
 type SeoMetaOptions = {
   title: string

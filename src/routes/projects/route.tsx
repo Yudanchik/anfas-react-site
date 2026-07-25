@@ -46,7 +46,15 @@ export default function ProjectsRoute() {
   return (
     <main className={styles.projectsPage}>
       <section className={styles.projectsHero}>
-        <img className={styles.projectsHeroMedia} src={hero.image} alt={hero.alt} />
+        <img
+          className={styles.projectsHeroMedia}
+          src={hero.image}
+          alt={hero.alt}
+          width={hero.width}
+          height={hero.height}
+          loading="eager"
+          decoding="sync"
+        />
         <PageWrapper className={styles.projectsHeroWrap}>
           <div className={styles.projectsHeroCopy}>
             <p className={styles.projectsHeroEyebrow}>Реализованные проекты</p>

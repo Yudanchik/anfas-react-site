@@ -1,3 +1,6 @@
+import individualFormatImage from '@/assets/images/formats/individual-format.webp'
+import packageFormatImage from '@/assets/images/formats/package-format.webp'
+
 export type Service = {
   id: 'individual' | 'package'
   number: string
@@ -5,6 +8,8 @@ export type Service = {
   text: string
   tags: readonly string[]
   image: string
+  imageWidth: number
+  imageHeight: number
   lead: string
   bullets: readonly string[]
   metrics: ReadonlyArray<{
@@ -23,7 +28,9 @@ export const services: readonly Service[] = [
     title: 'Индивидуальный ремонт',
     text: 'Формат для тех, кому нужен персональный интерьер, гибкая планировка, авторский подбор материалов и спокойный ремонт квартиры под ключ под конкретный сценарий жизни.',
     tags: ['Дизайн-проект', 'Комплектация', 'Авторский контроль'],
-    image: '/images/formats/individual-format.webp',
+    image: individualFormatImage,
+    imageWidth: 1448,
+    imageHeight: 1086,
     lead: 'Сначала проектируем пространство под вас, затем доводим идею до реализации одной командой без потери смысла и качества.',
     bullets: [
       'персональная планировка и визуальный образ интерьера',
@@ -45,7 +52,9 @@ export const services: readonly Service[] = [
     title: 'Пакетный ремонт',
     text: 'Готовый формат для тех, кто хочет быстро получить стильный интерьер: решения по материалам, смета, сроки и логика комплектации понятны ещё до старта работ.',
     tags: ['Фиксированная цена', 'Быстрый запуск', 'Готовые эстетики'],
-    image: '/images/formats/package-format.webp',
+    image: packageFormatImage,
+    imageWidth: 1448,
+    imageHeight: 1086,
     lead: 'Собираем понятный пакет решений и переводим ремонт квартиры в предсказуемый рабочий процесс без десятков отдельных согласований.',
     bullets: [
       '3–4 готовые эстетики и собранные сценарии комплектации',

@@ -152,7 +152,7 @@
 }
 
 .socials__metaDisclaimer {
-  color: rgb(22 23 19 / 58%);
+  color: rgb(22 23 19 / 76%);
 }
 
 .socials__caption {
@@ -173,7 +173,7 @@
 }
 
 .socials__phonePanel {
-  @include flex.flex($fd: column, $jc: space-between);
+  @include flex.flex($fd: column, $jc: center);
 
   width: 100%;
   min-height: 100%;

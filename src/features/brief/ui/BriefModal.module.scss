@@ -6,10 +6,6 @@
   position: fixed;
   z-index: 100;
   inset: 0;
-
-  @include flex.flex($jc: center, $ai: center);
-
-  padding: 16px;
   overflow: hidden;
 }
 
@@ -26,9 +22,18 @@
   backdrop-filter: blur(6px);
 }
 
+.briefModal__viewport {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  pointer-events: none;
+}
+
 .briefModal__panel {
   position: relative;
-  z-index: 1;
 
   @include flex.flex($fd: column);
 
@@ -42,6 +47,7 @@
   background-color: c.$paper;
   box-shadow: c.$shadow-soft;
   animation: modal-in 0.35s cubic-bezier(0.2, 0.7, 0, 1);
+  pointer-events: auto;
 }
 
 .briefModal__close {
@@ -356,8 +362,7 @@
 }
 
 @include mq.media(phone) {
-  .briefModal {
-    align-items: flex-end;
+  .briefModal__viewport {
     padding:
       8px
       max(8px, env(safe-area-inset-right))

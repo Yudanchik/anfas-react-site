@@ -5,9 +5,6 @@ import styles from './SectionHeader.module.scss'
 export const sectionHeaderClassNames = {
   root: 'sectionHeader',
   main: 'sectionHeaderMain',
-  kicker: 'sectionHeaderKicker',
-  number: 'sectionHeaderNumber',
-  label: 'sectionHeaderLabel',
   title: 'sectionHeaderTitle',
   lead: 'sectionHeaderLead',
 } as const
@@ -20,6 +17,7 @@ type SectionHeaderProps = {
   tone?: 'light' | 'dark'
   reveal?: boolean
   className?: string
+  titleId?: string
   titleClassName?: string
   leadClassName?: string
 }
@@ -27,16 +25,13 @@ type SectionHeaderProps = {
 export function SectionHeader({
   title,
   lead,
-  number,
-  label,
   tone = 'light',
   reveal = true,
   className,
+  titleId,
   titleClassName,
   leadClassName,
 }: SectionHeaderProps) {
-  const showKicker = Boolean(number && label)
-
   const headerClassName = [
     styles.sectionHeader,
     sectionHeaderClassNames.root,
@@ -52,21 +47,8 @@ export function SectionHeader({
       {...(reveal ? { 'data-reveal': true } : { 'data-visible': true })}
     >
       <div className={`${styles.sectionHeaderMain} ${sectionHeaderClassNames.main}`}>
-        {showKicker ? (
-          <div className={`${styles.sectionHeaderKicker} ${sectionHeaderClassNames.kicker}`}>
-            <span className={`${styles.sectionHeaderNumber} ${sectionHeaderClassNames.number}`}>
-              {number}
-            </span>
-            <p
-              className={[styles.sectionHeaderLabel, sectionHeaderClassNames.label]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              {label}
-            </p>
-          </div>
-        ) : null}
         <h2
+          id={titleId}
           className={`${styles.sectionHeaderTitle} ${sectionHeaderClassNames.title} ${titleClassName ?? ''}`}
         >
           {title}

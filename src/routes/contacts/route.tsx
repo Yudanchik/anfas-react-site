@@ -64,7 +64,15 @@ export default function ContactsRoute() {
   return (
     <main className={styles.heroPage}>
       <section className={styles.heroSection}>
-        <img className={styles.heroMedia} src={hero.image} alt={hero.alt} />
+        <img
+          className={styles.heroMedia}
+          src={hero.image}
+          alt={hero.alt}
+          width={hero.width}
+          height={hero.height}
+          loading="eager"
+          decoding="sync"
+        />
         <PageWrapper className={styles.heroWrap}>
           <div className={styles.heroCopy}>
             <p className={styles.heroEyebrow}>Контакты</p>
@@ -113,13 +121,13 @@ export default function ContactsRoute() {
         </PageWrapper>
       </section>
 
-      <section className={styles.darkSection}>
+      <section className={styles.lightSection}>
         <PageWrapper>
           <section className={styles.contactPanel} aria-labelledby="contacts-main-title">
             <div className={styles.contactPanel__content}>
               <div className={styles.contactPanel__details}>
                 <span>Связаться с Анфас</span>
-                <h2 id="contacts-main-title">Один блок для звонка, письма и встречи.</h2>
+                <h2 id="contacts-main-title">Контакты</h2>
                 <dl>
                   {contactDetails.map((item) => (
                     <div key={item.label}>
@@ -162,11 +170,7 @@ export default function ContactsRoute() {
               </a>
             </article>
           </section>
-        </PageWrapper>
-      </section>
 
-      <section className={styles.lightSection}>
-        <PageWrapper>
           <section className={styles.legalPanel} aria-label="Реквизиты компании">
             <div>
               <p className={styles.eyebrow}>Реквизиты</p>

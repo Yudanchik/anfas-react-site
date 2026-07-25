@@ -1,4 +1,6 @@
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
+import individualFormatImage from '@/assets/images/formats/individual-format.webp'
+import packageFormatImage from '@/assets/images/formats/package-format.webp'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
 
@@ -46,11 +48,16 @@ export function HomePaths() {
               </ModalTriggerButton>
             </div>
             <div className={`${styles.paths__photo} ${styles.paths__photo_individual}`} aria-hidden="true">
+              <img
+                className={styles.paths__photoImage}
+                src={individualFormatImage}
+                alt=""
+                width={1448}
+                height={1086}
+                loading="lazy"
+                decoding="async"
+              />
               <span className={styles.paths__photoBadge}>Индивидуальный путь</span>
-              <div className={styles.paths__photoContent}>
-                <strong>Планировка, материалы и свет собираются под ваш образ жизни.</strong>
-                <span>Без шаблонов и типовых сценариев.</span>
-              </div>
             </div>
           </article>
 
@@ -77,11 +84,16 @@ export function HomePaths() {
               </ModalTriggerButton>
             </div>
             <div className={`${styles.paths__photo} ${styles.paths__photo_package}`} aria-hidden="true">
+              <img
+                className={styles.paths__photoImage}
+                src={packageFormatImage}
+                alt=""
+                width={1448}
+                height={1086}
+                loading="lazy"
+                decoding="async"
+              />
               <span className={styles.paths__photoBadge}>Готовый формат</span>
-              <div className={styles.paths__photoContent}>
-                <strong>Сроки, смета и комплектация понятны ещё до старта ремонта.</strong>
-                <span>Быстрее запуск, меньше согласований.</span>
-              </div>
             </div>
           </article>
         </div>
