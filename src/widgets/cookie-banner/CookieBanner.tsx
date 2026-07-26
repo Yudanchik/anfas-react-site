@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 
 import styles from './CookieBanner.module.scss'
 
-const STORAGE_KEY = 'anfas-cookie-notice-v1'
+const STORAGE_KEY = 'anfas-cookie-notice-v2'
 
 const subscribeToCookieNotice = () => () => undefined
 
@@ -44,7 +44,7 @@ export function CookieBanner() {
   }
 
   return (
-    <section className={styles.cookieBanner} aria-label="Уведомление о локальном хранении данных">
+    <section className={styles.cookieBanner} aria-label="Уведомление о cookies и аналитике">
       <p className={styles.cookieBanner__text}>
         Сайт использует{' '}
         <Link className={styles.cookieBanner__link} to="/cookies">
