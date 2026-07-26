@@ -5,6 +5,7 @@ import { Link } from 'react-router'
 
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 
+import { submitLead } from '../api/submitLead'
 import { formatPhoneValue, sanitizeNameValue } from '../model/brief.form'
 import { briefSchema, type BriefFormValues } from '../model/brief.schema'
 import { useLeadModal } from '../model/LeadModalContext'
@@ -19,22 +20,27 @@ const focusableSelector = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',')
 
+type LeadFormValues = BriefFormValues & { company?: string }
+
 export function BriefModal() {
   const { closeLeadModal, isOpen, modalState, preset } = useLeadModal()
   const panelRef = useRef<HTMLDivElement>(null)
+  const startedAtRef = useRef(Math.floor(Date.now() / 1000))
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const {
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
     register,
     reset,
     setValue,
-  } = useForm<BriefFormValues>({
+  } = useForm<LeadFormValues>({
     defaultValues: {
       name: '',
       phone: '',
       service: 'general',
       wishes: '',
+      company: '',
     },
     resolver: zodResolver(briefSchema),
   })
@@ -42,11 +48,15 @@ export function BriefModal() {
   const close = useCallback(() => {
     closeLeadModal()
     setSubmitted(false)
+    setSubmitError(null)
     reset()
   }, [closeLeadModal, reset])
 
   useEffect(() => {
     if (!isOpen) return
+
+    startedAtRef.current = Math.floor(Date.now() / 1000)
+    setSubmitError(null)
 
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
     const focusTimer = window.setTimeout(() => {
@@ -99,7 +109,23 @@ export function BriefModal() {
     }
   }, [isOpen, preset.requestType, setValue])
 
-  const submit = (_values: BriefFormValues) => {
+  const submit = async (values: LeadFormValues) => {
+    setSubmitError(null)
+    const result = await submitLead({
+      name: values.name,
+      phone: values.phone,
+      service: values.service,
+      wishes: values.wishes,
+      company: values.company,
+      source: modalState.source || 'brief-modal',
+      startedAt: startedAtRef.current,
+    })
+
+    if (!result.ok) {
+      setSubmitError(result.error)
+      return
+    }
+
     setSubmitted(true)
   }
 
@@ -147,6 +173,14 @@ export function BriefModal() {
 
             <form className={styles.briefModal__form} onSubmit={handleSubmit(submit)} noValidate>
               <input type="hidden" {...register('service')} />
+              <input
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: 'absolute', left: '-9999px', height: 0, width: 0, opacity: 0 }}
+                {...register('company')}
+              />
 
               <div className={styles.briefModal__selected}>
                 <span className={styles.briefModal__selectedLabel}>Выбрано</span>
@@ -224,8 +258,16 @@ export function BriefModal() {
                 </label>
               )}
 
-              <button className={styles.briefModal__submit} type="submit">
-                <span className={styles.briefModal__submitText}>{preset.submitLabel}</span>
+              {submitError ? (
+                <small className={styles.briefModal__error} role="alert">
+                  {submitError}
+                </small>
+              ) : null}
+
+              <button className={styles.briefModal__submit} type="submit" disabled={isSubmitting}>
+                <span className={styles.briefModal__submitText}>
+                  {isSubmitting ? 'Отправляем…' : preset.submitLabel}
+                </span>
                 <i className={styles.briefModal__submitIcon} aria-hidden="true">
                   <ArrowIcon size={16} />
                 </i>

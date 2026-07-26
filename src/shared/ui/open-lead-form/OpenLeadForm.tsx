@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useId, useState, type ReactNode } from 'react'
+import { useId, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { useForm, useWatch } from 'react-hook-form'
 
+import { submitLead } from '@/features/brief/api/submitLead'
 import {
   briefServiceOptions,
   formatPhoneValue,
@@ -31,6 +32,8 @@ type OpenLeadFormProps = {
   successMessage?: string
 }
 
+type LeadFormValues = BriefFormValues & { company?: string }
+
 const serviceIcons = {
   general: ConsultationIcon,
   individual: HomeIcon,
@@ -43,9 +46,11 @@ export function OpenLeadForm({
   lead,
   defaultService = 'individual',
   submitLabel = 'Обсудить проект',
-  successMessage = 'Спасибо. Форма прошла клиентскую валидацию, и мы свяжемся с вами для уточнения деталей.',
+  successMessage = 'Спасибо. Мы получили заявку и свяжемся с вами для уточнения деталей.',
 }: OpenLeadFormProps) {
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const startedAtRef = useRef(Math.floor(Date.now() / 1000))
   const formId = useId()
   const nameInputId = `${formId}-name`
   const phoneInputId = `${formId}-phone`
@@ -58,11 +63,12 @@ export function OpenLeadForm({
     register,
     reset,
     setValue,
-  } = useForm<BriefFormValues>({
+  } = useForm<LeadFormValues>({
     defaultValues: {
       name: '',
       phone: '',
       service: defaultService,
+      company: '',
     },
     resolver: zodResolver(briefSchema),
   })
@@ -70,12 +76,29 @@ export function OpenLeadForm({
   const selectedService = useWatch({ control, name: 'service' })
   const activeService: BriefService = selectedService ?? defaultService
 
-  const submit = (_values: BriefFormValues) => {
+  const submit = async (values: LeadFormValues) => {
+    setSubmitError(null)
+    const result = await submitLead({
+      name: values.name,
+      phone: values.phone,
+      service: values.service,
+      company: values.company,
+      source: 'open-lead-form',
+      startedAt: startedAtRef.current,
+    })
+
+    if (!result.ok) {
+      setSubmitError(result.error)
+      return
+    }
+
     setSubmitted(true)
+    startedAtRef.current = Math.floor(Date.now() / 1000)
     reset({
       name: '',
       phone: '',
       service: activeService,
+      company: '',
     })
   }
 
@@ -87,6 +110,14 @@ export function OpenLeadForm({
       </div>
 
       <form className={styles.openLeadForm__form} onSubmit={handleSubmit(submit)} noValidate>
+        <input
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{ position: 'absolute', left: '-9999px', height: 0, width: 0, opacity: 0 }}
+          {...register('company')}
+        />
         <fieldset className={styles.openLeadForm__servicePicker}>
           <legend className={styles.openLeadForm__legend}>Что интересует сейчас</legend>
           <div className={styles.openLeadForm__serviceOptions}>
@@ -179,6 +210,11 @@ export function OpenLeadForm({
         </div>
 
         <div className={styles.openLeadForm__footer}>
+          {submitError ? (
+            <small className={styles.openLeadForm__error} role="alert">
+              {submitError}
+            </small>
+          ) : null}
           <div className={styles.openLeadForm__footerAction}>
             <button className={styles.openLeadForm__button} type="submit" disabled={isSubmitting}>
               <span className={styles.openLeadForm__buttonText}>

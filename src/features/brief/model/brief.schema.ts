@@ -16,6 +16,7 @@ export const briefSchema = z.object({
     error: 'Выберите услугу',
   }),
   wishes: z.string().trim().max(600, 'Сократите текст до 600 символов').optional(),
+  company: z.string().optional(),
 })
 
 export type BriefFormValues = z.infer<typeof briefSchema>
