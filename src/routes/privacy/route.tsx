@@ -7,7 +7,7 @@ import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './PrivacyRoute.module.scss'
 
-const REVISION_DATE = '21 июля 2026 года'
+const REVISION_DATE = '26 июля 2026 года'
 
 const privacySummary = [
   { label: 'Оператор', value: company.legalOwner },

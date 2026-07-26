@@ -7,7 +7,7 @@ import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './CookiesRoute.module.scss'
 
-const REVISION_DATE = '16 июля 2026 года'
+const REVISION_DATE = '26 июля 2026 года'
 
 const cookieSummary = [
   { label: 'Оператор', value: company.legalOwner },
@@ -21,7 +21,7 @@ export const meta = () =>
   createSeoMeta({
     title: 'Политика использования cookie — Анфас',
     description:
-      'Информация об использовании локального хранения и технических данных на сайте ООО «АНФАС».',
+      'Информация об использовании cookies, локального хранения и Яндекс.Метрики на сайте ООО «АНФАС».',
     path: '/cookies',
     robots: 'noindex, follow',
   })
@@ -39,8 +39,8 @@ export default function CookiesRoute() {
               <em>использования cookie.</em>
             </h1>
             <p className={styles.lead}>
-              Документ объясняет использование технических данных и локального хранилища браузера на
-              сайте ООО «АНФАС».
+              Документ объясняет использование cookies, локального хранилища и веб-аналитики
+              Яндекс.Метрика на сайте ООО «АНФАС».
             </p>
           </div>
 
