@@ -3,10 +3,12 @@ import { lazy, Suspense, type ReactNode } from 'react'
 
 import { AppProviders } from '@/app/providers/AppProviders'
 import { LeadModalProvider, useLeadModal } from '@/features/brief/model/LeadModalContext'
+import { YANDEX_METRIKA_ID } from '@/shared/config/analytics'
 import { company } from '@/shared/config/company'
 import { absoluteUrl } from '@/shared/config/seo'
 import { useRouteScrollRestoration } from '@/shared/hooks/useRouteScrollRestoration'
 import { useScrollEffects } from '@/shared/hooks/useScrollEffects'
+import { YandexMetrikaHit, yandexMetrikaInlineScript } from '@/shared/lib/yandex-metrika/YandexMetrika'
 import { ScrollToTop } from '@/shared/ui/scroll-to-top/ScrollToTop'
 import { CookieBanner } from '@/widgets/cookie-banner'
 import { SiteFooter } from '@/widgets/site-footer/SiteFooter'
@@ -47,11 +49,24 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="theme-color" content="#161713" />
         <link rel="icon" href="/images/anfas-logo-official.svg" type="image/svg+xml" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{ __html: yandexMetrikaInlineScript }}
+        />
         <Meta />
         <Links />
       </head>
       <body>
         {children}
+        <noscript>
+          <div>
+            <img
+              src={`https://mc.yandex.ru/watch/${YANDEX_METRIKA_ID}`}
+              style={{ position: 'absolute', left: '-9999px' }}
+              alt=""
+            />
+          </div>
+        </noscript>
         <Scripts />
       </body>
     </html>
@@ -87,6 +102,7 @@ export default function Root() {
           <LazyLeadModalMount />
           <ScrollToTop />
           <CookieBanner />
+          <YandexMetrikaHit />
         </div>
       </LeadModalProvider>
     </AppProviders>
