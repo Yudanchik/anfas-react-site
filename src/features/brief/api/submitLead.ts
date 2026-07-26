@@ -5,7 +5,6 @@ export type SubmitLeadPayload = BriefFormValues & {
   source?: string
   page?: string
   company?: string
-  startedAt?: number
 }
 
 export type SubmitLeadResult =
@@ -44,7 +43,6 @@ export async function submitLead(payload: SubmitLeadPayload): Promise<SubmitLead
         source: payload.source ?? 'site',
         page: payload.page ?? (typeof window !== 'undefined' ? window.location.href : ''),
         company: payload.company ?? '',
-        startedAt: payload.startedAt ?? Math.floor(Date.now() / 1000),
       }),
     })
 

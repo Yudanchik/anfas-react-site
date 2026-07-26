@@ -25,7 +25,6 @@ type LeadFormValues = BriefFormValues & { company?: string }
 export function BriefModal() {
   const { closeLeadModal, isOpen, modalState, preset } = useLeadModal()
   const panelRef = useRef<HTMLDivElement>(null)
-  const startedAtRef = useRef(Math.floor(Date.now() / 1000))
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const {
@@ -54,9 +53,6 @@ export function BriefModal() {
 
   useEffect(() => {
     if (!isOpen) return
-
-    startedAtRef.current = Math.floor(Date.now() / 1000)
-    setSubmitError(null)
 
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
     const focusTimer = window.setTimeout(() => {
@@ -118,7 +114,6 @@ export function BriefModal() {
       wishes: values.wishes,
       company: values.company,
       source: modalState.source || 'brief-modal',
-      startedAt: startedAtRef.current,
     })
 
     if (!result.ok) {

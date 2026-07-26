@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useId, useRef, useState, type ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { useForm, useWatch } from 'react-hook-form'
 
@@ -50,7 +50,6 @@ export function OpenLeadForm({
 }: OpenLeadFormProps) {
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const startedAtRef = useRef(Math.floor(Date.now() / 1000))
   const formId = useId()
   const nameInputId = `${formId}-name`
   const phoneInputId = `${formId}-phone`
@@ -84,7 +83,6 @@ export function OpenLeadForm({
       service: values.service,
       company: values.company,
       source: 'open-lead-form',
-      startedAt: startedAtRef.current,
     })
 
     if (!result.ok) {
@@ -93,7 +91,6 @@ export function OpenLeadForm({
     }
 
     setSubmitted(true)
-    startedAtRef.current = Math.floor(Date.now() / 1000)
     reset({
       name: '',
       phone: '',
