@@ -30,7 +30,10 @@ const renderHotspots = (
         style={{ '--feature-y': item.position } as FeatureStyle}
         type="button"
         key={item.id}
-        onClick={() => selectFeature(index)}
+        onClick={(event) => {
+          selectFeature(index)
+          event.currentTarget.blur()
+        }}
         aria-label={`${item.label}: ${item.title}`}
         aria-pressed={index === activeFeature}
       />
@@ -56,7 +59,7 @@ export function HomeProjectControl() {
             titleId="project-control-title"
             title={
               <>
-                Ремонт может быть понятным и <em>спокойным событием</em> в вашей жизни.
+                Ремонт может быть понятным <em> и спокойным событием</em> в вашей жизни.
               </>
             }
             lead="Всё, что происходит на объекте, вы видите в одном месте. Финансы, фотоотчёты, документы и цены на работы всегда под рукой. Нажмите на разделы в телефоне и посмотрите, как устроен прозрачный контроль ремонта."

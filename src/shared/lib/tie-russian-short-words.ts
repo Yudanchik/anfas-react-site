@@ -1,3 +1,5 @@
+import { cloneElement, isValidElement, type ReactNode } from 'react'
+
 const NBSP = '\u00a0'
 
 const SHORT_WORD =
@@ -14,4 +16,30 @@ export function tieRussianShortWords(text: string) {
   }
 
   return text.replace(SHORT_WORD_RE, `$1${NBSP}`)
+}
+
+export function tieRussianShortWordsInNode(node: ReactNode): ReactNode {
+  if (node == null || typeof node === 'boolean') {
+    return node
+  }
+
+  if (typeof node === 'string' || typeof node === 'number') {
+    return tieRussianShortWords(String(node))
+  }
+
+  if (Array.isArray(node)) {
+    return node.map((child) => tieRussianShortWordsInNode(child))
+  }
+
+  if (isValidElement<{ children?: ReactNode }>(node)) {
+    const { children } = node.props
+
+    if (children == null) {
+      return node
+    }
+
+    return cloneElement(node, undefined, tieRussianShortWordsInNode(children))
+  }
+
+  return node
 }

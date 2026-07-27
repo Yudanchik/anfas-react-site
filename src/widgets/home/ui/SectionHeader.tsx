@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+import { tieRussianShortWords, tieRussianShortWordsInNode } from '@/shared/lib/tie-russian-short-words'
+
 import styles from './SectionHeader.module.scss'
 
 export const sectionHeaderClassNames = {
@@ -51,13 +53,13 @@ export function SectionHeader({
           id={titleId}
           className={`${styles.sectionHeaderTitle} ${sectionHeaderClassNames.title} ${titleClassName ?? ''}`}
         >
-          {title}
+          {tieRussianShortWordsInNode(title)}
         </h2>
         {lead ? (
           <p
             className={`${styles.sectionHeaderLead} ${sectionHeaderClassNames.lead} ${leadClassName ?? ''}`}
           >
-            {lead}
+            {tieRussianShortWords(lead)}
           </p>
         ) : null}
       </div>
