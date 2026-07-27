@@ -2,6 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 
+import type { CalculatorLeadContext } from '../model/calculator-lead-context'
 import type { BriefService } from '../model/brief.form'
 import { useLeadModal } from '../model/LeadModalContext'
 import type { ModalIntent } from '../model/lead-modal'
@@ -27,6 +28,7 @@ export type ModalTriggerButtonProps = NativeButtonProps & {
   showArrow?: boolean
   disabled?: boolean
   analyticsEvent?: string
+  calculatorContext?: CalculatorLeadContext
   className?: string
 }
 
@@ -42,6 +44,7 @@ export function ModalTriggerButton({
   showArrow = true,
   disabled = false,
   analyticsEvent,
+  calculatorContext,
   className,
   ...buttonProps
 }: ModalTriggerButtonProps) {
@@ -59,7 +62,7 @@ export function ModalTriggerButton({
   const handleClick = () => {
     if (disabled) return
 
-    openLeadModal({ intent, source, projectSlug, requestType, analyticsEvent })
+    openLeadModal({ intent, source, projectSlug, requestType, analyticsEvent, calculatorContext })
   }
 
   return (

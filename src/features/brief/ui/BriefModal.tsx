@@ -114,6 +114,7 @@ export function BriefModal() {
       wishes: values.wishes,
       company: values.company,
       source: modalState.source || 'brief-modal',
+      calculator: modalState.calculatorContext,
     })
 
     if (!result.ok) {

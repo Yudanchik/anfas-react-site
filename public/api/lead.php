@@ -92,6 +92,7 @@ if (mb_strlen($wishes) > 600) {
 $serviceLabel = $allowedServices[$service];
 $when = (new DateTimeImmutable('now', new DateTimeZone('Europe/Moscow')))->format('d.m.Y H:i');
 $page = trim((string) ($data['page'] ?? ''));
+$calculatorLines = formatCalculatorLines($data['calculator'] ?? null);
 
 $subject = 'Заявка с сайта Анфас — ' . $serviceLabel;
 $bodyText = implode("\n", array_filter([
@@ -101,6 +102,7 @@ $bodyText = implode("\n", array_filter([
   'Телефон: ' . $phone,
   'Услуга: ' . $serviceLabel,
   $wishes !== '' ? 'Пожелания: ' . $wishes : null,
+  $calculatorLines !== '' ? $calculatorLines : null,
   $source !== '' ? 'Источник формы: ' . $source : null,
   $page !== '' ? 'Страница: ' . $page : null,
   'Время (МСК): ' . $when,
@@ -133,6 +135,65 @@ try {
 
 echo json_encode(['ok' => true], JSON_UNESCAPED_UNICODE);
 exit;
+
+/**
+ * @param mixed $calculator
+ */
+function formatCalculatorLines($calculator): string {
+  if (!is_array($calculator)) {
+    return '';
+  }
+
+  $lines = ['Параметры калькулятора:'];
+
+  $append = static function (string $label, mixed $value) use (&$lines): void {
+    if (!is_string($value)) {
+      return;
+    }
+
+    $value = trim($value);
+    if ($value === '') {
+      return;
+    }
+
+    $lines[] = $label . ': ' . $value;
+  };
+
+  $append('Формат', $calculator['modeLabel'] ?? null);
+  $append('Площадь', isset($calculator['area']) ? ((string) $calculator['area']) . ' м²' : null);
+  $append('Тип объекта', $calculator['propertyLabel'] ?? null);
+  $append('Комплектация', $calculator['packageLabel'] ?? null);
+  $append('Уровень отделки', $calculator['finishLabel'] ?? null);
+  $append('Сложность проекта', $calculator['complexityLabel'] ?? null);
+
+  if (!empty($calculator['extraWorks']) && is_array($calculator['extraWorks'])) {
+    $extraWorks = array_values(array_filter(array_map(
+      static fn ($item) => is_string($item) ? trim($item) : '',
+      $calculator['extraWorks']
+    )));
+
+    if ($extraWorks !== []) {
+      $lines[] = 'Дополнительные работы: ' . implode(', ', $extraWorks);
+    }
+  }
+
+  $priceLabel = trim((string) ($calculator['priceLabel'] ?? ''));
+  $priceValue = trim((string) ($calculator['priceValue'] ?? ''));
+  if ($priceLabel !== '' && $priceValue !== '') {
+    $lines[] = $priceLabel . ': ' . $priceValue;
+  } elseif ($priceValue !== '') {
+    $lines[] = 'Ориентир стоимости: ' . $priceValue;
+  }
+
+  $append('Срок', $calculator['duration'] ?? null);
+  $append('Ставка', $calculator['rateText'] ?? null);
+
+  if (count($lines) <= 1) {
+    return '';
+  }
+
+  return implode("\n", $lines);
+}
 
 /**
  * @param array<string, mixed> $smtp
