@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { sharedHeroSlides } from '@/shared/config/hero-media'
+import { tieRussianShortWords } from '@/shared/lib/tie-russian-short-words'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './HomeHero.module.scss'
@@ -108,7 +109,7 @@ export function HomeHero() {
                 {heroContent.cards.map((card) => (
                   <article className={styles.hero__card} key={card.label}>
                     <span className={styles.hero__cardLabel}>{card.label}</span>
-                    <strong className={styles.hero__cardText}>{card.text}</strong>
+                    <strong className={styles.hero__cardText}>{tieRussianShortWords(card.text)}</strong>
                   </article>
                 ))}
               </div>
