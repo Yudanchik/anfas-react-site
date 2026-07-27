@@ -1,8 +1,9 @@
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { company } from '@/shared/config/company'
-import { createSeoMeta } from '@/shared/config/seo'
+import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { YandexOfficeMap } from '@/shared/ui/yandex-office-map'
 
 import styles from './ContactsRoute.module.scss'
 
@@ -60,9 +61,35 @@ export const meta = () =>
 
 export default function ContactsRoute() {
   const hero = innerHeroImages.contacts
+  const localBusinessJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: company.name,
+    legalName: company.legalOwner,
+    url: absoluteUrl('/contacts'),
+    telephone: company.phone,
+    email: company.email,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: `${company.addressShort}, ${company.office}`,
+      addressLocality: 'Санкт-Петербург',
+      addressCountry: 'RU',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: company.mapCenter.lat,
+      longitude: company.mapCenter.lon,
+    },
+    openingHours: 'Mo-Fr 10:00-19:00',
+    sameAs: [company.vkHref, company.telegramHref, company.youtubeHref, company.instagramHref],
+  }
 
   return (
     <main className={styles.heroPage}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+      />
       <section className={styles.heroSection}>
         <img
           className={styles.heroMedia}
@@ -161,29 +188,36 @@ export default function ContactsRoute() {
               </div>
             </div>
 
-            <article className={styles.contactPanel__map} aria-label="Карта офиса Анфас">
-              <span>Карта</span>
-              <h2>Маршрут до офиса</h2>
-              <p>Откройте карту и согласуйте время встречи, чтобы команда заранее подготовилась к вашему объекту.</p>
-              <a href={company.mapHref} target="_blank" rel="noreferrer">
-                Открыть маршрут
-              </a>
+            <article className={styles.contactPanel__legal} aria-label="Реквизиты компании">
+              <span>Реквизиты</span>
+              <h2>Юридическая информация</h2>
+              <dl>
+                {legalRows.map(([label, value]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
             </article>
           </section>
 
-          <section className={styles.legalPanel} aria-label="Реквизиты компании">
-            <div>
-              <p className={styles.eyebrow}>Реквизиты</p>
-              <h2>Юридическая информация.</h2>
+          <section className={styles.officeMapPanel} aria-labelledby="office-map-title">
+            <div className={styles.officeMapPanel__copy}>
+              <span>Карта</span>
+              <h2 id="office-map-title">Офис Анфас на карте</h2>
+              <p>
+                {company.address}. Приезжайте по предварительной договорённости — команда заранее
+                подготовится к встрече и разбору вашего объекта.
+              </p>
+              <a href={company.mapHref} target="_blank" rel="noreferrer">
+                Построить маршрут
+              </a>
             </div>
-            <dl>
-              {legalRows.map(([label, value]) => (
-                <div key={label}>
-                  <dt>{label}</dt>
-                  <dd>{value}</dd>
-                </div>
-              ))}
-            </dl>
+
+            <div className={styles.officeMapPanel__map}>
+              <YandexOfficeMap />
+            </div>
           </section>
         </PageWrapper>
       </section>

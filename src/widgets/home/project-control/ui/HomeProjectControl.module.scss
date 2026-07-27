@@ -181,10 +181,11 @@
     background 180ms ease,
     box-shadow 180ms ease;
 
-  &:hover,
-  &:focus-visible {
-    background: rgb(197 160 102 / 18%);
-    box-shadow: inset 0 0 0 2px rgb(197 160 102 / 60%);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(.hotspotActive) {
+      background: rgb(197 160 102 / 18%);
+      box-shadow: inset 0 0 0 2px rgb(197 160 102 / 60%);
+    }
   }
 
   &:focus-visible {

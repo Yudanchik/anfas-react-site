@@ -38,7 +38,7 @@ export const sharedHeroSlides: ReadonlyArray<SharedHeroSlide> = [
   {
     image: heroDining,
     alt: 'Премиальная столовая зона с мягким вечерним светом и тёплыми материалами',
-    eyebrow: 'Премиальный интерьер без визуального шума',
+    eyebrow: 'Премиальный интерьер',
     width: 1692,
     height: 929,
   },
