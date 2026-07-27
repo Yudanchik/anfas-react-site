@@ -1,3 +1,5 @@
+import type { CalculatorLeadContext } from '../model/calculator-lead-context'
+
 import type { BriefService } from './brief.form'
 
 export type ModalIntent =
@@ -26,6 +28,7 @@ export type LeadModalOpenOptions = {
   projectSlug?: string
   requestType?: BriefService
   analyticsEvent?: string
+  calculatorContext?: CalculatorLeadContext
   customPreset?: Partial<LeadModalPreset>
 }
 

@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
+import type { CalculatorLeadContext } from '@/features/brief/model/calculator-lead-context'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import { SectionHeader } from '../../ui'
+import { buildCalculatorLeadContext } from '../model/calculator-lead-context'
 import { packageCalculator } from '../model/package-calculator.data'
 
 import styles from './HomePackageCalculator.module.scss'
@@ -113,6 +115,20 @@ export function HomePackageCalculator() {
       propertyLabel: propertyLabels[propertyType],
     }
   }, [area, complexity, finish, mode, propertyType, selectedOptions, selectedPackage])
+
+  const calculatorLeadContext = useMemo<CalculatorLeadContext>(
+    () =>
+      buildCalculatorLeadContext({
+        mode,
+        area,
+        propertyType,
+        packageVariant,
+        finish,
+        complexity,
+        selectedOptions,
+      }),
+    [area, complexity, finish, mode, packageVariant, propertyType, selectedOptions],
+  )
 
   const toggleOption = (value: OptionType) => {
     setSelectedOptions((current) =>
@@ -367,6 +383,7 @@ export function HomePackageCalculator() {
                 intent="calculation"
                 requestType={mode}
                 source="home-calculator-result"
+                calculatorContext={calculatorLeadContext}
               >
                 Получить расчёт
               </ModalTriggerButton>
@@ -375,6 +392,7 @@ export function HomePackageCalculator() {
                 intent={mode}
                 source="home-calculator-format"
                 variant="outline"
+                calculatorContext={calculatorLeadContext}
               >
                 Обсудить формат
               </ModalTriggerButton>

@@ -1,10 +1,15 @@
+import type { CalculatorLeadContext } from '../model/calculator-lead-context'
+
 import { briefServiceOptions, type BriefService } from '../model/brief.form'
 import type { BriefFormValues } from '../model/brief.schema'
+
+export type { CalculatorLeadContext }
 
 export type SubmitLeadPayload = BriefFormValues & {
   source?: string
   page?: string
   company?: string
+  calculator?: CalculatorLeadContext
 }
 
 export type SubmitLeadResult =
@@ -43,6 +48,7 @@ export async function submitLead(payload: SubmitLeadPayload): Promise<SubmitLead
         source: payload.source ?? 'site',
         page: payload.page ?? (typeof window !== 'undefined' ? window.location.href : ''),
         company: payload.company ?? '',
+        calculator: payload.calculator ?? null,
       }),
     })
 
