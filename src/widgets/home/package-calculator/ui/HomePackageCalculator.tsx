@@ -146,7 +146,7 @@ export function HomePackageCalculator() {
             <>
               {packageCalculator.title}
               <br />
-              <em>и понятной вилкой</em>
+              <em>и честной вилкой</em>
             </>
           }
           lead={packageCalculator.lead}
@@ -175,7 +175,7 @@ export function HomePackageCalculator() {
               </p>
               <p className={styles.packageCalculator__formHint}>
                 {mode === 'package'
-                  ? 'В пакетном режиме считаем только площадь и выбранную комплектацию. Это быстрый и понятный ориентир.'
+                  ? 'В пакетном режиме считаем только площадь и выбранную комплектацию. Это быстрый ориентир по стоимости.'
                   : 'В индивидуальном режиме добавляем параметры квартиры, уровень отделки и дополнительные работы.'}
               </p>
             </div>
