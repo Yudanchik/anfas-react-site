@@ -1,8 +1,8 @@
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
+import type { ServicePackage } from '@/entities/service/model/services.data'
 import packageFormatImage from '@/assets/images/formats/package-format.webp'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
-import { storyPackage } from '../model/story-package.data'
 
 import styles from './HomeStoryPackage.module.scss'
 
@@ -18,22 +18,31 @@ function renderMultiline(text: string) {
   ))
 }
 
-export function HomeStoryPackage() {
+type HomeStoryPackageProps = {
+  service: ServicePackage
+  tone?: 'light' | 'dark'
+}
+
+export function HomeStoryPackage({ service, tone = 'light' }: HomeStoryPackageProps) {
+  const { story } = service
+
   return (
-    <section className={styles.story + ' ' + styles.sectionpad}>
+    <section
+      className={`${styles.story} ${styles.sectionpad} ${tone === 'dark' ? styles.story_dark : ''}`}
+    >
       <PageWrapper className={styles.layout}>
         <div className={styles.processColumn}>
           <SectionHeader
             className={styles.storyHeader}
-            number="04"
-            label={storyPackage.eyebrow}
-            title={<>{renderMultiline(storyPackage.title)}</>}
-            lead={storyPackage.lead}
+            label={story.eyebrow}
+            title={<>{renderMultiline(story.title)}</>}
+            lead={story.lead}
+            tone={tone === 'dark' ? 'dark' : 'light'}
             reveal={false}
           />
 
           <div className={styles.process}>
-            {storyPackage.steps.map((step) => (
+            {story.steps.map((step) => (
               <article className={styles.stepCard} key={step.number}>
                 <div className={styles.stepTop}>
                   <span className={styles.stepNumber}>{step.number}</span>
@@ -60,25 +69,28 @@ export function HomeStoryPackage() {
                 decoding="async"
               />
             </div>
-            <span className={styles.summaryOverline}>{storyPackage.summary.overline}</span>
-            <h3 className={styles.summaryTitle}>{storyPackage.summary.title}</h3>
-            <p className={styles.summaryText}>{storyPackage.summary.text}</p>
 
-            <ul className={styles.summaryList}>
-              {storyPackage.summary.bullets.map((bullet) => (
-                <li className={styles.summaryItem} key={bullet}>
-                  {bullet}
-                </li>
-              ))}
-            </ul>
+            <div className={styles.summaryContent}>
+              <span className={styles.summaryOverline}>{story.summary.overline}</span>
+              <h3 className={styles.summaryTitle}>{story.summary.title}</h3>
+              <p className={styles.summaryText}>{story.summary.text}</p>
 
-            <ModalTriggerButton
-              className={styles.cta}
-              intent="package"
-              source="home-package-story"
-            >
-              Хочу пакетный ремонт
-            </ModalTriggerButton>
+              <ul className={styles.summaryList}>
+                {story.summary.bullets.map((bullet) => (
+                  <li className={styles.summaryItem} key={bullet}>
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+
+              <ModalTriggerButton
+                className={styles.cta}
+                intent="package"
+                source="service-package-story"
+              >
+                {service.ctaLabel}
+              </ModalTriggerButton>
+            </div>
           </div>
         </div>
       </PageWrapper>

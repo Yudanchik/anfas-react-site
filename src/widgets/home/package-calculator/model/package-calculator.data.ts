@@ -98,9 +98,9 @@ export const packageCalculator = {
   rates: {
     individualDesignPerM2: 9000,
     individualWorkPerM2: {
-      basic: 39000,
-      standard: 44000,
-      premium: 52000,
+      basic: 46000,
+      standard: 52000,
+      premium: 61000,
     },
     propertyCoefficients: {
       new: 1,

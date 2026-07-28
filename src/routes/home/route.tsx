@@ -12,8 +12,6 @@ import { HomeSocials } from '@/widgets/home/socials'
 import { HomeTicker } from '@/widgets/home/ticker'
 import { HomePains } from '@/widgets/home/pains'
 import { HomeProjectControl } from '@/widgets/home/project-control'
-// import { HomeStoryIndividual } from '@/widgets/home/story-individual'
-// import { HomeStoryPackage } from '@/widgets/home/story-package'
 import { createSeoMeta } from '@/shared/config/seo'
 
 export const meta = () =>
@@ -42,12 +40,6 @@ export default function HomeRoute() {
 
       {/* 02: контроль ремонта в личном кабинете */}
       <HomeProjectControl />
-
-      {/* 03: индивидуальный путь */}
-      {/* <HomeStoryIndividual /> */}
-
-      {/* 04: пакетный путь */}
-      {/* <HomeStoryPackage /> */}
 
       {/* 05: выбор тарифов */}
       <HomePaths />

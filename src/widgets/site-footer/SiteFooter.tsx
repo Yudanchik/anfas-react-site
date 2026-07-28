@@ -2,7 +2,7 @@ import { useId, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
-import { services } from '@/entities/service/model/services.data'
+import { services, getServiceHref } from '@/entities/service/model/services.data'
 import { company } from '@/shared/config/company'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { META_DISCLAIMER } from '@/widgets/home/socials/model/socials.data'
@@ -138,7 +138,7 @@ export function SiteFooter() {
               <span className={styles.siteFooter__title}>Услуги</span>
               <nav className={styles.siteFooter__nav} aria-label="Навигация по услугам">
                 {services.slice(0, 5).map((service) => (
-                  <Link key={service.id} to={`/services#${service.id}`}>
+                  <Link key={service.id} to={getServiceHref(service.slug)}>
                     {service.title}
                   </Link>
                 ))}
@@ -164,7 +164,7 @@ export function SiteFooter() {
             <FooterAccordion title="Услуги">
               <nav className={styles.siteFooter__nav} aria-label="Навигация по услугам">
                 {services.slice(0, 5).map((service) => (
-                  <Link key={service.id} to={`/services#${service.id}`}>
+                  <Link key={service.id} to={getServiceHref(service.slug)}>
                     {service.title}
                   </Link>
                 ))}
