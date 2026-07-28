@@ -1,4 +1,4 @@
-import { cloneElement, isValidElement, type ReactNode } from 'react'
+import { Children, cloneElement, isValidElement, type ReactNode } from 'react'
 
 const NBSP = '\u00a0'
 
@@ -28,7 +28,7 @@ export function tieRussianShortWordsInNode(node: ReactNode): ReactNode {
   }
 
   if (Array.isArray(node)) {
-    return node.map((child) => tieRussianShortWordsInNode(child))
+    return Children.map(node, (child) => tieRussianShortWordsInNode(child))
   }
 
   if (isValidElement<{ children?: ReactNode }>(node)) {

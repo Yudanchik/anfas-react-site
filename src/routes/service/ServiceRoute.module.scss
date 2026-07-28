@@ -1,0 +1,216 @@
+@use 'media' as mq;
+@use 'flex' as flex;
+
+.servicePage {
+  padding: 0;
+  background: var(--paper);
+}
+
+.servicePage__hero {
+  position: relative;
+  min-height: 700px;
+  overflow: hidden;
+  color: var(--paper);
+  background: var(--ink);
+
+  @include mq.media(phone, tablet) {
+    min-height: 0;
+  }
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background:
+      linear-gradient(90deg, rgb(16 16 14 / 82%) 0%, rgb(16 16 14 / 48%) 42%, rgb(16 16 14 / 24%) 100%),
+      linear-gradient(180deg, rgb(16 16 14 / 32%), rgb(16 16 14 / 54%));
+  }
+}
+
+.servicePage__heroMedia {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.servicePage__heroWrap {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(320px, 0.72fr);
+  gap: var(--space-32);
+  align-items: end;
+  min-height: 700px;
+  padding-top: 146px;
+  padding-bottom: 72px;
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+    gap: var(--space-32);
+    min-height: 0;
+    padding-top: 112px;
+    padding-bottom: var(--space-48);
+  }
+
+  @include mq.media(phone) {
+    padding-top: 96px;
+    padding-bottom: var(--space-40);
+  }
+}
+
+.servicePage__heroCopy {
+  max-width: 760px;
+}
+
+.servicePage__heroEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-12);
+  margin: 0 0 var(--space-20);
+  color: rgb(245 242 236 / 76%);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+
+  &::before {
+    width: 36px;
+    height: 1px;
+    content: '';
+    background: currentcolor;
+  }
+}
+
+.servicePage__heroTitle {
+  max-width: 11.5ch;
+  margin: 0;
+  font-size: var(--type-display-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+
+  @include mq.media(phone, tablet) {
+    max-width: none;
+  }
+
+  em {
+    color: var(--amber);
+    font-family: inherit;
+    font-style: normal;
+    font-weight: var(--weight-medium);
+  }
+}
+
+.servicePage__heroLead {
+  max-width: 42ch;
+  margin: var(--space-24) 0 0;
+  color: rgb(245 242 236 / 78%);
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
+
+  @include mq.media(phone, tablet) {
+    max-width: 100%;
+  }
+}
+
+.servicePage__heroActions {
+  @include flex.flex($fw: wrap);
+
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.servicePage__heroStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-12);
+  margin-top: var(--space-32);
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+    gap: var(--space-32);
+  }
+
+  div {
+    padding: var(--space-16) var(--space-20);
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: var(--radius-md);
+    background: rgb(255 255 255 / 6%);
+    backdrop-filter: var(--glass-blur);
+  }
+
+  span,
+  strong {
+    display: block;
+  }
+
+  span {
+    color: var(--amber);
+    font-size: var(--type-caption);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  strong {
+    margin-top: var(--space-8);
+    font-size: var(--type-body-md);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-body-sm);
+  }
+}
+
+.servicePage__heroAside {
+  display: grid;
+  gap: var(--space-16);
+  justify-self: end;
+  width: min(100%, 520px);
+}
+
+.servicePage__heroCard {
+  padding: var(--space-20) var(--space-24);
+  color: var(--paper);
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: var(--radius-card);
+  background: rgb(255 255 255 / 6%);
+  box-shadow: 0 18px 48px rgb(0 0 0 / 16%);
+  backdrop-filter: var(--glass-blur);
+}
+
+.servicePage__heroCardEyebrow {
+  display: inline-flex;
+  margin-bottom: var(--space-12);
+  color: var(--amber);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.servicePage__heroCardTitle {
+  display: block;
+  margin-bottom: var(--space-12);
+  font-size: var(--type-heading-xs);
+  line-height: var(--leading-heading-compact);
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+
+.servicePage__heroCardText {
+  display: block;
+  margin: 0;
+  color: rgb(245 242 236 / 78%);
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
+}
+
+.servicePage__surfaceLight {
+  padding: var(--section-pad-y) 0;
+  background: var(--paper);
+}
+
+.servicePage__formSection {
+  margin-top: 0;
+}

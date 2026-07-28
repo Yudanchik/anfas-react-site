@@ -26,5 +26,7 @@ export default {
     '/projects/id-kudrovo',
     '/projects/grand-house',
     '/services',
+    '/services/individual',
+    '/services/package',
   ],
 } satisfies Config

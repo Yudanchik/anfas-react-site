@@ -21,7 +21,7 @@ export function HomePaths() {
               мы работаем. Что <em>ближе?</em>
             </>
           }
-          lead="Оба формата ведут к одной цели: спокойному ремонту квартиры под ключ с понятным бюджетом, прозрачными сроками и контролем результата. Разница в том, сколько решений вы хотите оставить на нашей стороне."
+          lead="Оба формата ведут к одной цели: спокойной сдаче квартиры с фиксированным бюджетом и согласованным графиком. Разница в том, сколько решений вы хотите оставить на нашей стороне."
         />
 
         <div className={styles.paths__grid} data-reveal>
@@ -31,7 +31,7 @@ export function HomePaths() {
             <h3 className={styles.paths__title}>Индивидуальный проект</h3>
             <p className={styles.paths__description}>
               Подходит, если вы хотите персональный дизайн интерьера, гибкую планировку,
-              авторский подбор материалов и ремонт квартиры под ключ под ваш сценарий жизни.
+              авторский подбор материалов и реализацию под ваш сценарий жизни.
             </p>
             <ul className={styles.paths__features}>
               <li className={styles.paths__feature}>Архитектурный дизайн-проект и продуманная планировка</li>
@@ -41,7 +41,7 @@ export function HomePaths() {
             </ul>
             <div className={styles.paths__footer}>
               <span className={styles.paths__price}>
-                от <strong>9 000 ₽</strong> / м² · дизайн
+                от <strong>55 000 ₽</strong> / м² · под ключ
               </span>
               <ModalTriggerButton intent="individual" source="home-paths-individual">
                 Хочу индивидуальный ремонт
@@ -67,11 +67,11 @@ export function HomePaths() {
             <h3 className={styles.paths__title}>Пакетный ремонт</h3>
             <p className={styles.paths__description}>
               Готовый формат для тех, кто хочет быстро получить стильный интерьер: цена,
-              материалы, сроки и сценарий комплектации понятны ещё до старта работ.
+              материалы, сроки и состав работ ясны ещё до старта.
             </p>
             <ul className={styles.paths__features}>
-              <li className={styles.paths__feature}>3–4 готовые интерьерные эстетики под квартиру под ключ</li>
-              <li className={styles.paths__feature}>Фиксированная цена и прозрачная смета без скрытых доплат</li>
+              <li className={styles.paths__feature}>3–4 готовые интерьерные эстетики на выбор</li>
+              <li className={styles.paths__feature}>Фиксированная цена и открытая смета без скрытых доплат</li>
               <li className={styles.paths__feature}>Срок реализации: от 3 до 5 месяцев</li>
               <li className={styles.paths__feature}>Собранные решения по мебели, свету, сантехнике и отделке</li>
             </ul>

@@ -1,0 +1,128 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+
+.page {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  min-height: calc(100svh - 180px);
+  padding: var(--section-pad-y) 0;
+  background:
+    radial-gradient(circle at 50% 28%, rgb(237 174 36 / 10%), transparent 42%),
+    var(--paper);
+
+  @include mq.media(phone, tablet) {
+    min-height: calc(100svh - 140px);
+  }
+}
+
+.backdrop {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 0;
+  margin: 0;
+  pointer-events: none;
+  user-select: none;
+  color: rgb(22 23 19 / 6%);
+  font-family: var(--font-heading);
+  font-size: clamp(12rem, 42vw, 28rem);
+  font-weight: var(--weight-medium);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  white-space: nowrap;
+  transform: translate(-50%, -54%);
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.content {
+  @include flex.flex($fd: column, $ai: center);
+
+  max-width: 36rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.code {
+  @include flex.flex($ai: center, $jc: center);
+
+  gap: 12px;
+  margin: 0 0 20px;
+  color: rgb(22 23 19 / 52%);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    width: 28px;
+    height: 1px;
+    content: '';
+    background: currentcolor;
+  }
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--type-display-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--ink);
+
+  @include mq.media(phone) {
+    font-size: var(--type-display-md);
+  }
+
+  em {
+    color: var(--amber);
+    font-family: inherit;
+    font-style: italic;
+    font-weight: var(--weight-regular);
+  }
+}
+
+.lead {
+  max-width: 34ch;
+  margin: 18px 0 0;
+  color: rgb(22 23 19 / 62%);
+  font-size: var(--type-body-md);
+  line-height: var(--leading-body);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--button-height);
+  margin-top: 32px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  color: var(--paper);
+  font-size: var(--type-body-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-decoration: none;
+  text-transform: uppercase;
+  background: var(--ink);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background: rgb(22 23 19 / 88%);
+    transform: translateY(-1px);
+  }
+
+  @include mq.media(phone) {
+    width: 100%;
+  }
+}

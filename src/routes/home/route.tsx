@@ -12,17 +12,15 @@ import { HomeSocials } from '@/widgets/home/socials'
 import { HomeTicker } from '@/widgets/home/ticker'
 import { HomePains } from '@/widgets/home/pains'
 import { HomeProjectControl } from '@/widgets/home/project-control'
-// import { HomeStoryIndividual } from '@/widgets/home/story-individual'
-// import { HomeStoryPackage } from '@/widgets/home/story-package'
 import { createSeoMeta } from '@/shared/config/seo'
 
 export const meta = () =>
   createSeoMeta({
     title: 'Ремонт квартир под ключ в Санкт-Петербурге | Анфас',
     description:
-      'Ремонт квартир под ключ, дизайн-проект и пакетные решения в Санкт-Петербурге. Прозрачные сроки, понятный бюджет и контроль на каждом этапе.',
+      'Дизайн-проект, пакетный и индивидуальный ремонт квартир в Санкт-Петербурге. Фиксированные сроки, согласованный бюджет и контроль на каждом этапе.',
     keywords:
-      'ремонт квартир под ключ, ремонт квартиры спб, дизайн-проект квартиры, пакетный ремонт квартиры, ремонт с фиксированной ценой, ремонт с понятными сроками',
+      'ремонт квартир под ключ, ремонт квартиры спб, дизайн-проект квартиры, пакетный ремонт квартиры, ремонт с фиксированной ценой, индивидуальный ремонт квартиры',
     path: '/',
   })
 
@@ -42,12 +40,6 @@ export default function HomeRoute() {
 
       {/* 02: контроль ремонта в личном кабинете */}
       <HomeProjectControl />
-
-      {/* 03: индивидуальный путь */}
-      {/* <HomeStoryIndividual /> */}
-
-      {/* 04: пакетный путь */}
-      {/* <HomeStoryPackage /> */}
 
       {/* 05: выбор тарифов */}
       <HomePaths />

@@ -1,7 +1,10 @@
+import { Link } from 'react-router'
+
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
-import { services } from '@/entities/service/model/services.data'
+import { services, getServiceHref } from '@/entities/service/model/services.data'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { createSeoMeta } from '@/shared/config/seo'
+import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
@@ -9,24 +12,13 @@ import styles from './ServicesRoute.module.scss'
 
 export const meta = () =>
   createSeoMeta({
-    title: 'Услуги ремонта квартир под ключ | Анфас',
+    title: 'Услуги по ремонту и дизайну квартир в СПб | Анфас',
     description:
-      'Индивидуальный и пакетный ремонт квартир под ключ в Санкт-Петербурге. Понятные сроки, прозрачная смета, комплектация и одна команда на весь проект.',
+      'Индивидуальный и пакетный ремонт квартир в Санкт-Петербурге. Фиксированные сроки, согласованный бюджет и одна команда на весь проект.',
     keywords:
-      'ремонт квартир под ключ спб, индивидуальный ремонт, пакетный ремонт, дизайн и ремонт квартиры, ремонт квартиры с комплектацией',
+      'ремонт квартир под ключ спб, индивидуальный ремонт, пакетный ремонт, дизайн-проект квартиры, ремонт квартиры спб',
     path: '/services',
   })
-
-const heroCards = [
-  {
-    label: 'Индивидуальный формат',
-    text: 'Подходит, если нужен интерьер под вас, гибкая планировка и точная работа с деталями без шаблонных решений.',
-  },
-  {
-    label: 'Пакетный формат',
-    text: 'Подходит, если важны быстрый старт, понятный бюджет и собранные решения без перегруза и лишних согласований.',
-  },
-] as const
 
 export default function ServicesRoute() {
   const hero = innerHeroImages.services
@@ -54,19 +46,9 @@ export default function ServicesRoute() {
               <em>под ваш сценарий жизни</em>
             </h1>
             <p className={styles.servicesPage__lead}>
-              Сейчас у нас два основных формата: индивидуальный и пакетный ремонт. Оба ведут к
-              готовому интерьеру под ключ, но отличаются глубиной проектирования, количеством
-              решений и темпом запуска.
+              Два формата — индивидуальный и пакетный. Оба ведут к готовому интерьеру, но
+              отличаются глубиной проектирования и темпом запуска.
             </p>
-          </div>
-
-          <div className={styles.servicesPage__heroAside}>
-            {heroCards.map((card) => (
-              <article className={styles.servicesPage__heroCard} key={card.label}>
-                <span className={styles.servicesPage__heroCardLabel}>{card.label}</span>
-                <p className={styles.servicesPage__heroCardText}>{card.text}</p>
-              </article>
-            ))}
           </div>
         </PageWrapper>
       </section>
@@ -75,32 +57,24 @@ export default function ServicesRoute() {
         <PageWrapper>
           <section className={styles.servicesPage__section}>
             <div className={styles.servicesPage__sectionHeader}>
-              <p className={styles.servicesPage__sectionLabel}>Два формата работы</p>
+              <p className={styles.servicesPage__sectionLabel}>Форматы работы</p>
               <h2 className={styles.servicesPage__sectionTitle}>
-                Выбирайте путь,
+                Выберите услугу
                 <br />
-                который <em>подходит именно вам</em>
+                и <em>узнайте подробности</em>
               </h2>
-              <p className={styles.servicesPage__sectionLead}>
-                Мы не перегружаем страницу десятком псевдоуслуг. Сейчас фокус на двух направлениях,
-                которые закрывают основные сценарии клиента: персональный интерьер под себя и
-                пакетный ремонт квартиры с быстрым стартом.
-              </p>
             </div>
 
-            <div className={styles.servicesPage__servicesGrid}>
-              {services.map((service, index) => (
-                <article
-                  className={`${styles.servicesPage__serviceCard} ${
-                    index % 2 === 1 ? styles.servicesPage__serviceCard_reverse : ''
-                  }`}
-                  id={service.id}
-                  key={service.id}
-                  data-reveal
-                >
-                  <div className={styles.servicesPage__serviceMedia}>
+            <div className={styles.servicesPage__list}>
+              {services.map((service) => (
+                <article className={styles.servicesPage__card} key={service.id} data-reveal>
+                  <Link
+                    className={styles.servicesPage__cardMedia}
+                    to={getServiceHref(service.slug)}
+                    aria-label={`Подробнее: ${service.title}`}
+                  >
                     <img
-                      className={styles.servicesPage__serviceImage}
+                      className={styles.servicesPage__cardImage}
                       src={service.image}
                       alt={service.title}
                       width={service.imageWidth}
@@ -108,92 +82,48 @@ export default function ServicesRoute() {
                       loading="lazy"
                       decoding="async"
                     />
-                    <span className={styles.servicesPage__serviceBadge}>{service.tags[0]}</span>
-                    <span className={styles.servicesPage__serviceNumber}>{service.number}</span>
-                  </div>
+                    <span className={styles.servicesPage__cardNumber}>{service.number}</span>
+                  </Link>
 
-                  <div className={styles.servicesPage__serviceBody}>
-                    <h2 className={styles.servicesPage__serviceTitle}>{service.title}</h2>
-                    <p className={styles.servicesPage__serviceText}>{service.text}</p>
-                    <p className={styles.servicesPage__serviceLead}>{service.lead}</p>
-
-                    <ul className={styles.servicesPage__serviceTags}>
-                      {service.tags.map((tag) => (
-                        <li className={styles.servicesPage__serviceTag} key={tag}>
-                          {tag}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <ul className={styles.servicesPage__serviceBullets}>
-                      {service.bullets.map((bullet) => (
-                        <li className={styles.servicesPage__serviceBullet} key={bullet}>
-                          {bullet}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className={styles.servicesPage__serviceMetrics}>
-                      {service.metrics.map((metric) => (
-                        <div className={styles.servicesPage__serviceMetric} key={metric.label}>
-                          <strong className={styles.servicesPage__serviceMetricValue}>{metric.value}</strong>
-                          <span className={styles.servicesPage__serviceMetricLabel}>{metric.label}</span>
-                        </div>
-                      ))}
+                  <div className={styles.servicesPage__cardBody}>
+                    <div className={styles.servicesPage__cardTop}>
+                      <h2 className={styles.servicesPage__cardTitle}>
+                        <Link to={getServiceHref(service.slug)}>{service.title}</Link>
+                      </h2>
+                      <ul className={styles.servicesPage__cardTags}>
+                        {service.tags.map((tag) => (
+                          <li className={styles.servicesPage__cardTag} key={tag}>
+                            {tag}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
 
-                    <div className={styles.servicesPage__serviceFoot}>
-                      <div className={styles.servicesPage__serviceMeta}>
-                        <strong className={styles.servicesPage__servicePrice}>{service.price}</strong>
-                        <span className={styles.servicesPage__serviceDuration}>{service.duration}</span>
+                    <p className={styles.servicesPage__cardText}>{service.shortText}</p>
+
+                    <div className={styles.servicesPage__cardFoot}>
+                      <div className={styles.servicesPage__cardMeta}>
+                        <strong className={styles.servicesPage__cardPrice}>{service.price}</strong>
+                        <span className={styles.servicesPage__cardDuration}>{service.duration}</span>
                       </div>
-                      <ModalTriggerButton
-                        className={styles.servicesPage__serviceButton}
-                        intent={service.id}
-                        source={`services-${service.id}`}
-                      >
-                        {service.ctaLabel}
-                      </ModalTriggerButton>
+
+                      <div className={styles.servicesPage__cardActions}>
+                        <Link className={styles.servicesPage__cardLink} to={getServiceHref(service.slug)}>
+                          Подробнее
+                          <ArrowIcon size={16} />
+                        </Link>
+                        <ModalTriggerButton
+                          className={styles.servicesPage__cardButton}
+                          intent={service.id}
+                          source={`services-index-${service.id}`}
+                        >
+                          {service.ctaLabel}
+                        </ModalTriggerButton>
+                      </div>
                     </div>
                   </div>
                 </article>
               ))}
-            </div>
-          </section>
-        </PageWrapper>
-      </section>
-
-      <section className={styles.servicesPage__surfaceDark}>
-        <PageWrapper>
-          <section className={styles.servicesPage__section}>
-            <div className={styles.servicesPage__sectionHeader}>
-              <p className={styles.servicesPage__sectionLabel}>Как понять, что ближе</p>
-              <h2 className={styles.servicesPage__sectionTitle}>
-                Кому подходит
-                <br />
-                <em>каждый формат</em>
-              </h2>
-            </div>
-
-            <div className={styles.servicesPage__compare}>
-              <article className={styles.servicesPage__compareCard} data-reveal>
-                <span className={styles.servicesPage__compareLabel}>Индивидуальный ремонт</span>
-                <h3 className={styles.servicesPage__compareTitle}>Когда важны уникальность и гибкость</h3>
-                <p className={styles.servicesPage__compareText}>
-                  Подходит, если вы хотите интерьер не по шаблону, готовы прорабатывать детали и
-                  хотите собрать пространство под свой ритм жизни, привычки и долгий горизонт
-                  использования.
-                </p>
-              </article>
-
-              <article className={styles.servicesPage__compareCard} data-reveal>
-                <span className={styles.servicesPage__compareLabel}>Пакетный ремонт</span>
-                <h3 className={styles.servicesPage__compareTitle}>Когда важны скорость и предсказуемость</h3>
-                <p className={styles.servicesPage__compareText}>
-                  Подходит, если вы хотите быстрее перейти к результату, заранее понимать бюджет и
-                  не тратить недели на сравнение каждого материала, света и позиции вручную.
-                </p>
-              </article>
             </div>
           </section>
         </PageWrapper>
@@ -211,7 +141,7 @@ export default function ServicesRoute() {
                 <em>выбрать формат</em>
               </>
             }
-            lead="Если пока неясно, что лучше для вашей квартиры, оставьте имя и телефон. Мы свяжемся, уточним задачу и подскажем, с чего лучше начать: с индивидуального проекта или с пакетного ремонта."
+            lead="Если пока неясно, что лучше для вашей квартиры, оставьте имя и телефон. Свяжемся, уточним задачу и подскажем, с чего начать — с индивидуального проекта или пакетного ремонта."
             successMessage="Спасибо. Форма прошла клиентскую валидацию. Следующим шагом можно подключить отправку заявок в Telegram, почту или CRM."
           />
         </PageWrapper>
