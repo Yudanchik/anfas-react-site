@@ -41,7 +41,7 @@ export function HomePaths() {
             </ul>
             <div className={styles.paths__footer}>
               <span className={styles.paths__price}>
-                от <strong>9 000 ₽</strong> / м² · дизайн
+                от <strong>55 000 ₽</strong> / м² · под ключ
               </span>
               <ModalTriggerButton intent="individual" source="home-paths-individual">
                 Хочу индивидуальный ремонт

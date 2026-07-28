@@ -1,6 +1,6 @@
 ﻿import { Link } from 'react-router'
 
-import { services } from '@/entities/service/model/services.data'
+import { services, getServiceHref } from '@/entities/service/model/services.data'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
@@ -41,7 +41,7 @@ export function HomeServices() {
               </ul>
               <Link
                 className={styles.services__link}
-                to={`/services#${service.id}`}
+                to={getServiceHref(service.slug)}
                 aria-label={`Подробнее: ${service.title}`}
               >
                 <ArrowIcon size={16} />

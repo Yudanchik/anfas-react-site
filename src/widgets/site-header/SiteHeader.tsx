@@ -12,6 +12,7 @@ export function SiteHeader() {
   const isHeroPage =
     pathname === '/' ||
     pathname === '/services' ||
+    pathname.startsWith('/services/') ||
     pathname === '/about' ||
     pathname === '/contacts' ||
     pathname === '/projects' ||

@@ -1,9 +1,5 @@
-import { Link } from 'react-router'
-
 import { createSeoMeta } from '@/shared/config/seo'
-import { PageWrapper } from '@/shared/ui/page-wrapper'
-
-import styles from './NotFoundRoute.module.scss'
+import { NotFoundState } from '@/shared/ui/not-found-state'
 
 export const meta = () =>
   createSeoMeta({
@@ -13,19 +9,5 @@ export const meta = () =>
   })
 
 export default function NotFoundRoute() {
-  return (
-    <main className={styles.page}>
-      <PageWrapper>
-        <p className={styles.eyebrow}>Ошибка 404</p>
-        <h1 className={styles.title}>
-          Такой страницы
-          <br />
-          <em>пока нет.</em>
-        </h1>
-        <Link className={styles.button} to="/">
-          Вернуться на главную
-        </Link>
-      </PageWrapper>
-    </main>
-  )
+  return <NotFoundState />
 }

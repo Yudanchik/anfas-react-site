@@ -1,8 +1,8 @@
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
+import type { ServiceIndividual } from '@/entities/service/model/services.data'
 import individualFormatImage from '@/assets/images/formats/individual-format.webp'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
-import { storyIndividual } from '../model/story-individual.data'
 
 import styles from './HomeStoryIndividual.module.scss'
 
@@ -18,23 +18,28 @@ function renderMultiline(text: string) {
   ))
 }
 
-export function HomeStoryIndividual() {
+type HomeStoryIndividualProps = {
+  service: ServiceIndividual
+}
+
+export function HomeStoryIndividual({ service }: HomeStoryIndividualProps) {
+  const { story } = service
+
   return (
     <section className={styles.story + ' ' + styles.sectionpad}>
       <PageWrapper className={styles.layout}>
         <div className={styles.headerColumn}>
           <SectionHeader
             className={styles.storyHeader}
-            number="03"
-            label={storyIndividual.eyebrow}
-            title={<>{renderMultiline(storyIndividual.title)}</>}
-            lead={storyIndividual.lead}
+            label={story.eyebrow}
+            title={<>{renderMultiline(story.title)}</>}
+            lead={story.lead}
             tone="dark"
             reveal={false}
           />
 
           <div className={styles.steps}>
-            {storyIndividual.steps.map((step) => (
+            {story.steps.map((step) => (
               <article className={styles.stepCard} key={step.label}>
                 <span className={styles.stepLabel}>{step.label}</span>
                 <h3 className={styles.stepTitle}>{step.title}</h3>
@@ -60,12 +65,12 @@ export function HomeStoryIndividual() {
           </div>
 
           <div className={styles.heroContent}>
-            <span className={styles.heroOverline}>{storyIndividual.hero.overline}</span>
-            <h3 className={styles.heroTitle}>{storyIndividual.hero.title}</h3>
-            <p className={styles.heroText}>{storyIndividual.hero.text}</p>
+            <span className={styles.heroOverline}>{story.hero.overline}</span>
+            <h3 className={styles.heroTitle}>{story.hero.title}</h3>
+            <p className={styles.heroText}>{story.hero.text}</p>
 
             <div className={styles.metrics}>
-              {storyIndividual.hero.metrics.map((metric) => (
+              {story.hero.metrics.map((metric) => (
                 <div className={styles.metric} key={metric.label}>
                   <strong>{metric.value}</strong>
                   <span>{metric.label}</span>
@@ -76,15 +81,15 @@ export function HomeStoryIndividual() {
             <ModalTriggerButton
               className={styles.cta}
               intent="individual"
-              source="home-individual-story"
+              source="service-individual-story"
             >
-              Хочу индивидуальный ремонт
+              {service.ctaLabel}
             </ModalTriggerButton>
           </div>
         </div>
 
         <div className={styles.highlights}>
-          {storyIndividual.highlights.map((highlight) => (
+          {story.highlights.map((highlight) => (
             <article className={styles.highlightCard} key={highlight.label}>
               <span className={styles.highlightLabel}>{highlight.label}</span>
               <h3 className={styles.highlightTitle}>{highlight.title}</h3>

@@ -6,6 +6,7 @@ import { ProjectReview } from '@/entities/project/ui/project-review'
 import { createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
+import { NotFoundState } from '@/shared/ui/not-found-state'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
@@ -38,6 +39,10 @@ export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
     image: `/${data.project.image}`,
     type: 'article',
   })
+}
+
+export function ErrorBoundary() {
+  return <NotFoundState />
 }
 
 export default function ProjectRoute() {

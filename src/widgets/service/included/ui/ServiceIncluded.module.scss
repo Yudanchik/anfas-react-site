@@ -1,0 +1,213 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+
+.section {
+  padding: var(--section-pad-y) 0;
+  background: var(--paper);
+}
+
+.intro {
+  max-width: 860px;
+  margin-bottom: 36px;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 14px;
+  color: rgb(22 23 19 / 56%);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+
+  &::before {
+    width: 34px;
+    height: 1px;
+    content: '';
+    background: currentcolor;
+  }
+}
+
+.header {
+  :global(.sectionHeader) {
+    opacity: 1;
+    transform: none;
+  }
+
+  :global(.sectionHeaderTitle) {
+    font-size: var(--type-heading-xl);
+  }
+
+  :global(.sectionHeaderLead) {
+    max-width: 58ch;
+    margin-top: 18px;
+    color: rgb(22 23 19 / 68%);
+  }
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.38fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+
+  @include mq.media(phone, tablet, laptop) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fitCard {
+  position: sticky;
+  top: 120px;
+  padding: 24px;
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgb(237 174 36 / 10%), transparent 36%),
+    linear-gradient(145deg, rgb(255 255 255 / 95%), rgb(255 255 255 / 88%));
+  box-shadow: 0 18px 42px rgb(22 23 19 / 7%);
+
+  @include mq.media(phone, tablet, laptop) {
+    position: static;
+  }
+
+  @include mq.media(phone) {
+    padding: 18px;
+    border-radius: 22px;
+  }
+}
+
+.fitLabel {
+  display: inline-flex;
+  margin-bottom: 12px;
+  color: var(--amber);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.fitTitle {
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+}
+
+.fitText {
+  margin: 0 0 16px;
+  color: rgb(22 23 19 / 68%);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
+}
+
+.fitList {
+  @include flex.flex($fd: column);
+
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fitItem {
+  position: relative;
+  padding-left: 18px;
+  color: rgb(22 23 19 / 78%);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
+
+  &::before {
+    position: absolute;
+    top: 0.62em;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    content: '';
+    background: var(--amber);
+  }
+}
+
+.groups {
+  @include flex.flex($fd: column);
+
+  gap: 14px;
+}
+
+.group {
+  padding: 22px 24px;
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 92%), rgb(255 255 255 / 78%));
+  box-shadow: 0 14px 36px rgb(22 23 19 / 5%);
+
+  @include mq.media(phone) {
+    padding: 18px;
+    border-radius: 20px;
+  }
+}
+
+.groupHead {
+  margin-bottom: 16px;
+}
+
+.groupTitle {
+  margin: 0 0 8px;
+  font-family: var(--font-heading);
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  color: var(--ink);
+}
+
+.groupText {
+  margin: 0;
+  color: rgb(22 23 19 / 64%);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+  margin: 0;
+  padding: 16px 0 0;
+  border-top: 1px solid rgb(22 23 19 / 8%);
+  list-style: none;
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.item {
+  position: relative;
+  padding-left: 18px;
+  color: rgb(22 23 19 / 78%);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
+
+  &::before {
+    position: absolute;
+    top: 0.62em;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    content: '';
+    background: var(--amber);
+  }
+}
+
+.note {
+  max-width: 72ch;
+  margin: 28px 0 0;
+  color: rgb(22 23 19 / 56%);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
+}
