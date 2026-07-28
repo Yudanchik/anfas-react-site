@@ -14,7 +14,7 @@ const manifestoStats = [
   {
     value: '100+',
     label: 'сданных объектов',
-    description: 'Квартиры и дома под ключ',
+    description: 'Квартиры и частные дома',
     Icon: BuildingIcon,
   },
   {

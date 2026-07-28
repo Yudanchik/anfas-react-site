@@ -31,9 +31,9 @@ export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
   }
 
   return createSeoMeta({
-    title: `${data.project.title} — Анфас`,
-    description: data.project.description,
-    keywords: `${data.project.title}, ремонт квартир спб, дизайн интерьера, портфолио ремонта`,
+    title: `${data.project.title} — ${data.project.type} | Анфас`,
+    description: `${data.project.description} Площадь ${data.project.area}, срок ${data.project.term}, бюджет ${data.project.price}. Реализованный проект в Санкт-Петербурге.`,
+    keywords: `${data.project.title}, ремонт квартир спб, ${data.project.type}, портфолио ремонта, дизайн интерьера спб, ремонт квартиры ${data.project.area}`,
     path: `/projects/${data.project.slug}`,
     image: `/${data.project.image}`,
     type: 'article',
@@ -203,8 +203,8 @@ export default function ProjectRoute() {
               <p className={styles.projectDetailEyebrowDark}>О проекте</p>
               <h2>{project.title}</h2>
               <p className={styles.projectDetailIntroLead}>
-                Превращаем пространство в готовый интерьер с понятной логикой решений, прозрачными этапами и
-                спокойным контролем бюджета.
+                Показываем, как задача превращалась в готовый интерьер: планировка, материалы, сроки и бюджет — с
+                понятной логикой на каждом этапе.
               </p>
               <div className={styles.projectDetailTags}>
                 <span>Планировка</span>
@@ -216,11 +216,11 @@ export default function ProjectRoute() {
             <aside className={styles.projectDetailIntroAside}>
               <p className={styles.projectDetailIntroEyebrow}>Ключевые параметры</p>
               <strong className={styles.projectDetailIntroAsideTitle}>
-                Ремонт квартиры под ключ без лишнего шума и хаоса.
+                Реализация с фиксированным бюджетом и согласованным графиком.
               </strong>
               <p className={styles.projectDetailIntroAsideText}>
-                Мы соединяем планировку, отделку и организацию работ так, чтобы проект оставался управляемым,
-                а результат выглядел цельно и современно.
+                Планировку, отделку и организацию работ вели в одной связке — чтобы проект оставался управляемым, а
+                результат выглядел цельно.
               </p>
               <dl className={styles.projectDetailIntroMeta}>
                 <div>
@@ -319,7 +319,7 @@ export default function ProjectRoute() {
                 <em>в своей квартире?</em>
               </>
             }
-            lead="Оставьте имя и телефон. Мы посмотрим задачу, зададим несколько уточняющих вопросов и подскажем, какой формат ремонта подходит лучше."
+            lead="Оставьте имя и телефон — посмотрим задачу, зададим несколько вопросов и подскажем, какой формат работ подойдёт лучше."
             submitLabel="Обсудить проект"
           />
         </PageWrapper>
