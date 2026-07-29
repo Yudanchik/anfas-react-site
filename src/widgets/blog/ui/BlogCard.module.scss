@@ -64,7 +64,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-12);
-  color: rgb(22 23 19 / 56%);
+  color: var(--amber);
   font-size: var(--type-caption);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-label);
@@ -111,7 +111,7 @@
 
   dt {
     display: block;
-    color: rgb(22 23 19 / 52%);
+    color: var(--amber);
     font-size: var(--type-caption);
     font-weight: var(--weight-bold);
     letter-spacing: var(--tracking-label);

@@ -223,7 +223,6 @@ export default function ProjectRoute() {
         <PageWrapper>
           <div className={styles.projectDetailIntro}>
             <div className={styles.projectDetailIntroCopy}>
-              <p className={styles.projectDetailEyebrowDark}>О проекте</p>
               <h2>{project.title}</h2>
               <p className={styles.projectDetailIntroLead}>
                 Показываем, как задача превращалась в готовый интерьер: планировка, материалы, сроки и бюджет — с
