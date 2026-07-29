@@ -5,12 +5,28 @@ import { projectRepository } from '@/entities/project/api'
 import { ProjectReview } from '@/entities/project/ui/project-review'
 import { createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
+import { tieRussianShortWords, tieRussianShortWordsInNode } from '@/shared/lib/tie-russian-short-words'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { NotFoundState } from '@/shared/ui/not-found-state'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './ProjectRoute.module.scss'
+
+function titleWithAccent(title: string, accent: string) {
+  const index = title.indexOf(accent)
+  if (index < 0) {
+    return tieRussianShortWords(title)
+  }
+
+  return tieRussianShortWordsInNode(
+    <>
+      {title.slice(0, index)}
+      <em>{accent}</em>
+      {title.slice(index + accent.length)}
+    </>,
+  )
+}
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const project = await projectRepository.getBySlug(params.slug ?? '')
@@ -180,9 +196,11 @@ export default function ProjectRoute() {
         <img className={styles.projectDetailImage} src={assetUrl(project.image)} alt={project.type} />
         <PageWrapper className={styles.projectDetailWrapper}>
           <div className={styles.projectDetailHeroContent}>
-            <p className={styles.projectDetailEyebrow}>{project.location}</p>
-            <h1 className={styles.projectDetailTitle}>{project.type}</h1>
-            <p className={styles.projectDetailLead}>{project.description}</p>
+            <p className={styles.projectDetailEyebrow}>{tieRussianShortWords(project.location)}</p>
+            <h1 className={styles.projectDetailTitle}>
+              {titleWithAccent(project.type, project.typeAccent)}
+            </h1>
+            <p className={styles.projectDetailLead}>{tieRussianShortWords(project.description)}</p>
             <dl className={styles.projectDetailHeroMeta}>
               <div>
                 <dt>Площадь</dt>

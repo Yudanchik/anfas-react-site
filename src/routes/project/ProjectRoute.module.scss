@@ -80,15 +80,18 @@
 }
 
 .projectDetailTitle {
-  max-width: 12.8ch;
   margin: 0;
+  color: var(--paper);
   font-size: var(--type-display-lg);
   font-weight: var(--weight-medium);
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
 
-  @include mq.media(phone, tablet) {
-    max-width: none;
+  em {
+    color: var(--amber);
+    font-family: inherit;
+    font-style: normal;
+    font-weight: var(--weight-medium);
   }
 }
 
@@ -139,7 +142,7 @@
   }
 
   dt {
-    color: rgb(245 242 236 / 58%);
+    color: var(--amber);
     font-size: var(--type-caption);
     font-weight: var(--weight-bold);
     letter-spacing: var(--tracking-label);

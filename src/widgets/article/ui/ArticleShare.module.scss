@@ -1,0 +1,61 @@
+@use 'media' as mq;
+
+.share {
+  margin-top: var(--space-40);
+  padding: var(--space-32) var(--space-20);
+  text-align: center;
+  border-top: 1px solid rgb(22 23 19 / 8%);
+}
+
+.title {
+  margin: 0 0 var(--space-20);
+  color: var(--ink);
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-heading);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-12);
+
+  @include mq.media(phone) {
+    gap: var(--space-8);
+  }
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  color: var(--ink);
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--amber) 18%, var(--paper) 82%);
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    color 0.25s ease;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    color: var(--paper);
+    background: var(--ink);
+  }
+}
+
+.copied {
+  margin: var(--space-12) 0 0;
+  color: rgb(22 23 19 / 64%);
+  font-size: var(--type-caption);
+}

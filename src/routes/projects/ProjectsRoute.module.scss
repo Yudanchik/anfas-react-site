@@ -188,8 +188,9 @@
 
 .projectsHeroCardTitle {
   display: block;
-  margin-bottom: var(--space-12);
+  margin: 0 0 var(--space-12);
   font-size: var(--type-heading-xs);
+  font-weight: var(--weight-medium);
   line-height: var(--leading-heading-compact);
   letter-spacing: var(--tracking-heading);
   text-wrap: balance;

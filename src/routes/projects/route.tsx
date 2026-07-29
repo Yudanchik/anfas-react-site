@@ -81,9 +81,9 @@ export default function ProjectsRoute() {
           <aside className={styles.projectsHeroAside}>
             <article className={styles.projectsHeroCard}>
               <span className={styles.projectsHeroCardEyebrow}>Портфолио Анфас</span>
-              <strong className={styles.projectsHeroCardTitle}>
+              <p className={styles.projectsHeroCardTitle}>
                 Каждый проект можно разобрать не только по картинке, но и по логике решений.
-              </strong>
+              </p>
               <p className={styles.projectsHeroCardText}>
                 Показываем фактуру интерьера, планировочную дисциплину и качество итоговой
                 реализации — не только красивые кадры.

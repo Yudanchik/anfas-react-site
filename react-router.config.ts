@@ -14,6 +14,10 @@ export default {
   prerender: [
     '/',
     '/about',
+    '/blog',
+    '/blog/elektrika-v-kvartire-pri-remonte',
+    '/blog/zachem-zalivat-poly-rovnitelem',
+    '/blog/kak-vybrat-santehniku-dlya-remonta',
     '/contacts',
     '/cookies',
     '/privacy',

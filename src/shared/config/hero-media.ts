@@ -49,4 +49,5 @@ export const innerHeroImages = {
   projects: sharedHeroSlides[1],
   contacts: sharedHeroSlides[2],
   about: sharedHeroSlides[3],
+  blog: sharedHeroSlides[3],
 } as const
