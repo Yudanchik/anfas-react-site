@@ -14,6 +14,13 @@ export default {
   prerender: [
     '/',
     '/about',
+    '/blog',
+    '/blog/elektrika-v-kvartire-pri-remonte',
+    '/blog/zachem-zalivat-poly-rovnitelem',
+    '/blog/kak-vybrat-santehniku-dlya-remonta',
+    '/blog/ventilyaciya-i-vytyazhka-v-kvartire-pri-remonte',
+    '/blog/shtukaturka-sten-pri-remonte',
+    '/blog/laminat-kvartsvinil-ili-parket',
     '/contacts',
     '/cookies',
     '/privacy',

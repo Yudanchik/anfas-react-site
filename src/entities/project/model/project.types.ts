@@ -16,6 +16,8 @@ export type Project = {
   slug: string
   title: string
   type: string
+  /** Фрагмент type, который в hero подсвечивается amber через <em> */
+  typeAccent: string
   location: string
   description: string
   image: string
