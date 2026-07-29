@@ -36,4 +36,10 @@
   <url>
     <loc>https://anfas-remont.ru/services</loc>
   </url>
+  <url>
+    <loc>https://anfas-remont.ru/services/individual</loc>
+  </url>
+  <url>
+    <loc>https://anfas-remont.ru/services/package</loc>
+  </url>
 </urlset>
