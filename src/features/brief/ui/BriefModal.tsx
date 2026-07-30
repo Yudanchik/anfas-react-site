@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 
 import { reachGoal } from '@/shared/lib/yandex-metrika/reach-goal'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
@@ -14,6 +14,7 @@ import styles from './BriefModal.module.scss'
 
 const PRICE_LIST_FORM_SUBMIT_GOAL = 'prices_form_submit'
 const PRICE_LIST_FORM_SUCCESS_GOAL = 'prices_form_success'
+const PRICE_LIST_THANKS_PATH = '/prices/thanks'
 
 const focusableSelector = [
   'a[href]',
@@ -38,6 +39,7 @@ export function BriefModal() {
 
 function BriefModalContent() {
   const { closeLeadModal, modalState, preset } = useLeadModal()
+  const navigate = useNavigate()
   const isPriceList = modalState.intent === 'price-list'
   const panelRef = useRef<HTMLDivElement>(null)
   const [submitted, setSubmitted] = useState(false)
@@ -145,6 +147,9 @@ function BriefModalContent() {
 
     if (isPriceList) {
       reachGoal(PRICE_LIST_FORM_SUCCESS_GOAL)
+      closeLeadModal()
+      navigate(PRICE_LIST_THANKS_PATH)
+      return
     }
 
     setSubmitted(true)

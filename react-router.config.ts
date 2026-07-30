@@ -39,6 +39,7 @@ export default {
     '/prices/potolki',
     '/prices/dveri',
     '/prices/obshhestroitelnye',
+    '/prices/thanks',
     '/privacy',
     '/projects',
     '/projects/2-murinskiy-37',
