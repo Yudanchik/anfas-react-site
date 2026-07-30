@@ -1,0 +1,37 @@
+@use 'media' as mq;
+
+.cta {
+  padding: var(--space-32);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-card);
+  color: var(--paper);
+  background:
+    radial-gradient(circle at 82% 8%, rgb(197 160 102 / 18%), transparent 30%),
+    linear-gradient(135deg, rgb(20 20 17), rgb(28 27 24));
+  box-shadow: var(--shadow-card-strong);
+
+  @include mq.media(phone) {
+    padding: var(--space-24);
+  }
+
+  h2 {
+    margin: 0 0 var(--space-16);
+    max-width: 46ch;
+    font-size: var(--type-heading-md);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+
+  p {
+    margin: 0;
+    max-width: 62ch;
+    color: rgb(245 242 236 / 76%);
+    font-size: var(--type-body-md);
+    line-height: var(--leading-body);
+  }
+}
+
+.button {
+  margin-top: var(--space-24);
+}
