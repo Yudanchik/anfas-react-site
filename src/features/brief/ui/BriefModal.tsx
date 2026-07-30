@@ -3,13 +3,17 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
 
+import { reachGoal } from '@/shared/lib/yandex-metrika/reach-goal'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 
 import { submitLead } from '../api/submitLead'
 import { formatPhoneValue, sanitizeNameValue } from '../model/brief.form'
-import { briefSchema, type BriefFormValues } from '../model/brief.schema'
+import { briefSchema, priceListBriefSchema, type BriefFormValues } from '../model/brief.schema'
 import { useLeadModal } from '../model/LeadModalContext'
 import styles from './BriefModal.module.scss'
+
+const PRICE_LIST_FORM_SUBMIT_GOAL = 'prices_form_submit'
+const PRICE_LIST_FORM_SUCCESS_GOAL = 'prices_form_success'
 
 const focusableSelector = [
   'a[href]',
@@ -34,9 +38,11 @@ export function BriefModal() {
 
 function BriefModalContent() {
   const { closeLeadModal, modalState, preset } = useLeadModal()
+  const isPriceList = modalState.intent === 'price-list'
   const panelRef = useRef<HTMLDivElement>(null)
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [startedAt] = useState(() => Math.floor(Date.now() / 1000))
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
@@ -48,14 +54,23 @@ function BriefModalContent() {
       phone: '',
       service: preset.requestType,
       wishes: '',
+      email: '',
       company: '',
     },
-    resolver: zodResolver(briefSchema),
+    resolver: zodResolver(isPriceList ? priceListBriefSchema : briefSchema),
   })
 
   const close = useCallback(() => {
     closeLeadModal()
   }, [closeLeadModal])
+
+  useEffect(() => {
+    if (modalState.analyticsEvent) {
+      reachGoal(modalState.analyticsEvent)
+    }
+    // Цель открытия формы фиксируем один раз за монтаж актуальной формы.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
@@ -105,19 +120,31 @@ function BriefModalContent() {
 
   const submit = async (values: LeadFormValues) => {
     setSubmitError(null)
+
+    if (isPriceList) {
+      reachGoal(PRICE_LIST_FORM_SUBMIT_GOAL)
+    }
+
     const result = await submitLead({
       name: values.name,
       phone: values.phone,
       service: values.service,
       wishes: values.wishes,
+      email: values.email,
       company: values.company,
+      intent: modalState.intent,
       source: modalState.source || 'brief-modal',
+      startedAt,
       calculator: modalState.calculatorContext,
     })
 
     if (!result.ok) {
       setSubmitError(result.error)
       return
+    }
+
+    if (isPriceList) {
+      reachGoal(PRICE_LIST_FORM_SUCCESS_GOAL)
     }
 
     setSubmitted(true)
@@ -226,6 +253,27 @@ function BriefModalContent() {
                     )}
                   </label>
                 </div>
+
+                {isPriceList && (
+                  <label className={`${styles.briefModal__field} ${styles.briefModal__field_fullWidth}`}>
+                    <span className={styles.briefModal__fieldLabel}>Email</span>
+                    <input
+                      className={styles.briefModal__fieldControl}
+                      type="email"
+                      autoComplete="email"
+                      maxLength={120}
+                      placeholder="you@example.com"
+                      aria-invalid={Boolean(errors.email)}
+                      aria-describedby={errors.email ? 'lead-modal-email-error' : undefined}
+                      {...register('email')}
+                    />
+                    {errors.email && (
+                      <small className={styles.briefModal__error} id="lead-modal-email-error">
+                        {errors.email.message}
+                      </small>
+                    )}
+                  </label>
+                )}
 
                 {modalState.intent === 'brief' && (
                   <label className={`${styles.briefModal__field} ${styles.briefModal__field_fullWidth}`}>

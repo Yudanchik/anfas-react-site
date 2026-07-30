@@ -9,6 +9,7 @@ export type ModalIntent =
   | 'calculation'
   | 'brief'
   | 'custom'
+  | 'price-list'
 
 export type LeadModalPreset = {
   eyebrow: string
@@ -107,6 +108,19 @@ export const leadModalPresets: Record<ModalIntent, LeadModalPreset> = {
     requestType: 'general',
     successTitle: 'Заявка принята',
     successDescription: 'Мы свяжемся с вами и уточним детали проекта.',
+  },
+  'price-list': {
+    eyebrow: 'Прайс-лист',
+    title: 'Получите полный прайс-лист',
+    description:
+      'Оставьте имя, телефон и email — пришлём ссылку на полный прайс со всеми позициями и ценами.',
+    selectedLabel: 'Полный прайс-лист',
+    selectedDescription: 'Ссылку на файл отправим на указанный email.',
+    submitLabel: 'Получить прайс на почту',
+    requestType: 'general',
+    successTitle: 'Заявка на прайс принята',
+    successDescription:
+      'Проверьте почту (в том числе папку «Спам») — туда придёт ссылка на скачивание полного прайс-листа.',
   },
 }
 
