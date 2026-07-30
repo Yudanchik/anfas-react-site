@@ -23,6 +23,7 @@ export default {
     '/blog/laminat-kvartsvinil-ili-parket',
     '/contacts',
     '/cookies',
+    '/prices',
     '/privacy',
     '/projects',
     '/projects/2-murinskiy-37',
