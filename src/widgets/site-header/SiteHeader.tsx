@@ -14,6 +14,8 @@ export function SiteHeader() {
     pathname === '/services' ||
     pathname.startsWith('/services/') ||
     pathname === '/about' ||
+    pathname === '/blog' ||
+    pathname.startsWith('/blog/') ||
     pathname === '/contacts' ||
     pathname === '/projects' ||
     pathname.startsWith('/projects/')

@@ -1,0 +1,31 @@
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+  margin: 0 0 var(--space-32);
+  color: rgb(22 23 19 / 56%);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+
+  a {
+    color: rgb(22 23 19 / 68%);
+    transition: color 0.25s ease;
+
+    &:hover {
+      color: var(--amber);
+    }
+  }
+}
+
+.sep {
+  flex-shrink: 0;
+  color: rgb(22 23 19 / 36%);
+}
+
+.current {
+  color: var(--ink);
+  text-wrap: balance;
+}

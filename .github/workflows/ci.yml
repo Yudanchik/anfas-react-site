@@ -6,12 +6,15 @@ on:
       - main
       - dev
   push:
+    branches:
+      - main
+      - dev
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:

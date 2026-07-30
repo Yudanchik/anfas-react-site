@@ -13,6 +13,7 @@ const footerPages = [
   { label: 'Главная', to: '/' },
   { label: 'Услуги', to: '/services' },
   { label: 'Проекты', to: '/projects' },
+  { label: 'Журнал', to: '/blog' },
   { label: 'О нас', to: '/about' },
   { label: 'Контакты', to: '/contacts' },
 ] as const
