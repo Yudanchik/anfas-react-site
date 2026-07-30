@@ -8,6 +8,7 @@ export default [
   route('contacts', './routes/contacts/route.tsx'),
   route('cookies', './routes/cookies/route.tsx'),
   route('prices', './routes/prices/route.tsx'),
+  route('prices/:categorySlug', './routes/price-category/route.tsx'),
   route('privacy', './routes/privacy/route.tsx'),
   route('projects', './routes/projects/route.tsx'),
   route('projects/:slug', './routes/project/route.tsx'),
