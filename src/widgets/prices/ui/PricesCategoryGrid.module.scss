@@ -1,0 +1,16 @@
+@use 'media' as mq;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-20);
+
+  @include mq.media(tablet, laptop) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+    gap: var(--space-16);
+  }
+}

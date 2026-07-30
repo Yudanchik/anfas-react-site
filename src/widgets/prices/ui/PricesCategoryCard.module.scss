@@ -1,0 +1,99 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+
+.card {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--space-20);
+  padding: var(--space-24);
+  color: var(--ink);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(circle at 86% 10%, rgb(197 160 102 / 12%), transparent 26%),
+    linear-gradient(180deg, rgb(255 255 255 / 90%), rgb(250 247 241 / 94%));
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.42s cubic-bezier(0.2, 0.7, 0, 1),
+    border-color 0.32s cubic-bezier(0.2, 0.7, 0, 1),
+    box-shadow 0.32s cubic-bezier(0.2, 0.7, 0, 1);
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgb(197 160 102 / 42%);
+    box-shadow: 0 22px 44px rgb(22 23 19 / 14%);
+  }
+
+  @include mq.media(phone) {
+    padding: var(--space-20);
+  }
+}
+
+.body {
+  display: grid;
+  gap: var(--space-12);
+  align-content: start;
+}
+
+.eyebrow {
+  color: var(--amber);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--type-heading-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+.lead {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: rgb(22 23 19 / 70%);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.footer {
+  @include flex.flex($ai: center, $jc: space-between);
+
+  gap: var(--space-12);
+  padding-top: var(--space-16);
+  border-top: 1px solid rgb(22 23 19 / 10%);
+}
+
+.price {
+  min-width: 0;
+  color: var(--ink);
+  font-size: var(--type-body-sm);
+  font-weight: var(--weight-bold);
+}
+
+.link {
+  @include flex.flex($ai: center);
+
+  flex-shrink: 0;
+  gap: var(--space-8);
+  color: var(--ink);
+  font-size: var(--type-button);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+  }
+}
+
+.card:hover .link {
+  color: var(--amber);
+}
