@@ -19,7 +19,8 @@ export function SiteHeader() {
     pathname === '/contacts' ||
     pathname === '/projects' ||
     pathname.startsWith('/projects/') ||
-    pathname === '/prices'
+    pathname === '/prices' ||
+    pathname.startsWith('/prices/')
 
   useEffect(() => {
     document.body.classList.toggle('menu-open', menuOpen)
