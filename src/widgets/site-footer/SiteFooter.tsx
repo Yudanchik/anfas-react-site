@@ -12,6 +12,7 @@ import styles from './SiteFooter.module.scss'
 const footerPages = [
   { label: 'Главная', to: '/' },
   { label: 'Услуги', to: '/services' },
+  { label: 'Прайс-лист', to: '/prices' },
   { label: 'Проекты', to: '/projects' },
   { label: 'Журнал', to: '/blog' },
   { label: 'О нас', to: '/about' },

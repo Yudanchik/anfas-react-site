@@ -34,6 +34,7 @@ export const company = {
 
 export const navigation = [
   { label: 'Услуги', to: '/services' },
+  { label: 'Прайс-лист', to: '/prices' },
   { label: 'Проекты', to: '/projects' },
   { label: 'Журнал', to: '/blog' },
   { label: 'О нас', to: '/about' },

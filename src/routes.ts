@@ -7,6 +7,7 @@ export default [
   route('blog/:slug', './routes/article/route.tsx'),
   route('contacts', './routes/contacts/route.tsx'),
   route('cookies', './routes/cookies/route.tsx'),
+  route('prices', './routes/prices/route.tsx'),
   route('privacy', './routes/privacy/route.tsx'),
   route('projects', './routes/projects/route.tsx'),
   route('projects/:slug', './routes/project/route.tsx'),
