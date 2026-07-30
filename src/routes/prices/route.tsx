@@ -1,8 +1,9 @@
 import { Link, useLoaderData } from 'react-router'
 
 import { priceRepository } from '@/entities/price/api'
+import { getPriceCategoryHref, getPriceHubHref } from '@/entities/price/lib/price-helpers'
 import type { PriceFaqItem } from '@/entities/price/model/price.types'
-import { createSeoMeta } from '@/shared/config/seo'
+import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '@/widgets/home/ui'
@@ -76,8 +77,41 @@ const secondaryLinks = [
 export default function PricesRoute() {
   const { categories } = useLoaderData<typeof loader>()
 
+  const offerCatalogJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'OfferCatalog',
+    name: 'Прайс-лист Анфас — категории работ',
+    url: absoluteUrl(getPriceHubHref()),
+    itemListElement: categories.map((category) => ({
+      '@type': 'Offer',
+      name: category.title,
+      price: category.priceFrom,
+      priceCurrency: 'RUB',
+      url: absoluteUrl(getPriceCategoryHref(category.slug)),
+    })),
+  }
+
+  const faqPageJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: hubFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+  }
+
   return (
     <main className={styles.pricesPage}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(offerCatalogJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageJsonLd) }}
+      />
+
       <PricesHero
         eyebrow="Прайс-лист Анфас"
         title="Ориентировочные цены на ремонт квартир"
