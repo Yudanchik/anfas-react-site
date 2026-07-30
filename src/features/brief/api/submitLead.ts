@@ -2,13 +2,17 @@ import type { CalculatorLeadContext } from '../model/calculator-lead-context'
 
 import { briefServiceOptions, type BriefService } from '../model/brief.form'
 import type { BriefFormValues } from '../model/brief.schema'
+import type { ModalIntent } from '../model/lead-modal'
 
 export type { CalculatorLeadContext }
 
 export type SubmitLeadPayload = BriefFormValues & {
+  intent?: ModalIntent
   source?: string
   page?: string
   company?: string
+  /** Unix-время (в секундах) монтажа формы — используется backend для антиспам-проверки. */
+  startedAt?: number
   calculator?: CalculatorLeadContext
 }
 
@@ -45,9 +49,12 @@ export async function submitLead(payload: SubmitLeadPayload): Promise<SubmitLead
         phone: payload.phone,
         service: payload.service,
         wishes: payload.wishes ?? '',
+        email: payload.email ?? '',
+        intent: payload.intent ?? '',
         source: payload.source ?? 'site',
         page: payload.page ?? (typeof window !== 'undefined' ? window.location.href : ''),
         company: payload.company ?? '',
+        startedAt: payload.startedAt ?? 0,
         calculator: payload.calculator ?? null,
       }),
     })

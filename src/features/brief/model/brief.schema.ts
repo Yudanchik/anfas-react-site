@@ -16,7 +16,18 @@ export const briefSchema = z.object({
     error: 'Выберите услугу',
   }),
   wishes: z.string().trim().max(600, 'Сократите текст до 600 символов').optional(),
+  email: z.string().trim().max(120, 'Слишком длинный email').optional(),
   company: z.string().optional(),
+})
+
+/** Используется только для intent="price-list": ссылка на прайс отправляется на email. */
+export const priceListBriefSchema = briefSchema.extend({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Укажите email')
+    .max(120, 'Слишком длинный email')
+    .email('Введите корректный email'),
 })
 
 export type BriefFormValues = z.infer<typeof briefSchema>
