@@ -1,0 +1,114 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+
+.faq {
+  display: grid;
+  gap: var(--space-24);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--type-heading-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+
+  @include mq.media(phone) {
+    font-size: var(--type-heading-md);
+  }
+}
+
+.list {
+  display: grid;
+  gap: var(--space-16);
+}
+
+.item {
+  overflow: clip;
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: var(--radius-card);
+  background: linear-gradient(180deg, rgb(255 255 255 / 96%), rgb(250 247 241 / 88%));
+  box-shadow: var(--shadow-card);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.item_open {
+  border-color: rgb(197 160 102 / 42%);
+  box-shadow: var(--shadow-card-strong);
+}
+
+.trigger {
+  @include flex.flex($ai: center, $jc: space-between);
+
+  gap: var(--space-16);
+  width: 100%;
+  padding: var(--space-20) var(--space-24);
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  border: 0;
+  background: transparent;
+
+  @include mq.media(phone) {
+    padding: var(--space-16) var(--space-20);
+  }
+}
+
+.question {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--type-body-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-heading-compact);
+}
+
+.toggle {
+  @include flex.flex($ai: center, $jc: center);
+
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  color: var(--ink);
+  border: 1px solid rgb(22 23 19 / 14%);
+  border-radius: 50%;
+  background: rgb(22 23 19 / 4%);
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.item_open .toggle {
+  color: var(--paper);
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s cubic-bezier(0.2, 0.7, 0, 1);
+}
+
+.item_open .answer {
+  grid-template-rows: 1fr;
+}
+
+.answerInner {
+  min-height: 0;
+  overflow: hidden;
+  padding-inline: var(--space-24);
+
+  @include mq.media(phone) {
+    padding-inline: var(--space-20);
+  }
+}
+
+.answerText {
+  margin: 0;
+  padding-bottom: var(--space-20);
+  color: rgb(22 23 19 / 70%);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
+}

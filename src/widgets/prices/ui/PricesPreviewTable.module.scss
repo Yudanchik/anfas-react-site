@@ -1,0 +1,119 @@
+@use 'media' as mq;
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid rgb(22 23 19 / 10%);
+  border-radius: var(--radius-card);
+  background: rgb(255 255 255 / 92%);
+
+  th,
+  td {
+    padding: var(--space-16) var(--space-20);
+    text-align: left;
+    vertical-align: top;
+  }
+}
+
+.head {
+  th {
+    color: rgb(22 23 19 / 56%);
+    font-size: var(--type-caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    background: rgb(22 23 19 / 4%);
+  }
+}
+
+.row {
+  border-top: 1px solid rgb(22 23 19 / 8%);
+
+  &:first-child {
+    border-top: 0;
+  }
+
+  td {
+    color: rgb(22 23 19 / 82%);
+    font-size: var(--type-body-sm);
+    line-height: var(--leading-body);
+  }
+}
+
+.cellName {
+  display: grid;
+  gap: var(--space-4);
+  width: 46%;
+
+  span {
+    color: var(--ink);
+    font-weight: var(--weight-medium);
+  }
+
+  em {
+    color: rgb(22 23 19 / 56%);
+    font-size: var(--type-caption);
+    font-style: normal;
+    line-height: var(--leading-caption);
+  }
+}
+
+.cellPrice {
+  color: var(--ink);
+  font-weight: var(--weight-bold);
+  white-space: nowrap;
+}
+
+@include mq.media(phone, tablet) {
+  .table {
+    display: block;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .head {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+
+  tbody {
+    display: grid;
+    gap: var(--space-12);
+  }
+
+  .row {
+    display: grid;
+    gap: var(--space-12);
+    padding: var(--space-16);
+    border: 1px solid rgb(22 23 19 / 10%);
+    border-radius: var(--radius-md);
+    background: rgb(255 255 255 / 92%);
+  }
+
+  .row td {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0;
+  }
+
+  .row td::before {
+    content: attr(data-label);
+    color: rgb(22 23 19 / 52%);
+    font-size: var(--type-caption);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .cellName {
+    width: auto;
+  }
+}

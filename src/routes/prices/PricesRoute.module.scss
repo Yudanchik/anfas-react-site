@@ -1,0 +1,99 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+
+.pricesPage {
+  padding: 0;
+  background: var(--paper);
+}
+
+.section {
+  padding: var(--section-pad-y) 0;
+
+  @include mq.media(phone, tablet) {
+    padding: var(--section-pad-y-tight) 0;
+  }
+}
+
+.sectionHeader {
+  max-width: 860px;
+  margin-bottom: var(--space-32);
+}
+
+.linksSection {
+  border-top: 1px solid rgb(22 23 19 / 8%);
+}
+
+.linksTitle {
+  margin: 0 0 var(--space-24);
+  font-size: var(--type-heading-md);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+}
+
+.links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-20);
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+    gap: var(--space-16);
+  }
+}
+
+.linkCard {
+  @include flex.flex($fd: column);
+
+  gap: var(--space-12);
+  padding: var(--space-24);
+  color: var(--ink);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-card);
+  background: linear-gradient(180deg, rgb(255 255 255 / 92%), rgb(250 247 241 / 96%));
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.7, 0, 1),
+    border-color 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgb(197 160 102 / 42%);
+  }
+
+  strong {
+    font-size: var(--type-heading-xs);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-heading-compact);
+  }
+
+  p {
+    margin: 0;
+    flex: 1;
+    color: rgb(22 23 19 / 68%);
+    font-size: var(--type-body-sm);
+    line-height: var(--leading-body);
+  }
+
+  span {
+    @include flex.flex($ai: center);
+
+    gap: var(--space-8);
+    margin-top: auto;
+    padding-top: var(--space-16);
+    color: var(--ink);
+    border-top: 1px solid rgb(22 23 19 / 10%);
+    font-size: var(--type-button);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+
+    svg {
+      display: block;
+      flex-shrink: 0;
+    }
+  }
+
+  &:hover span {
+    color: var(--amber);
+  }
+}
