@@ -1,5 +1,6 @@
 @use 'flex' as flex;
 @use 'media' as mq;
+@use 'common' as home;
 
 .pricesPage {
   padding: 0;
@@ -7,19 +8,25 @@
 }
 
 .section {
-  padding: var(--section-pad-y) 0;
-
-  @include mq.media(phone, tablet) {
-    padding: var(--section-pad-y-tight) 0;
-  }
+  @include home.section-pad;
 }
 
 .sectionHeader {
   max-width: 860px;
-  margin-bottom: var(--space-32);
+  margin-bottom: 0;
+}
+
+.contentFlow {
+  display: grid;
+  gap: var(--section-pad-y);
+
+  @include mq.media(phone, tablet) {
+    gap: var(--section-pad-y-tight);
+  }
 }
 
 .linksSection {
+  padding-top: var(--space-24);
   border-top: 1px solid rgb(22 23 19 / 8%);
 }
 
@@ -82,9 +89,8 @@
     padding-top: var(--space-16);
     color: var(--ink);
     border-top: 1px solid rgb(22 23 19 / 10%);
-    font-size: var(--type-button);
+    font-size: var(--type-body-sm);
     font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
 
     svg {
