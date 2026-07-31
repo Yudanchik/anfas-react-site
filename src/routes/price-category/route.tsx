@@ -152,24 +152,14 @@ export default function PriceCategoryRoute() {
               title="Это не весь прайс"
               text="В превью — только часть популярных позиций категории. Полный прайс-лист содержит значительно больше работ, включая узкоспециальные и вспомогательные позиции."
             />
+            <PricesSeoNote title="Про ориентировочные цены" text={category.disclaimer} />
           </div>
         </PageWrapper>
       </section>
 
-      <section className={styles.section}>
-        <PageWrapper>
-          <PricesSeoNote title="Про ориентировочные цены" text={category.disclaimer} />
-        </PageWrapper>
-      </section>
-
-      <section className={styles.section}>
-        <PageWrapper>
+      <section className={`${styles.section} ${styles.sectionDark}`}>
+        <PageWrapper className={styles.mainZone}>
           <PricesFactors items={category.factors} />
-        </PageWrapper>
-      </section>
-
-      <section className={styles.section}>
-        <PageWrapper>
           <PricesFaq items={category.faq} />
         </PageWrapper>
       </section>
@@ -195,36 +185,34 @@ export default function PriceCategoryRoute() {
               Обсудить смету
             </ModalTriggerButton>
           </div>
-        </PageWrapper>
-      </section>
 
-      <section className={`${styles.section} ${styles.relatedSection}`}>
-        <PageWrapper>
-          <h2 className={styles.relatedTitle}>Связанные материалы</h2>
+          <div className={styles.relatedSection}>
+            <h2 className={styles.relatedTitle}>Связанные материалы</h2>
 
-          <div className={styles.relatedLinks}>
-            {serviceSlug ? (
-              <Link className={styles.relatedLink} to={getServiceHref(serviceSlug)}>
-                <strong>Услуга</strong>
-                <span>{serviceLabel}</span>
+            <div className={styles.relatedLinks}>
+              {serviceSlug ? (
+                <Link className={styles.relatedLink} to={getServiceHref(serviceSlug)}>
+                  <strong>Услуга</strong>
+                  <span>{serviceLabel}</span>
+                </Link>
+              ) : null}
+              <Link className={styles.relatedLink} to={getPriceHubHref()}>
+                <strong>Прайс-лист</strong>
+                <span>Все категории цен</span>
               </Link>
-            ) : null}
-            <Link className={styles.relatedLink} to={getPriceHubHref()}>
-              <strong>Прайс-лист</strong>
-              <span>Все категории цен</span>
-            </Link>
-            <Link className={styles.relatedLink} to="/blog">
-              <strong>Журнал</strong>
-              <span>Статьи об этапах ремонта</span>
-            </Link>
-          </div>
+              <Link className={styles.relatedLink} to="/blog">
+                <strong>Журнал</strong>
+                <span>Статьи об этапах ремонта</span>
+              </Link>
+            </div>
 
-          {relatedCategories.length > 0 ? (
-            <>
-              <p className={styles.relatedCategoriesLabel}>Похожие категории</p>
-              <PricesCategoryGrid categories={relatedCategories} />
-            </>
-          ) : null}
+            {relatedCategories.length > 0 ? (
+              <>
+                <p className={styles.relatedCategoriesLabel}>Похожие категории</p>
+                <PricesCategoryGrid categories={relatedCategories} />
+              </>
+            ) : null}
+          </div>
         </PageWrapper>
       </section>
     </main>
