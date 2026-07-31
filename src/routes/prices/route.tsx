@@ -120,7 +120,7 @@ export default function PricesRoute() {
       />
 
       <section className={styles.section}>
-        <PageWrapper>
+        <PageWrapper className={styles.contentFlow}>
           <SectionHeader
             className={styles.sectionHeader}
             label="Категории работ"
@@ -133,48 +133,31 @@ export default function PricesRoute() {
             lead="У каждой категории — собственная страница с превью популярных позиций, пояснениями и ценами «от»."
           />
           <PricesCategoryGrid categories={categories} />
-        </PageWrapper>
-      </section>
-
-      <section className={styles.section}>
-        <PageWrapper>
           <PricesSeoNote
             title="Про ориентировочные цены"
             text="Все цены на сайте — ориентир и зависят от состояния объекта, материалов и объёма работ. Итоговую стоимость фиксируем в смете после бесплатного замера."
           />
-        </PageWrapper>
-      </section>
-
-      <section className={styles.section}>
-        <PageWrapper>
+          <PricesFaq items={hubFaq} />
           <PricesCta
             title="Нужен точный расчёт по вашей квартире?"
             lead="Оставьте заявку — пришлём на почту полный прайс-лист со всеми категориями и позициями, без ограничений превью."
             source="prices-hub"
           />
-        </PageWrapper>
-      </section>
 
-      <section className={styles.section}>
-        <PageWrapper>
-          <PricesFaq items={hubFaq} />
-        </PageWrapper>
-      </section>
-
-      <section className={`${styles.section} ${styles.linksSection}`}>
-        <PageWrapper>
-          <h2 className={styles.linksTitle}>Смотрите также</h2>
-          <div className={styles.links}>
-            {secondaryLinks.map((link) => (
-              <Link className={styles.linkCard} key={link.to} to={link.to}>
-                <strong>{link.label}</strong>
-                <p>{link.text}</p>
-                <span>
-                  Перейти
-                  <ArrowIcon size={14} />
-                </span>
-              </Link>
-            ))}
+          <div className={styles.linksSection}>
+            <h2 className={styles.linksTitle}>Смотрите также</h2>
+            <div className={styles.links}>
+              {secondaryLinks.map((link) => (
+                <Link className={styles.linkCard} key={link.to} to={link.to}>
+                  <strong>{link.label}</strong>
+                  <p>{link.text}</p>
+                  <span>
+                    Перейти
+                    <ArrowIcon size={14} />
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         </PageWrapper>
       </section>

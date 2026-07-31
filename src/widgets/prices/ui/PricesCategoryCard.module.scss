@@ -45,7 +45,7 @@
 
 .title {
   margin: 0;
-  font-size: var(--type-heading-sm);
+  font-size: var(--type-heading-xs);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-heading);
   letter-spacing: var(--tracking-heading);
@@ -85,7 +85,6 @@
   color: var(--ink);
   font-size: var(--type-button);
   font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 
   svg {
