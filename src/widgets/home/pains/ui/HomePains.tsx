@@ -104,13 +104,15 @@ export function HomePains() {
 
                   <div className={styles.content}>
                     <div className={styles.contentHead}>
-                      <span className={styles.kicker}>Боль</span>
+                      <span className={styles.kicker}>{item.kicker}</span>
                       <h3 className={styles.painTitle}>{item.pain}</h3>
                     </div>
 
                     <div className={styles.solution}>
                       <span className={styles.solutionTag}>Как решаем</span>
-                      <h4 className={styles.solutionTitle}>{item.solveTitle}</h4>
+                      {item.solveTitle ? (
+                        <h4 className={styles.solutionTitle}>{item.solveTitle}</h4>
+                      ) : null}
                       <p className={styles.solutionText}>{item.solveText}</p>
                     </div>
 

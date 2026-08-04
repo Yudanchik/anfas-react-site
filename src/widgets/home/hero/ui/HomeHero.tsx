@@ -3,7 +3,6 @@ import { Link } from 'react-router'
 
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { sharedHeroSlides } from '@/shared/config/hero-media'
-import { tieRussianShortWords } from '@/shared/lib/tie-russian-short-words'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './HomeHero.module.scss'
@@ -12,25 +11,10 @@ const slides = sharedHeroSlides
 
 const heroContent = {
   title: {
-    start: 'Ремонт квартиры под ключ, который',
-    accent: 'не забирает',
-    end: 'вашу жизнь.',
+    main: 'Ремонт квартиры под ключ',
+    accent: 'с понятным бюджетом, сроком и результатом',
   },
-  lead: 'Собираем дизайн, ремонт и комплектацию в Санкт-Петербурге — в один согласованный процесс. Вы видите сроки, бюджет и результат без бесконечных согласований и сюрпризов по ходу работ.',
-  cards: [
-    {
-      label: 'Дизайн-проект',
-      text: 'Собираем образ пространства до старта работ.',
-    },
-    {
-      label: 'Комплектация',
-      text: 'Материалы, свет и мебель в одной системе.',
-    },
-    {
-      label: 'Реализация',
-      text: 'Одна команда доводит объект до финала.',
-    },
-  ],
+  lead: 'Берём на себя весь процесс — от дизайн-проекта и ремонта до комплектации и мебели. Вы заранее понимаете, сколько будет стоить квартира, когда она будет готова и какой результат получите.',
 } as const
 
 export function HomeHero() {
@@ -83,9 +67,9 @@ export function HomeHero() {
               <span className={styles.hero__eyebrow}>{activeSlide.eyebrow}</span>
               <div className={styles.hero__textBlock}>
                 <h1 className={styles.hero__title}>
-                  {heroContent.title.start}{' '}
-                  <span className={styles.hero__titleAccent}>{heroContent.title.accent}</span>{' '}
-                  {heroContent.title.end}
+                  {heroContent.title.main}
+                  <br />
+                  <span className={styles.hero__titleAccent}>{heroContent.title.accent}</span>
                 </h1>
                 <p className={styles.hero__lead}>{heroContent.lead}</p>
 
@@ -103,15 +87,6 @@ export function HomeHero() {
                     Смотреть проекты
                   </Link>
                 </div>
-              </div>
-
-              <div className={styles.hero__cards}>
-                {heroContent.cards.map((card) => (
-                  <article className={styles.hero__card} key={card.label}>
-                    <span className={styles.hero__cardLabel}>{card.label}</span>
-                    <strong className={styles.hero__cardText}>{tieRussianShortWords(card.text)}</strong>
-                  </article>
-                ))}
               </div>
             </div>
           </div>

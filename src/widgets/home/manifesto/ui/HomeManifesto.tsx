@@ -6,27 +6,27 @@ import styles from './HomeManifesto.module.scss'
 
 const manifestoStats = [
   {
-    value: '13',
+    value: '5',
     label: 'лет на рынке',
     description: 'Опыт сложных проектов',
     Icon: ColumnIcon,
   },
   {
-    value: '100+',
+    value: '67',
     label: 'сданных объектов',
     description: 'Квартиры и частные дома',
     Icon: BuildingIcon,
   },
   {
-    value: '36 мес',
+    value: '24 мес',
     label: 'гарантия',
     description: 'На инженерные работы',
     Icon: ShieldIcon,
   },
   {
-    value: '0 ₽',
-    label: 'скрытых расходов',
-    description: 'Прозрачная смета',
+    value: '24/7',
+    label: 'доступ к отчетности',
+    description: 'Прозрачный контроль проекта',
     Icon: RubleIcon,
   },
 ] as const

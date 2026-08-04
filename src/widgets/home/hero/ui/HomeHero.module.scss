@@ -145,7 +145,7 @@
 
 .hero__title {
   margin: 0;
-  max-width: 13.8ch;
+  max-width: 20ch;
   font-family: var(--font-heading);
   font-size: var(--type-display-lg);
   font-weight: var(--weight-medium);
@@ -154,16 +154,12 @@
   text-wrap: balance;
 
   @include mq.media(phone, tablet) {
-    max-width: 12.5ch;
+    max-width: 16ch;
     line-height: var(--leading-display);
   }
 
   @include mq.media(phone) {
-    max-width: 12ch;
-  }
-
-  @include mq.media(phone) {
-    max-width: 12.5ch;
+    max-width: 14ch;
   }
 }
 
