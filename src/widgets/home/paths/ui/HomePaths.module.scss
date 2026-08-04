@@ -65,6 +65,15 @@
   color: color-mix(in srgb, currentcolor 74%, transparent);
 }
 
+.paths__featuresLabel {
+  margin: 0;
+  color: color-mix(in srgb, currentcolor 56%, transparent);
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
 .paths__features {
   @include flex.flex($fd: column);
 
