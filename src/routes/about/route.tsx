@@ -4,6 +4,8 @@ import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { AboutInstagram } from '@/widgets/about/instagram'
+import { AboutVideos } from '@/widgets/about/videos'
 
 import styles from './AboutRoute.module.scss'
 
@@ -11,9 +13,9 @@ export const meta = () =>
   createSeoMeta({
     title: 'О компании Анфас — дизайн и ремонт квартир в Санкт-Петербурге',
     description:
-      'Анфас с 2012 года ведёт дизайн и ремонт квартир в Санкт-Петербурге. Одна команда на проект, смету, материалы и сдачу объекта.',
+      'Команда Анфас: дизайн и ремонт квартир под ключ в Санкт-Петербурге. Реальные объекты, этапы работ, фото- и видеоматериалы с площадки.',
     keywords:
-      'о компании анфас, ремонт квартир спб, дизайн интерьера спб, ремонт под ключ, команда дизайнеров и строителей',
+      'о компании анфас, ремонт квартир в Санкт-Петербурге, ремонт квартиры под ключ, реальные объекты ремонта, видео ремонта, дизайн и ремонт спб',
     path: '/about',
   })
 
@@ -102,6 +104,9 @@ export default function AboutRoute() {
           </div>
         </PageWrapper>
       </section>
+
+      <AboutVideos />
+      <AboutInstagram />
     </main>
   )
 }
