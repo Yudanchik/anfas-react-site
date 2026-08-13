@@ -21,6 +21,8 @@ export default {
     '/blog/ventilyaciya-i-vytyazhka-v-kvartire-pri-remonte',
     '/blog/shtukaturka-sten-pri-remonte',
     '/blog/laminat-kvartsvinil-ili-parket',
+    '/blog/gidroizolyaciya-vannoj-i-sanuzla-pri-remonte',
+    '/blog/shumoizolyaciya-kvartiry-pri-remonte',
     '/contacts',
     '/cookies',
     '/prices',
