@@ -18,7 +18,9 @@
     "lint:styles": "stylelint \"src/**/*.{css,scss}\"",
     "format": "prettier --write .",
     "check": "pnpm typecheck && pnpm lint && pnpm lint:styles",
-    "sync:youtube": "node scripts/sync-youtube.mjs"
+    "sync:youtube": "node scripts/sync-youtube.mjs",
+    "parity:articles": "node scripts/parity-articles.mjs",
+    "parity:articles:strapi": "node scripts/parity-articles.mjs --strapi"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

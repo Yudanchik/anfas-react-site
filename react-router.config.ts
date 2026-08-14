@@ -1,5 +1,7 @@
 import type { Config } from '@react-router/dev/config'
 
+import { resolvePrerenderPaths } from './src/shared/content/articles/prerender-paths'
+
 const publicPath = process.env.PUBLIC_PATH || '/'
 const basename = publicPath === '/' ? '/' : publicPath.replace(/\/$/, '')
 
@@ -11,48 +13,7 @@ export default {
     mode: 'initial',
   },
   ssr: false,
-  prerender: [
-    '/',
-    '/about',
-    '/blog',
-    '/blog/elektrika-v-kvartire-pri-remonte',
-    '/blog/zachem-zalivat-poly-rovnitelem',
-    '/blog/kak-vybrat-santehniku-dlya-remonta',
-    '/blog/ventilyaciya-i-vytyazhka-v-kvartire-pri-remonte',
-    '/blog/shtukaturka-sten-pri-remonte',
-    '/blog/laminat-kvartsvinil-ili-parket',
-    '/blog/gidroizolyaciya-vannoj-i-sanuzla-pri-remonte',
-    '/blog/shumoizolyaciya-kvartiry-pri-remonte',
-    '/contacts',
-    '/cookies',
-    '/prices',
-    '/prices/vyvoz-musora',
-    '/prices/gipsokarton',
-    '/prices/demontazh',
-    '/prices/kladka',
-    '/prices/shtukaturka',
-    '/prices/malyarnye',
-    '/prices/plitka',
-    '/prices/napolnye-pokrytiya',
-    '/prices/elektroremontazh',
-    '/prices/santehmontazh',
-    '/prices/kondicionirovanie',
-    '/prices/zvukoizolyaciya',
-    '/prices/potolki',
-    '/prices/dveri',
-    '/prices/obshhestroitelnye',
-    '/prices/thanks',
-    '/privacy',
-    '/projects',
-    '/projects/2-murinskiy-37',
-    '/projects/zhk-grafika',
-    '/projects/verkhnekamenskaya',
-    '/projects/prospekt-slavy-4',
-    '/projects/forest-akvilon',
-    '/projects/id-kudrovo',
-    '/projects/grand-house',
-    '/services',
-    '/services/individual',
-    '/services/package',
-  ],
+  async prerender() {
+    return resolvePrerenderPaths()
+  },
 } satisfies Config
