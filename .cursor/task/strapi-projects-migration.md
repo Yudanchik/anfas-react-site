@@ -1,7 +1,7 @@
 # Strapi: миграция проектов и галерей
 
-**Status:** Ready for Stage 5
-**Next stage:** Этап 5 — Visual QA + Admin UX review + решение по details/alt/reviews
+**Status:** Ready for next content migration
+**Next stage:** Следующий тип контента (рекомендация: Services или Prices — отдельный план)
 **Scope:** только `Project` + cover/gallery (+ review, details, size)
 **Repos:** `2026-08-15`
 **Frontend branch (current):** `feature/strapi-journal-pilot`
@@ -402,17 +402,66 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 
 ---
 
-### Этап 5 — Visual QA + Admin UX ← **NEXT**
-**Scope (предложение):**
-- [ ] **5.1** Visual QA: `/projects`, `/projects/:slug`, lightbox, `/prices/thanks` (3 projects) при `local` и выборочно `snapshot`/`strapi`
-- [ ] **5.2** Admin UX review в Strapi: cover/gallery order, review fields, details JSON readability
-- [ ] **5.3** Решения перед следующим типом контента: `details[]` (JSON vs component), gallery `alt`, authenticity gate для reviews
-- [ ] **5.4** Обновить README CMS (import projects) + этот task → `[x]`
-- [ ] **5.5** Не включать production cutover / не удалять `projects.data.ts` в этом этапе
+### Этап 5 — Visual QA + Admin UX + decisions
+- [x] **5.1** Visual QA `/projects` + все `/projects/:slug` в `local` / `strapi` / `snapshot` (desktop ~1440, tablet ~768, mobile ~390)
+- [x] **5.2** Admin UX review Project (schema + live API shape)
+- [x] **5.3** Decisions: details / gallery alt / review authenticity gate
+- [x] **5.4** Docs: CMS README + FE `docs/strapi-content-sources.md`
+- [x] **5.5** No production cutover; `projects.data.ts` retained
 
-**Готовность:** чеклист visual + зафиксированные решения
+#### Visual QA summary (2026-08-15)
+
+| Check | Result |
+| --- | --- |
+| Modes local / strapi / snapshot | Cover + gallery[0] + review quote **identical** |
+| All 7 detail URLs HTTP 200 | OK in all 3 modes |
+| List order (first 6 + «Показать ещё» → 7th) | Same across modes |
+| Broken / localhost media | **0** |
+| Desktop hero/detail | OK — no text overlap |
+| Mobile ~390 | OK — stacked metrics, hamburger, no overlap |
+| Tablet ~768 | OK — readable hero/metrics |
+| Mapping/adapter bugs | **None found** — no code fix required |
+
+**Follow-ups (pre-existing UI, not Stage 5 regressions):**
+- List page paginates with «Показать ещё» (7th card `grand-house` behind button) — intentional UX, not data loss
+- Long project titles may ellipsize on card grid (e.g. «ЖК Форест Аквилон…») — cosmetic
+
+#### Admin UX
+
+| Area | Assessment |
+| --- | --- |
+| title / slug / location / type / typeAccent | Clear string fields — OK for editors |
+| cover | `image` media + portable `imagePath` — OK |
+| gallery | `sortOrder` + `imagePath` + media — order is editable; `alt` nullable |
+| review | quote / details / author / projectInfo / location / rating / service — clear |
+| details JSON | Acceptable while UI does not render; not great for day-to-day editing |
+| seo | null on all imports — OK (FE route SEO) |
+
+#### Decisions (Stage 5)
+
+1. **`details[]`:** **оставить JSON** до production cutover. Контент неоднородный (`string[]` абзацы/заголовки/пункты); UI не показывает. Repeatable component — только после отдельного подтверждения, не в Stage 5.
+2. **`gallery.alt`:** **не генерировать массово**. Правило на будущее: заполнять вручную в CMS только осмысленные alt; пустое = декоративное / UI fallback «{title}: фото N». Frontend fallback остаётся техническим.
+3. **Review authenticity gate (перед production cutover):**
+   - [ ] Владелец подтвердил источник каждого из 7 отзывов
+   - [ ] Есть разрешение на публикацию имени/локации (или анонимизация)
+   - [ ] Отзыв соответствует реальному объекту (slug / адрес / метраж)
+   - [ ] Rating не завышен искусственно; нет пометки mock во фронте как «боевой»
+   - [ ] Снят комментарий `Temporary mock reviews` из `projects.data.ts` **или** reviews заменены на verified
+   - Без этого чекпоинта Projects cutover **не выполнять**
+
+**Готовность:** ✅ Stage 5 complete — **Ready for next content migration**
 **Out:** production switch, merge в `dev`/`main` без отдельного подтверждения
 
+---
+
+### Рекомендация: следующий тип контента
+
+После Projects + Articles пилотов логичный следующий блок:
+
+1. **Services** (`/services`, individual/package) — меньше медиа, ясный DTO, переиспользует dual-run паттерн; **или**
+2. **Prices** — если приоритет коммерции / прайс-категории.
+
+Не начинать без отдельного task/плана и ветки.
 ---
 
 ## Контрольные точки (всегда ждать подтверждения)
@@ -480,11 +529,18 @@ Frontend rollback: `PROJECTS_CONTENT_SOURCE=local`, hardcode на месте.
 | | Parity local↔snapshot 7/7; local↔Strapi 7/7; articles 8/8. |
 | | Builds: local / strapi-up / strapi-down→snapshot / snapshot — all OK. CMS untouched. |
 | | Status → **Ready for Stage 5**. |
+| 2026-08-15 | **Stage 5 complete.** Visual QA + Admin UX + decisions + docs. |
+| | Visual: local/strapi/snapshot parity visual+HTML; 7/7 details 200; no broken images; mobile/tablet/desktop OK. |
+| | No adapter/schema fixes required. Pre-existing: list «Показать ещё», title ellipsis. |
+| | Decisions: details=JSON; alt=manual later + UI fallback; review authenticity gate before cutover. |
+| | Docs: CMS README projects workflow; FE `docs/strapi-content-sources.md`. |
+| | Status → **Ready for next content migration**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 5** (visual QA + Admin UX + решения по details/alt/reviews).
-Не merge в `dev`/`main` и не production cutover без явного запроса.
+Projects migration plan **complete through Stage 5**.
+Ждать отдельного подтверждения на: merge в `dev`, production cutover, или **новый task** для следующего типа контента (Services / Prices).
+Не удалять hardcode и не менять production env без явного запроса.
