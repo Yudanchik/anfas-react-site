@@ -1,7 +1,7 @@
 # Strapi: миграция проектов и галерей
 
-**Status:** Ready for Stage 1
-**Next stage:** Этап 1 — CMS schema Project
+**Status:** Ready for Stage 2
+**Next stage:** Этап 2 — Seed + import dry-run
 **Scope:** только `Project` + cover/gallery (+ review, details, size)
 **Repos:** `2026-08-15`
 **Frontend branch (current):** `feature/strapi-journal-pilot`
@@ -296,20 +296,27 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 
 ---
 
-### Этап 1 — CMS schema Project ← **NEXT**
-- [ ] **1.1** Components `project.review`, `project.gallery-item`
-- [ ] **1.2** Collection type `project` (+ optional `shared.seo`; **без** автогенерации SEO при импорте)
-- [ ] **1.3** Public permissions find/findOne (как у Article)
-- [ ] **1.4** CMS `check` / `build`
+### Этап 1 — CMS schema Project
+- [x] **1.1** Components `project.review`, `project.gallery-item`
+- [x] **1.2** Collection type `project` (+ optional `shared.seo`; без автогенерации SEO)
+- [x] **1.3** Public permissions find/findOne via bootstrap (как Article)
+- [x] **1.4** CMS `check` / `build` + API smoke (GET 200, write/PUT/DELETE 403)
 
-**Файлы (CMS):** `src/components/project/*`, `src/api/project/**`, bootstrap permissions
-**Готовность:** admin видит Project; API пустой 200
-**⛔ Checkpoint:** schema review OK
-**Не делать в этапе 1:** importer, media, frontend wiring
+**Фактически создано (CMS `feature/projects-migration` @ `5c33624`):**
+- `project.review`: quote, details?, author, projectInfo?, location?, rating (1–5), service?
+- `project.gallery-item`: imagePath, image?, alt?, sortOrder
+- `Project`: title, slug, type, typeAccent, location, description, imagePath, image?, area, term, price, size(enum wide|tall|standard), gallery[], details(json), review?, seo?(shared.seo); draftAndPublish=true
+- Public actions only: `api::project.project.find`, `api::project.project.findOne`
+- Article schema/import **не изменены**; GET `/api/articles` по-прежнему 8
+
+**Файлы (CMS):** `src/components/project/*`, `src/api/project/**`, `src/index.ts`, `types/generated/*`
+**Готовность:** ✅ Stage 1 complete — Ready for Stage 2
+**⛔ Checkpoint:** подтверждение перед Этапом 2 (seed/dry-run)
+**Не делать до этапа 2+:** importer write, media upload, frontend wiring
 
 ---
 
-### Этап 2 — Seed + import dry-run
+### Этап 2 — Seed + import dry-run ← **NEXT**
 - [ ] **2.1** Экспорт `projects.json` из `projects.data.ts` (не меняя data.ts)
 - [ ] **2.2** `import-projects.cjs` dry-run
 - [ ] **2.3** Отчёт: 7 проектов, все media paths найдены
@@ -391,10 +398,17 @@ Frontend rollback: `PROJECTS_CONTENT_SOURCE=local`, hardcode на месте.
 | | `git fetch`; `merge origin/dev` → **Already up to date** (base `8d3c436`). No conflicts. No force push. |
 | | FE checks: `pnpm check`, build `CONTENT_SOURCE=local`, articles parity 8/8, `git diff --check`. |
 | | Status → **Ready for Stage 1**. CMS schema / import / FE Project wiring **not started**. |
+| 2026-08-15 | **Stage 1 complete.** CMS branch `feature/projects-migration`, commit `5c33624`. |
+| | Schema: Project + project.review + project.gallery-item + optional shared.seo. |
+| | Permissions: public find/findOne only; write 403. Articles API intact (8). |
+| | Checks: schema JSON OK, `pnpm check`, `pnpm build`, smoke GET projects []. |
+| | `docker-compose.yml` local dirty (CRLF) **not** committed. |
+| | Status → **Ready for Stage 2**. |
+
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 1** (только CMS schema Project + components + public read permissions + CMS check/build).
-Не начинать importer / media / frontend Project integration без явного запроса.
+**Ждать подтверждения Этапа 2** (seed `projects.json` + `import-projects` dry-run only; без записи в БД / media).
+Не начинать полный import / frontend Project integration без явного запроса.
