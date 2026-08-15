@@ -1,9 +1,10 @@
 # Strapi: миграция проектов и галерей
 
-**Status:** Planned  
-**Scope:** только `Project` + cover/gallery (+ review, details, size)  
-**Repos:** `2026-08-15`  
-**Frontend branch (current):** `feature/strapi-journal-pilot`  
+**Status:** Ready for Stage 1
+**Next stage:** Этап 1 — CMS schema Project
+**Scope:** только `Project` + cover/gallery (+ review, details, size)
+**Repos:** `2026-08-15`
+**Frontend branch (current):** `feature/strapi-journal-pilot`
 **CMS repo:** `Yudanchik/anfas-cms` (`main`)
 
 ---
@@ -46,30 +47,27 @@
 
 ---
 
-## Open questions (нужно ваше решение до/в ходе этапов)
+## Accepted decisions (Stage 0 — 2026-08-15)
 
-1. **`PROJECTS_CONTENT_SOURCE` vs расширение `CONTENT_SOURCE`**  
-   Рекомендация: отдельный `PROJECTS_CONTENT_SOURCE=local|strapi|snapshot` (default `local`), чтобы статьи и проекты включались независимо.
+| # | Решение |
+| --- | --- |
+| 1 | Отдельный **`PROJECTS_CONTENT_SOURCE=local\|strapi\|snapshot`** (default `local`). Не меняет источник статей (`CONTENT_SOURCE`). |
+| 2 | SEO: **вариант A** — `shared.seo` optional. Без SEO в CMS frontend использует текущую генерацию title/description/canonical/OG. При импорте **не** создавать выдуманные SEO-тексты. |
+| 3 | **`details[]` переносим полностью** в Strapi + snapshot. UI detail **не** меняем, новые блоки не выводим. |
+| 4 | Gallery `alt` в CMS **optional**. Frontend: обязательный детерминированный fallback «название проекта + порядковый номер». Пустой alt — только для действительно декоративных изображений. |
+| 5 | Отзывы импортируем **published** ровно как сейчас на сайте; содержание не менять и не дописывать. **Обязательная проверка достоверности отзывов перед production cutover** (см. ниже). |
+| 6 | Sync с `dev`: **merge**, не rebase. **Force push запрещён**. |
 
-2. **SEO component для Project**  
-   - A) optional `shared.seo` + fallback генерация как в `project/route.tsx` meta  
-   - B) при импорте заполнять SEO вычисленными строками (жёсткий parity meta)  
-   Рекомендация: **A** (ближе к текущему коду; проще редактировать в CMS).
+### Gate before production cutover (reviews)
+- [ ] Владелец подтвердил, что все 7 отзывов достоверны / заменены на реальные
+- [ ] Нет пометки «Temporary mock reviews» в production-источнике
+- Без этого чекпоинта cutover Projects **не выполнять**
 
-3. **Поле `details` (массив строк)**  
-   Мигрировать в Strapi, даже если UI пока не показывает?  
-   Рекомендация: **да** (parity источника + возможность показать позже).
+---
 
-4. **Per-image alt/caption в CMS**  
-   Сейчас alt только runtime. Добавлять optional `alt` в gallery component или оставить генерацию UI?  
-   Рекомендация: optional `alt` + fallback `${title}: фото ${n}` как сейчас.
+## Open questions
 
-5. **Mock reviews**  
-   В `projects.data.ts` комментарий: *Temporary mock reviews*. Оставляем как есть при импорте или помечаем draft?  
-   Рекомендация: импортировать как published (как сейчас на сайте), отдельная задача на замену текстов.
-
-6. **Синхронизация ветки**  
-   Перед реализацией: `feature/strapi-journal-pilot` ← `origin/dev` (rebase или merge). Подтвердите предпочтение: **merge** (безопаснее для shared history) или **rebase**.
+*Все вопросы 1–6 закрыты решениями Stage 0.*
 
 ---
 
@@ -163,18 +161,18 @@ Cover (`image`) — отдельный webp из той же папки прое
 ### 3.2 New components
 
 **`project.review`**
-- `quote` text required  
-- `details` text optional  
-- `author` string required  
-- `projectInfo` string optional  
-- `location` string optional  
-- `rating` integer required (min 1 max 5)  
-- `service` string optional  
+- `quote` text required
+- `details` text optional
+- `author` string required
+- `projectInfo` string optional
+- `location` string optional
+- `rating` integer required (min 1 max 5)
+- `service` string optional
 
 **`project.gallery-item`**
-- `imagePath` string required  
-- `image` media single optional (images)  
-- `alt` string optional  
+- `imagePath` string required
+- `image` media single optional (images)
+- `alt` string optional
 - `sortOrder` integer required (0-based, сохраняет порядок)
 
 ### 3.3 Collection `api::project.project`
@@ -287,26 +285,27 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 > В следующих задачах: «выполни только этап N», затем «обнови task-файл».
 
 ### Этап 0 — Синхронизация ветки и подтверждение решений
-- [ ] **0.1** Показать `git fetch` + diff `feature/strapi-journal-pilot...origin/dev`
-- [ ] **0.2** Merge (или rebase — по вашему выбору) `origin/dev` в feature-ветку **без потери** journal-пилота
-- [ ] **0.3** Зафиксировать ответы на Open questions 1–6
+- [x] **0.1** `git fetch` + сравнение с `origin/dev`
+- [x] **0.2** Merge `origin/dev` в `feature/strapi-journal-pilot` (Already up to date; conflicts none)
+- [x] **0.3** Зафиксированы ответы на Open questions 1–6 (см. Accepted decisions)
 
-**Файлы:** только git  
-**Проверки:** `pnpm check` после sync  
-**Готовность:** ветка чистая/собирается; решения записаны в Progress log  
-**⛔ Checkpoint:** ваше подтверждение перед любым кодом Strapi/FE
+**Файлы:** `.cursor/task/strapi-projects-migration.md`
+**Проверки:** `pnpm check`, build local, articles parity 8/8, `git diff --check`
+**Готовность:** ✅ Stage 0 complete — Ready for Stage 1
+**⛔ Checkpoint:** подтверждение перед Этапом 1 (schema)
 
 ---
 
-### Этап 1 — CMS schema Project
+### Этап 1 — CMS schema Project ← **NEXT**
 - [ ] **1.1** Components `project.review`, `project.gallery-item`
-- [ ] **1.2** Collection type `project` (+ optional `shared.seo`)
+- [ ] **1.2** Collection type `project` (+ optional `shared.seo`; **без** автогенерации SEO при импорте)
 - [ ] **1.3** Public permissions find/findOne (как у Article)
 - [ ] **1.4** CMS `check` / `build`
 
-**Файлы (CMS):** `src/components/project/*`, `src/api/project/**`, bootstrap permissions  
-**Готовность:** admin видит Project; API пустой 200  
+**Файлы (CMS):** `src/components/project/*`, `src/api/project/**`, bootstrap permissions
+**Готовность:** admin видит Project; API пустой 200
 **⛔ Checkpoint:** schema review OK
+**Не делать в этапе 1:** importer, media, frontend wiring
 
 ---
 
@@ -315,7 +314,7 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 - [ ] **2.2** `import-projects.cjs` dry-run
 - [ ] **2.3** Отчёт: 7 проектов, все media paths найдены
 
-**Готовность:** dry-run errors=0  
+**Готовность:** dry-run errors=0
 **⛔ Checkpoint:** можно писать в БД
 
 ---
@@ -325,7 +324,7 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 - [ ] **3.2** Повторный import (updated=7, created=0, media без дублей)
 - [ ] **3.3** Проверка порядка gallery / cover
 
-**Готовность:** REST отдаёт 7 published projects  
+**Готовность:** REST отдаёт 7 published projects
 **⛔ Checkpoint:** перед frontend wiring
 
 ---
@@ -337,9 +336,9 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 - [ ] **4.4** Prerender paths для projects
 - [ ] **4.5** Builds: local / strapi / strapi-down
 
-**Файлы (FE):** `entities/project/api/*`, `shared/content/**`, `prerender-paths.ts`, `.env.example`, scripts  
-**Не трогать:** UI widgets/routes кроме необходимости env  
-**Готовность:** parity 7/7; default local  
+**Файлы (FE):** `entities/project/api/*`, `shared/content/**`, `prerender-paths.ts`, `.env.example`, scripts
+**Не трогать:** UI widgets/routes кроме необходимости env
+**Готовность:** parity 7/7; default local
 **⛔ Checkpoint:** PR/review перед merge в dev
 
 ---
@@ -349,17 +348,17 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 - [ ] **5.2** Обновить README CMS (import projects)
 - [ ] **5.3** Обновить этот task → Progress + статусы `[x]`
 
-**Готовность:** чеклист §8  
+**Готовность:** чеклист §8
 **Out:** production switch (отдельная задача)
 
 ---
 
 ## Контрольные точки (всегда ждать подтверждения)
 
-1. После Этапа 0 (sync + open questions)  
-2. После Этапа 1 (schema)  
-3. После Этапа 3 (import)  
-4. Перед merge frontend-ветки в `dev`  
+1. После Этапа 0 (sync + open questions)
+2. После Этапа 1 (schema)
+3. После Этапа 3 (import)
+4. Перед merge frontend-ветки в `dev`
 5. Любой production / DNS / удаление hardcode — **вне этого плана**
 
 ---
@@ -373,7 +372,7 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 | Сломать статьи env | отдельный `PROJECTS_CONTENT_SOURCE` | default local |
 | Конфликт с `dev` | Этап 0 sync | revert merge commit |
 | Schema неверна | checkpoint после этапа 1 | удалить CT до данных / migrate down |
-| Mock reviews | open question 5 | draft/unpublish later |
+| Mock / недостоверные отзывы | gate перед production cutover | не включать cutover без подтверждения владельца |
 
 Frontend rollback: `PROJECTS_CONTENT_SOURCE=local`, hardcode на месте.
 
@@ -387,10 +386,15 @@ Frontend rollback: `PROJECTS_CONTENT_SOURCE=local`, hardcode на месте.
 | | Frontend: 7 projects, 164 webp, repository-only consumers (+ unused HomeProjects). |
 | | CMS: reuse `shared.seo`; journal pilot already on `anfas-cms`. |
 | | Git FE branch `feature/strapi-journal-pilot`; CMS `main`. |
+| 2026-08-15 | **Stage 0 complete.** Decisions 1–6 accepted (см. Accepted decisions). |
+| | Commit plan: `Add Strapi projects migration plan`. |
+| | `git fetch`; `merge origin/dev` → **Already up to date** (base `8d3c436`). No conflicts. No force push. |
+| | FE checks: `pnpm check`, build `CONTENT_SOURCE=local`, articles parity 8/8, `git diff --check`. |
+| | Status → **Ready for Stage 1**. CMS schema / import / FE Project wiring **not started**. |
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 0** (sync с `dev` + ответы на Open questions).  
-После подтверждения — выполнять только запрошенный этап и обновлять этот файл.
+**Ждать подтверждения Этапа 1** (только CMS schema Project + components + public read permissions + CMS check/build).
+Не начинать importer / media / frontend Project integration без явного запроса.
