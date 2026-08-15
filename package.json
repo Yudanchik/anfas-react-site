@@ -20,7 +20,10 @@
     "check": "pnpm typecheck && pnpm lint && pnpm lint:styles",
     "sync:youtube": "node scripts/sync-youtube.mjs",
     "parity:articles": "node scripts/parity-articles.mjs",
-    "parity:articles:strapi": "node scripts/parity-articles.mjs --strapi"
+    "parity:articles:strapi": "node scripts/parity-articles.mjs --strapi",
+    "parity:projects": "node scripts/parity-projects.mjs",
+    "parity:projects:strapi": "node scripts/parity-projects.mjs --strapi",
+    "snapshot:projects": "node scripts/snapshot-projects.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

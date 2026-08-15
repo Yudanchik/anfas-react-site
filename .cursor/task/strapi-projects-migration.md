@@ -1,7 +1,7 @@
 # Strapi: миграция проектов и галерей
 
-**Status:** Ready for Stage 4
-**Next stage:** Этап 4 — Frontend wiring (PROJECTS_CONTENT_SOURCE, DTO, adapter, repository, snapshot, prerender/parity)
+**Status:** Ready for Stage 5
+**Next stage:** Этап 5 — Visual QA + Admin UX review + решение по details/alt/reviews
 **Scope:** только `Project` + cover/gallery (+ review, details, size)
 **Repos:** `2026-08-15`
 **Frontend branch (current):** `feature/strapi-journal-pilot`
@@ -372,29 +372,46 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 
 ---
 
-### Этап 4 — Frontend wiring ← **NEXT**
-**Scope:** dual-run для проектов без cutover / без удаления hardcode.
+### Этап 4 — Frontend wiring
+- [x] **4.1** Zod DTO + `adaptStrapiProject` + `local` / `strapi` / `snapshot` factory
+- [x] **4.2** `projects.snapshot.json` + `parity:projects` / `parity:projects:strapi` + `snapshot:projects`
+- [x] **4.3** `PROJECTS_CONTENT_SOURCE` (default **local**); `CONTENT_SOURCE` статей не затронут
+- [x] **4.4** Prerender: `/projects` + `/projects/:slug` из snapshot/CMS; Strapi-down → snapshot
+- [x] **4.5** Builds: local / strapi-up / strapi-down→snapshot / snapshot — все OK
 
-- [ ] **4.1** Zod DTO + Strapi adapter + `local` / `strapi` / `snapshot` repository factory
-- [ ] **4.2** `projects.snapshot.json` + parity script (local ↔ snapshot ↔ Strapi)
-- [ ] **4.3** `PROJECTS_CONTENT_SOURCE=local|strapi|snapshot` (default **local**); не меняет `CONTENT_SOURCE` статей
-- [ ] **4.4** Prerender paths для `/projects` и `/projects/:slug` из snapshot/CMS
-- [ ] **4.5** Builds: local / strapi / strapi-down
+**Проверки Stage 4 (2026-08-15):**
 
-**Файлы (FE):** `entities/project/api/*`, `shared/content/**`, `prerender-paths.ts`, `.env.example`, scripts
-**Не трогать:** UI widgets/routes кроме необходимости env; CMS schema; live re-import без нужды
-**Готовность:** parity 7/7; default local
-**⛔ Checkpoint:** PR/review перед merge в dev
+| Check | Result |
+| --- | --- |
+| `pnpm check` | OK |
+| `git diff --check` | OK |
+| `parity:projects` local↔snapshot | **7/7** |
+| `parity:projects:strapi` local↔Strapi | **7/7** |
+| `parity:articles` | **8/8** (не сломан) |
+| build `PROJECTS_CONTENT_SOURCE=local` | OK |
+| build `=strapi` (Strapi up) | OK, 7 project pages |
+| build `=strapi` (Strapi down) | OK, snapshot fallback |
+| build `=snapshot` | OK |
+| default без env | local (как production) |
+| CMS changes | **нет** |
+
+**Поведение:** imagePath → FE `image` без leading `/`; gallery по `sortOrder`; media URL Strapi не используется для parity; alt по-прежнему UI fallback; details в данных, UI не показывает; SEO route-generated.
+
+**Готовность:** ✅ Stage 4 complete — Ready for Stage 5
+**⛔ Checkpoint:** перед Stage 5 / перед merge в `dev`
 
 ---
 
-### Этап 5 — Visual QA + docs
-- [ ] **5.1** List / detail / lightbox / thanks (3 projects)
-- [ ] **5.2** Обновить README CMS (import projects)
-- [ ] **5.3** Обновить этот task → Progress + статусы `[x]`
+### Этап 5 — Visual QA + Admin UX ← **NEXT**
+**Scope (предложение):**
+- [ ] **5.1** Visual QA: `/projects`, `/projects/:slug`, lightbox, `/prices/thanks` (3 projects) при `local` и выборочно `snapshot`/`strapi`
+- [ ] **5.2** Admin UX review в Strapi: cover/gallery order, review fields, details JSON readability
+- [ ] **5.3** Решения перед следующим типом контента: `details[]` (JSON vs component), gallery `alt`, authenticity gate для reviews
+- [ ] **5.4** Обновить README CMS (import projects) + этот task → `[x]`
+- [ ] **5.5** Не включать production cutover / не удалять `projects.data.ts` в этом этапе
 
-**Готовность:** чеклист §8
-**Out:** production switch (отдельная задача)
+**Готовность:** чеклист visual + зафиксированные решения
+**Out:** production switch, merge в `dev`/`main` без отдельного подтверждения
 
 ---
 
@@ -457,11 +474,17 @@ Frontend rollback: `PROJECTS_CONTENT_SOURCE=local`, hardcode на месте.
 | | REST parity: projects 7, gallery 164+media, articles 8, issues []. Schema unchanged. |
 | | Checks: `pnpm check`, `pnpm build`, `git diff --check`. uploads/.env/docker-compose **not** committed. |
 | | Status → **Ready for Stage 4**. |
+| 2026-08-15 | **Stage 4 complete.** FE dual-run for Projects (no production cutover). |
+| | `PROJECTS_CONTENT_SOURCE` default local; DTO/adapter; strapi/snapshot/local repos; snapshot JSON. |
+| | Prerender project slugs dynamic; Strapi-down → snapshot. Articles `CONTENT_SOURCE` unchanged. |
+| | Parity local↔snapshot 7/7; local↔Strapi 7/7; articles 8/8. |
+| | Builds: local / strapi-up / strapi-down→snapshot / snapshot — all OK. CMS untouched. |
+| | Status → **Ready for Stage 5**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 4** (frontend wiring: `PROJECTS_CONTENT_SOURCE`, DTO/adapter/repos, snapshot, prerender/parity; default local).
-Не начинать production cutover / merge в `dev`/`main` без явного запроса.
+**Ждать подтверждения Этапа 5** (visual QA + Admin UX + решения по details/alt/reviews).
+Не merge в `dev`/`main` и не production cutover без явного запроса.
