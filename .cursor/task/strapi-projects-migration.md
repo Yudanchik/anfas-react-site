@@ -1,7 +1,7 @@
 # Strapi: миграция проектов и галерей
 
-**Status:** Ready for Stage 3
-**Next stage:** Этап 3 — Import + media
+**Status:** Ready for Stage 4
+**Next stage:** Этап 4 — Frontend wiring (PROJECTS_CONTENT_SOURCE, DTO, adapter, repository, snapshot, prerender/parity)
 **Scope:** только `Project` + cover/gallery (+ review, details, size)
 **Repos:** `2026-08-15`
 **Frontend branch (current):** `feature/strapi-journal-pilot`
@@ -347,28 +347,42 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 
 ---
 
-### Этап 3 — Import + media ← **NEXT**
-**Точный scope этапа 3:**
-- [ ] **3.1** Live importer `pnpm projects:import` (или эквивалент): создать 7 Project в Strapi/PostgreSQL; publish; **не** трогать Article
-- [ ] **3.2** Upload cover + gallery media из frontend `public/images/...` (пути из seed); dedupe по path; сохранить `sortOrder`
-- [ ] **3.3** Повторный import: updated=7, created=0, без дублей media
-- [ ] **3.4** REST smoke: GET `/api/projects` = 7; gallery order; cover; review/details parity vs seed
-- [ ] **3.5** Не менять Project schema (`details` остаётся JSON); не трогать FE DTO/UI/snapshot
+### Этап 3 — Import + media
+- [x] **3.1** Live importer `pnpm projects:import`: created=7, published; Article не тронут
+- [x] **3.2** Upload cover + gallery; dedupe по `caption`=public path + stable name; `sortOrder` сохранён
+- [x] **3.3** Повторный import: created=0, updated=7; mediaUploaded=0, mediaReused=164; uploadFileCount стабилен (180)
+- [x] **3.4** REST smoke `pnpm projects:parity`: projects=7, gallery=164+media, articles=8, issues=[]
+- [x] **3.5** Schema не менялась (`details` JSON); FE DTO/UI/snapshot не трогались
 
-**Готовность:** REST отдаёт 7 published projects
-**⛔ Checkpoint:** перед frontend wiring (этап 4)
+**Фактические результаты импорта (2026-08-15):**
+
+| Run | created | updated | skipped | errors | mediaUploaded | mediaReused | mediaCacheHits | uploadFileCount | parity |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| 1st live | **7** | 0 | 0 | 0 | **164** | 0 | 7 | 180 | ok |
+| 2nd live | **0** | **7** | 0 | 0 | **0** | **164** | 7 | **180** (no dupes) | ok |
+
+**REST smoke:**
+- GET `/api/projects` → **7** published; slugs = seed
+- coversWithMedia **7**; galleryItems **164**; galleryWithMedia **164**; unique media captions **164**
+- GET `/api/articles` → **8** (unchanged)
+- `details` JSON + `review` text parity ok; SEO not generated
+
+**Готовность:** ✅ Stage 3 complete — Ready for Stage 4
+**⛔ Checkpoint:** подтверждение перед Этапом 4 (frontend wiring)
 
 ---
 
-### Этап 4 — Frontend repositories (без cutover)
-- [ ] **4.1** DTO Zod + adapter + strapi/snapshot/local factory
-- [ ] **4.2** `projects.snapshot.json` + parity script
-- [ ] **4.3** `PROJECTS_CONTENT_SOURCE` (default local)
-- [ ] **4.4** Prerender paths для projects
+### Этап 4 — Frontend wiring ← **NEXT**
+**Scope:** dual-run для проектов без cutover / без удаления hardcode.
+
+- [ ] **4.1** Zod DTO + Strapi adapter + `local` / `strapi` / `snapshot` repository factory
+- [ ] **4.2** `projects.snapshot.json` + parity script (local ↔ snapshot ↔ Strapi)
+- [ ] **4.3** `PROJECTS_CONTENT_SOURCE=local|strapi|snapshot` (default **local**); не меняет `CONTENT_SOURCE` статей
+- [ ] **4.4** Prerender paths для `/projects` и `/projects/:slug` из snapshot/CMS
 - [ ] **4.5** Builds: local / strapi / strapi-down
 
 **Файлы (FE):** `entities/project/api/*`, `shared/content/**`, `prerender-paths.ts`, `.env.example`, scripts
-**Не трогать:** UI widgets/routes кроме необходимости env
+**Не трогать:** UI widgets/routes кроме необходимости env; CMS schema; live re-import без нужды
 **Готовность:** parity 7/7; default local
 **⛔ Checkpoint:** PR/review перед merge в dev
 
@@ -436,11 +450,18 @@ Frontend rollback: `PROJECTS_CONTENT_SOURCE=local`, hardcode на месте.
 | | `details[]`: keep JSON through stage 3 (heterogeneous string[]; no schema change). |
 | | Checks: `pnpm check`, `pnpm build`, `git diff --check`, JSON parse OK. |
 | | `docker-compose.yml` dirty **not** committed. Status → **Ready for Stage 3**. |
+| 2026-08-15 | **Stage 3 complete.** Live import + media (local Strapi/Postgres only). |
+| | CMS: `import-projects.cjs`, `projects-parity-smoke.cjs`; scripts `projects:import`, `projects:parity`. |
+| | Import #1: created=7, mediaUploaded=164, mediaCacheHits=7 (cover∩gallery). |
+| | Import #2: created=0, updated=7, mediaUploaded=0, mediaReused=164; uploadFileCount 180→180. |
+| | REST parity: projects 7, gallery 164+media, articles 8, issues []. Schema unchanged. |
+| | Checks: `pnpm check`, `pnpm build`, `git diff --check`. uploads/.env/docker-compose **not** committed. |
+| | Status → **Ready for Stage 4**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 3** (live import Project + media upload; без FE wiring / schema change / production).
-Не начинать frontend Project dual-run без явного запроса.
+**Ждать подтверждения Этапа 4** (frontend wiring: `PROJECTS_CONTENT_SOURCE`, DTO/adapter/repos, snapshot, prerender/parity; default local).
+Не начинать production cutover / merge в `dev`/`main` без явного запроса.
