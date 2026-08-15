@@ -1,7 +1,7 @@
 # Strapi: миграция проектов и галерей
 
-**Status:** Ready for Stage 2
-**Next stage:** Этап 2 — Seed + import dry-run
+**Status:** Ready for Stage 3
+**Next stage:** Этап 3 — Import + media
 **Scope:** только `Project` + cover/gallery (+ review, details, size)
 **Repos:** `2026-08-15`
 **Frontend branch (current):** `feature/strapi-journal-pilot`
@@ -316,23 +316,47 @@ Prerender: все 7 slug + `/projects` всегда в build при наличи
 
 ---
 
-### Этап 2 — Seed + import dry-run ← **NEXT**
-- [ ] **2.1** Экспорт `projects.json` из `projects.data.ts` (не меняя data.ts)
-- [ ] **2.2** `import-projects.cjs` dry-run
-- [ ] **2.3** Отчёт: 7 проектов, все media paths найдены
+### Этап 2 — Seed + import dry-run
+- [x] **2.1** Экспорт `scripts/seed/projects.json` из `projects.data.ts` (tsx import; data.ts не менялся)
+- [x] **2.2** `pnpm projects:import:dry` (без Strapi/DB/media)
+- [x] **2.3** Отчёт: 7 проектов, media found; повторный dry-run идентичен
 
-**Готовность:** dry-run errors=0
-**⛔ Checkpoint:** можно писать в БД
+**Dry-run media counts (2026-08-15):**
+| Metric | Value |
+| --- | --- |
+| projects total | **7** |
+| unique slugs | 7 |
+| covers referenced / found / missing | **7 / 7 / 0** |
+| gallery items referenced / found / missing | **164 / 164 / 0** |
+| unique media files | **164** |
+| duplicate media refs (cover∩gallery) | **7** paths, count=2 each (expected) |
+| missing alt | **164** (warning only; source has no alt) |
+| orphan files under `public/images/projects` | **0** |
+| errors | **[]** |
+| warnings | **171** (164 missing alt + 7 cover-in-gallery) |
+| exit code | **0** |
+
+**details[] analysis (schema not changed in stage 2):**
+- Фактически: `string[]`, 3–8 элементов на проект, всего **42** строки.
+- Смешанный контент в одном массиве: вводные абзацы, заголовки («Основные работы:»), пункты работ, заключения — **без** стабильной пары title/body.
+- Сейчас в schema: `details: json` (stage 1).
+- **Решение для этапа 3:** **оставить JSON**. Repeatable component (`text` lines) имеет смысл позже для Admin UX, не до live import; смена схемы сейчас даст лишнюю миграцию без выигрыша для parity.
+
+**Готовность:** ✅ Stage 2 complete — Ready for Stage 3
+**⛔ Checkpoint:** подтверждение перед Этапом 3 (live import + media upload)
 
 ---
 
-### Этап 3 — Import + media
-- [ ] **3.1** Первый import (created=7)
-- [ ] **3.2** Повторный import (updated=7, created=0, media без дублей)
-- [ ] **3.3** Проверка порядка gallery / cover
+### Этап 3 — Import + media ← **NEXT**
+**Точный scope этапа 3:**
+- [ ] **3.1** Live importer `pnpm projects:import` (или эквивалент): создать 7 Project в Strapi/PostgreSQL; publish; **не** трогать Article
+- [ ] **3.2** Upload cover + gallery media из frontend `public/images/...` (пути из seed); dedupe по path; сохранить `sortOrder`
+- [ ] **3.3** Повторный import: updated=7, created=0, без дублей media
+- [ ] **3.4** REST smoke: GET `/api/projects` = 7; gallery order; cover; review/details parity vs seed
+- [ ] **3.5** Не менять Project schema (`details` остаётся JSON); не трогать FE DTO/UI/snapshot
 
 **Готовность:** REST отдаёт 7 published projects
-**⛔ Checkpoint:** перед frontend wiring
+**⛔ Checkpoint:** перед frontend wiring (этап 4)
 
 ---
 
@@ -404,11 +428,19 @@ Frontend rollback: `PROJECTS_CONTENT_SOURCE=local`, hardcode на месте.
 | | Checks: schema JSON OK, `pnpm check`, `pnpm build`, smoke GET projects []. |
 | | `docker-compose.yml` local dirty (CRLF) **not** committed. |
 | | Status → **Ready for Stage 2**. |
+| 2026-08-15 | **Stage 2 complete.** Seed + dry-run only (no live import). |
+| | CMS: `scripts/seed/projects.json` (7), `build-projects-seed.mts`, `import-projects-dry.cjs`, `tsx` devDep; `tsconfig` excludes `scripts/`. |
+| | Seed parity vs `projects.data.ts`: ok; no SEO invented; no alt invented; paths `/images/...` only. |
+| | Dry-run ×2 identical: covers 7/7/0, gallery 164/164/0, unique 164, orphans 0, errors [], warnings 171. |
+| | Duplicate refs = 7 covers also in gallery (expected). Articles seed still 8; Article API untouched. |
+| | `details[]`: keep JSON through stage 3 (heterogeneous string[]; no schema change). |
+| | Checks: `pnpm check`, `pnpm build`, `git diff --check`, JSON parse OK. |
+| | `docker-compose.yml` dirty **not** committed. Status → **Ready for Stage 3**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 2** (seed `projects.json` + `import-projects` dry-run only; без записи в БД / media).
-Не начинать полный import / frontend Project integration без явного запроса.
+**Ждать подтверждения Этапа 3** (live import Project + media upload; без FE wiring / schema change / production).
+Не начинать frontend Project dual-run без явного запроса.
