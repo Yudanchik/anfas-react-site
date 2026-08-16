@@ -1,7 +1,7 @@
 # Strapi: миграция прайс-листа (Prices)
 
 **Status:** Completed locally / Waiting for production cutover
-**Next stage:** Production cutover (отдельное подтверждение) — **не начат**
+**Next stage:** Infrastructure / production cutover (отдельное подтверждение) — content pilot scope closed
 **Scope:** Курируемое публичное превью прайс-категорий (`PriceCategory` + nested positions/FAQ/factors) + dual-run `PRICES_CONTENT_SOURCE`
 **Дата плана:** `2026-08-16`
 **Frontend branch (current):** `feature/strapi-journal-pilot`

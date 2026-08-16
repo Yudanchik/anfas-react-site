@@ -1,7 +1,7 @@
 # Strapi: миграция проектов и галерей
 
-**Status:** Ready for next content migration
-**Next stage:** Следующий тип контента (рекомендация: Services или Prices — отдельный план)
+**Status:** Completed locally / Waiting for production cutover
+**Next stage:** Infrastructure / production cutover (out of scope for this task). Content pilot scope closed — see master-plan.
 **Scope:** только `Project` + cover/gallery (+ review, details, size)
 **Repos:** `2026-08-15`
 **Frontend branch (current):** `feature/strapi-journal-pilot`
@@ -535,6 +535,7 @@ Frontend rollback: `PROJECTS_CONTENT_SOURCE=local`, hardcode на месте.
 | | Decisions: details=JSON; alt=manual later + UI fallback; review authenticity gate before cutover. |
 | | Docs: CMS README projects workflow; FE `docs/strapi-content-sources.md`. |
 | | Status → **Ready for next content migration**. |
+| 2026-08-16 | Content pilot scope closed. Status → **Completed locally / Waiting for production cutover**. |
 
 
 ---
@@ -542,5 +543,6 @@ Frontend rollback: `PROJECTS_CONTENT_SOURCE=local`, hardcode на месте.
 ## Next action
 
 Projects migration plan **complete through Stage 5**.
-Ждать отдельного подтверждения на: merge в `dev`, production cutover, или **новый task** для следующего типа контента (Services / Prices).
+Status: **Completed locally / Waiting for production cutover**.
+Ждать infrastructure + cutover approval (не новый content domain по умолчанию).
 Не удалять hardcode и не менять production env без явного запроса.

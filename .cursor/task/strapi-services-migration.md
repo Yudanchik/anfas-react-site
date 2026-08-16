@@ -1,7 +1,7 @@
 # Strapi: миграция услуг (Services)
 
 **Status:** Completed locally / Waiting for production cutover  
-**Next stage:** Production cutover (отдельное подтверждение) — **не начат**  
+**Next stage:** Infrastructure / production cutover (отдельное подтверждение) — content pilot scope closed  
 **Scope:** Collection `Service` + nested components (hero / included / story) + SEO + cover media  
 **Дата плана:** `2026-08-15`  
 **Frontend branch (current):** `feature/strapi-journal-pilot`  

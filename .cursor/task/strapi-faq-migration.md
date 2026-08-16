@@ -1,7 +1,7 @@
 # Strapi: миграция FAQ
 
 **Status:** Completed locally / Waiting for production cutover
-**Next stage:** Production cutover (out of scope) — do **not** start Partners without go-ahead
+**Next stage:** Infrastructure / production cutover (out of scope). Partners skipped / keep in code; content pilot scope closed.
 **Scope:** Page-scoped FAQ вне Prices nested: **Home** + **Prices hub** (+ dual-run `FAQ_CONTENT_SOURCE`)
 **Дата плана:** `2026-08-16`
 **Frontend branch (current):** `feature/strapi-journal-pilot`
