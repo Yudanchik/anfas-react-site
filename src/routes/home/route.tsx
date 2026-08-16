@@ -1,5 +1,7 @@
 ﻿import { useState } from 'react'
+import { useLoaderData } from 'react-router'
 
+import { faqRepository } from '@/entities/faq/api'
 import { HomeContact } from '@/widgets/home/contact'
 import { HomeFaq } from '@/widgets/home/faq'
 import { HomeHero } from '@/widgets/home/hero'
@@ -14,6 +16,13 @@ import { HomePains } from '@/widgets/home/pains'
 import { HomeProjectControl } from '@/widgets/home/project-control'
 import { createSeoMeta } from '@/shared/config/seo'
 
+export async function loader() {
+  const group = await faqRepository.getByKey('home')
+  return {
+    faqItems: group?.items ?? [],
+  }
+}
+
 export const meta = () =>
   createSeoMeta({
     title: 'Ремонт квартир под ключ в Санкт-Петербурге | Анфас',
@@ -25,6 +34,7 @@ export const meta = () =>
   })
 
 export default function HomeRoute() {
+  const { faqItems } = useLoaderData<typeof loader>()
   const [openFaq, setOpenFaq] = useState(0)
 
   return (
@@ -51,7 +61,7 @@ export default function HomeRoute() {
       <HomePartners />
       <HomeSocials />
       <HomeProcess />
-      <HomeFaq openFaq={openFaq} setOpenFaq={setOpenFaq} />
+      <HomeFaq items={faqItems} openFaq={openFaq} setOpenFaq={setOpenFaq} />
       <HomeContact />
     </main>
   )

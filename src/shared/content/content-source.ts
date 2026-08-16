@@ -3,6 +3,7 @@ export type ContentSource = 'local' | 'strapi' | 'snapshot'
 export type ProjectsContentSource = ContentSource
 export type ServicesContentSource = ContentSource
 export type PricesContentSource = ContentSource
+export type FaqContentSource = ContentSource
 
 export function getContentSource(): ContentSource {
   const value = (process.env.CONTENT_SOURCE || 'local').trim().toLowerCase()
@@ -33,6 +34,15 @@ export function getServicesContentSource(): ServicesContentSource {
 /** Independent of articles/projects/services sources. Default local keeps production unchanged. */
 export function getPricesContentSource(): PricesContentSource {
   const value = (process.env.PRICES_CONTENT_SOURCE || 'local').trim().toLowerCase()
+  if (value === 'strapi' || value === 'snapshot') {
+    return value
+  }
+  return 'local'
+}
+
+/** Independent FAQ groups (home + prices-hub). Default local keeps production unchanged. */
+export function getFaqContentSource(): FaqContentSource {
+  const value = (process.env.FAQ_CONTENT_SOURCE || 'local').trim().toLowerCase()
   if (value === 'strapi' || value === 'snapshot') {
     return value
   }

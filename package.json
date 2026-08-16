@@ -27,9 +27,12 @@
     "parity:services:strapi": "node scripts/parity-services.mjs --strapi",
     "parity:prices": "node scripts/parity-prices.mjs",
     "parity:prices:strapi": "node scripts/parity-prices.mjs --strapi",
+    "parity:faq": "node scripts/parity-faq.mjs",
+    "parity:faq:strapi": "node scripts/parity-faq.mjs --strapi",
     "snapshot:projects": "node scripts/snapshot-projects.mjs",
     "snapshot:services": "node scripts/snapshot-services.mjs",
-    "snapshot:prices": "node scripts/snapshot-prices.mjs"
+    "snapshot:prices": "node scripts/snapshot-prices.mjs",
+    "snapshot:faq": "node scripts/snapshot-faq.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
