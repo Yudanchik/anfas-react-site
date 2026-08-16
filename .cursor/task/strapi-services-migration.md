@@ -1,7 +1,7 @@
 # Strapi: миграция услуг (Services)
 
-**Status:** Ready for Stage 2  
-**Next stage:** Этап 2 — Seed + import dry-run  
+**Status:** Ready for Stage 3  
+**Next stage:** Этап 3 — Live import + optional media upload/dedupe  
 **Scope:** Collection `Service` + nested components (hero / included / story) + SEO + cover media  
 **Дата плана:** `2026-08-15`  
 **Frontend branch (current):** `feature/strapi-journal-pilot`  
@@ -245,24 +245,28 @@ Public: **find / findOne** only (как Article/Project). Write → 403.
 
 ---
 
-### Этап 2 — Seed + dry-run ← **NEXT**
+### Этап 2 — Seed + dry-run ← **DONE**
 
-- [ ] `scripts/seed/services.json` из `services.data.ts` (structured import, не regex-копипаст полей)
-- [ ] Нормализация media → portable `/images/services/...` (или согласованный path)
-- [ ] `pnpm services:import:dry` — без Strapi/DB/upload
-- [ ] Валидация: count=2, unique slugs, schema shape, story discriminant, media exists, no Windows abs paths
-- [ ] Parity field-by-field vs `services.data.ts`
-- [ ] Inventory: unused fields (`lead`/`bullets`/`metrics`) явно в отчёте
+- [x] `scripts/seed/services.json` из `services.data.ts` (structured TS import; Vite `@/assets` stubs → portable paths)
+- [x] Нормализация media → `/images/services/{slug}.webp`
+- [x] Copy covers → FE `public/images/services/` (Vite `formats/*` **не** удалены; UI imports **не** менялись)
+- [x] `pnpm services:import:dry` — без Strapi/DB/upload
+- [x] Валидация: count=2, unique slugs/serviceIds, enum, schema shape, story discriminant, media source+target, no Windows abs paths
+- [x] Parity field-by-field vs `services.data.ts`
+- [x] Inventory: unused fields (`lead`/`bullets`/`metrics`) в dry-run warnings
 
+**Seed summary:** 2 services — `individual` (sortOrder 0), `package` (sortOrder 1); SEO from source (not invented); hero/included/storyIndividual|storyPackage; no Prices/FAQ/relations/isFeatured.  
+**Media decision:** **copied** `src/assets/images/formats/{individual,package}-format.webp` → `public/images/services/{individual,package}.webp`.  
+**Dry-run report:** `dryRun=true`; servicesTotal=2; uniqueSlugs/Ids=`individual|package`; missingRequiredFields=[]; media referenced/found/missing=2/2/[]; sourceFound=2; parityIssues=[]; errors=[]; exit 0 (identical ×2).  
 **Готовность:** dry-run errors=0  
-**⛔ Checkpoint:** перед live import
+**⛔ Checkpoint:** перед live import — **пройден**
 
 ---
 
-### Этап 3 — Live import + media
+### Этап 3 — Live import + media ← **NEXT**
 
-- [ ] Idempotent upsert по `slug` / `serviceId`
-- [ ] Upload cover + dedupe; publish
+- [ ] Idempotent upsert по `slug` / `serviceId` (live import **2** services)
+- [ ] Optional cover upload + dedupe; publish
 - [ ] Повторный import: created=0, updated=2 (или skipped), no media dupes
 - [ ] REST smoke: 2 services; Article=8; Project=7
 - [ ] Schema не менять без блокера
@@ -348,11 +352,16 @@ Frontend rollback: `SERVICES_CONTENT_SOURCE=local`, hardcode на месте.
 | | Smoke: services `[]` 200; articles 8; projects 7; POST/PUT/DELETE 403. |
 | | Article/Project schemas untouched. `pnpm check`, `pnpm build`, `git diff --check` OK. |
 | | `docker-compose.yml` dirty not committed. Status → **Ready for Stage 2**. |
+| 2026-08-16 | **Stage 2 complete.** Seed + dry-run + media copy. No live import / FE runtime wiring. |
+| | CMS: `scripts/seed/services.json` (2), `build-services-seed.mts`, `import-services-dry.cjs`, `pnpm services:import:dry`. |
+| | FE: `public/images/services/{individual,package}.webp` copied from formats; task md; runtime code untouched. |
+| | Dry-run ×2 identical, exit 0; parity 0 issues; articles 8/8; projects 7/7. |
+| | Article/Project import/API unchanged. Status → **Ready for Stage 3**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 2** (seed `services.json` + dry-run importer; media → `public/images/services/`; без записи в БД).
-Не начинать live import / FE wiring без явного запроса.
+**Ждать подтверждения Этапа 3** (live import 2 services + optional media upload/dedupe; idempotency; REST smoke).
+Не начинать FE wiring / snapshot / merge без явного запроса.
