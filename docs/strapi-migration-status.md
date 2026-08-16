@@ -1,56 +1,56 @@
-# Strapi content migration — status
+# Статус миграции контента в Strapi
 
-**Status:** Content scope completed locally / Waiting for infrastructure and production cutover
-**Updated:** `2026-08-16`
-**Frontend branch:** `feature/strapi-journal-pilot`
-**CMS branch (latest tip):** `feature/faq-migration`
+**Статус:** Контентный scope завершён локально / Ждём инфраструктуру и production cutover
+**Обновлено:** `2026-08-16`
+**Ветка frontend:** `feature/strapi-journal-pilot`
+**Ветка CMS (актуальный tip):** `feature/faq-migration`
 
-Editor guide (RU): [`strapi-editor-guide.md`](./strapi-editor-guide.md)
-Dual-run how-to: [`strapi-content-sources.md`](./strapi-content-sources.md)
-Master plan: `.cursor/task/strapi-content-master-plan.md`
+Руководство редактора: [`strapi-editor-guide.md`](./strapi-editor-guide.md)
+Dual-run для разработчика: [`strapi-content-sources.md`](./strapi-content-sources.md)
+Master-plan: `.cursor/task/strapi-content-master-plan.md`
 
-Production Host-0 is **not** switched to Strapi. All FE content-source defaults remain **`local`**.
+Production Host-0 **не** переключён на Strapi. Все источники контента на фронте по умолчанию остаются **`local`**.
 
 ---
 
-## Completed domains
+## Что уже перенесено (локально, dual-run готов)
 
-| Domain | CMS | FE env | Counts | Notes |
+| Раздел | CMS | Переменная FE | Количество | Примечание |
 | --- | --- | --- | --- | --- |
-| Articles | `Article` (+ category) | `CONTENT_SOURCE` | 8 | Journal pilot origin |
-| Projects | `Project` | `PROJECTS_CONTENT_SOURCE` | 7 | Cover + gallery + review |
-| Services | `Service` | `SERVICES_CONTENT_SOURCE` | 2 | `individual`, `package` |
-| Prices | `PriceCategory` | `PRICES_CONTENT_SOURCE` | 15 / 259 | Public preview only |
+| Статьи | `Article` (+ category) | `CONTENT_SOURCE` | 8 | Журнальный пилот |
+| Проекты | `Project` | `PROJECTS_CONTENT_SOURCE` | 7 | Обложка + галерея + отзыв |
+| Услуги | `Service` | `SERVICES_CONTENT_SOURCE` | 2 | `individual`, `package` |
+| Прайс | `PriceCategory` | `PRICES_CONTENT_SOURCE` | 15 / 259 | Публичное превью |
 | FAQ | `FaqGroup` | `FAQ_CONTENT_SOURCE` | 2 / 11 | `home` + `prices-hub` |
 
-Each domain: `local` \| `strapi` \| `snapshot`. `strapi` falls back to committed snapshot if CMS is down.
+Каждый раздел: `local` \| `strapi` \| `snapshot`. В режиме `strapi` при недоступности CMS сайт падает на snapshot.
 
-### Task files
+### Task-файлы
 
-| Domain | Task | Status |
+| Раздел | Файл | Статус |
 | --- | --- | --- |
-| Articles | _(no separate task md)_ | Completed locally / waiting cutover |
-| Projects | `.cursor/task/strapi-projects-migration.md` | Completed locally / Waiting for production cutover |
-| Services | `.cursor/task/strapi-services-migration.md` | Completed locally / Waiting for production cutover |
-| Prices | `.cursor/task/strapi-prices-migration.md` | Completed locally / Waiting for production cutover |
+| Статьи | _(отдельного task нет)_ | Completed locally / waiting cutover |
+| Проекты | `.cursor/task/strapi-projects-migration.md` | Completed locally / Waiting for production cutover |
+| Услуги | `.cursor/task/strapi-services-migration.md` | Completed locally / Waiting for production cutover |
+| Прайс | `.cursor/task/strapi-prices-migration.md` | Completed locally / Waiting for production cutover |
 | FAQ | `.cursor/task/strapi-faq-migration.md` | Completed locally / Waiting for production cutover |
 
 ---
 
-## Branches
+## Ветки
 
-| Repo | Branch |
+| Репозиторий | Ветка |
 | --- | --- |
 | `anfas-react-site` | `feature/strapi-journal-pilot` |
-| `anfas-cms` | `feature/faq-migration` (tip; lineage via prices → services → projects) |
+| `anfas-cms` | `feature/faq-migration` (tip; линия prices → services → projects) |
 
-Do **not** merge to `dev` / `main` or deploy without approval.
+Не делать merge в `dev` / `main` и не деплоить без отдельного согласования.
 
 ---
 
-## Env flags (defaults)
+## Переменные источника (defaults)
 
-| Variable | Default |
+| Переменная | Значение по умолчанию |
 | --- | --- |
 | `CONTENT_SOURCE` | **`local`** |
 | `PROJECTS_CONTENT_SOURCE` | **`local`** |
@@ -60,25 +60,25 @@ Do **not** merge to `dev` / `main` or deploy without approval.
 
 ---
 
-## Skipped / deferred / non-goals
+## Пропущено / отложено / non-goals
 
-- **Skipped / code:** Partners, Home/About blocks, Navigation/Footer
-- **Deferred:** SiteSettings/contacts/socials; global route SEO/meta
-- **Non-goals:** forms/PHP, calculator, PDF lead-magnet, analytics, legal as CMS
+- **Оставлено в коде:** Partners, блоки Home/About, Navigation/Footer
+- **Отложено:** SiteSettings / контакты / соцсети; глобальный route SEO/meta
+- **Не переносим:** формы/PHP, калькулятор, PDF lead-magnet, analytics, legal как CMS
 
 ---
 
-## Cutover checklist
+## Чеклист production cutover
 
-1. Host Strapi
+1. Хостинг Strapi
 2. Managed Postgres
 3. Uploads / object storage
 4. Env / secrets
-5. Backups
-6. Webhook → frontend rebuild
-7. DNS / CMS subdomain
-8. Final parity on staging
-9. Merge to `dev` (explicit)
-10. Production source switch (+ rollback to `local`/`snapshot`)
+5. Бэкапы
+6. Webhook → пересборка frontend
+7. DNS / поддомен CMS
+8. Финальный parity на staging
+9. Merge в `dev` (явно)
+10. Переключение source на production (+ откат на `local`/`snapshot`)
 
-**Next real step:** infrastructure, not new content domains.
+**Следующий реальный шаг:** инфраструктура, а не новые контентные домены.

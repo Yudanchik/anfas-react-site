@@ -74,11 +74,24 @@
    - **relatedService** — `individual` или `package`
 3. Опубликуйте (draftAndPublish).
 4. После изменений на стороне разработки обычно:
-   - обновить snapshot / local data по процессу команды
-   - `pnpm parity:articles` (+ при необходимости `:strapi`)
+   - обновить local data / seed и при необходимости snapshot по процессу команды
+   - `pnpm parity:articles` (+ при необходимости `pnpm parity:articles:strapi`)
    - `pnpm check` и `pnpm build` с нужным `CONTENT_SOURCE`
 
 Пока production на `local`, новая статья на сайте появится только после обновления кода/`articles.data.ts` (или после будущего cutover).
+
+### Как обновить snapshots (общая схема)
+
+Snapshots лежат во frontend и собираются из CMS seed:
+
+```bash
+pnpm snapshot:projects
+pnpm snapshot:services
+pnpm snapshot:prices
+pnpm snapshot:faq
+```
+
+Затем `pnpm parity:*` и commit JSON, если снимок изменился. Подробнее: [`strapi-content-sources.md`](./strapi-content-sources.md).
 
 ---
 
@@ -237,3 +250,15 @@ pnpm build   # все *_CONTENT_SOURCE по умолчанию local
 9. Явное переключение `*_CONTENT_SOURCE=strapi` (cutover) + план отката на `local`/`snapshot`
 
 До этого шага **не считайте** правки в локальном Strapi опубликованными на anfas-remont.ru.
+
+---
+
+## 12. Что нельзя коммитить
+
+- `.env` и любые реальные секреты
+- `public/uploads/**` CMS (кроме `.gitkeep`)
+- Docker volumes / данные Postgres
+- `node_modules`, `dist`, build-артефакты
+- логи, `.tmp`, scratch-файлы
+- случайный шум в `docker-compose.yml` (только CRLF / локальные правки)
+- удаление local `*.data.ts` / snapshots / seeds «на всякий случай» до cutover
