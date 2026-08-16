@@ -1,14 +1,16 @@
 import articlesSnapshot from './articles.snapshot.json'
 import projectsSnapshot from '../projects/projects.snapshot.json'
 import servicesSnapshot from '../services/services.snapshot.json'
+import pricesSnapshot from '../prices/prices.snapshot.json'
 import {
   getContentSource,
+  getPricesContentSource,
   getProjectsContentSource,
   getServicesContentSource,
 } from '../content-source'
 import { strapiFetch } from '../strapi/client'
 
-/** Static routes excluding dynamic blog/project/service slug pages. */
+/** Static routes excluding dynamic blog/project/service/price slug pages. */
 const STATIC_PATHS = [
   '/',
   '/about',
@@ -16,6 +18,15 @@ const STATIC_PATHS = [
   '/contacts',
   '/cookies',
   '/prices',
+  '/prices/thanks',
+  '/privacy',
+  '/projects',
+  '/services',
+] as const
+
+const FALLBACK_SERVICE_PATHS = ['/services/individual', '/services/package'] as const
+
+const FALLBACK_PRICE_PATHS = [
   '/prices/vyvoz-musora',
   '/prices/gipsokarton',
   '/prices/demontazh',
@@ -31,13 +42,7 @@ const STATIC_PATHS = [
   '/prices/potolki',
   '/prices/dveri',
   '/prices/obshhestroitelnye',
-  '/prices/thanks',
-  '/privacy',
-  '/projects',
-  '/services',
 ] as const
-
-const FALLBACK_SERVICE_PATHS = ['/services/individual', '/services/package'] as const
 
 function blogPathsFromSlugs(slugs: readonly string[]) {
   return slugs.map((slug) => `/blog/${slug}`)
@@ -49,6 +54,10 @@ function projectPathsFromSlugs(slugs: readonly string[]) {
 
 function servicePathsFromSlugs(slugs: readonly string[]) {
   return slugs.map((slug) => `/services/${slug}`)
+}
+
+function pricePathsFromSlugs(slugs: readonly string[]) {
+  return slugs.map((slug) => `/prices/${slug}`)
 }
 
 function snapshotBlogPaths() {
@@ -67,6 +76,14 @@ function snapshotServicePaths() {
     return [...FALLBACK_SERVICE_PATHS]
   }
   return servicePathsFromSlugs(slugs)
+}
+
+function snapshotPricePaths() {
+  const slugs = (pricesSnapshot as Array<{ slug: string }>).map((item) => item.slug)
+  if (slugs.length === 0) {
+    return [...FALLBACK_PRICE_PATHS]
+  }
+  return pricePathsFromSlugs(slugs)
 }
 
 async function strapiBlogPaths(): Promise<string[]> {
@@ -153,11 +170,40 @@ async function strapiServicePaths(): Promise<string[]> {
   }
 }
 
-/** Blog + project + service paths for prerender. Never returns empty dynamic lists when snapshots exist. */
+async function strapiPricePaths(): Promise<string[]> {
+  const baseUrl = process.env.STRAPI_URL?.trim()
+  if (!baseUrl) {
+    console.warn('[prerender] STRAPI_URL missing — using snapshot price paths')
+    return snapshotPricePaths()
+  }
+
+  try {
+    const json = await strapiFetch<{ data: Array<{ slug: string }> }>(
+      '/api/price-categories?fields[0]=slug&pagination[pageSize]=100&sort[0]=sortOrder:asc',
+      {
+        baseUrl,
+        token: process.env.STRAPI_TOKEN?.trim() || undefined,
+        timeoutMs: Number(process.env.STRAPI_TIMEOUT_MS || 8000),
+      },
+    )
+    const slugs = (json.data ?? []).map((item) => item.slug).filter(Boolean)
+    if (slugs.length === 0) {
+      console.warn('[prerender] Strapi returned 0 price categories — using snapshot')
+      return snapshotPricePaths()
+    }
+    return pricePathsFromSlugs(slugs)
+  } catch (error) {
+    console.warn('[prerender] Strapi unavailable — using snapshot price paths:', error)
+    return snapshotPricePaths()
+  }
+}
+
+/** Blog + project + service + price paths for prerender. Never returns empty dynamic lists when snapshots exist. */
 export async function resolvePrerenderPaths(): Promise<string[]> {
   const articleSource = getContentSource()
   const projectsSource = getProjectsContentSource()
   const servicesSource = getServicesContentSource()
+  const pricesSource = getPricesContentSource()
 
   let blogPaths: string[]
   if (articleSource === 'strapi') {
@@ -190,5 +236,15 @@ export async function resolvePrerenderPaths(): Promise<string[]> {
     servicePaths = [...FALLBACK_SERVICE_PATHS]
   }
 
-  return [...STATIC_PATHS, ...projectPaths, ...servicePaths, ...blogPaths]
+  let pricePaths: string[]
+  if (pricesSource === 'strapi') {
+    pricePaths = await strapiPricePaths()
+  } else {
+    pricePaths = snapshotPricePaths()
+  }
+  if (pricePaths.length === 0) {
+    pricePaths = [...FALLBACK_PRICE_PATHS]
+  }
+
+  return [...STATIC_PATHS, ...pricePaths, ...projectPaths, ...servicePaths, ...blogPaths]
 }

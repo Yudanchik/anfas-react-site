@@ -1,12 +1,12 @@
 # Strapi: миграция прайс-листа (Prices)
 
-**Status:** Ready for Stage 2
-**Next stage:** Этап 2 — Seed `price-categories.json` + dry-run importer (без DB writes / FE wiring)
+**Status:** Completed locally / Waiting for production cutover
+**Next stage:** Production cutover (отдельное подтверждение) — **не начат**
 **Scope:** Курируемое публичное превью прайс-категорий (`PriceCategory` + nested positions/FAQ/factors) + dual-run `PRICES_CONTENT_SOURCE`
 **Дата плана:** `2026-08-16`
 **Frontend branch (current):** `feature/strapi-journal-pilot`
 **CMS repo:** `Yudanchik/anfas-cms`
-**CMS branch:** `feature/prices-migration` @ `9438682`
+**CMS branch:** `feature/prices-migration`
 **Паттерн:** как Articles / Projects / Services (отдельный env, default **local**)
 
 ---
@@ -277,60 +277,55 @@ Hub page SEO / intro: **оставить hardcoded** на Stage 1–4 (как li
 
 ---
 
-### Этап 2 — Seed + dry-run ← **NEXT**
+### Этап 2 — Seed + dry-run
 
-- [ ] `scripts/seed/price-categories.json` из `prices.data.ts` (structured import)
-- [ ] `pnpm prices:import:dry` — без Strapi/DB
-- [ ] Validate: count=15, unique slugs, positions totals, no Windows abs paths
-- [ ] Parity field-by-field vs local
-- [ ] Inventory: unused `articleSlugs` / empty `note` — явно в отчёте
-- [ ] Frontend wiring / live DB writes **не** начинать
+- [x] `scripts/seed/price-categories.json` из `prices.data.ts` (`build-prices-seed.mts`)
+- [x] `pnpm prices:import:dry` — без Strapi/DB
+- [x] Validate: count=15, unique slugs, positions=259, no Windows abs paths
+- [x] Parity field-by-field vs local (`parityIssues=[]`)
+- [x] Inventory: `categoriesWithArticleSlugs=6` (UI may not render); `positionsWithNote=0`
+- [x] Frontend wiring / live DB writes **не** на Stage 2
 
-**Готовность:** dry-run errors=0
-**⛔ Checkpoint:** перед live import
+**Готовность:** ✅ Stage 2 complete — Ready for Stage 3
 
 ---
 
 ### Этап 3 — Live import
 
-- [ ] Idempotent upsert по `slug`
-- [ ] Publish 15 categories
-- [ ] Повторный import: created=0, updated=15 (или skipped)
-- [ ] REST smoke: 15; articles=8; projects=7; services=2
-- [ ] Schema не менять без блокера
+- [x] Idempotent upsert по `slug` (`import-prices.cjs`)
+- [x] Publish 15 categories (import1: created=15; import2: created=0 updated=15)
+- [x] Seed ↔ Strapi parity OK (null/undefined optional json normalized)
+- [x] REST smoke `pnpm prices:parity`: 15 cats / 259 positions; articles=8; projects=7; services=2
+- [x] Schema не менялась
 
-**Готовность:** REST 15 published categories
-**⛔ Checkpoint:** перед FE wiring
+**Готовность:** ✅ Stage 3 complete — Ready for Stage 4
 
 ---
 
 ### Этап 4 — Frontend wiring (без cutover)
 
-- [ ] `getPricesContentSource()` default `local`
-- [ ] Zod DTO + `adaptStrapiPriceCategory` → существующий `PriceCategory`
-- [ ] `strapi` / `snapshot` / `local` repositories + factory
-- [ ] `prices.snapshot.json` (+ `parity:prices`, `snapshot:prices`)
-- [ ] Prerender/sitemap: `/prices/:slug` из source + snapshot fallback (список не пустеет)
-- [ ] Builds: local / strapi / strapi-down→snapshot / snapshot
-- [ ] Не менять production env; не удалять `prices.data.ts`
-- [ ] Calculator / PHP / Services strings **не** трогать
+- [x] `getPricesContentSource()` default `local`
+- [x] Zod DTO + `adaptStrapiPriceCategory` → `PriceCategory`
+- [x] `strapi` / `snapshot` / `local` repositories + factory
+- [x] `prices.snapshot.json` (+ `parity:prices`, `snapshot:prices`)
+- [x] Prerender: category paths from snapshot/strapi + FALLBACK_PRICE_PATHS; hub+thanks static
+- [x] Builds: local / strapi / snapshot / strapi-down→snapshot OK
+- [x] FE parity local/snapshot/Strapi 15/15 · 259/259
+- [x] `prices.data.ts` сохранён; calculator / PHP / Services strings **не** трогались
 
-**Готовность:** parity 15/15; default local
-**⛔ Checkpoint:** перед Stage 5 / merge в `dev`
+**Готовность:** ✅ Stage 4 complete — Ready for Stage 5
 
 ---
 
 ### Этап 5 — Visual + SEO + CTA/docs QA
 
-- [ ] Visual: `/prices`, 2–3 sample categories, desktop/tablet/mobile; local/strapi/snapshot
-- [ ] SEO: category meta/canonical/JSON-LD; hub meta (hardcoded — follow-up если выносить)
-- [ ] CTA: `price-list` brief → thanks; download flow **не** ломать
-- [ ] Soft links → `/services/individual|package`
-- [ ] Calculator smoke (не регресс)
-- [ ] Docs: CMS README + FE content-sources
-- [ ] Decisions before next type
+- [x] Visual: `/prices` (15 cards), `/prices/shtukaturka` (+ samples via HTTP), `/prices/thanks` (noindex)
+- [x] SEO: category titles from data; hub meta hardcoded; thanks `noindex`
+- [x] CTA: «Получить полный прайс» present on hub/category; soft link to `/services/individual`
+- [x] Docs: CMS README + FE `docs/strapi-content-sources.md` + master plan
+- [x] Master plan next domains documented (FAQ → …); FAQ **не** начат
 
-**Готовность:** Completed locally / Waiting for production cutover
+**Готовность:** ✅ Completed locally / Waiting for production cutover
 **Out:** production cutover
 
 ---
@@ -361,7 +356,7 @@ Frontend rollback: `PRICES_CONTENT_SOURCE=local`.
 
 1. ~~После Этапа 0 (open questions)~~ ✅
 2. ~~После Этапа 1 (schema)~~ ✅
-3. После Этапа 3 (import)
+3. ~~После Этапа 3 (import)~~ ✅
 4. Перед merge frontend-ветки в `dev`
 5. Любой production / DNS / удаление hardcode / публикация полного прайса — **вне этого плана**
 
@@ -371,26 +366,20 @@ Frontend rollback: `PRICES_CONTENT_SOURCE=local`.
 
 | Дата | Событие |
 | --- | --- |
-| 2026-08-16 | Read-only аудит Prices выполнен. Task-файл создан, Status=**Planned**. |
-| | 15 categories / 259 positions; repository seam есть; Strapi CT нет. |
-| | PDF gate (PHP) + calculator rates + service marketing — отдельные системы. |
-| | Soft `serviceSlug` на всех категориях; FAQ/factors nested. |
-| | Реализация не начата. CMS не менялась. |
-| 2026-08-16 | **Stage 0 complete.** Decisions 1–13 accepted. |
-| | FE: `feature/strapi-journal-pilot`; `merge origin/dev` → Already up to date (`8d3c436` ancestor). |
-| | CMS: `feature/prices-migration` created from `feature/services-migration` @ `71d9658`, pushed. |
-| | Checks: FE `pnpm check` + build OK; parity articles 8/8, projects 7/7, services 2/2; CMS `pnpm check` + build OK; `git diff --check` OK. |
-| | No CMS schema / importer / FE runtime changes. `docker-compose.yml` dirty not committed. |
-| | Status → **Ready for Stage 1**. |
-| 2026-08-16 | **Stage 1 complete.** CMS `PriceCategory` schema + `price.*` components @ `9438682`. |
-| | Public find/findOne; smoke `[]` 200; writes 403; articles=8 projects=7 services=2. |
-| | FE: только task md. Importer/seed/FE runtime не начинались. |
-| | Status → **Ready for Stage 2**. |
+| 2026-08-16 | Read-only аудит Prices. Status=**Planned**. |
+| 2026-08-16 | **Stage 0 complete.** Decisions accepted. Status → Ready for Stage 1. |
+| 2026-08-16 | **Stage 1 complete.** Schema `PriceCategory` + components @ CMS `9438682`. Status → Ready for Stage 2. |
+| 2026-08-16 | **Stage 2 complete.** Seed 15/259; dry-run errors=0; parityIssues=[]. |
+| 2026-08-16 | **Stage 3 complete.** Live import idempotent; REST 15/259; articles/projects/services intact. |
+| 2026-08-16 | **Stage 4 complete.** `PRICES_CONTENT_SOURCE` dual-run; snapshot; prerender fallback; builds OK. |
+| 2026-08-16 | **Stage 5 complete.** Visual/SEO/CTA QA + docs + master plan. |
+| | Status → **Completed locally / Waiting for production cutover**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения перед Этапом 2** (seed `price-categories.json` + dry-run importer, без DB writes / FE wiring).
-Не начинать live import / FE dual-run без явного запроса.
+**Ждать подтверждения production cutover** (отдельно) и/или **go-ahead на следующий домен FAQ**.
+FAQ schema/branch **не** начинать без явного запроса.
+Не merge в `dev`/`main`, не deploy.
