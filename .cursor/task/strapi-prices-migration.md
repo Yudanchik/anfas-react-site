@@ -1,12 +1,12 @@
 # Strapi: миграция прайс-листа (Prices)
 
-**Status:** Ready for Stage 1  
-**Next stage:** Этап 1 — CMS schema only (`PriceCategory` + nested components)  
-**Scope:** Курируемое публичное превью прайс-категорий (`PriceCategory` + nested positions/FAQ/factors) + dual-run `PRICES_CONTENT_SOURCE`  
-**Дата плана:** `2026-08-16`  
-**Frontend branch (current):** `feature/strapi-journal-pilot` @ `8f121e7` (+ Stage 0 task commit)  
-**CMS repo:** `Yudanchik/anfas-cms`  
-**CMS branch:** `feature/prices-migration` ← от `feature/services-migration` @ `71d9658`  
+**Status:** Ready for Stage 2
+**Next stage:** Этап 2 — Seed `price-categories.json` + dry-run importer (без DB writes / FE wiring)
+**Scope:** Курируемое публичное превью прайс-категорий (`PriceCategory` + nested positions/FAQ/factors) + dual-run `PRICES_CONTENT_SOURCE`
+**Дата плана:** `2026-08-16`
+**Frontend branch (current):** `feature/strapi-journal-pilot`
+**CMS repo:** `Yudanchik/anfas-cms`
+**CMS branch:** `feature/prices-migration` @ `9438682`
 **Паттерн:** как Articles / Projects / Services (отдельный env, default **local**)
 
 ---
@@ -59,9 +59,9 @@
 | 14 | `dveri` | `/prices/dveri` | package |
 | 15 | `obshhestroitelnye` | `/prices/obshhestroitelnye` | individual |
 
-Hub: `/prices`.  
-Thanks (noindex): `/prices/thanks`.  
-Sitemap: hub + 15 categories (**без** thanks).  
+Hub: `/prices`.
+Thanks (noindex): `/prices/thanks`.
+Sitemap: hub + 15 categories (**без** thanks).
 Prerender: hub + 15 + thanks (static list в `prerender-paths.ts`).
 
 **Counts:** 15 categories · **259** positions · **45** FAQ (3×15) · factors по 3/категорию · `note` на позициях: **0** в data.
@@ -239,34 +239,54 @@ Hub page SEO / intro: **оставить hardcoded** на Stage 1–4 (как li
 - [x] Schema / importer / FE wiring **не** начинались
 - [x] `docker-compose.yml` dirty в CMS **не** закоммичен
 
-**Готовность:** ✅ Stage 0 complete — Ready for Stage 1  
+**Готовность:** ✅ Stage 0 complete — Ready for Stage 1
 **⛔ Checkpoint:** подтверждение перед Этапом 1 (schema only)
 
 ---
 
-### Этап 1 — CMS schema only ← **NEXT**
+### Этап 1 — CMS schema only
 
-- [ ] Collection `api::price-category.price-category`
-- [ ] Components: `price.position`, `price.factor`, `price.faq-item`
-- [ ] Bootstrap public `find` / `findOne`; writes 403
-- [ ] Smoke: `/api/price-categories` → `[]`; articles/projects/services counts unchanged
-- [ ] Article/Project/Service schemas **не** трогать
-- [ ] No importer / no FE
+- [x] Collection `api::price-category.price-category` + draftAndPublish
+- [x] Components: `price.position`, `price.factor`, `price.faq-item`
+- [x] Soft `serviceSlug` enum `individual|package` (top-level; flattened from `related.serviceSlug`)
+- [x] Soft related: `relatedArticleSlugs` / `relatedCategorySlugs` (json)
+- [x] Category SEO via `shared.seo` (required)
+- [x] Bootstrap public `find` / `findOne`; writes 403
+- [x] Smoke: GET `/api/price-categories` → `[]` 200; articles=8; projects=7; services=2; POST/PUT/DELETE → 403
+- [x] Article/Project/Service schemas **не** трогались
+- [x] No importer / no FE runtime / no seed
+- [x] `docker-compose.yml` dirty **не** committed
 
-**Готовность:** empty published API OK  
-**⛔ Checkpoint:** перед seed
+**Фактическая schema PriceCategory (Stage 1):**
+- Scalar: `title`, `slug` (uid), `titleAccent`, `eyebrow`, `lead`, `priceFrom` (integer), `priceUnit`, `disclaimer`, `serviceSlug?` (`individual|package`), `relatedArticleSlugs?` (json), `relatedCategorySlugs?` (json), `sortOrder`
+- Nested: `positions[]` → `price.position` `{ name, unit, priceFrom, note?, sortOrder }`
+- Nested: `factors[]` → `price.factor` `{ title, text, sortOrder }`
+- Nested: `faq[]` → `price.faq-item` `{ question, answer, sortOrder }`
+- SEO: `seo` → `shared.seo` `{ title, description, keywords }`
+
+**Отличия от запроса / source naming:**
+- Нет `shortTitle` / `navTitle` в source → не добавлены; есть `titleAccent` + `eyebrow`
+- `description` → поле `lead` (как в FE)
+- `related` object flatten: `serviceSlug` + json slug arrays (не отдельный component)
+- Нет `group`/`section` на position → не добавлены
+- Добавлены `sortOrder` на CT и nested (в FE data отсутствуют; нужны для Admin/import order)
+- Hub `/prices` SEO **не** в schema (hardcoded)
+
+**Готовность:** ✅ Stage 1 complete — Ready for Stage 2
+**⛔ Checkpoint:** подтверждение перед seed / dry-run
 
 ---
 
-### Этап 2 — Seed + dry-run
+### Этап 2 — Seed + dry-run ← **NEXT**
 
 - [ ] `scripts/seed/price-categories.json` из `prices.data.ts` (structured import)
 - [ ] `pnpm prices:import:dry` — без Strapi/DB
 - [ ] Validate: count=15, unique slugs, positions totals, no Windows abs paths
 - [ ] Parity field-by-field vs local
 - [ ] Inventory: unused `articleSlugs` / empty `note` — явно в отчёте
+- [ ] Frontend wiring / live DB writes **не** начинать
 
-**Готовность:** dry-run errors=0  
+**Готовность:** dry-run errors=0
 **⛔ Checkpoint:** перед live import
 
 ---
@@ -279,7 +299,7 @@ Hub page SEO / intro: **оставить hardcoded** на Stage 1–4 (как li
 - [ ] REST smoke: 15; articles=8; projects=7; services=2
 - [ ] Schema не менять без блокера
 
-**Готовность:** REST 15 published categories  
+**Готовность:** REST 15 published categories
 **⛔ Checkpoint:** перед FE wiring
 
 ---
@@ -295,7 +315,7 @@ Hub page SEO / intro: **оставить hardcoded** на Stage 1–4 (как li
 - [ ] Не менять production env; не удалять `prices.data.ts`
 - [ ] Calculator / PHP / Services strings **не** трогать
 
-**Готовность:** parity 15/15; default local  
+**Готовность:** parity 15/15; default local
 **⛔ Checkpoint:** перед Stage 5 / merge в `dev`
 
 ---
@@ -310,7 +330,7 @@ Hub page SEO / intro: **оставить hardcoded** на Stage 1–4 (как li
 - [ ] Docs: CMS README + FE content-sources
 - [ ] Decisions before next type
 
-**Готовность:** Completed locally / Waiting for production cutover  
+**Готовность:** Completed locally / Waiting for production cutover
 **Out:** production cutover
 
 ---
@@ -340,7 +360,7 @@ Frontend rollback: `PRICES_CONTENT_SOURCE=local`.
 ## 7. Контрольные точки (ждать подтверждения)
 
 1. ~~После Этапа 0 (open questions)~~ ✅
-2. После Этапа 1 (schema)
+2. ~~После Этапа 1 (schema)~~ ✅
 3. После Этапа 3 (import)
 4. Перед merge frontend-ветки в `dev`
 5. Любой production / DNS / удаление hardcode / публикация полного прайса — **вне этого плана**
@@ -362,11 +382,15 @@ Frontend rollback: `PRICES_CONTENT_SOURCE=local`.
 | | Checks: FE `pnpm check` + build OK; parity articles 8/8, projects 7/7, services 2/2; CMS `pnpm check` + build OK; `git diff --check` OK. |
 | | No CMS schema / importer / FE runtime changes. `docker-compose.yml` dirty not committed. |
 | | Status → **Ready for Stage 1**. |
+| 2026-08-16 | **Stage 1 complete.** CMS `PriceCategory` schema + `price.*` components @ `9438682`. |
+| | Public find/findOne; smoke `[]` 200; writes 403; articles=8 projects=7 services=2. |
+| | FE: только task md. Importer/seed/FE runtime не начинались. |
+| | Status → **Ready for Stage 2**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения перед Этапом 1** (CMS schema only: `PriceCategory` + components + public find/findOne).  
-Не начинать seed / importer / FE wiring без явного запроса.
+**Ждать подтверждения перед Этапом 2** (seed `price-categories.json` + dry-run importer, без DB writes / FE wiring).
+Не начинать live import / FE dual-run без явного запроса.
