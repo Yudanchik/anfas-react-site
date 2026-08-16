@@ -1,7 +1,7 @@
 # Strapi: миграция услуг (Services)
 
-**Status:** Ready for Stage 5  
-**Next stage:** Этап 5 — Visual + SEO/CTA/forms QA + docs  
+**Status:** Completed locally / Waiting for production cutover  
+**Next stage:** Production cutover (отдельное подтверждение) — **не начат**  
 **Scope:** Collection `Service` + nested components (hero / included / story) + SEO + cover media  
 **Дата плана:** `2026-08-15`  
 **Frontend branch (current):** `feature/strapi-journal-pilot`  
@@ -308,17 +308,24 @@ Public: **find / findOne** only (как Article/Project). Write → 403.
 
 ---
 
-### Этап 5 — Visual + SEO + forms QA + docs ← **NEXT**
+### Этап 5 — Visual + SEO + forms QA + docs ← **DONE**
 
-- [ ] Visual: `/services`, both details, desktop/tablet/mobile; local/strapi/snapshot
-- [ ] SEO: title/description/canonical/OG на detail; list meta (hardcoded — зафиксировать follow-up если выносить в CMS)
-- [ ] CTA/forms: Brief intents individual/package; OpenLeadForm; article→service link
-- [ ] Calculator + Prices links всё ещё работают со стабильными slug
-- [ ] Docs: CMS README + FE content-sources
-- [ ] Decisions before next type (Prices vs FAQ vs Home)
+- [x] Visual: `/services`, `/services/individual`, `/services/package` @ 1440 / 768 / 390
+- [x] SEO: title/description/canonical на list+details; prerender HTML; 404 unknown slug; sitemap URLs present
+- [x] CTA/forms: ModalTrigger brief opens with correct service (individual/package); close works; list form radios OK
+- [x] Calculator + HomePaths + footer service links: stable `individual`/`package` intact
+- [x] Docs: FE `docs/strapi-content-sources.md` + CMS `README.md` (services import/snapshot/default local)
+- [x] Builds/parity re-verified (local/strapi/snapshot/strapi-down)
 
-**Готовность:** Ready for next content migration  
-**Out:** production cutover
+**Visual QA summary:** order individual→package; cards/hero/covers/included/story OK; CTA labels OK; images load from `/images/services/*`; no localhost media URLs; no text overlap found.
+
+**Follow-ups (не блокеры):**  
+- List SEO meta still hardcoded in route (not CMS) — optional later  
+- HomePaths / story widgets still use Vite `formats/*.webp` while service routes use public `images/services/*` (dual asset paths until cutover cleanup)  
+- Prices migration / FAQ / production cutover — out of this plan
+
+**Готовность:** Completed locally  
+**Out:** production cutover / merge `dev`/`main`
 
 ---
 
@@ -382,11 +389,15 @@ Frontend rollback: `SERVICES_CONTENT_SOURCE=local`, hardcode на месте.
 | | DTO/adapter/repos/snapshot/parity/prerender; portable public images; routes via repository. |
 | | Parity local↔snapshot + local↔Strapi 2/2; builds local/strapi/strapi-down/snapshot OK. |
 | | CMS: minor seed-builder update (direct TS import after portable paths). Status → **Ready for Stage 5**. |
+| 2026-08-16 | **Stage 5 complete.** Visual/SEO/CTA/forms QA + docs. No cutover/merge/deploy. |
+| | Browser QA: list+details @ desktop/tablet/mobile; modal open/close with service intent; 404 OK. |
+| | Docs updated (FE content-sources + CMS README). Status → **Completed locally / Waiting for production cutover**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 5** (visual QA + SEO/CTA/forms + docs + local completion).
-Не merge в `dev` / production cutover без явного запроса.
+**Services migration закрыта локально.**  
+Дальше только по отдельному подтверждению: production cutover (`SERVICES_CONTENT_SOURCE=strapi` на Host-0) и/или merge в `dev`.  
+Логичный следующий контентный домен: **Prices** (или FAQ / HomePaths cleanup).
