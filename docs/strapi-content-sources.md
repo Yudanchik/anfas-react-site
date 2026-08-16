@@ -1,4 +1,4 @@
-# Strapi content sources (Articles + Projects + Services + Prices)
+# Strapi content sources (Articles + Projects + Services + Prices + FAQ)
 
 Production / default Host-0 builds stay on **local** hardcode until an explicit cutover.
 
@@ -12,6 +12,7 @@ See `.env.example`.
 | `PROJECTS_CONTENT_SOURCE` | Projects only | `local` |
 | `SERVICES_CONTENT_SOURCE` | Services only | `local` |
 | `PRICES_CONTENT_SOURCE` | Price categories only | `local` |
+| `FAQ_CONTENT_SOURCE` | FAQ groups (home + prices-hub) | `local` |
 | `STRAPI_URL` | When any source is `strapi` | — |
 | `STRAPI_TOKEN` | Optional | — |
 | `STRAPI_TIMEOUT_MS` | Optional | `8000` |
@@ -19,6 +20,29 @@ See `.env.example`.
 Values: `local` | `strapi` | `snapshot`.
 
 `strapi` mode falls back to the committed snapshot if CMS is unreachable (build/prerender must not break).
+
+## FAQ workflows
+
+```bash
+FAQ_CONTENT_SOURCE=local pnpm dev
+FAQ_CONTENT_SOURCE=strapi STRAPI_URL=http://127.0.0.1:1337 pnpm build
+FAQ_CONTENT_SOURCE=snapshot pnpm build
+
+pnpm parity:faq
+STRAPI_URL=http://127.0.0.1:1337 pnpm parity:faq:strapi
+pnpm snapshot:faq
+```
+
+CMS side (from `anfas-cms`):
+
+```bash
+pnpm faq:seed          # rebuild scripts/seed/faq-groups.json
+pnpm faq:import:dry    # no DB
+pnpm faq:import        # live upsert 2 groups / 11 items
+pnpm faq:parity        # REST smoke vs seed
+```
+
+Counts: **2** groups (`home` 7 + `prices-hub` 4 = **11** items). Price-category FAQ stays in Prices (`price.faq-item`). FAQPage JSON-LD on `/prices` stays route-generated from hub FAQ content.
 
 ## Prices workflows
 
@@ -74,6 +98,7 @@ CMS import / seed docs: `anfas-cms/README.md`.
 ## Do not
 
 - Commit `.env`, uploads, or set production to `strapi` without cutover approval
-- Delete `projects.data.ts` / `articles.data.ts` / `services.data.ts` / `prices.data.ts` until cutover
+- Delete `projects.data.ts` / `articles.data.ts` / `services.data.ts` / `prices.data.ts` / home `faq.data.ts` until cutover
 - Mix domains into a single env (`CONTENT_SOURCE` is articles-only)
+- Re-home PriceCategory FAQ into the FAQ domain (already in Prices)
 - Merge to `dev`/`main` or deploy as part of content-source wiring
