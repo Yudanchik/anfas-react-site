@@ -1,7 +1,7 @@
 # Strapi: миграция услуг (Services)
 
-**Status:** Ready for Stage 3  
-**Next stage:** Этап 3 — Live import + optional media upload/dedupe  
+**Status:** Ready for Stage 4  
+**Next stage:** Этап 4 — Frontend wiring (`SERVICES_CONTENT_SOURCE`)  
 **Scope:** Collection `Service` + nested components (hero / included / story) + SEO + cover media  
 **Дата плана:** `2026-08-15`  
 **Frontend branch (current):** `feature/strapi-journal-pilot`  
@@ -263,20 +263,29 @@ Public: **find / findOne** only (как Article/Project). Write → 403.
 
 ---
 
-### Этап 3 — Live import + media ← **NEXT**
+### Этап 3 — Live import + media ← **DONE**
 
-- [ ] Idempotent upsert по `slug` / `serviceId` (live import **2** services)
-- [ ] Optional cover upload + dedupe; publish
-- [ ] Повторный import: created=0, updated=2 (или skipped), no media dupes
-- [ ] REST smoke: 2 services; Article=8; Project=7
-- [ ] Schema не менять без блокера
+- [x] Idempotent upsert по `slug` / `serviceId` (live import **2** services)
+- [x] Cover upload + dedupe (caption/name = public path); publish
+- [x] Повторный import: created=0, updated=2; mediaUploaded=0, mediaReused=2
+- [x] REST smoke: 2 services; Article=8; Project=7; covers=2
+- [x] Schema не менялась
+
+**Import report:**  
+- 1st: `created=2`, `updated=0`, `mediaUploaded=2`, `mediaReused=0`  
+- 2nd: `created=0`, `updated=2`, `mediaUploaded=0`, `mediaReused=2`  
+- `imagePath` остаётся `/images/services/...` (не localhost media URL)
+
+**Media dedupe:** stable key = public path as upload `caption` + `name` (`images__services__*.webp`); repeat import reuses existing files.
+
+**REST / parity:** services=2 (`individual`,`package`); serviceIds match; published; coversWithMedia=2; sortOrder 0/1; SEO/hero/included/story match seed; articles=8; projects=7; issues=[].
 
 **Готовность:** REST 2 published services  
-**⛔ Checkpoint:** перед FE wiring
+**⛔ Checkpoint:** перед FE wiring — **пройден**
 
 ---
 
-### Этап 4 — Frontend wiring (без cutover)
+### Этап 4 — Frontend wiring (без cutover) ← **NEXT**
 
 - [ ] `getServicesContentSource()` default `local`
 - [ ] Zod DTO + `adaptStrapiService` → существующий `Service` union
@@ -357,11 +366,16 @@ Frontend rollback: `SERVICES_CONTENT_SOURCE=local`, hardcode на месте.
 | | FE: `public/images/services/{individual,package}.webp` copied from formats; task md; runtime code untouched. |
 | | Dry-run ×2 identical, exit 0; parity 0 issues; articles 8/8; projects 7/7. |
 | | Article/Project import/API unchanged. Status → **Ready for Stage 3**. |
+| 2026-08-16 | **Stage 3 complete.** Live import + media dedupe + REST parity. No FE wiring. |
+| | CMS: `import-services.cjs`, `services-parity-smoke.cjs`, `pnpm services:import` / `services:parity`. |
+| | 1st import created=2 mediaUploaded=2; 2nd updated=2 mediaReused=2 mediaUploaded=0. |
+| | REST: services=2 published, covers=2; articles=8; projects=7; seed↔Strapi parity OK. |
+| | Article/Project schemas/scripts untouched. Status → **Ready for Stage 4**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 3** (live import 2 services + optional media upload/dedupe; idempotency; REST smoke).
-Не начинать FE wiring / snapshot / merge без явного запроса.
+**Ждать подтверждения Этапа 4** (FE `SERVICES_CONTENT_SOURCE=local|strapi|snapshot`, DTO, adapter, repositories, snapshot, prerender fallback).
+Не начинать Stage 5 / merge / production без явного запроса.
