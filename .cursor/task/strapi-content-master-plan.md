@@ -8,7 +8,8 @@
 
 Production Host-0, DNS, VPS, merge to `dev`/`main`, and deleting `*.data.ts` are **out of scope** until infrastructure + cutover approval.
 
-Canonical status summary: [`docs/strapi-migration-status.md`](../../docs/strapi-migration-status.md)
+Canonical status: [`docs/strapi-migration-status.md`](../../docs/strapi-migration-status.md)
+Editor guide (RU): [`docs/strapi-editor-guide.md`](../../docs/strapi-editor-guide.md)
 
 ---
 

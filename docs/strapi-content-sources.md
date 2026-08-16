@@ -1,5 +1,7 @@
 # Strapi content sources (Articles + Projects + Services + Prices + FAQ)
 
+Editor guide (RU): [`strapi-editor-guide.md`](./strapi-editor-guide.md) · Status: [`strapi-migration-status.md`](./strapi-migration-status.md)
+
 Production / default Host-0 builds stay on **local** hardcode until an explicit cutover.
 
 ## Env (no secrets in Git)

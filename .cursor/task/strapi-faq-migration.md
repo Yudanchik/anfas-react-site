@@ -1,82 +1,32 @@
 # Strapi: миграция FAQ
 
 **Status:** Completed locally / Waiting for production cutover
-**Next stage:** Infrastructure / production cutover (out of scope). Partners skipped / keep in code; content pilot scope closed.
-**Scope:** Page-scoped FAQ вне Prices nested: **Home** + **Prices hub** (+ dual-run `FAQ_CONTENT_SOURCE`)
-**Дата плана:** `2026-08-16`
-**Frontend branch (current):** `feature/strapi-journal-pilot`
-**CMS repo:** `Yudanchik/anfas-cms`
-**CMS branch:** `feature/faq-migration` ← от `feature/prices-migration` @ `f2211f2`
-**Паттерн:** как Articles / Projects / Services / Prices (отдельный env, default **local**)
+**Scope:** `FaqGroup` — `home` (7) + `prices-hub` (4) = **11** items
+**Frontend branch:** `feature/strapi-journal-pilot`
+**CMS branch:** `feature/faq-migration`
 
 ---
 
-## Scope / Out of scope
+## Decisions (keep)
 
-### In scope
-- Home FAQ: `src/features/faq/model/faq.data.ts` → **7** items
-- Prices hub FAQ: `src/entities/faq/model/prices-hub-faq.data.ts` → **4** items
-- Frontend dual-run: `FAQ_CONTENT_SOURCE=local|strapi|snapshot` (default **`local`**)
-- Snapshot + safe fallback; parity local ↔ snapshot ↔ Strapi
-- Route-level `FAQPage` JSON-LD on `/prices` — **route-generated** from hub FAQ via repository
-
-### Out of scope
-- Production cutover / merge `dev`/`main` / deploy
-- PriceCategory nested FAQ (45) — Prices domain
-- Services / About FAQ (нет в коде)
-- Accordion UI / forms / CTA
-- Deleting local FAQ data until cutover
-- Partners domain
+- Dual-run: `FAQ_CONTENT_SOURCE`, default **`local`**
+- Binding by `key` only (`home` \| `prices-hub`)
+- Price-category FAQ stays in Prices domain (45 items) — **not** duplicated here
+- Partners / Services / About FAQ — not migrated / not invented
+- FAQPage JSON-LD on `/prices` remains **route-generated** from hub FAQ content
 
 ---
 
-## Accepted decisions (Stage 0)
+## Outcome
 
-1. FAQ — отдельный домен
-2. `FaqGroup` + nested `faq.item`
-3. Groups: `home`, `prices-hub`
-4. Price category FAQ не переносим
-5. Services/About FAQ не добавлять
-6. Отдельный `FAQ_CONTENT_SOURCE`
-7. Default всегда `local`
-8. Связи через `key` only
-9. FAQPage schema.org — route-generated
-10. CMS branch `feature/faq-migration` from `feature/prices-migration`
-11. Controlled e2e Stage 0→5 with green gates
-12. После FAQ остановиться; Partners не начинать
+Stage 0–5 complete locally. Content pilot scope closed after FAQ. Partners skipped / keep in code.
+
+See: [`docs/strapi-editor-guide.md`](../../docs/strapi-editor-guide.md), master-plan
 
 ---
 
-## Progress
-
-| Stage | Status |
-| --- | --- |
-| 0 Sync + decisions | ✅ |
-| 1 CMS schema | ✅ |
-| 2 Seed + dry-run | ✅ 2/11, parityIssues=[] |
-| 3 Live import | ✅ created 2 → updated 2; REST 2/11 |
-| 4 FE wiring | ✅ |
-| 5 QA + docs | ✅ Completed locally / Waiting for production cutover |
-
-### Gates (green)
-
-- seed: 2 groups / 11 items (home 7, prices-hub 4)
-- dry-run errors = 0; parityIssues = 0
-- live import idempotent; REST count = 2/11
-- FE parity local/snapshot/Strapi OK
-- builds/checks OK; default source `local`
-
----
-
-## Progress log
+## Progress log (short)
 
 | Дата | Событие |
 | --- | --- |
-| 2026-08-16 | Audit + Planned |
-| 2026-08-16 | Decisions confirmed; Stage 0–5 completed locally |
-
----
-
-## Next action
-
-**Stop.** Do not start Partners. Wait for production cutover / merge decision.
+| 2026-08-16 | Audit → Stage 0–5 complete; Partners skipped later; task compressed |
