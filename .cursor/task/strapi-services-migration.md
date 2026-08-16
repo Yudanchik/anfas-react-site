@@ -1,12 +1,12 @@
 # Strapi: миграция услуг (Services)
 
-**Status:** Ready for Stage 1  
-**Next stage:** Этап 1 — CMS Service schema/components only  
+**Status:** Ready for Stage 2  
+**Next stage:** Этап 2 — Seed + import dry-run  
 **Scope:** Collection `Service` + nested components (hero / included / story) + SEO + cover media  
 **Дата плана:** `2026-08-15`  
 **Frontend branch (current):** `feature/strapi-journal-pilot`  
 **CMS repo:** `Yudanchik/anfas-cms`  
-**CMS branch:** `feature/services-migration` (от `feature/projects-migration` @ `17d1adc`)  
+**CMS branch:** `feature/services-migration`  
 **Паттерн:** как Articles (`CONTENT_SOURCE`) и Projects (`PROJECTS_CONTENT_SOURCE`)
 
 ---
@@ -225,20 +225,27 @@ Public: **find / findOne** only (как Article/Project). Write → 403.
 
 ---
 
-### Этап 1 — CMS schema only ← **NEXT**
-- [ ] Components: `service.hero`, `service.included*`, `service.story-*` (минимально понятные)
-- [ ] Collection `Service` + `shared.seo` + `serviceId` enum + string `price`/`duration`
-- [ ] Public find/findOne; write 403
-- [ ] Smoke: GET `/api/services` → `[]`
-- [ ] Article/Project API не затронуты; `relatedService` enum без изменений
-- [ ] Не коммитить dirty `docker-compose.yml` / uploads / `.env`
-- [ ] **Не** importer, **не** FE wiring, **не** media copy в Stage 1 (media copy → Stage 2)
+### Этап 1 — CMS schema only
+- [x] Components: `service.stat`, `hero`/`hero-aside`, `included`/`included-group`/`included-fit`, `story-card`, `story-individual`(+hero), `story-package`(+summary/step)
+- [x] Collection `api::service.service` + `shared.seo` + `serviceId` enum + string `price`/`duration`
+- [x] Public find/findOne; write 403
+- [x] Smoke: GET `/api/services` → `[]`; articles=8; projects=7
+- [x] Article/Project schemas **не** изменены; `relatedService` enum без изменений
+- [x] `docker-compose.yml` dirty **не** committed; uploads/`.env` не трогались
+- [x] Importer / FE wiring / media copy **не** делались
 
-**Готовность:** schema OK + `pnpm check/build` CMS  
-**⛔ Checkpoint:** перед seed/dry-run
+**Фактическая schema Service (Stage 1):**
+- Scalar: `title`, `slug` (uid), `serviceId` (`individual|package`), `number`, `shortText`, `text`, `lead`, `tags` (json), `imagePath`, `cover` (media), `imageWidth`/`imageHeight`, `bullets` (json), `metrics` (repeatable `service.stat`), `price`, `duration`, `ctaLabel`, `sortOrder`, `isFeatured`
+- Components: `hero`, `included`, `storyIndividual?`, `storyPackage?`, `seo` (required)
+- draftAndPublish: true
+- Naming: marketing strings = `price`/`duration` (FE); media = `cover` + portable `imagePath`
+
+**Готовность:** ✅ Stage 1 complete — Ready for Stage 2  
+**⛔ Checkpoint:** подтверждение перед seed/dry-run
+
 ---
 
-### Этап 2 — Seed + dry-run
+### Этап 2 — Seed + dry-run ← **NEXT**
 
 - [ ] `scripts/seed/services.json` из `services.data.ts` (structured import, не regex-копипаст полей)
 - [ ] Нормализация media → portable `/images/services/...` (или согласованный path)
@@ -336,11 +343,16 @@ Frontend rollback: `SERVICES_CONTENT_SOURCE=local`, hardcode на месте.
 | | CMS: branch `feature/services-migration` created from `feature/projects-migration` @ `17d1adc`, pushed. No schema commit. |
 | | Checks: FE check + build local; articles parity; projects parity; CMS check + build; `git diff --check`. |
 | | Status → **Ready for Stage 1**. |
+| 2026-08-16 | **Stage 1 complete.** CMS Service schema + components on `feature/services-migration`. |
+| | Collection `api::service.service`; components under `src/components/service/*`; bootstrap public find/findOne. |
+| | Smoke: services `[]` 200; articles 8; projects 7; POST/PUT/DELETE 403. |
+| | Article/Project schemas untouched. `pnpm check`, `pnpm build`, `git diff --check` OK. |
+| | `docker-compose.yml` dirty not committed. Status → **Ready for Stage 2**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 1** (CMS Service schema/components only; public find/findOne; без importer / FE wiring / media copy).
-Не начинать Stage 2+ без явного запроса.
+**Ждать подтверждения Этапа 2** (seed `services.json` + dry-run importer; media → `public/images/services/`; без записи в БД).
+Не начинать live import / FE wiring без явного запроса.
