@@ -1,7 +1,7 @@
 # Strapi: миграция услуг (Services)
 
-**Status:** Ready for Stage 4  
-**Next stage:** Этап 4 — Frontend wiring (`SERVICES_CONTENT_SOURCE`)  
+**Status:** Ready for Stage 5  
+**Next stage:** Этап 5 — Visual + SEO/CTA/forms QA + docs  
 **Scope:** Collection `Service` + nested components (hero / included / story) + SEO + cover media  
 **Дата плана:** `2026-08-15`  
 **Frontend branch (current):** `feature/strapi-journal-pilot`  
@@ -285,23 +285,30 @@ Public: **find / findOne** only (как Article/Project). Write → 403.
 
 ---
 
-### Этап 4 — Frontend wiring (без cutover) ← **NEXT**
+### Этап 4 — Frontend wiring (без cutover) ← **DONE**
 
-- [ ] `getServicesContentSource()` default `local`
-- [ ] Zod DTO + `adaptStrapiService` → существующий `Service` union
-- [ ] `strapi` / `snapshot` / `local` repositories + factory
-- [ ] `services.snapshot.json` (+ `parity:services`, optional `snapshot:services`)
-- [ ] Prerender: `/services/:slug` из source с fallback snapshot (список не пустеет)
-- [ ] Builds: local / strapi / strapi-down→snapshot / snapshot
-- [ ] Не менять production env; не удалять `services.data.ts`
-- [ ] Прямые импорты data → по возможности только local repo
+- [x] `getServicesContentSource()` default `local`
+- [x] Zod DTO (`service.dto.ts`) + `adaptStrapiService` → `Service` union
+- [x] `strapi` / `snapshot` / `local` repositories + factory
+- [x] `services.snapshot.json` + `parity:services` + `snapshot:services`
+- [x] Prerender: `/services/:slug` from source with snapshot/hardcoded fallback
+- [x] Builds: local / strapi / strapi-down→snapshot / snapshot
+- [x] Production env не менялся; `services.data.ts` сохранён (portable `images/services/*`)
+- [x] Routes `/services` + `/services/:slug` через `serviceRepository` + `assetUrl`
+
+**Wiring:**  
+- Env: `SERVICES_CONTENT_SOURCE` (independent of articles/projects)  
+- Adapter prefers portable `imagePath` → FE `image` (no localhost media URLs)  
+- Snapshot: `src/shared/content/services/services.snapshot.json` (2 services)
+
+**Parity / builds:** local↔snapshot OK; local↔Strapi OK (2/2); articles 8/8; projects 7/7; all 4 builds OK.
 
 **Готовность:** parity 2/2; default local  
-**⛔ Checkpoint:** перед Stage 5 / merge в `dev`
+**⛔ Checkpoint:** перед Stage 5 / merge в `dev` — **пройден**
 
 ---
 
-### Этап 5 — Visual + SEO + forms QA + docs
+### Этап 5 — Visual + SEO + forms QA + docs ← **NEXT**
 
 - [ ] Visual: `/services`, both details, desktop/tablet/mobile; local/strapi/snapshot
 - [ ] SEO: title/description/canonical/OG на detail; list meta (hardcoded — зафиксировать follow-up если выносить в CMS)
@@ -371,11 +378,15 @@ Frontend rollback: `SERVICES_CONTENT_SOURCE=local`, hardcode на месте.
 | | 1st import created=2 mediaUploaded=2; 2nd updated=2 mediaReused=2 mediaUploaded=0. |
 | | REST: services=2 published, covers=2; articles=8; projects=7; seed↔Strapi parity OK. |
 | | Article/Project schemas/scripts untouched. Status → **Ready for Stage 4**. |
+| 2026-08-16 | **Stage 4 complete.** FE dual-run wiring. Default `SERVICES_CONTENT_SOURCE=local`. |
+| | DTO/adapter/repos/snapshot/parity/prerender; portable public images; routes via repository. |
+| | Parity local↔snapshot + local↔Strapi 2/2; builds local/strapi/strapi-down/snapshot OK. |
+| | CMS: minor seed-builder update (direct TS import after portable paths). Status → **Ready for Stage 5**. |
 
 
 ---
 
 ## Next action
 
-**Ждать подтверждения Этапа 4** (FE `SERVICES_CONTENT_SOURCE=local|strapi|snapshot`, DTO, adapter, repositories, snapshot, prerender fallback).
-Не начинать Stage 5 / merge / production без явного запроса.
+**Ждать подтверждения Этапа 5** (visual QA + SEO/CTA/forms + docs + local completion).
+Не merge в `dev` / production cutover без явного запроса.

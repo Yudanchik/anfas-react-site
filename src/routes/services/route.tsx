@@ -1,14 +1,22 @@
-import { Link } from 'react-router'
+import { Link, useLoaderData } from 'react-router'
 
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
-import { services, getServiceHref } from '@/entities/service/model/services.data'
+import { serviceRepository } from '@/entities/service/api'
+import { getServiceHref } from '@/entities/service/model/services.data'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { createSeoMeta } from '@/shared/config/seo'
+import { assetUrl } from '@/shared/lib/asset-url'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './ServicesRoute.module.scss'
+
+export async function loader() {
+  return {
+    services: await serviceRepository.getAll(),
+  }
+}
 
 export const meta = () =>
   createSeoMeta({
@@ -21,6 +29,7 @@ export const meta = () =>
   })
 
 export default function ServicesRoute() {
+  const { services } = useLoaderData<typeof loader>()
   const hero = innerHeroImages.services
 
   return (
@@ -75,7 +84,7 @@ export default function ServicesRoute() {
                   >
                     <img
                       className={styles.servicesPage__cardImage}
-                      src={service.image}
+                      src={assetUrl(service.image)}
                       alt={service.title}
                       width={service.imageWidth}
                       height={service.imageHeight}

@@ -23,7 +23,10 @@
     "parity:articles:strapi": "node scripts/parity-articles.mjs --strapi",
     "parity:projects": "node scripts/parity-projects.mjs",
     "parity:projects:strapi": "node scripts/parity-projects.mjs --strapi",
-    "snapshot:projects": "node scripts/snapshot-projects.mjs"
+    "parity:services": "node scripts/parity-services.mjs",
+    "parity:services:strapi": "node scripts/parity-services.mjs --strapi",
+    "snapshot:projects": "node scripts/snapshot-projects.mjs",
+    "snapshot:services": "node scripts/snapshot-services.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

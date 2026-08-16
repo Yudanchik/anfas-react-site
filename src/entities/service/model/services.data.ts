@@ -1,6 +1,3 @@
-import individualFormatImage from '@/assets/images/formats/individual-format.webp'
-import packageFormatImage from '@/assets/images/formats/package-format.webp'
-
 export type ServiceIncludedGroup = {
   number: string
   title: string
@@ -129,7 +126,7 @@ export const services: readonly Service[] = [
       'Персональный интерьер, гибкая планировка и авторский подбор материалов под ваш сценарий жизни.',
     text: 'Формат для тех, кому нужен персональный интерьер, гибкая планировка, авторский подбор материалов и реализация под ваш сценарий жизни.',
     tags: ['Дизайн-проект', 'Материалы', 'Авторский контроль'],
-    image: individualFormatImage,
+    image: 'images/services/individual.webp',
     imageWidth: 1448,
     imageHeight: 1086,
     lead: 'Сначала проектируем пространство под вас, затем доводим идею до реализации одной командой без потери смысла и качества.',
@@ -317,7 +314,7 @@ export const services: readonly Service[] = [
       'Готовый формат с фиксированной ценой: стиль, смета, сроки и состав работ ясны ещё до старта.',
     text: 'Готовый формат для тех, кто хочет быстро получить стильный интерьер: материалы, смета, сроки и состав работ ясны ещё до старта.',
     tags: ['Фиксированная цена', 'Быстрый запуск', 'Готовые эстетики'],
-    image: packageFormatImage,
+    image: 'images/services/package.webp',
     imageWidth: 1448,
     imageHeight: 1086,
     lead: 'Собираем понятный пакет решений и ведём ремонт в согласованном темпе — без десятков отдельных согласований.',

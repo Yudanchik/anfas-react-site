@@ -1,9 +1,14 @@
 import articlesSnapshot from './articles.snapshot.json'
 import projectsSnapshot from '../projects/projects.snapshot.json'
-import { getContentSource, getProjectsContentSource } from '../content-source'
+import servicesSnapshot from '../services/services.snapshot.json'
+import {
+  getContentSource,
+  getProjectsContentSource,
+  getServicesContentSource,
+} from '../content-source'
 import { strapiFetch } from '../strapi/client'
 
-/** Static routes excluding dynamic blog/project slug pages. */
+/** Static routes excluding dynamic blog/project/service slug pages. */
 const STATIC_PATHS = [
   '/',
   '/about',
@@ -30,9 +35,9 @@ const STATIC_PATHS = [
   '/privacy',
   '/projects',
   '/services',
-  '/services/individual',
-  '/services/package',
 ] as const
+
+const FALLBACK_SERVICE_PATHS = ['/services/individual', '/services/package'] as const
 
 function blogPathsFromSlugs(slugs: readonly string[]) {
   return slugs.map((slug) => `/blog/${slug}`)
@@ -40,6 +45,10 @@ function blogPathsFromSlugs(slugs: readonly string[]) {
 
 function projectPathsFromSlugs(slugs: readonly string[]) {
   return slugs.map((slug) => `/projects/${slug}`)
+}
+
+function servicePathsFromSlugs(slugs: readonly string[]) {
+  return slugs.map((slug) => `/services/${slug}`)
 }
 
 function snapshotBlogPaths() {
@@ -50,6 +59,14 @@ function snapshotBlogPaths() {
 function snapshotProjectPaths() {
   const slugs = (projectsSnapshot as Array<{ slug: string }>).map((item) => item.slug)
   return projectPathsFromSlugs(slugs)
+}
+
+function snapshotServicePaths() {
+  const slugs = (servicesSnapshot as Array<{ slug: string }>).map((item) => item.slug)
+  if (slugs.length === 0) {
+    return [...FALLBACK_SERVICE_PATHS]
+  }
+  return servicePathsFromSlugs(slugs)
 }
 
 async function strapiBlogPaths(): Promise<string[]> {
@@ -108,10 +125,39 @@ async function strapiProjectPaths(): Promise<string[]> {
   }
 }
 
-/** Blog + project paths for prerender. Never returns empty dynamic lists when snapshots exist. */
+async function strapiServicePaths(): Promise<string[]> {
+  const baseUrl = process.env.STRAPI_URL?.trim()
+  if (!baseUrl) {
+    console.warn('[prerender] STRAPI_URL missing — using snapshot service paths')
+    return snapshotServicePaths()
+  }
+
+  try {
+    const json = await strapiFetch<{ data: Array<{ slug: string }> }>(
+      '/api/services?fields[0]=slug&pagination[pageSize]=100&sort[0]=sortOrder:asc',
+      {
+        baseUrl,
+        token: process.env.STRAPI_TOKEN?.trim() || undefined,
+        timeoutMs: Number(process.env.STRAPI_TIMEOUT_MS || 8000),
+      },
+    )
+    const slugs = (json.data ?? []).map((item) => item.slug).filter(Boolean)
+    if (slugs.length === 0) {
+      console.warn('[prerender] Strapi returned 0 services — using snapshot')
+      return snapshotServicePaths()
+    }
+    return servicePathsFromSlugs(slugs)
+  } catch (error) {
+    console.warn('[prerender] Strapi unavailable — using snapshot service paths:', error)
+    return snapshotServicePaths()
+  }
+}
+
+/** Blog + project + service paths for prerender. Never returns empty dynamic lists when snapshots exist. */
 export async function resolvePrerenderPaths(): Promise<string[]> {
   const articleSource = getContentSource()
   const projectsSource = getProjectsContentSource()
+  const servicesSource = getServicesContentSource()
 
   let blogPaths: string[]
   if (articleSource === 'strapi') {
@@ -134,5 +180,15 @@ export async function resolvePrerenderPaths(): Promise<string[]> {
     projectPaths = snapshotProjectPaths()
   }
 
-  return [...STATIC_PATHS, ...projectPaths, ...blogPaths]
+  let servicePaths: string[]
+  if (servicesSource === 'strapi') {
+    servicePaths = await strapiServicePaths()
+  } else {
+    servicePaths = snapshotServicePaths()
+  }
+  if (servicePaths.length === 0) {
+    servicePaths = [...FALLBACK_SERVICE_PATHS]
+  }
+
+  return [...STATIC_PATHS, ...projectPaths, ...servicePaths, ...blogPaths]
 }

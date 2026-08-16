@@ -4,6 +4,7 @@ import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { serviceRepository } from '@/entities/service/api'
 import { getServiceHref } from '@/entities/service/model/services.data'
 import { createSeoMeta } from '@/shared/config/seo'
+import { assetUrl } from '@/shared/lib/asset-url'
 import { NotFoundState } from '@/shared/ui/not-found-state'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
@@ -37,7 +38,7 @@ export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
     description: data.service.seo.description,
     keywords: data.service.seo.keywords,
     path: getServiceHref(data.service.slug),
-    image: data.service.image,
+    image: `/${data.service.image.replace(/^\/+/, '')}`,
   })
 }
 
@@ -53,7 +54,7 @@ export default function ServiceRoute() {
       <section className={styles.servicePage__hero}>
         <img
           className={styles.servicePage__heroMedia}
-          src={service.image}
+          src={assetUrl(service.image)}
           alt={service.title}
           width={service.imageWidth}
           height={service.imageHeight}
