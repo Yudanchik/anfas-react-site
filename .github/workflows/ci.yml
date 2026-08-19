@@ -31,11 +31,11 @@ jobs:
           HEAD_BRANCH: ${{ github.head_ref }}
           BASE_BRANCH: ${{ github.base_ref }}
         run: |
-          allowed='^(dev|(feature|fix|hotfix|chore|docs|refactor|test)/[a-z0-9]+(-[a-z0-9]+)*|dependabot/.+)$'
+          allowed='^(dev|(feat|feature|fix|hotfix|chore|docs|refactor|test)/[a-z0-9]+(-[a-z0-9]+)*|dependabot/.+)$'
 
           if [[ ! "$HEAD_BRANCH" =~ $allowed ]]; then
             echo "Invalid branch name: $HEAD_BRANCH"
-            echo "Use: feature/*, fix/*, hotfix/*, chore/*, docs/*, refactor/* or test/*."
+            echo "Use: feat/*, feature/*, fix/*, hotfix/*, chore/*, docs/*, refactor/* or test/*."
             exit 1
           fi
 

@@ -43,56 +43,25 @@
   letter-spacing: var(--tracking-heading);
 
   em {
-    color: var(--color-accent);
+    color: var(--amber);
     font-style: normal;
   }
 }
 
 .lead {
-  max-width: 48ch;
+  max-width: 52ch;
   margin-top: var(--space-24);
   color: color-mix(in srgb, var(--color-text) 68%, transparent);
   font-size: var(--type-body-md);
   line-height: var(--leading-body);
 }
 
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 20px;
-  margin-top: var(--space-24);
-
-  span {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    color: color-mix(in srgb, var(--color-text) 72%, transparent);
-    font-size: var(--type-caption);
-    line-height: var(--leading-caption);
-
-    &::before {
-      width: 8px;
-      height: 8px;
-      flex: 0 0 8px;
-      border-radius: 50%;
-      background: var(--paper);
-      box-shadow: inset 0 0 0 1px rgb(22 23 19 / 18%);
-      content: '';
-    }
-  }
-
-  span:nth-child(2)::before {
-    background: var(--ink);
-  }
-
-  span:nth-child(3)::before {
-    background: var(--color-accent);
-    box-shadow: none;
-  }
-
-  @include mq.media(phone, tablet) {
-    gap: 8px 16px;
-  }
+.hint {
+  margin: var(--space-24) 0 0;
+  max-width: 42ch;
+  color: var(--amber);
+  font-size: var(--type-body-sm);
+  line-height: var(--leading-body);
 }
 
 .demo {
@@ -117,19 +86,16 @@
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: space-between;
-  gap: var(--space-16);
+  align-items: center;
+  justify-content: center;
   margin-bottom: var(--space-12);
   padding-inline: 4px;
   color: color-mix(in srgb, var(--color-text) 56%, transparent);
   font-size: var(--type-caption);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-label);
+  text-align: center;
   text-transform: uppercase;
-
-  span:last-child {
-    color: var(--color-accent);
-  }
 }
 
 .viewport {
@@ -267,7 +233,7 @@
 
 @include mq.media(phone, tablet) {
   .title {
-    max-width: 19ch;
+    max-width: 22ch;
   }
 
   .lead {
@@ -276,13 +242,12 @@
     line-height: var(--leading-body-sm);
   }
 
-  .demoHeader {
-    align-items: center;
-    margin-bottom: var(--space-8);
+  .hint {
+    margin-top: var(--space-16);
+  }
 
-    span:last-child {
-      display: none;
-    }
+  .demoHeader {
+    margin-bottom: var(--space-8);
   }
 
   .desktopViewport {

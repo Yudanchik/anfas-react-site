@@ -59,25 +59,24 @@ export function HomeProjectControl() {
             titleId="project-control-title"
             title={
               <>
-                Ремонт может быть <em>спокойным событием</em> в вашей жизни.
+                Весь ремонт — у вас
+                <br />
+                <em>перед глазами.</em>
               </>
             }
-            lead="Всё, что происходит на объекте, вы видите в одном месте. Финансы, фотоотчёты, документы и цены на работы всегда под рукой. Нажмите на разделы в телефоне и посмотрите, как устроен личный кабинет проекта."
+            lead="Всё, что происходит на объекте, собрано в одном приложении: финансы, сметы, счета, документы, план работ, фото- и видеоотчёты. Вы видите, что уже сделано, за что заплачено и что будет дальше."
             titleClassName={styles.title}
             leadClassName={styles.lead}
           />
 
-          <div className={styles.legend} aria-label="Возможности личного кабинета">
-            <span>Финансы</span>
-            <span>Фото и видео</span>
-            <span>Документы</span>
-          </div>
+          <p className={styles.hint}>
+            Нажмите на разделы и посмотрите, как устроен личный кабинет проекта.
+          </p>
         </div>
 
         <div className={styles.demo}>
           <div className={styles.demoHeader}>
             <span>Личный кабинет проекта</span>
-            <span>Нажмите на раздел</span>
           </div>
 
           <div className={`${styles.viewport} ${styles.desktopViewport}`}>
