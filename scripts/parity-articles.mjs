@@ -172,8 +172,11 @@ if (withStrapi) {
   }
 }
 
-const snapshotOk = results.snapshotParity.length === 0 && results.localCount === 8
-const strapiOk = !withStrapi || (results.strapiParity?.length === 0 && results.strapiCount === 8)
+const snapshotOk =
+  results.snapshotParity.length === 0 && results.localCount === results.snapshotCount
+const strapiOk =
+  !withStrapi ||
+  (results.strapiParity?.length === 0 && results.strapiCount === results.localCount)
 
 console.log(JSON.stringify(results, null, 2))
 if (!snapshotOk || !strapiOk) {
