@@ -45,12 +45,19 @@
 - Script: `pnpm test:floor-estimate` (`tsx --test …/floor-estimate.test.ts`)
 - 8/8 pass: disabled=0, empty/neg qty=0, coef, rounding, wet area → waterproofing only, recommendations, mapping vs frontend, enabled totals
 
-### Stage 2 scope (next)
+### Stage 2 completed
 
-- Route `/internal/estimate` + noindex meta
-- Page shell + input fields
-- Connect mapping/builders (no public header)
-- Still no materials / finish coverings / PDF export / auth
+- Route `/internal/estimate` + `noindex, nofollow`
+- Feature intro + domain preview stats
+- Header convenience link «Смета» (branch-only; revisit before merge)
+- Commit: `fc5ebc3` Add internal estimate calculator route
+
+### Stage 3 completed
+
+- Editable estimate table + totals
+- Domain apply/manual helpers prepared for Stage 4
+- Formulas stay in domain (`calculateLineTotal` / section totals)
+- Commit: (pending) Add floor estimate table and totals
 
 ---
 

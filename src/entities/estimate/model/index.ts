@@ -23,3 +23,12 @@ export {
   findFloorMappingConflicts,
 } from './assert-floor-mapping'
 export type { FloorMappingConflict } from './assert-floor-mapping'
+export {
+  applyDemolitionAreaToDemolitionWorks,
+  applyQuantityToMatchingLines,
+  applyScreedAreaToScreedWorks,
+  applyTotalAreaToSquareMeterWorks,
+  applyWetAreaToWaterproofing,
+  createManualEstimateLine,
+  updateEstimateLine,
+} from './apply-floor-quantities'

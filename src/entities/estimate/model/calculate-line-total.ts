@@ -1,10 +1,13 @@
 import type { EstimateLine } from './estimate.types'
 
 /**
- * Empty / invalid quantity → 0.
- * Negative quantity → 0 (normalized, not thrown).
- * Disabled lines → 0.
- * Round each line to whole rubles.
+ * Line total for a single estimate row (labour only, no materials).
+ *
+ * Rules:
+ * - disabled → 0
+ * - empty / non-finite / negative quantity or unitPrice → 0
+ * - invalid coefficient (≤0 / NaN) → treated as 1
+ * - result is rounded to whole rubles with Math.round
  */
 export function calculateLineTotal(line: Pick<EstimateLine, 'enabled' | 'quantity' | 'unitPrice' | 'coefficient'>): number {
   if (!line.enabled) return 0

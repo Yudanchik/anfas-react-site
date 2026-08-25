@@ -1,1 +1,6 @@
+export { FloorEstimateWorkspace } from './ui/FloorEstimateWorkspace'
 export { FloorEstimateIntro } from './ui/FloorEstimateIntro'
+export { FloorEstimateTable } from './ui/FloorEstimateTable'
+export { FloorEstimateTotals } from './ui/FloorEstimateTotals'
+export { useFloorEstimateEditor } from './model/use-floor-estimate-editor'
+export type { FloorEstimateEditor } from './model/use-floor-estimate-editor'

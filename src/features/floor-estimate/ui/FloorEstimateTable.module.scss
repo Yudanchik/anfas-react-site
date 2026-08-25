@@ -1,0 +1,92 @@
+@use 'media' as mq;
+
+.wrap {
+  margin-top: 40px;
+}
+
+.head {
+  margin-bottom: 18px;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--type-title-md);
+  font-weight: var(--weight-medium);
+}
+
+.lead {
+  margin: 8px 0 0;
+  max-width: 70ch;
+  font-size: var(--type-body);
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+
+.scroll {
+  overflow-x: auto;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+.table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th,
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    font-size: 11px;
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--ink) 58%, transparent);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+  }
+
+  tr[data-enabled='false'] {
+    opacity: 0.55;
+  }
+}
+
+.workTitle {
+  display: block;
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+}
+
+.meta {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+
+.num {
+  width: 88px;
+  padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  background: var(--paper);
+  font: inherit;
+}
+
+.comment {
+  width: 100%;
+  min-width: 140px;
+  padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  background: var(--paper);
+  font: inherit;
+}
+
+.total {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-medium);
+}

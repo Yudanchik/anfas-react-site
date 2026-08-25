@@ -2,13 +2,17 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
 import {
+  applyDemolitionAreaToDemolitionWorks,
+  applyWetAreaToWaterproofing,
   assertFloorMappingMatchesFrontend,
   buildFloorEstimate,
   buildFloorEstimateLines,
   calculateEstimateTotal,
   calculateLineTotal,
+  createManualEstimateLine,
   FLOOR_PRICE_MAPPING,
   getFloorRecommendation,
+  updateEstimateLine,
 } from './index'
 
 const sampleInput = {
@@ -170,5 +174,36 @@ describe('floor estimate domain', () => {
 
     assert.equal(result.selectedCount, 2)
     assert.equal(result.totalRub, Math.round(45 * 900) + Math.round(6 * 700))
+  })
+
+  it('applies quantity helpers without auto-enabling rows', () => {
+    let lines = buildFloorEstimateLines(sampleInput)
+    lines = applyDemolitionAreaToDemolitionWorks(lines, 40)
+    lines = applyWetAreaToWaterproofing(lines, 5)
+
+    const demolition = lines.find((line) => line.priceKey === 'demolition-laminate')
+    const hydro = lines.find((line) => line.priceKey === 'waterproofing-acrylic-1')
+    assert.equal(demolition?.quantity, 40)
+    assert.equal(demolition?.enabled, false)
+    assert.equal(hydro?.quantity, 5)
+    assert.equal(hydro?.enabled, false)
+  })
+
+  it('supports manual lines and price overrides in totals', () => {
+    const manual = createManualEstimateLine({
+      title: 'Доп. работа',
+      unit: 'м²',
+      unitPrice: 500,
+      quantity: 3,
+    })
+    assert.equal(manual.source, 'manual')
+    assert.equal(manual.enabled, true)
+    assert.equal(calculateLineTotal(manual), 1500)
+
+    const overridden = updateEstimateLine([manual], manual.id, {
+      coefficient: 1.2,
+      unitPrice: 500,
+    })[0]
+    assert.equal(calculateLineTotal(overridden), 1800)
   })
 })
