@@ -1,0 +1,42 @@
+@use 'media' as mq;
+
+.wrap {
+  margin-top: 36px;
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: var(--type-title-md);
+  font-weight: var(--weight-medium);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: var(--type-caption);
+  letter-spacing: 0.02em;
+
+  input,
+  textarea {
+    padding: 10px 12px;
+    border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+    background: var(--paper);
+    font: inherit;
+    font-size: var(--type-body);
+  }
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+}

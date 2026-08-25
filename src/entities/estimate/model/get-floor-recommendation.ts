@@ -37,6 +37,10 @@ const MESSAGES: Record<FloorRecommendationLevel, string> = {
     'Перепад больше 50 мм: нужна стяжка большей толщины (полусухая свыше 80 мм / мокрая 50–80 или свыше 80 мм). Не выбирается автоматически.',
 }
 
+/**
+ * Builds recommendation text/suggested keys from average floor height delta (mm).
+ * Does NOT enable estimate lines — estimator applies suggestions manually.
+ */
 export function getFloorRecommendation(avgDeltaMm: number): FloorRecommendation {
   const delta = Number.isFinite(avgDeltaMm) && avgDeltaMm > 0 ? avgDeltaMm : 0
   const level = resolveLevel(delta)

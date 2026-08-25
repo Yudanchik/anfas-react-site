@@ -55,9 +55,24 @@
 ### Stage 3 completed
 
 - Editable estimate table + totals
-- Domain apply/manual helpers prepared for Stage 4
+- Domain apply/manual helpers
 - Formulas stay in domain (`calculateLineTotal` / section totals)
-- Commit: (pending) Add floor estimate table and totals
+- Commit: `6b9bb4d` Add floor estimate table and totals
+
+### Stage 4 completed
+
+- Surveyor input fields
+- Recommendation + apply-quantity helpers (no auto-enable)
+- Manual labour line
+- Reset action
+- Commit: (pending) Add floor estimate helpers and manual lines
+
+### Stage 5 notes
+
+- Usage: open `/internal/estimate`
+- Prices: `FLOOR_PRICE_MAPPING` (PDF primary + frontend both-check)
+- Materials excluded
+- Next: walls/ceilings sections, auth/admin decision, header link revisit before merge
 
 ---
 

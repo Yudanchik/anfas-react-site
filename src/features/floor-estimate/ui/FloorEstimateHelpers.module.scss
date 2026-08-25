@@ -1,0 +1,55 @@
+@use 'media' as mq;
+
+.wrap {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  margin-top: 28px;
+  padding: 22px;
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.title {
+  margin: 0 0 10px;
+  font-size: var(--type-title-md);
+  font-weight: var(--weight-medium);
+}
+
+.text {
+  margin: 0;
+  font-size: var(--type-body);
+  line-height: 1.5;
+}
+
+.hint,
+.keys {
+  margin: 10px 0 0;
+  font-size: var(--type-caption);
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  button {
+    padding: 12px 14px;
+    border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+    background: var(--paper);
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+  }
+}
+
+.reset {
+  margin-top: 6px;
+  border-color: color-mix(in srgb, var(--amber) 50%, transparent) !important;
+}

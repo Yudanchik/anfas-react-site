@@ -1,0 +1,51 @@
+@use 'media' as mq;
+
+.wrap {
+  margin-top: 28px;
+}
+
+.title {
+  margin: 0 0 14px;
+  font-size: var(--type-title-md);
+  font-weight: var(--weight-medium);
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 2fr 0.7fr 0.7fr 0.7fr auto;
+  gap: 10px;
+  align-items: end;
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: var(--type-caption);
+  }
+
+  input {
+    padding: 10px 12px;
+    border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+    background: var(--paper);
+    font: inherit;
+  }
+
+  button {
+    padding: 12px 16px;
+    border: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font: inherit;
+    cursor: pointer;
+  }
+}
+
+.error {
+  margin: 10px 0 0;
+  color: #8a1f1f;
+  font-size: var(--type-caption);
+}

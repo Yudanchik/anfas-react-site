@@ -19,6 +19,11 @@ export type BuildFloorEstimateLinesOptions = {
   coefficientByKey?: Readonly<Record<string, number>>
 }
 
+/**
+ * Builds editable estimate lines from floor mapping + surveyor input.
+ * Assumptions: labour-only prices from FLOOR_PRICE_MAPPING; materials excluded.
+ * Quantity defaults come from input fields; enabled defaults stay false for mapped rows.
+ */
 export function buildFloorEstimateLines(
   input: FloorEstimateInput,
   options: BuildFloorEstimateLinesOptions = {},

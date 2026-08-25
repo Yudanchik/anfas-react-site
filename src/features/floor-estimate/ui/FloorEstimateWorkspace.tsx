@@ -1,4 +1,7 @@
+import { FloorEstimateHelpers } from './FloorEstimateHelpers'
+import { FloorEstimateInputs } from './FloorEstimateInputs'
 import { FloorEstimateIntro } from './FloorEstimateIntro'
+import { FloorEstimateManualLine } from './FloorEstimateManualLine'
 import { FloorEstimateTable } from './FloorEstimateTable'
 import { FloorEstimateTotals } from './FloorEstimateTotals'
 import { useFloorEstimateEditor } from '../model/use-floor-estimate-editor'
@@ -14,6 +17,19 @@ export function FloorEstimateWorkspace() {
         selectedCount={editor.selectedCount}
         totalRub={editor.totalRub}
       />
+
+      <FloorEstimateInputs input={editor.input} onChange={editor.patchInput} />
+
+      <FloorEstimateHelpers
+        recommendation={editor.recommendation}
+        onApplyTotalArea={editor.applyTotalArea}
+        onApplyDemolitionArea={editor.applyDemolitionArea}
+        onApplyScreedArea={editor.applyScreedArea}
+        onApplyWetArea={editor.applyWetArea}
+        onReset={editor.resetEstimate}
+      />
+
+      <FloorEstimateManualLine onAdd={editor.addManualLine} />
 
       <FloorEstimateTable
         lines={editor.lines}
