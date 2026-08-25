@@ -2,7 +2,7 @@
 
 | Поле | Значение |
 |------|----------|
-| Статус | **Stage 2 in progress → Ready for Stage 3 after commit** |
+| Статус | **MVP complete (Stage 5) — Ready for review** |
 | Branch | `feature/estimate-calculator-floors` |
 | Base | `dev` @ `14ca329` (после `git fetch` + sync) |
 | Дата аудита | 2026-08-25 |
@@ -65,14 +65,22 @@
 - Recommendation + apply-quantity helpers (no auto-enable)
 - Manual labour line
 - Reset action
-- Commit: (pending) Add floor estimate helpers and manual lines
+- Commit: `cce56b4` Add floor estimate helpers and manual lines
 
-### Stage 5 notes
+### Stage 5 completed
 
-- Usage: open `/internal/estimate`
-- Prices: `FLOOR_PRICE_MAPPING` (PDF primary + frontend both-check)
-- Materials excluded
-- Next: walls/ceilings sections, auth/admin decision, header link revisit before merge
+- Docs: `docs/internal-floor-estimate.md`
+- Self-review: formulas in domain; mapping centralized; no public price changes; noindex route; header link is branch convenience
+- Checks: `pnpm check`, `pnpm build`, `pnpm test:floor-estimate` green
+- Commit: Complete floor estimate calculator MVP
+
+### Commit chain
+
+1. `6e3faaf` Add floor estimate calculation domain
+2. `fc5ebc3` Add internal estimate calculator route
+3. `6b9bb4d` Add floor estimate table and totals
+4. `cce56b4` Add floor estimate helpers and manual lines
+5. (this) Complete floor estimate calculator MVP
 
 ---
 
