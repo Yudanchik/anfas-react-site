@@ -72,7 +72,7 @@
 - Docs: `docs/internal-floor-estimate.md`
 - Self-review: formulas in domain; mapping centralized; no public price changes; noindex route; header link is branch convenience
 - Checks: `pnpm check`, `pnpm build`, `pnpm test:floor-estimate` green
-- Commit: Complete floor estimate calculator MVP
+- Commit: `6d20d6a` Complete floor estimate calculator MVP
 
 ### Commit chain
 
@@ -80,7 +80,7 @@
 2. `fc5ebc3` Add internal estimate calculator route
 3. `6b9bb4d` Add floor estimate table and totals
 4. `cce56b4` Add floor estimate helpers and manual lines
-5. (this) Complete floor estimate calculator MVP
+5. `6d20d6a` Complete floor estimate calculator MVP
 
 ---
 
