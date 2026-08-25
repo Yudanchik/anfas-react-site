@@ -1,0 +1,116 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+
+.intro {
+  max-width: 920px;
+}
+
+.eyebrow {
+  @include flex.flex($ai: center);
+
+  gap: 12px;
+  margin: 0 0 24px;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+
+  &::before {
+    width: 40px;
+    height: 1px;
+    content: '';
+    background: currentcolor;
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: var(--type-display-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+
+  em {
+    color: var(--amber);
+    font-family: inherit;
+    font-style: italic;
+    font-weight: var(--weight-regular);
+  }
+}
+
+.lead {
+  margin: 20px 0 0;
+  max-width: 62ch;
+  font-size: var(--type-lead);
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--ink) 82%, transparent);
+}
+
+.warning {
+  margin: 24px 0 0;
+  padding: 14px 16px;
+  border-left: 3px solid var(--amber);
+  background: color-mix(in srgb, var(--amber) 12%, transparent);
+  font-size: var(--type-body);
+  line-height: 1.45;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 32px 0 0;
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
+
+  div {
+    padding: 16px 18px;
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+  }
+
+  dt {
+    margin: 0;
+    font-size: var(--type-caption);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--ink) 60%, transparent);
+  }
+
+  dd {
+    margin: 8px 0 0;
+    font-size: var(--type-title-md);
+    font-weight: var(--weight-medium);
+  }
+}
+
+.recommendation {
+  margin-top: 28px;
+  padding: 20px 22px;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.recommendationLabel {
+  display: block;
+  margin-bottom: 10px;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--paper) 70%, transparent);
+}
+
+.recommendationText {
+  margin: 0;
+  font-size: var(--type-body);
+  line-height: 1.5;
+}
+
+.recommendationHint {
+  margin: 12px 0 0;
+  font-size: var(--type-caption);
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--paper) 68%, transparent);
+}

@@ -2,7 +2,7 @@
 
 | Поле | Значение |
 |------|----------|
-| Статус | **Ready for Stage 2** |
+| Статус | **Stage 2 in progress → Ready for Stage 3 after commit** |
 | Branch | `feature/estimate-calculator-floors` |
 | Base | `dev` @ `14ca329` (после `git fetch` + sync) |
 | Дата аудита | 2026-08-25 |
