@@ -18,13 +18,12 @@ const fields: ReadonlyArray<{
   key: keyof FloorEstimateInput
   label: string
   unit: string
-  kind: 'number' | 'text'
 }> = [
-  { key: 'totalFloorArea', label: 'Общая площадь пола', unit: 'м²', kind: 'number' },
-  { key: 'demolitionArea', label: 'Площадь демонтажа', unit: 'м²', kind: 'number' },
-  { key: 'screedArea', label: 'Площадь стяжки/выравнивания', unit: 'м²', kind: 'number' },
-  { key: 'wetZonesArea', label: 'Площадь мокрых зон', unit: 'м²', kind: 'number' },
-  { key: 'avgDeltaMm', label: 'Средний перепад', unit: 'мм', kind: 'number' },
+  { key: 'totalFloorArea', label: 'Общая площадь пола', unit: 'м²' },
+  { key: 'demolitionArea', label: 'Площадь демонтажа', unit: 'м²' },
+  { key: 'screedArea', label: 'Площадь стяжки', unit: 'м²' },
+  { key: 'wetZonesArea', label: 'Мокрые зоны', unit: 'м²' },
+  { key: 'avgDeltaMm', label: 'Средний перепад', unit: 'мм' },
 ]
 
 export function FloorEstimateInputs({ input, onChange }: FloorEstimateInputsProps) {
@@ -36,10 +35,12 @@ export function FloorEstimateInputs({ input, onChange }: FloorEstimateInputsProp
       <div className={styles.grid}>
         {fields.map((field) => (
           <label key={field.key} className={styles.field}>
-            <span>
-              {field.label}, {field.unit}
+            <span className={styles.label}>
+              {field.label}
+              <span className={styles.unit}>{field.unit}</span>
             </span>
             <input
+              className={styles.control}
               type="number"
               min={0}
               step="any"
@@ -50,15 +51,17 @@ export function FloorEstimateInputs({ input, onChange }: FloorEstimateInputsProp
             />
           </label>
         ))}
-        <label className={`${styles.field} ${styles.fieldWide}`}>
-          <span>Комментарий замерщика</span>
-          <textarea
-            rows={3}
-            value={input.surveyorComment ?? ''}
-            onChange={(event) => onChange({ surveyorComment: event.target.value })}
-          />
-        </label>
       </div>
+
+      <details className={styles.commentDetails}>
+        <summary className={styles.commentSummary}>Комментарий замерщика</summary>
+        <textarea
+          className={styles.comment}
+          rows={2}
+          value={input.surveyorComment ?? ''}
+          onChange={(event) => onChange({ surveyorComment: event.target.value })}
+        />
+      </details>
     </section>
   )
 }

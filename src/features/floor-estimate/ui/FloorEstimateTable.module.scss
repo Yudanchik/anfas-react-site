@@ -1,57 +1,89 @@
 @use 'media' as mq;
+@use './estimate-ui' as eu;
 
 .wrap {
-  margin-top: 40px;
+  @include eu.panel;
 }
 
 .head {
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .title {
-  margin: 0;
-  font-size: var(--type-title-md);
-  font-weight: var(--weight-medium);
+  @include eu.section-title;
 }
 
 .lead {
-  margin: 8px 0 0;
-  max-width: 70ch;
-  font-size: var(--type-body);
-  line-height: 1.5;
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  @include eu.section-lead;
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.group {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
 }
 
 .scroll {
   overflow-x: auto;
-  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  background:
+    linear-gradient(var(--paper) 30%, transparent),
+    linear-gradient(transparent, var(--paper) 70%) 0 100%,
+    radial-gradient(farthest-side at 0 50%, rgb(22 23 19 / 12%), transparent),
+    radial-gradient(farthest-side at 100% 50%, rgb(22 23 19 / 12%), transparent) 100% 0;
+  background-repeat: no-repeat;
+  background-size:
+    40px 100%,
+    40px 100%,
+    14px 100%,
+    14px 100%;
+  background-attachment: local, local, scroll, scroll;
+
+  &[hidden] {
+    display: none;
+  }
 }
 
 .table {
   width: 100%;
-  min-width: 980px;
+  min-width: 920px;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 13px;
 
   th,
   td {
-    padding: 10px 12px;
-    border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+    padding: 8px 10px;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
     text-align: left;
     vertical-align: top;
   }
 
   th {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: var(--weight-semibold);
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--ink) 58%, transparent);
-    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    color: color-mix(in srgb, var(--ink) 55%, transparent);
+    background: color-mix(in srgb, var(--ink) 3.5%, var(--paper));
+  }
+
+  tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--ink) 2%, var(--paper));
   }
 
   tr[data-enabled='false'] {
     opacity: 0.55;
+  }
+
+  tr[data-enabled='true'] td:first-child {
+    box-shadow: inset 3px 0 0 var(--amber);
   }
 }
 
@@ -63,30 +95,32 @@
 
 .meta {
   display: block;
-  margin-top: 4px;
+  margin-top: 3px;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--ink) 52%, transparent);
+}
+
+.num,
+.comment {
+  @include eu.control;
+
+  min-height: 32px;
+  padding: 5px 7px;
   font-size: 12px;
-  color: color-mix(in srgb, var(--ink) 55%, transparent);
 }
 
 .num {
-  width: 88px;
-  padding: 6px 8px;
-  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
-  background: var(--paper);
-  font: inherit;
+  width: 78px;
+  font-variant-numeric: tabular-nums;
 }
 
 .comment {
   width: 100%;
-  min-width: 140px;
-  padding: 6px 8px;
-  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
-  background: var(--paper);
-  font: inherit;
+  min-width: 120px;
 }
 
 .total {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
 }

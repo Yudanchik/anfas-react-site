@@ -2,7 +2,7 @@
 
 | Поле | Значение |
 |------|----------|
-| Статус | **MVP complete (Stage 5) — Ready for review** |
+| Статус | **MVP ready on branch (UI polish + presets/groups) — merge gate: header «Смета»** |
 | Branch | `feature/estimate-calculator-floors` |
 | Base | `dev` @ `14ca329` (после `git fetch` + sync) |
 | Дата аудита | 2026-08-25 |
@@ -81,6 +81,13 @@
 3. `6b9bb4d` Add floor estimate table and totals
 4. `cce56b4` Add floor estimate helpers and manual lines
 5. `6d20d6a` Complete floor estimate calculator MVP
+6. `b281c4f` (+ later) UX polish / presets / groups — see git log on branch
+
+### Before merge to `dev` (follow-up)
+
+- [ ] **Header link «Смета»** (`SiteHeader` `INTERNAL_NAV`): keep / hide DEV-only / remove — decide explicitly
+- [ ] Do not merge with unresolved public-nav exposure of `/internal/estimate`
+- Walls/ceilings sections, materials, auth, PDF export remain out of scope
 
 ---
 

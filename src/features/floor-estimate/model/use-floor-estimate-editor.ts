@@ -2,11 +2,11 @@ import { useMemo, useState } from 'react'
 
 import {
   applyDemolitionAreaToDemolitionWorks,
+  applyFloorPreset,
   applyScreedAreaToScreedWorks,
   applyTotalAreaToSquareMeterWorks,
   applyWetAreaToWaterproofing,
   buildFloorEstimateLines,
-  calculateLineTotal,
   calculateSectionTotal,
   countEnabledLines,
   createManualEstimateLine,
@@ -14,6 +14,7 @@ import {
   updateEstimateLine,
   type EstimateLine,
   type FloorEstimateInput,
+  type FloorPresetApplication,
 } from '@/entities/estimate'
 
 import {
@@ -86,6 +87,15 @@ export function useFloorEstimateEditor(initialInput: FloorEstimateInput = EMPTY_
     return affected
   }
 
+  function applyPreset(application: FloorPresetApplication): { label: string; addedCount: number } {
+    let result = applyFloorPreset(lines, input, application)
+    setLines((prev) => {
+      result = applyFloorPreset(prev, input, application)
+      return result.lines
+    })
+    return { label: result.presetLabel, addedCount: result.addedCount }
+  }
+
   function addManualLine(params: {
     title: string
     unit: string
@@ -98,10 +108,6 @@ export function useFloorEstimateEditor(initialInput: FloorEstimateInput = EMPTY_
   function resetEstimate() {
     setInput(EMPTY_INPUT)
     setLines(buildFloorEstimateLines(EMPTY_INPUT))
-  }
-
-  function lineTotal(line: EstimateLine) {
-    return calculateLineTotal(line)
   }
 
   return {
@@ -118,9 +124,9 @@ export function useFloorEstimateEditor(initialInput: FloorEstimateInput = EMPTY_
     applyDemolitionArea,
     applyScreedArea,
     applyWetArea,
+    applyPreset,
     addManualLine,
     resetEstimate,
-    lineTotal,
   }
 }
 

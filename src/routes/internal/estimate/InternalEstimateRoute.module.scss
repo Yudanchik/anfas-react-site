@@ -1,42 +1,10 @@
-@use 'flex' as flex;
 @use 'media' as mq;
 
 .page {
-  padding: var(--section-gap-tight) 0 var(--section-gap);
-  background: var(--paper);
+  padding: 72px 0 88px;
+  background: color-mix(in srgb, var(--paper-deep) 70%, var(--paper));
 
   @include mq.media(phone, tablet) {
-    padding: 76px 0 96px;
+    padding: 64px 0 72px;
   }
-}
-
-.placeholder {
-  margin-top: 40px;
-  padding: 28px 24px;
-  border: 1px dashed color-mix(in srgb, var(--ink) 22%, transparent);
-  background: color-mix(in srgb, var(--ink) 3%, transparent);
-}
-
-.placeholderEyebrow {
-  margin: 0 0 10px;
-  font-size: var(--type-caption);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--ink) 62%, transparent);
-}
-
-.placeholderTitle {
-  margin: 0 0 10px;
-  font-size: var(--type-title-md);
-  font-weight: var(--weight-medium);
-  line-height: 1.25;
-}
-
-.placeholderText {
-  margin: 0;
-  max-width: 62ch;
-  font-size: var(--type-body);
-  line-height: 1.55;
-  color: color-mix(in srgb, var(--ink) 78%, transparent);
 }

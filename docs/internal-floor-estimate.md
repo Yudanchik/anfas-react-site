@@ -5,7 +5,8 @@
 `/internal/estimate`
 
 - `robots: noindex, nofollow`
-- Header link «Смета» is branch convenience only — decide before merge to `dev`
+- Header link «Смета» is **branch convenience only** (`SiteHeader` → `INTERNAL_NAV`)
+- **Before merge to `dev`:** separately decide whether to keep, hide (e.g. DEV-only), or remove the header link
 
 ## What it does
 

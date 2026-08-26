@@ -3,6 +3,7 @@ import { describe, it } from 'node:test'
 
 import {
   applyDemolitionAreaToDemolitionWorks,
+  applyFloorPreset,
   applyWetAreaToWaterproofing,
   assertFloorMappingMatchesFrontend,
   buildFloorEstimate,
@@ -11,7 +12,9 @@ import {
   calculateLineTotal,
   createManualEstimateLine,
   FLOOR_PRICE_MAPPING,
+  getDefaultOpenFloorGroupIds,
   getFloorRecommendation,
+  groupFloorEstimateLines,
   updateEstimateLine,
 } from './index'
 
@@ -215,5 +218,149 @@ describe('floor estimate domain', () => {
       unitPrice: 500,
     })[0]
     assert.equal(calculateLineTotal(overridden), 1800)
+  })
+
+  it('groups lines and computes group totals from enabled rows only', () => {
+    let lines = buildFloorEstimateLines(sampleInput)
+    lines = lines.map((line) =>
+      line.priceKey === 'demolition-laminate' || line.priceKey === 'semidry-screed-up-to-80'
+        ? { ...line, enabled: true }
+        : line,
+    )
+
+    const groups = groupFloorEstimateLines(lines)
+    const demolition = groups.find((group) => group.id === 'demolition')
+    const screed = groups.find((group) => group.id === 'screed')
+    const waste = groups.find((group) => group.id === 'waste')
+
+    assert.ok(demolition)
+    assert.ok(screed)
+    assert.ok(waste)
+    assert.equal(demolition.selectedCount, 1)
+    assert.equal(demolition.totalRub, Math.round(40 * 300))
+    assert.equal(screed.selectedCount, 1)
+    assert.equal(screed.totalRub, Math.round(45 * 1300))
+    assert.equal(waste.selectedCount, 0)
+    assert.equal(waste.totalRub, 0)
+    assert.deepEqual(getDefaultOpenFloorGroupIds(groups), ['demolition', 'screed'])
+  })
+
+  it('opens demolition and screed by default when nothing is selected', () => {
+    const groups = groupFloorEstimateLines(buildFloorEstimateLines(sampleInput))
+    assert.deepEqual(getDefaultOpenFloorGroupIds(groups), ['demolition', 'screed'])
+  })
+
+  it('applies demolition covering preset without conflicting alternatives', () => {
+    let lines = buildFloorEstimateLines(sampleInput)
+    lines = lines.map((line) =>
+      line.priceKey === 'demolition-floating-laminate-engineered'
+        ? { ...line, enabled: true, quantity: 40 }
+        : line,
+    )
+
+    const result = applyFloorPreset(lines, sampleInput, {
+      presetId: 'demolition-covering',
+      covering: 'laminate',
+    })
+
+    const laminate = result.lines.find((line) => line.priceKey === 'demolition-laminate')
+    const floating = result.lines.find(
+      (line) => line.priceKey === 'demolition-floating-laminate-engineered',
+    )
+    const linoleum = result.lines.find((line) => line.priceKey === 'demolition-linoleum')
+    const waste = result.lines.find((line) => line.priceKey === 'waste-gazelle-6')
+
+    assert.equal(laminate?.enabled, true)
+    assert.equal(laminate?.quantity, 40)
+    assert.equal(floating?.enabled, false)
+    assert.equal(linoleum?.enabled, false)
+    assert.equal(waste?.enabled, false)
+    assert.equal(result.addedCount, 1)
+    assert.match(result.presetLabel, /Демонтаж/)
+  })
+
+  it('applies screed preset with one main screed type and prep chain', () => {
+    const result = applyFloorPreset(buildFloorEstimateLines(sampleInput), sampleInput, {
+      presetId: 'screed-on-slab',
+      screedType: 'semidry-up-to-80',
+    })
+
+    const enabledKeys = result.lines.filter((line) => line.enabled).map((line) => line.priceKey)
+    assert.deepEqual(enabledKeys.sort(), [
+      'semidry-dust-removal',
+      'semidry-prep',
+      'semidry-primer',
+      'semidry-screed-up-to-80',
+    ])
+    assert.equal(
+      result.lines.find((line) => line.priceKey === 'semidry-screed-over-80')?.enabled,
+      false,
+    )
+    assert.equal(result.lines.find((line) => line.priceKey === 'wet-screed-up-to-50')?.enabled, false)
+    assert.equal(
+      result.lines.find((line) => line.priceKey === 'self-leveling-device')?.enabled,
+      false,
+    )
+  })
+
+  it('applies self-leveling preset without enabling screed rows', () => {
+    const result = applyFloorPreset(buildFloorEstimateLines(sampleInput), sampleInput, {
+      presetId: 'self-leveling',
+    })
+    const enabledKeys = result.lines.filter((line) => line.enabled).map((line) => line.priceKey)
+    assert.ok(enabledKeys.includes('self-leveling-device'))
+    assert.ok(enabledKeys.includes('self-leveling-primer'))
+    assert.equal(enabledKeys.includes('semidry-screed-up-to-80'), false)
+    assert.equal(enabledKeys.includes('wet-screed-up-to-50'), false)
+  })
+
+  it('applies wet-zones preset with exclusive acrylic layer choice', () => {
+    let lines = buildFloorEstimateLines(sampleInput)
+    lines = lines.map((line) =>
+      line.priceKey === 'waterproofing-acrylic-1' ? { ...line, enabled: true } : line,
+    )
+
+    const result = applyFloorPreset(lines, sampleInput, {
+      presetId: 'wet-zones',
+      layers: 'acrylic-2',
+    })
+
+    assert.equal(
+      result.lines.find((line) => line.priceKey === 'waterproofing-acrylic-2')?.enabled,
+      true,
+    )
+    assert.equal(
+      result.lines.find((line) => line.priceKey === 'waterproofing-acrylic-1')?.enabled,
+      false,
+    )
+    assert.equal(
+      result.lines.find((line) => line.priceKey === 'waterproofing-acrylic-2')?.quantity,
+      6,
+    )
+  })
+
+  it('keeps manual rows and unrelated enabled rows when applying a preset', () => {
+    let lines = buildFloorEstimateLines(sampleInput)
+    const manual = createManualEstimateLine({
+      title: 'Ручная',
+      unit: 'м²',
+      unitPrice: 100,
+      quantity: 2,
+    })
+    lines = [
+      ...lines.map((line) =>
+        line.priceKey === 'waste-pass-permit' ? { ...line, enabled: true } : line,
+      ),
+      manual,
+    ]
+
+    const result = applyFloorPreset(lines, sampleInput, {
+      presetId: 'demolition-covering',
+      covering: 'linoleum',
+    })
+
+    assert.equal(result.lines.find((line) => line.id === manual.id)?.enabled, true)
+    assert.equal(result.lines.find((line) => line.priceKey === 'waste-pass-permit')?.enabled, true)
+    assert.equal(result.lines.find((line) => line.priceKey === 'demolition-linoleum')?.enabled, true)
   })
 })

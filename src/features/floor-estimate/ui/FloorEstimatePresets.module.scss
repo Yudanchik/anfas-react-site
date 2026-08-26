@@ -1,0 +1,132 @@
+@use 'media' as mq;
+@use './estimate-ui' as eu;
+
+.wrap {
+  @include eu.panel;
+}
+
+.head {
+  margin-bottom: 12px;
+}
+
+.title {
+  @include eu.section-title;
+}
+
+.lead {
+  @include eu.section-lead;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+
+  @include mq.media(tablet) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--paper-deep) 35%, var(--paper));
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--ink) 28%, transparent);
+    background: var(--paper);
+    box-shadow: 0 8px 24px rgb(22 23 19 / 5%);
+  }
+}
+
+.cardAccent {
+  border-left: 3px solid var(--amber);
+}
+
+.cardTop {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  line-height: 1.3;
+}
+
+.badge,
+.badgeMuted {
+  flex: 0 0 auto;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge {
+  background: color-mix(in srgb, var(--amber) 22%, var(--paper));
+  color: color-mix(in srgb, var(--ink) 82%, transparent);
+}
+
+.badgeMuted {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: color-mix(in srgb, var(--ink) 58%, transparent);
+}
+
+.cardHint {
+  margin: 0;
+  min-height: 2.6em;
+  font-size: 11px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--ink) 60%, transparent);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--ink) 66%, transparent);
+}
+
+.select {
+  @include eu.select-control;
+
+  font-size: 12px;
+}
+
+.action {
+  @include eu.button-primary;
+
+  width: 100%;
+  margin-top: auto;
+}
+
+.status {
+  @include eu.status-chip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}

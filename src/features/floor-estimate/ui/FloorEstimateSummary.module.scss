@@ -1,0 +1,138 @@
+@use 'media' as mq;
+@use './estimate-ui' as eu;
+
+.wrap {
+  @include eu.panel-result;
+}
+
+.head {
+  margin-bottom: 12px;
+}
+
+.title {
+  @include eu.section-title;
+}
+
+.lead {
+  @include eu.section-lead;
+}
+
+.empty {
+  margin: 0;
+  padding: 16px 14px;
+  border: 1px dashed color-mix(in srgb, var(--ink) 20%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--paper-deep) 40%, var(--paper));
+  font-size: 13px;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.item {
+  padding: 11px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+
+  &:nth-child(even) {
+    background: color-mix(in srgb, var(--ink) 2%, var(--paper));
+  }
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.itemMain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: baseline;
+}
+
+.group {
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+
+.work {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+}
+
+.itemMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--ink) 66%, transparent);
+}
+
+.itemTotal {
+  margin-left: auto;
+  color: var(--ink);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-semibold);
+}
+
+.comment {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--ink) 58%, transparent);
+}
+
+.footer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat {
+  min-width: 0;
+}
+
+.label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+
+.value {
+  font-size: 22px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-card);
+}
+
+.note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}

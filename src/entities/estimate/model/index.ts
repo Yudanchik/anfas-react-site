@@ -32,3 +32,29 @@ export {
   createManualEstimateLine,
   updateEstimateLine,
 } from './apply-floor-quantities'
+export {
+  getDefaultOpenFloorGroupIds,
+  getFloorEstimateGroupTitle,
+  groupFloorEstimateLines,
+  resolveFloorEstimateGroupId,
+} from './floor-estimate-groups'
+export type { FloorEstimateGroup, FloorEstimateGroupId } from './floor-estimate-groups'
+export {
+  disableConflictingAlternatives,
+  FLOOR_CONFLICT_GROUPS,
+  getFloorConflictGroupId,
+} from './floor-conflict-groups'
+export {
+  applyFloorPreset,
+  formatFloorPresetFeedback,
+  getFloorPresetLabel,
+} from './apply-floor-preset'
+export type {
+  ApplyFloorPresetResult,
+  DemolitionCoveringOption,
+  FloorPresetApplication,
+  FloorPresetId,
+  ScreedTypeOption,
+  WasteTripOption,
+  WaterproofingLayersOption,
+} from './apply-floor-preset'
