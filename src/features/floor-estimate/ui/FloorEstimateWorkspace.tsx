@@ -22,6 +22,10 @@ export function FloorEstimateWorkspace() {
 
       <FloorEstimateHelpers
         recommendation={editor.recommendation}
+        totalFloorArea={editor.input.totalFloorArea}
+        demolitionArea={editor.input.demolitionArea}
+        screedArea={editor.input.screedArea}
+        wetZonesArea={editor.input.wetZonesArea}
         onApplyTotalArea={editor.applyTotalArea}
         onApplyDemolitionArea={editor.applyDemolitionArea}
         onApplyScreedArea={editor.applyScreedArea}

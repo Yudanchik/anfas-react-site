@@ -16,6 +16,13 @@ import {
   type FloorEstimateInput,
 } from '@/entities/estimate'
 
+import {
+  countDemolitionAreaTargets,
+  countScreedAreaTargets,
+  countTotalAreaTargets,
+  countWetAreaTargets,
+} from './quick-action-feedback'
+
 const EMPTY_INPUT: FloorEstimateInput = {
   totalFloorArea: 0,
   demolitionArea: 0,
@@ -55,20 +62,28 @@ export function useFloorEstimateEditor(initialInput: FloorEstimateInput = EMPTY_
     )
   }
 
-  function applyTotalArea() {
+  function applyTotalArea(): number {
+    const affected = countTotalAreaTargets(lines)
     setLines((prev) => applyTotalAreaToSquareMeterWorks(prev, input.totalFloorArea))
+    return affected
   }
 
-  function applyDemolitionArea() {
+  function applyDemolitionArea(): number {
+    const affected = countDemolitionAreaTargets(lines)
     setLines((prev) => applyDemolitionAreaToDemolitionWorks(prev, input.demolitionArea))
+    return affected
   }
 
-  function applyScreedArea() {
+  function applyScreedArea(): number {
+    const affected = countScreedAreaTargets(lines)
     setLines((prev) => applyScreedAreaToScreedWorks(prev, input.screedArea))
+    return affected
   }
 
-  function applyWetArea() {
+  function applyWetArea(): number {
+    const affected = countWetAreaTargets(lines)
     setLines((prev) => applyWetAreaToWaterproofing(prev, input.wetZonesArea))
+    return affected
   }
 
   function addManualLine(params: {
