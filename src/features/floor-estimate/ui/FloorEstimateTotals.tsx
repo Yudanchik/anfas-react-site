@@ -19,7 +19,7 @@ export function FloorEstimateTotals({ selectedCount, totalRub }: FloorEstimateTo
         <strong className={styles.value}>{formatPriceValue(totalRub)} ₽</strong>
       </div>
       <p className={styles.note} role="status">
-        Материалы пока не учитываются. Итог = сумма округлённых строк (`Math.round`) только по
+        Материалы пока не учитываются. Итог — сумма округлённых до рублей строк только по
         включённым работам.
       </p>
     </section>

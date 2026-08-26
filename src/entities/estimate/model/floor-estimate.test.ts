@@ -162,6 +162,16 @@ describe('floor estimate domain', () => {
     assert.ok(result.recommendation.suggestedPriceKeys.includes('semidry-screed-up-to-80'))
   })
 
+  it('keeps recommendation suggested keys inside FLOOR_PRICE_MAPPING', () => {
+    const ids = new Set(FLOOR_PRICE_MAPPING.map((item) => item.id))
+    for (const delta of [0, 3, 12, 35, 80]) {
+      const recommendation = getFloorRecommendation(delta)
+      for (const key of recommendation.suggestedPriceKeys) {
+        assert.ok(ids.has(key), `missing mapping id for suggested key: ${key}`)
+      }
+    }
+  })
+
   it('builds all mapping rows and can enable a line with total', () => {
     assert.ok(FLOOR_PRICE_MAPPING.length >= 40)
 
