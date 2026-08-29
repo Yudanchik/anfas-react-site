@@ -2,6 +2,7 @@ import type { EstimateLine } from '@/entities/estimate'
 import { calculateLineTotal } from '@/entities/estimate'
 import { formatPriceValue } from '@/entities/price/lib/price-helpers'
 
+import { EstimateNumberInput } from './EstimateNumberInput'
 import styles from './EstimateGroupedTable.module.scss'
 
 type EstimateLineRowProps = {
@@ -11,13 +12,6 @@ type EstimateLineRowProps = {
     lineId: string,
     patch: Partial<Pick<EstimateLine, 'quantity' | 'unitPrice' | 'coefficient' | 'comment'>>,
   ) => void
-}
-
-function parseNumberInput(raw: string): number {
-  const normalized = raw.replace(',', '.').trim()
-  if (normalized === '') return 0
-  const value = Number(normalized)
-  return Number.isFinite(value) ? value : 0
 }
 
 export function EstimateLineRow({ line, onToggle, onPatchLine }: EstimateLineRowProps) {
@@ -42,44 +36,27 @@ export function EstimateLineRow({ line, onToggle, onPatchLine }: EstimateLineRow
       </td>
       <td>{line.unit}</td>
       <td>
-        <input
+        <EstimateNumberInput
           className={styles.num}
-          type="number"
-          min={0}
-          step="any"
           value={line.quantity}
           aria-label={`Объём: ${line.title}`}
-          onChange={(event) =>
-            onPatchLine(line.id, { quantity: parseNumberInput(event.target.value) })
-          }
+          onValueChange={(quantity) => onPatchLine(line.id, { quantity })}
         />
       </td>
       <td>
-        <input
+        <EstimateNumberInput
           className={styles.num}
-          type="number"
-          min={0}
-          step="any"
           value={line.unitPrice}
           aria-label={`Цена: ${line.title}`}
-          onChange={(event) =>
-            onPatchLine(line.id, { unitPrice: parseNumberInput(event.target.value) })
-          }
+          onValueChange={(unitPrice) => onPatchLine(line.id, { unitPrice })}
         />
       </td>
       <td>
-        <input
+        <EstimateNumberInput
           className={styles.num}
-          type="number"
-          min={0}
-          step="any"
           value={line.coefficient}
           aria-label={`Коэффициент: ${line.title}`}
-          onChange={(event) =>
-            onPatchLine(line.id, {
-              coefficient: parseNumberInput(event.target.value),
-            })
-          }
+          onValueChange={(coefficient) => onPatchLine(line.id, { coefficient })}
         />
       </td>
       <td className={styles.total}>{formatPriceValue(total)} ₽</td>

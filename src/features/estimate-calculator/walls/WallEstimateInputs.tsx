@@ -1,5 +1,6 @@
 import type { WallEstimateInput } from '@/entities/estimate'
 
+import { EstimateNumberInput } from '../ui/EstimateNumberInput'
 import styles from './WallEstimateInputs.module.scss'
 
 type WallEstimateInputsProps = {
@@ -7,15 +8,8 @@ type WallEstimateInputsProps = {
   onChange: (patch: Partial<WallEstimateInput>) => void
 }
 
-function parseNumberInput(raw: string): number {
-  const normalized = raw.replace(',', '.').trim()
-  if (normalized === '') return 0
-  const value = Number(normalized)
-  return Number.isFinite(value) ? value : 0
-}
-
 const fields: ReadonlyArray<{
-  key: keyof WallEstimateInput
+  key: Exclude<keyof WallEstimateInput, 'surveyorComment'>
   label: string
   unit: string
 }> = [
@@ -42,15 +36,10 @@ export function WallEstimateInputs({ input, onChange }: WallEstimateInputsProps)
               {field.label}
               <span className={styles.unit}>{field.unit}</span>
             </span>
-            <input
+            <EstimateNumberInput
               className={styles.control}
-              type="number"
-              min={0}
-              step="any"
               value={Number(input[field.key] ?? 0)}
-              onChange={(event) =>
-                onChange({ [field.key]: parseNumberInput(event.target.value) })
-              }
+              onValueChange={(value) => onChange({ [field.key]: value })}
             />
           </label>
         ))}

@@ -1,0 +1,10 @@
+.input {
+  /* Hide native spinners when type=number is used by callers; text+inputMode is default. */
+  appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    margin: 0;
+    appearance: none;
+  }
+}

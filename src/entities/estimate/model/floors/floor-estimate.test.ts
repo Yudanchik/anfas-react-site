@@ -242,12 +242,12 @@ describe('floor estimate domain', () => {
     assert.equal(screed.totalRub, Math.round(45 * 1300))
     assert.equal(waste.selectedCount, 0)
     assert.equal(waste.totalRub, 0)
-    assert.deepEqual(getDefaultOpenFloorGroupIds(groups), ['demolition', 'screed'])
+    assert.deepEqual(getDefaultOpenFloorGroupIds(groups), [])
   })
 
-  it('opens demolition and screed by default when nothing is selected', () => {
+  it('keeps floor groups collapsed by default when nothing is selected', () => {
     const groups = groupFloorEstimateLines(buildFloorEstimateLines(sampleInput))
-    assert.deepEqual(getDefaultOpenFloorGroupIds(groups), ['demolition', 'screed'])
+    assert.deepEqual(getDefaultOpenFloorGroupIds(groups), [])
   })
 
   it('applies demolition covering preset without conflicting alternatives', () => {

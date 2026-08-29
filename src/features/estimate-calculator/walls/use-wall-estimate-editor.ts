@@ -41,9 +41,17 @@ const EMPTY_INPUT: WallEstimateInput = {
   surveyorComment: '',
 }
 
-export function useWallEstimateEditor(initialInput: WallEstimateInput = EMPTY_INPUT) {
+export type WallEstimateEditorInitial = {
+  input?: WallEstimateInput
+  lines?: EstimateLine[]
+}
+
+export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
+  const initialInput = initial.input ?? EMPTY_INPUT
   const [input, setInput] = useState<WallEstimateInput>(initialInput)
-  const [lines, setLines] = useState<EstimateLine[]>(() => buildWallEstimateLines(initialInput))
+  const [lines, setLines] = useState<EstimateLine[]>(
+    () => initial.lines ?? buildWallEstimateLines(initialInput),
+  )
 
   const selectedCount = useMemo(() => countEnabledLines(lines), [lines])
   const totalRub = useMemo(() => calculateSectionTotal({ lines }), [lines])
@@ -133,6 +141,11 @@ export function useWallEstimateEditor(initialInput: WallEstimateInput = EMPTY_IN
     setLines(buildWallEstimateLines(EMPTY_INPUT))
   }
 
+  function replaceEstimate(next: { input: WallEstimateInput; lines: EstimateLine[] }) {
+    setInput(next.input)
+    setLines(next.lines)
+  }
+
   return {
     input,
     lines,
@@ -151,6 +164,7 @@ export function useWallEstimateEditor(initialInput: WallEstimateInput = EMPTY_IN
     applyScenario,
     addManualLine,
     resetEstimate,
+    replaceEstimate,
   }
 }
 

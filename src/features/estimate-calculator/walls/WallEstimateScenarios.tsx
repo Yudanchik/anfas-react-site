@@ -10,9 +10,12 @@ import {
   type WallWallpaperTypeOption,
 } from '@/entities/estimate'
 
+import type { WallScenarioDraftState } from '../model/estimate-calculator-persistence'
 import styles from './WallEstimateScenarios.module.scss'
 
 type WallEstimateScenariosProps = {
+  draft: WallScenarioDraftState
+  onDraftChange: (patch: Partial<WallScenarioDraftState>) => void
   onApplyScenario: (application: WallScenarioApplication) => {
     label: string
     addedCount: number
@@ -56,13 +59,12 @@ const PAINT_OPTIONS: ReadonlyArray<{ value: WallPaintLayersOption; label: string
   { value: 'paint-mech-2', label: 'Механизированная, 2 слоя' },
 ]
 
-export function WallEstimateScenarios({ onApplyScenario }: WallEstimateScenariosProps) {
-  const [state, setState] = useState<WallStateOption>('from-scratch')
-  const [finishTarget, setFinishTarget] = useState<WallFinishTargetOption>('none')
-  const [demolitionCovering, setDemolitionCovering] =
-    useState<WallDemolitionCoveringOption>('wallpaper')
-  const [wallpaperType, setWallpaperType] = useState<WallWallpaperTypeOption>('flizelin')
-  const [paintLayers, setPaintLayers] = useState<WallPaintLayersOption>('paint-2')
+export function WallEstimateScenarios({
+  draft,
+  onDraftChange,
+  onApplyScenario,
+}: WallEstimateScenariosProps) {
+  const { state, finishTarget, demolitionCovering, wallpaperType, paintLayers } = draft
   const [status, setStatus] = useState<string | null>(null)
 
   const finishDisabled = state === 'demolition-only' || state === 'local-leveling'
@@ -115,13 +117,14 @@ export function WallEstimateScenarios({ onApplyScenario }: WallEstimateScenarios
               value={state}
               onChange={(event) => {
                 const next = event.target.value as WallStateOption
-                setState(next)
+                const patch: Partial<WallScenarioDraftState> = { state: next }
                 if (next === 'demolition-only' || next === 'local-leveling') {
-                  setFinishTarget('none')
+                  patch.finishTarget = 'none'
                 }
                 if (next === 'finish-only' && finishTarget === 'none') {
-                  setFinishTarget('paint')
+                  patch.finishTarget = 'paint'
                 }
+                onDraftChange(patch)
               }}
             >
               {STATE_OPTIONS.map((option) => (
@@ -139,7 +142,7 @@ export function WallEstimateScenarios({ onApplyScenario }: WallEstimateScenarios
               value={finishDisabled ? 'none' : finishTarget}
               disabled={finishDisabled}
               onChange={(event) =>
-                setFinishTarget(event.target.value as WallFinishTargetOption)
+                onDraftChange({ finishTarget: event.target.value as WallFinishTargetOption })
               }
             >
               {FINISH_OPTIONS.filter((option) =>
@@ -159,7 +162,9 @@ export function WallEstimateScenarios({ onApplyScenario }: WallEstimateScenarios
                 className={styles.select}
                 value={demolitionCovering}
                 onChange={(event) =>
-                  setDemolitionCovering(event.target.value as WallDemolitionCoveringOption)
+                  onDraftChange({
+                    demolitionCovering: event.target.value as WallDemolitionCoveringOption,
+                  })
                 }
               >
                 {DEMOLITION_OPTIONS.map((option) => (
@@ -178,7 +183,7 @@ export function WallEstimateScenarios({ onApplyScenario }: WallEstimateScenarios
                 className={styles.select}
                 value={wallpaperType}
                 onChange={(event) =>
-                  setWallpaperType(event.target.value as WallWallpaperTypeOption)
+                  onDraftChange({ wallpaperType: event.target.value as WallWallpaperTypeOption })
                 }
               >
                 {WALLPAPER_OPTIONS.map((option) => (
@@ -196,7 +201,9 @@ export function WallEstimateScenarios({ onApplyScenario }: WallEstimateScenarios
               <select
                 className={styles.select}
                 value={paintLayers}
-                onChange={(event) => setPaintLayers(event.target.value as WallPaintLayersOption)}
+                onChange={(event) =>
+                  onDraftChange({ paintLayers: event.target.value as WallPaintLayersOption })
+                }
               >
                 {PAINT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>

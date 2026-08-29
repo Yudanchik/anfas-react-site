@@ -94,19 +94,11 @@ export function groupFloorEstimateLines(lines: readonly EstimateLine[]): FloorEs
 }
 
 /**
- * Default open accordion ids:
- * - any group with selected lines;
- * - if none selected → Demolition + Screed (when present).
+ * Default open accordion ids for floor estimate groups.
+ * Stage 3: always collapsed unless the user opens a group in the session.
  */
 export function getDefaultOpenFloorGroupIds(
-  groups: readonly FloorEstimateGroup[],
+  _groups: readonly FloorEstimateGroup[],
 ): FloorEstimateGroupId[] {
-  const selected = groups.filter((group) => group.selectedCount > 0).map((group) => group.id)
-  if (selected.length > 0) return selected
-
-  const fallback: FloorEstimateGroupId[] = []
-  if (groups.some((group) => group.id === 'demolition')) fallback.push('demolition')
-  if (groups.some((group) => group.id === 'screed')) fallback.push('screed')
-  if (fallback.length > 0) return fallback
-  return groups[0] ? [groups[0].id] : []
+  return []
 }

@@ -42,6 +42,12 @@ src/routes/internal/estimate/       # route mounts EstimateCalculatorWorkspace
 
 `ESTIMATE_SECTION_LABELS` holds known titles (`floors`, `walls`, `ceilings`, …) for future tabs.
 
+## Persistence (Stage 3)
+
+Workspace state (tab, inputs, line patches, manual rows, scenario/preset drafts) is saved to
+`localStorage` key `anfas:estimate-calculator:v1`. Open accordion groups are **not** persisted —
+they stay collapsed after reload. «Сбросить смету» clears storage and resets both sections.
+
 ## Do not
 
 - Put formulas in JSX (use domain `calculateLineTotal` / section totals).

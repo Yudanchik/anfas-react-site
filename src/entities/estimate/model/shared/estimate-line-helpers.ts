@@ -17,6 +17,22 @@ export function applyQuantityToMatchingLines(
 let manualLineCounter = 0
 
 /**
+ * Bumps the manual id counter past any restored `manual-N` priceKeys
+ * so newly added manual rows do not collide after localStorage hydrate.
+ */
+export function noteManualLineIds(lines: readonly EstimateLine[]): void {
+  for (const line of lines) {
+    if (line.source !== 'manual') continue
+    const match = /^manual-(\d+)$/.exec(line.priceKey)
+    if (!match) continue
+    const value = Number(match[1])
+    if (Number.isFinite(value) && value > manualLineCounter) {
+      manualLineCounter = value
+    }
+  }
+}
+
+/**
  * Creates a manual estimate row (not from price mapping).
  * Materials are still out of scope — this is labour-only.
  */

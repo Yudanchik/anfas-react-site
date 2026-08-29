@@ -11,12 +11,28 @@ import {
 
 import styles from './FloorEstimatePresets.module.scss'
 
+type FloorPresetDraft = {
+  covering: DemolitionCoveringOption
+  screedType: ScreedTypeOption
+  layers: WaterproofingLayersOption
+  wasteTrip: WasteTripOption
+}
+
 type FloorEstimatePresetsProps = {
+  draft?: FloorPresetDraft
+  onDraftChange?: (patch: Partial<FloorPresetDraft>) => void
   demolitionArea: number
   screedArea: number
   totalFloorArea: number
   wetZonesArea: number
   onApplyPreset: (application: FloorPresetApplication) => { label: string; addedCount: number }
+}
+
+const DEFAULT_DRAFT: FloorPresetDraft = {
+  covering: 'laminate',
+  screedType: 'semidry-up-to-80',
+  layers: 'acrylic-2',
+  wasteTrip: 'gazelle-6',
 }
 
 const DEMOLITION_OPTIONS: ReadonlyArray<{ value: DemolitionCoveringOption; label: string }> = [
@@ -47,17 +63,23 @@ const WASTE_OPTIONS: ReadonlyArray<{ value: WasteTripOption; label: string }> = 
 ]
 
 export function FloorEstimatePresets({
+  draft: controlledDraft,
+  onDraftChange,
   demolitionArea,
   screedArea,
   totalFloorArea,
   wetZonesArea,
   onApplyPreset,
 }: FloorEstimatePresetsProps) {
-  const [covering, setCovering] = useState<DemolitionCoveringOption>('laminate')
-  const [screedType, setScreedType] = useState<ScreedTypeOption>('semidry-up-to-80')
-  const [layers, setLayers] = useState<WaterproofingLayersOption>('acrylic-2')
-  const [wasteTrip, setWasteTrip] = useState<WasteTripOption>('gazelle-6')
+  const [uncontrolledDraft, setUncontrolledDraft] = useState<FloorPresetDraft>(DEFAULT_DRAFT)
+  const draft = controlledDraft ?? uncontrolledDraft
+  const { covering, screedType, layers, wasteTrip } = draft
   const [status, setStatus] = useState<string | null>(null)
+
+  function patchDraft(patch: Partial<FloorPresetDraft>) {
+    if (onDraftChange) onDraftChange(patch)
+    else setUncontrolledDraft((prev) => ({ ...prev, ...patch }))
+  }
 
   const screedQty = screedArea > 0 ? screedArea : totalFloorArea
 
@@ -86,7 +108,9 @@ export function FloorEstimatePresets({
             <select
               className={styles.select}
               value={covering}
-              onChange={(event) => setCovering(event.target.value as DemolitionCoveringOption)}
+              onChange={(event) =>
+                patchDraft({ covering: event.target.value as DemolitionCoveringOption })
+              }
             >
               {DEMOLITION_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -115,7 +139,9 @@ export function FloorEstimatePresets({
             <select
               className={styles.select}
               value={screedType}
-              onChange={(event) => setScreedType(event.target.value as ScreedTypeOption)}
+              onChange={(event) =>
+                patchDraft({ screedType: event.target.value as ScreedTypeOption })
+              }
             >
               {SCREED_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -160,7 +186,9 @@ export function FloorEstimatePresets({
             <select
               className={styles.select}
               value={layers}
-              onChange={(event) => setLayers(event.target.value as WaterproofingLayersOption)}
+              onChange={(event) =>
+                patchDraft({ layers: event.target.value as WaterproofingLayersOption })
+              }
             >
               {HYDRO_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -189,7 +217,9 @@ export function FloorEstimatePresets({
             <select
               className={styles.select}
               value={wasteTrip}
-              onChange={(event) => setWasteTrip(event.target.value as WasteTripOption)}
+              onChange={(event) =>
+                patchDraft({ wasteTrip: event.target.value as WasteTripOption })
+              }
             >
               {WASTE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>

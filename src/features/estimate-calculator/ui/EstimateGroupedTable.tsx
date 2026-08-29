@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import type { EstimateLine } from '@/entities/estimate'
 
@@ -15,7 +15,8 @@ type EstimateGroupedTableProps = {
   lead?: string
   idPrefix: string
   groups: readonly EstimateGroupedTableGroup[]
-  defaultOpenGroupIds: readonly string[]
+  /** @deprecated Ignored — groups stay collapsed until the user opens them. */
+  defaultOpenGroupIds?: readonly string[]
   onToggle: (lineId: string) => void
   onPatchLine: (
     lineId: string,
@@ -28,38 +29,23 @@ export function EstimateGroupedTable({
   lead = 'Группы можно раскрывать. Итог считает domain-формула.',
   idPrefix,
   groups,
-  defaultOpenGroupIds,
   onToggle,
   onPatchLine,
 }: EstimateGroupedTableProps) {
-  const autoOpenIds = useMemo(() => new Set(defaultOpenGroupIds), [defaultOpenGroupIds])
-  const [collapsedIds, setCollapsedIds] = useState(() => new Set<string>())
-  const [expandedIds, setExpandedIds] = useState(() => new Set<string>())
+  const [openIds, setOpenIds] = useState(() => new Set<string>())
   const titleId = `${idPrefix}-table-title`
 
   function isGroupOpen(groupId: string): boolean {
-    if (collapsedIds.has(groupId)) return false
-    if (expandedIds.has(groupId)) return true
-    return autoOpenIds.has(groupId)
+    return openIds.has(groupId)
   }
 
   function toggleGroup(groupId: string) {
-    if (isGroupOpen(groupId)) {
-      setExpandedIds((prev) => {
-        const next = new Set(prev)
-        next.delete(groupId)
-        return next
-      })
-      setCollapsedIds((prev) => new Set(prev).add(groupId))
-      return
-    }
-
-    setCollapsedIds((prev) => {
+    setOpenIds((prev) => {
       const next = new Set(prev)
-      next.delete(groupId)
+      if (next.has(groupId)) next.delete(groupId)
+      else next.add(groupId)
       return next
     })
-    setExpandedIds((prev) => new Set(prev).add(groupId))
   }
 
   return (

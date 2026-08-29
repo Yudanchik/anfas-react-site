@@ -46,7 +46,13 @@ export function FloorEstimateHelpers({
           Быстрые действия
         </h2>
         <p className={styles.text}>{recommendation.message}</p>
-        <p className={styles.hint}>Только подстановка объёмов — строки не включаются.</p>
+        <p className={styles.hint}>
+          Кнопки ниже только подставляют объёмы в подходящие строки. Работы не включаются
+          автоматически.
+        </p>
+        <p className={styles.hint}>
+          Чтобы добавить работы в смету, включите строки вручную или примените сценарий.
+        </p>
       </div>
 
       <div className={styles.actionsPanel}>
@@ -88,13 +94,18 @@ export function FloorEstimateHelpers({
         <button
           type="button"
           className={styles.danger}
+          aria-label="Сбросить всю смету: полы, стены и автосохранение на этом устройстве"
+          title="Сбросит полы, стены и автосохранение на этом устройстве"
           onClick={() => {
             onReset()
             setStatus(formatQuickActionFeedback('reset'))
           }}
         >
-          Сбросить смету
+          Сбросить всю смету
         </button>
+        <p className={styles.hint}>
+          Сбросит полы, стены и сохранённые данные калькулятора на этом устройстве.
+        </p>
 
         {status ? (
           <p className={styles.status} role="status" aria-live="polite">

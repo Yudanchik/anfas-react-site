@@ -2,14 +2,15 @@
 
 | Поле | Значение |
 |------|----------|
-| Статус | **Stage 2 DONE (committed) — Ready for Stage 3** |
+| Статус | **Stage 3 DONE (committed) — Ready for Stage 4** |
 | Branch | `feature/estimate-calculator-floors` (route `/internal/estimate`) |
 | Base floors MVP | commit `3bdfd3d` и цепочка домен/UI полов |
 | Дата аудита | 2026-08-29 |
 | Stage 1 | 2026-08-29 |
 | Stage 2 | 2026-08-29 |
+| Stage 3 | 2026-08-29 |
 | Тип | Внутренний инструмент сметчика; **материалы не считаем** |
-| Scope сейчас | Domain + UI tabs + combined summary; Stage 3 polish |
+| Scope сейчас | Domain + UI + persistence/UX polish; Stage 4 QA/commit когда попросят |
 
 Связанные docs:
 
@@ -552,13 +553,21 @@ src/features/estimate-shell/  # optional: tabs + combined summary (можно в
 - [x] domain folder split shared/floors/walls
 - [x] docs/estimate-calculator-architecture.md
 
-### Stage 3 — polish — NEXT
+### Stage 3 — UX/state polish — DONE
 
-- apply-area helpers UX / mobile sanity
-- optional deeper fold of floor-estimate into estimate-calculator
-- docs polish
+- [x] localStorage persistence (`anfas:estimate-calculator:v1`) + «Сбросить всю смету»
+- [x] all estimate groups collapsed by default (no auto demolition/screed open)
+- [x] numeric input draft UX (no sticky leading zero)
+- [x] clearer quick-actions copy
+- [x] summary header compact stats (no «Раскрыть/Свернуть» text)
 
-### Stage 4 — QA / commit (когда попросят)
+### Stage 4 — optional follow-ups (не начат)
+
+- Mobile / denser polish
+- Optional deeper fold of `floor-estimate` into `estimate-calculator/floors/`
+- `model/export/` when PDF needed
+- Docs polish / screenshots
+- QA / commit when asked; **no push/merge** unless asked
 
 - checks green
 - commit messages staged

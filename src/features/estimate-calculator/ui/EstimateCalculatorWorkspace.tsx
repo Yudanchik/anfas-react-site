@@ -1,6 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
+  buildFloorEstimateLines,
+  buildWallEstimateLines,
   calculateEstimateTotal,
   FLOOR_PRICE_MAPPING,
   FLOOR_SECTION_ID,
@@ -14,8 +16,24 @@ import {
   WALL_SECTION_ID,
   WALL_SECTION_TITLE,
 } from '@/entities/estimate'
-import { useFloorEstimateEditor } from '@/features/floor-estimate'
+import { useFloorEstimateEditor } from '@/features/floor-estimate/model/use-floor-estimate-editor'
 
+import {
+  buildEstimateCalculatorSnapshot,
+  clearEstimateCalculatorSnapshot,
+  DEFAULT_FLOOR_PRESETS,
+  DEFAULT_WALL_SCENARIOS,
+  EMPTY_FLOOR_INPUT,
+  EMPTY_WALL_INPUT,
+  readEstimateCalculatorSnapshot,
+  restoreFloorEstimateState,
+  restoreFloorPresetDraft,
+  restoreWallEstimateState,
+  restoreWallScenarioDraft,
+  writeEstimateCalculatorSnapshot,
+  type FloorPresetDraftState,
+  type WallScenarioDraftState,
+} from '../model/estimate-calculator-persistence'
 import { FloorEstimatePanel } from '../floors/FloorEstimatePanel'
 import { useWallEstimateEditor } from '../walls/use-wall-estimate-editor'
 import { WallEstimatePanel } from '../walls/WallEstimatePanel'
@@ -25,9 +43,76 @@ import { EstimateTabs, type EstimateTabId } from './EstimateTabs'
 import styles from './EstimateCalculatorWorkspace.module.scss'
 
 export function EstimateCalculatorWorkspace() {
-  const [activeTab, setActiveTab] = useState<EstimateTabId>('floors')
-  const floors = useFloorEstimateEditor()
-  const walls = useWallEstimateEditor()
+  const [initial] = useState(() => {
+    const snapshot = readEstimateCalculatorSnapshot()
+    return {
+      snapshot,
+      floors: restoreFloorEstimateState(snapshot),
+      walls: restoreWallEstimateState(snapshot),
+      floorPresets: restoreFloorPresetDraft(snapshot),
+      wallScenarios: restoreWallScenarioDraft(snapshot),
+      activeTab: (snapshot?.activeTab ?? 'floors') as EstimateTabId,
+    }
+  })
+
+  const [activeTab, setActiveTab] = useState<EstimateTabId>(initial.activeTab)
+  const [floorPresetDraft, setFloorPresetDraft] = useState<FloorPresetDraftState>(
+    initial.floorPresets,
+  )
+  const [wallScenarioDraft, setWallScenarioDraft] = useState<WallScenarioDraftState>(
+    initial.wallScenarios,
+  )
+
+  const floors = useFloorEstimateEditor(initial.floors)
+  const walls = useWallEstimateEditor(initial.walls)
+  const skipFirstPersist = useRef(true)
+
+  useEffect(() => {
+    if (skipFirstPersist.current) {
+      skipFirstPersist.current = false
+      return
+    }
+
+    writeEstimateCalculatorSnapshot(
+      buildEstimateCalculatorSnapshot({
+        activeTab,
+        floorsInput: floors.input,
+        floorsLines: floors.lines,
+        wallsInput: walls.input,
+        wallsLines: walls.lines,
+        floorPresets: floorPresetDraft,
+        wallScenarios: wallScenarioDraft,
+      }),
+    )
+  }, [
+    activeTab,
+    floors.input,
+    floors.lines,
+    walls.input,
+    walls.lines,
+    floorPresetDraft,
+    wallScenarioDraft,
+  ])
+
+  function resetAllEstimate() {
+    clearEstimateCalculatorSnapshot()
+    setActiveTab('floors')
+    setFloorPresetDraft({ ...DEFAULT_FLOOR_PRESETS })
+    setWallScenarioDraft({ ...DEFAULT_WALL_SCENARIOS })
+    floors.replaceEstimate({
+      input: { ...EMPTY_FLOOR_INPUT },
+      lines: buildFloorEstimateLines(EMPTY_FLOOR_INPUT),
+    })
+    walls.replaceEstimate({
+      input: { ...EMPTY_WALL_INPUT },
+      lines: buildWallEstimateLines(EMPTY_WALL_INPUT),
+    })
+  }
+
+  function resetWallsSection() {
+    walls.resetEstimate()
+    setWallScenarioDraft({ ...DEFAULT_WALL_SCENARIOS })
+  }
 
   const selectedSections = useMemo(
     () =>
@@ -79,7 +164,14 @@ export function EstimateCalculatorWorkspace() {
         aria-labelledby="estimate-tab-floors"
         hidden={activeTab !== 'floors'}
       >
-        <FloorEstimatePanel editor={floors} />
+        <FloorEstimatePanel
+          editor={floors}
+          presetDraft={floorPresetDraft}
+          onPresetDraftChange={(patch) =>
+            setFloorPresetDraft((prev) => ({ ...prev, ...patch }))
+          }
+          onResetAll={resetAllEstimate}
+        />
       </div>
 
       <div
@@ -88,7 +180,14 @@ export function EstimateCalculatorWorkspace() {
         aria-labelledby="estimate-tab-walls"
         hidden={activeTab !== 'walls'}
       >
-        <WallEstimatePanel editor={walls} />
+        <WallEstimatePanel
+          editor={walls}
+          scenarioDraft={wallScenarioDraft}
+          onScenarioDraftChange={(patch) =>
+            setWallScenarioDraft((prev) => ({ ...prev, ...patch }))
+          }
+          onResetSection={resetWallsSection}
+        />
       </div>
 
       <div className={styles.zone}>

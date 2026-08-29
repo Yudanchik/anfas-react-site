@@ -1,9 +1,6 @@
 import { useId, useState } from 'react'
 
-import {
-  formatEstimatePositionCount,
-  type SelectedEstimateSectionGroup,
-} from '@/entities/estimate'
+import type { SelectedEstimateSectionGroup } from '@/entities/estimate'
 import { formatPriceValue } from '@/entities/price/lib/price-helpers'
 
 import styles from './EstimateCombinedSummary.module.scss'
@@ -49,26 +46,20 @@ export function EstimateCombinedSummary({
       >
         <span className={styles.chevron} data-open={expanded ? 'true' : 'false'} aria-hidden="true" />
         <span className={styles.toggleMain}>
-          <span className={styles.toggleTitleRow}>
-            <span className={styles.title} id={titleId}>
-              Итоговая смета
-            </span>
-            <span className={styles.badge}>{formatEstimatePositionCount(selectedCount)}</span>
+          <span className={styles.title} id={titleId}>
+            Итоговая смета
           </span>
-          {hasRows ? (
-            <span className={styles.miniTotals}>
-              {sections.map((section) => (
-                <span key={section.sectionId} className={styles.miniTotal}>
-                  {section.sectionTitle}: {formatPriceValue(section.subtotalRub)} ₽
-                </span>
-              ))}
-            </span>
-          ) : (
-            <span className={styles.miniEmpty}>Нет выбранных позиций</span>
-          )}
+          <span className={styles.compactStats}>
+            <span className={styles.statChip}>Позиций: {selectedCount}</span>
+            {sections.map((section) => (
+              <span key={section.sectionId} className={styles.statChip}>
+                {section.sectionTitle}: {formatPriceValue(section.subtotalRub)} ₽
+              </span>
+            ))}
+            <span className={styles.statTotal}>Всего: {formatPriceValue(grandTotalRub)} ₽</span>
+          </span>
+          {!hasRows ? <span className={styles.miniEmpty}>Нет выбранных позиций</span> : null}
         </span>
-        <strong className={styles.grandTotal}>{formatPriceValue(grandTotalRub)} ₽</strong>
-        <span className={styles.toggleHint}>{expanded ? 'Свернуть' : 'Раскрыть'}</span>
       </button>
 
       <div
@@ -115,9 +106,7 @@ export function EstimateCombinedSummary({
                     <span className={styles.sectionTitle} id={sectionTitleId}>
                       {section.sectionTitle}
                     </span>
-                    <span className={styles.sectionMeta}>
-                      {formatEstimatePositionCount(section.selectedCount)}
-                    </span>
+                    <span className={styles.sectionMeta}>Позиций: {section.selectedCount}</span>
                     <strong className={styles.sectionTotal}>
                       {formatPriceValue(section.subtotalRub)} ₽
                     </strong>

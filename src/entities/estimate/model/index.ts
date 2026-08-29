@@ -31,6 +31,7 @@ export {
 export {
   applyQuantityToMatchingLines,
   createManualEstimateLine,
+  noteManualLineIds,
   updateEstimateLine,
 } from './shared/estimate-line-helpers'
 export {

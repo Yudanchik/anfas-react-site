@@ -1,11 +1,8 @@
 import { useMemo } from 'react'
 
-import {
-  getDefaultOpenWallGroupIds,
-  groupWallEstimateLines,
-  type EstimateLine,
-} from '@/entities/estimate'
+import { groupWallEstimateLines, type EstimateLine } from '@/entities/estimate'
 
+import type { WallScenarioDraftState } from '../model/estimate-calculator-persistence'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
 import { EstimateManualLine } from '../ui/EstimateManualLine'
 import { WallEstimateHelpers } from './WallEstimateHelpers'
@@ -16,11 +13,18 @@ import styles from '../ui/EstimateCalculatorWorkspace.module.scss'
 
 type WallEstimatePanelProps = {
   editor: WallEstimateEditor
+  scenarioDraft: WallScenarioDraftState
+  onScenarioDraftChange: (patch: Partial<WallScenarioDraftState>) => void
+  onResetSection: () => void
 }
 
-export function WallEstimatePanel({ editor }: WallEstimatePanelProps) {
+export function WallEstimatePanel({
+  editor,
+  scenarioDraft,
+  onScenarioDraftChange,
+  onResetSection,
+}: WallEstimatePanelProps) {
   const groups = useMemo(() => groupWallEstimateLines(editor.lines), [editor.lines])
-  const defaultOpenGroupIds = useMemo(() => getDefaultOpenWallGroupIds(groups), [groups])
 
   return (
     <div className={styles.workspace}>
@@ -29,7 +33,11 @@ export function WallEstimatePanel({ editor }: WallEstimatePanelProps) {
       </div>
 
       <div className={styles.zoneAlt}>
-        <WallEstimateScenarios onApplyScenario={editor.applyScenario} />
+        <WallEstimateScenarios
+          draft={scenarioDraft}
+          onDraftChange={onScenarioDraftChange}
+          onApplyScenario={editor.applyScenario}
+        />
       </div>
 
       <div className={styles.zone}>
@@ -47,7 +55,7 @@ export function WallEstimatePanel({ editor }: WallEstimatePanelProps) {
           onApplyPuttyArea={editor.applyPuttyArea}
           onApplyFinishArea={editor.applyFinishArea}
           onApplyLinearMeters={editor.applyLinearMeters}
-          onReset={editor.resetEstimate}
+          onReset={onResetSection}
         />
         <EstimateManualLine titleId="wall-estimate-manual-title" onAdd={editor.addManualLine} />
       </div>
@@ -57,7 +65,6 @@ export function WallEstimatePanel({ editor }: WallEstimatePanelProps) {
           idPrefix="wall-estimate"
           title="Строки сметы — стены"
           groups={groups}
-          defaultOpenGroupIds={defaultOpenGroupIds}
           onToggle={editor.toggleLine}
           onPatchLine={patchLineAdapter(editor.patchLine)}
         />

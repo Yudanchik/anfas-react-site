@@ -96,15 +96,12 @@ export function groupWallEstimateLines(lines: readonly EstimateLine[]): WallEsti
   }).filter((group) => group.totalCount > 0)
 }
 
+/**
+ * Default open accordion ids for wall estimate groups.
+ * Stage 3: always collapsed unless the user opens a group in the session.
+ */
 export function getDefaultOpenWallGroupIds(
-  groups: readonly WallEstimateGroup[],
+  _groups: readonly WallEstimateGroup[],
 ): WallEstimateGroupId[] {
-  const selected = groups.filter((group) => group.selectedCount > 0).map((group) => group.id)
-  if (selected.length > 0) return selected
-
-  const fallback: WallEstimateGroupId[] = []
-  if (groups.some((group) => group.id === 'demolition')) fallback.push('demolition')
-  if (groups.some((group) => group.id === 'plaster')) fallback.push('plaster')
-  if (fallback.length > 0) return fallback
-  return groups[0] ? [groups[0].id] : []
+  return []
 }

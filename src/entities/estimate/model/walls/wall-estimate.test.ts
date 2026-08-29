@@ -14,7 +14,9 @@ import {
   calculateSelectedSectionsGrandTotal,
   createManualWallEstimateLine,
   getCombinedSelectedEstimateLines,
+  getDefaultOpenWallGroupIds,
   getSelectedEstimateSections,
+  groupWallEstimateLines,
   isWallFinishPriceKey,
   resolveWallScenarioKeys,
   WALL_PRICE_MAPPING,
@@ -372,5 +374,10 @@ describe('wall estimate domain', () => {
       ]),
       expectedGrand,
     )
+  })
+
+  it('keeps wall groups collapsed by default', () => {
+    const groups = groupWallEstimateLines(buildWallEstimateLines(sampleWallInput))
+    assert.deepEqual(getDefaultOpenWallGroupIds(groups), [])
   })
 })

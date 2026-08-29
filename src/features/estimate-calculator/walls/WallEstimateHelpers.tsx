@@ -51,8 +51,13 @@ export function WallEstimateHelpers({
         <h2 className={styles.title} id="wall-estimate-helpers-title">
           Быстрые действия
         </h2>
-        <p className={styles.text}>Подстановка объёмов по полям замера.</p>
-        <p className={styles.hint}>Только quantity — строки сами не включаются.</p>
+        <p className={styles.text}>
+          Кнопки ниже только подставляют объёмы в подходящие строки. Работы не включаются
+          автоматически.
+        </p>
+        <p className={styles.hint}>
+          Чтобы добавить работы в смету, включите строки вручную или примените сценарий.
+        </p>
       </div>
 
       <div className={styles.actionsPanel}>
@@ -110,6 +115,8 @@ export function WallEstimateHelpers({
         <button
           type="button"
           className={styles.danger}
+          aria-label="Сбросить только раздел стены"
+          title="Полы и их автосохранение не затрагиваются"
           onClick={() => {
             onReset()
             setStatus(formatWallQuickActionFeedback('reset'))

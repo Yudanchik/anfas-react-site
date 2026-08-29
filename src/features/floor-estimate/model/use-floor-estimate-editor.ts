@@ -33,9 +33,17 @@ const EMPTY_INPUT: FloorEstimateInput = {
   surveyorComment: '',
 }
 
-export function useFloorEstimateEditor(initialInput: FloorEstimateInput = EMPTY_INPUT) {
+export type FloorEstimateEditorInitial = {
+  input?: FloorEstimateInput
+  lines?: EstimateLine[]
+}
+
+export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {}) {
+  const initialInput = initial.input ?? EMPTY_INPUT
   const [input, setInput] = useState<FloorEstimateInput>(initialInput)
-  const [lines, setLines] = useState<EstimateLine[]>(() => buildFloorEstimateLines(initialInput))
+  const [lines, setLines] = useState<EstimateLine[]>(
+    () => initial.lines ?? buildFloorEstimateLines(initialInput),
+  )
 
   const recommendation = useMemo(
     () => getFloorRecommendation(input.avgDeltaMm),
@@ -110,6 +118,11 @@ export function useFloorEstimateEditor(initialInput: FloorEstimateInput = EMPTY_
     setLines(buildFloorEstimateLines(EMPTY_INPUT))
   }
 
+  function replaceEstimate(next: { input: FloorEstimateInput; lines: EstimateLine[] }) {
+    setInput(next.input)
+    setLines(next.lines)
+  }
+
   return {
     input,
     lines,
@@ -127,6 +140,7 @@ export function useFloorEstimateEditor(initialInput: FloorEstimateInput = EMPTY_
     applyPreset,
     addManualLine,
     resetEstimate,
+    replaceEstimate,
   }
 }
 

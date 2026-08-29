@@ -1,5 +1,7 @@
 import type { FloorEstimateInput } from '@/entities/estimate'
 
+import { EstimateNumberInput } from '@/features/estimate-calculator/ui/EstimateNumberInput'
+
 import styles from './FloorEstimateInputs.module.scss'
 
 type FloorEstimateInputsProps = {
@@ -7,15 +9,8 @@ type FloorEstimateInputsProps = {
   onChange: (patch: Partial<FloorEstimateInput>) => void
 }
 
-function parseNumberInput(raw: string): number {
-  const normalized = raw.replace(',', '.').trim()
-  if (normalized === '') return 0
-  const value = Number(normalized)
-  return Number.isFinite(value) ? value : 0
-}
-
 const fields: ReadonlyArray<{
-  key: keyof FloorEstimateInput
+  key: Exclude<keyof FloorEstimateInput, 'surveyorComment'>
   label: string
   unit: string
 }> = [
@@ -39,15 +34,10 @@ export function FloorEstimateInputs({ input, onChange }: FloorEstimateInputsProp
               {field.label}
               <span className={styles.unit}>{field.unit}</span>
             </span>
-            <input
+            <EstimateNumberInput
               className={styles.control}
-              type="number"
-              min={0}
-              step="any"
               value={Number(input[field.key] ?? 0)}
-              onChange={(event) =>
-                onChange({ [field.key]: parseNumberInput(event.target.value) })
-              }
+              onValueChange={(value) => onChange({ [field.key]: value })}
             />
           </label>
         ))}
