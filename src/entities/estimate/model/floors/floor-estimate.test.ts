@@ -16,7 +16,7 @@ import {
   getFloorRecommendation,
   groupFloorEstimateLines,
   updateEstimateLine,
-} from './index'
+} from '../index'
 
 const sampleInput = {
   totalFloorArea: 50,

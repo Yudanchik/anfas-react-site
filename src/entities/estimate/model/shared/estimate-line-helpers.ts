@@ -1,10 +1,9 @@
 import { normalizeNonNegative, normalizePositiveCoefficient } from './calculate-line-total'
-import type { EstimateLine, FloorWorkKind } from './estimate.types'
-import { FLOOR_SECTION_ID } from './floor-price.mapping'
+import type { EstimateLine, EstimateWorkKind } from './estimate.types'
 
 /**
  * Applies a quantity to matching estimate lines.
- * Does not toggle enabled — sметчик includes rows manually.
+ * Does not toggle enabled — estimator includes rows manually.
  */
 export function applyQuantityToMatchingLines(
   lines: readonly EstimateLine[],
@@ -13,58 +12,6 @@ export function applyQuantityToMatchingLines(
 ): EstimateLine[] {
   const nextQuantity = normalizeNonNegative(quantity)
   return lines.map((line) => (predicate(line) ? { ...line, quantity: nextQuantity } : line))
-}
-
-/** Applies area to all м² works except waste (waste stays manual). */
-export function applyTotalAreaToSquareMeterWorks(
-  lines: readonly EstimateLine[],
-  quantity: number,
-): EstimateLine[] {
-  return applyQuantityToMatchingLines(
-    lines,
-    (line) => line.unit === 'м²' && line.kind !== 'waste' && line.source !== 'manual',
-    quantity,
-  )
-}
-
-export function applyDemolitionAreaToDemolitionWorks(
-  lines: readonly EstimateLine[],
-  quantity: number,
-): EstimateLine[] {
-  return applyQuantityToMatchingLines(
-    lines,
-    (line) => line.kind === 'demolition' && line.unit === 'м²',
-    quantity,
-  )
-}
-
-export function applyWetAreaToWaterproofing(
-  lines: readonly EstimateLine[],
-  quantity: number,
-): EstimateLine[] {
-  return applyQuantityToMatchingLines(
-    lines,
-    (line) => line.kind === 'waterproofing' && line.unit === 'м²',
-    quantity,
-  )
-}
-
-export function applyScreedAreaToScreedWorks(
-  lines: readonly EstimateLine[],
-  quantity: number,
-): EstimateLine[] {
-  const screedKinds: readonly FloorWorkKind[] = [
-    'base-prep',
-    'primer',
-    'screed-semidry',
-    'screed-wet',
-    'self-leveling',
-  ]
-  return applyQuantityToMatchingLines(
-    lines,
-    (line) => screedKinds.includes(line.kind) && line.unit === 'м²',
-    quantity,
-  )
 }
 
 let manualLineCounter = 0
@@ -80,15 +27,18 @@ export function createManualEstimateLine(params: {
   quantity?: number
   coefficient?: number
   comment?: string
+  sectionId?: string
+  kind?: EstimateWorkKind
 }): EstimateLine {
   manualLineCounter += 1
   const id = `manual-${manualLineCounter}`
+  const sectionId = params.sectionId ?? 'floors'
 
   return {
-    id: `${FLOOR_SECTION_ID}:${id}`,
+    id: `${sectionId}:${id}`,
     priceKey: id,
-    sectionId: FLOOR_SECTION_ID,
-    kind: 'other-rough',
+    sectionId,
+    kind: params.kind ?? 'other-rough',
     title: params.title.trim() || 'Ручная строка',
     unit: params.unit.trim() || 'м²',
     unitPrice: normalizeNonNegative(params.unitPrice),

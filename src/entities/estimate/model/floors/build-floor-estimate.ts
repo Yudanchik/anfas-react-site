@@ -1,7 +1,7 @@
-import { calculateEstimateSelectedCount, calculateEstimateTotal } from './calculate-estimate-total'
-import { calculateSectionTotal } from './calculate-section-total'
+import { calculateEstimateSelectedCount, calculateEstimateTotal } from '../shared/calculate-estimate-total'
+import { calculateSectionTotal } from '../shared/calculate-section-total'
 import { buildFloorEstimateLines, type BuildFloorEstimateLinesOptions } from './build-floor-estimate-lines'
-import type { FloorEstimateInput, FloorEstimateResult } from './estimate.types'
+import type { FloorEstimateInput, FloorEstimateResult } from '../shared/estimate.types'
 import { FLOOR_SECTION_ID, FLOOR_SECTION_TITLE } from './floor-price.mapping'
 import { getFloorRecommendation } from './get-floor-recommendation'
 

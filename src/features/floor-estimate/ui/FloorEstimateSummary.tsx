@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import type { EstimateLine } from '@/entities/estimate'
 import { formatPriceValue } from '@/entities/price/lib/price-helpers'
 
-import { getSelectedEstimateLines } from '../model/get-selected-estimate-lines'
+import { getSelectedFloorEstimateLines } from '../model/get-selected-estimate-lines'
 import { FloorEstimateSummaryLine } from './FloorEstimateSummaryLine'
 import styles from './FloorEstimateSummary.module.scss'
 
@@ -13,7 +13,7 @@ type FloorEstimateSummaryProps = {
 }
 
 export function FloorEstimateSummary({ lines, totalRub }: FloorEstimateSummaryProps) {
-  const selectedLines = useMemo(() => getSelectedEstimateLines(lines), [lines])
+  const selectedLines = useMemo(() => getSelectedFloorEstimateLines(lines), [lines])
 
   return (
     <section className={styles.wrap} aria-labelledby="floor-estimate-summary-title">

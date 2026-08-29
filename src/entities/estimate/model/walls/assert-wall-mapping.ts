@@ -1,9 +1,9 @@
-import { prices } from '../../price/model/prices.data'
+import { prices } from '../../../price/model/prices.data'
 
-import type { FloorPriceMappingItem } from './estimate.types'
-import { FLOOR_PRICE_MAPPING } from './floor-price.mapping'
+import type { WallPriceMappingItem } from '../shared/estimate.types'
+import { WALL_PRICE_MAPPING } from './wall-price.mapping'
 
-export type FloorMappingConflict = {
+export type WallMappingConflict = {
   mappingId: string
   mappingTitle: string
   mappingPrice: number
@@ -16,10 +16,10 @@ export type FloorMappingConflict = {
  * Stops Stage 1 if a `both`/`frontend` mapping price disagrees with public preview data.
  * Does not mutate prices.data.ts.
  */
-export function findFloorMappingConflicts(
-  mapping: readonly FloorPriceMappingItem[] = FLOOR_PRICE_MAPPING,
-): FloorMappingConflict[] {
-  const conflicts: FloorMappingConflict[] = []
+export function findWallMappingConflicts(
+  mapping: readonly WallPriceMappingItem[] = WALL_PRICE_MAPPING,
+): WallMappingConflict[] {
+  const conflicts: WallMappingConflict[] = []
 
   for (const item of mapping) {
     if (item.source !== 'both' && item.source !== 'frontend') continue
@@ -66,10 +66,10 @@ export function findFloorMappingConflicts(
   return conflicts
 }
 
-export function assertFloorMappingMatchesFrontend(
-  mapping: readonly FloorPriceMappingItem[] = FLOOR_PRICE_MAPPING,
+export function assertWallMappingMatchesFrontend(
+  mapping: readonly WallPriceMappingItem[] = WALL_PRICE_MAPPING,
 ): void {
-  const conflicts = findFloorMappingConflicts(mapping)
+  const conflicts = findWallMappingConflicts(mapping)
   if (conflicts.length === 0) return
 
   const details = conflicts
@@ -79,5 +79,5 @@ export function assertFloorMappingMatchesFrontend(
     )
     .join('\n')
 
-  throw new Error(`Floor price mapping conflicts with frontend prices.data.ts:\n${details}`)
+  throw new Error(`Wall price mapping conflicts with frontend prices.data.ts:\n${details}`)
 }

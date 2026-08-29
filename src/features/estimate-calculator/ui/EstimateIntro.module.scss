@@ -1,0 +1,126 @@
+@use 'flex' as flex;
+@use 'media' as mq;
+@use './estimate-ui' as eu;
+
+.intro {
+  max-width: 920px;
+  margin-bottom: 4px;
+}
+
+.eyebrow {
+  @include flex.flex($ai: center);
+
+  gap: 10px;
+  margin: 0 0 12px;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+
+  &::before {
+    width: 28px;
+    height: 1px;
+    content: '';
+    background: var(--amber);
+  }
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.7rem, 2.2vw, 2.25rem);
+  font-weight: var(--weight-medium);
+  line-height: 1.12;
+  letter-spacing: var(--tracking-heading);
+
+  em {
+    color: var(--amber);
+    font-family: inherit;
+    font-style: italic;
+    font-weight: var(--weight-regular);
+  }
+}
+
+.lead {
+  margin: 12px 0 0;
+  max-width: 62ch;
+  font-size: 14px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--ink) 74%, transparent);
+}
+
+.warning {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--amber);
+  background: color-mix(in srgb, var(--amber) 12%, var(--paper));
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0 0;
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
+
+  div {
+    padding: 12px 14px;
+    border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+  }
+
+  dt {
+    margin: 0;
+    font-size: 10px;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--ink) 55%, transparent);
+  }
+
+  dd {
+    margin: 6px 0 0;
+    font-size: 18px;
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.recommendation {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.recommendationLabel {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--amber) 80%, var(--paper));
+}
+
+.recommendationText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.recommendationHint {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--paper) 68%, transparent);
+}

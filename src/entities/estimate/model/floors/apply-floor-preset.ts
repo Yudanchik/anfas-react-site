@@ -1,6 +1,6 @@
-import { normalizeNonNegative } from './calculate-line-total'
+import { normalizeNonNegative } from '../shared/calculate-line-total'
 import { disableConflictingAlternatives } from './floor-conflict-groups'
-import type { EstimateLine, FloorEstimateInput } from './estimate.types'
+import type { EstimateLine, FloorEstimateInput } from '../shared/estimate.types'
 
 export type DemolitionCoveringOption =
   | 'laminate'

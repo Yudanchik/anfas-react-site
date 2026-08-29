@@ -1,4 +1,4 @@
-import type { FloorPriceMappingItem } from './estimate.types'
+import type { FloorPriceMappingItem } from '../shared/estimate.types'
 
 /**
  * Explicit whitelist of rough-floor works for internal estimate MVP.

@@ -1,0 +1,64 @@
+@use 'media' as mq;
+@use '../ui/estimate-ui' as eu;
+
+.wrap {
+  @include eu.panel-muted;
+
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 16px 20px;
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.title {
+  @include eu.section-title;
+
+  margin-bottom: 8px;
+}
+
+.text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}
+
+.actionsPanel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.action {
+  @include eu.button-secondary;
+
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.danger {
+  @include eu.button-danger;
+
+  width: 100%;
+  margin-top: 12px;
+  justify-content: flex-start;
+}
+
+.status {
+  @include eu.status-chip;
+}

@@ -1,10 +1,10 @@
-import { normalizeNonNegative, normalizePositiveCoefficient } from './calculate-line-total'
+import { normalizeNonNegative, normalizePositiveCoefficient } from '../shared/calculate-line-total'
 import type {
   EstimateLine,
   FloorEstimateInput,
   FloorPriceMappingItem,
   FloorQuantityField,
-} from './estimate.types'
+} from '../shared/estimate.types'
 import { FLOOR_PRICE_MAPPING, FLOOR_SECTION_ID } from './floor-price.mapping'
 
 export type BuildFloorEstimateLinesOptions = {

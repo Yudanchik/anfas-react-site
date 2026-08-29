@@ -1,4 +1,4 @@
-import type { FloorRecommendation, FloorRecommendationLevel } from './estimate.types'
+import type { FloorRecommendation, FloorRecommendationLevel } from '../shared/estimate.types'
 
 const SUGGESTIONS: Record<FloorRecommendationLevel, readonly string[]> = {
   'up-to-5': [

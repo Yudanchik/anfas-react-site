@@ -1,0 +1,47 @@
+@use 'media' as mq;
+
+.wrap {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 4px;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--paper-deep) 45%, var(--paper));
+}
+
+.tab {
+  min-height: 36px;
+  padding: 7px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+
+  &[data-active='true'] {
+    border-color: color-mix(in srgb, var(--ink) 18%, transparent);
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 1px 0 rgb(22 23 19 / 4%);
+  }
+
+  &:hover:not([data-active='true']) {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 1px;
+  }
+
+  @include mq.media(phone) {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}

@@ -1,6 +1,9 @@
-import type { PriceCategorySlug } from '../../price/model/price.types'
+import type { PriceCategorySlug } from '../../../price/model/price.types'
 
-export type FloorPriceSource = 'pdf' | 'frontend' | 'both' | 'manual'
+export type EstimatePriceSource = 'pdf' | 'frontend' | 'both' | 'manual'
+
+/** @deprecated Prefer EstimatePriceSource — kept for floors call sites */
+export type FloorPriceSource = EstimatePriceSource
 
 export type FloorWorkKind =
   | 'demolition'
@@ -13,6 +16,21 @@ export type FloorWorkKind =
   | 'waste'
   | 'other-rough'
 
+export type WallWorkKind =
+  | 'demolition'
+  | 'prep'
+  | 'primer'
+  | 'plaster-gypsum'
+  | 'plaster-cement'
+  | 'putty'
+  | 'reinforce'
+  | 'slopes'
+  | 'finish-paint'
+  | 'finish-wallpaper'
+  | 'other'
+
+export type EstimateWorkKind = FloorWorkKind | WallWorkKind
+
 export type FloorQuantityField =
   | 'totalFloorArea'
   | 'demolitionArea'
@@ -20,11 +38,21 @@ export type FloorQuantityField =
   | 'wetZonesArea'
   | 'manual'
 
+export type WallQuantityField =
+  | 'totalWallArea'
+  | 'demolitionArea'
+  | 'plasterArea'
+  | 'puttyArea'
+  | 'finishArea'
+  | 'slopesLength'
+  | 'cornersLength'
+  | 'manual'
+
 export type EstimateLine = {
   id: string
   priceKey: string
   sectionId: string
-  kind: FloorWorkKind
+  kind: EstimateWorkKind
   title: string
   unit: string
   unitPrice: number
@@ -32,7 +60,7 @@ export type EstimateLine = {
   coefficient: number
   enabled: boolean
   comment?: string
-  source: FloorPriceSource
+  source: EstimatePriceSource
   frontendCategorySlug?: PriceCategorySlug
   note?: string
 }
@@ -69,13 +97,32 @@ export type FloorEstimateResult = {
   materialsExcluded: true
 }
 
+export type WallEstimateInput = {
+  totalWallArea: number
+  demolitionArea: number
+  plasterArea: number
+  puttyArea: number
+  finishArea: number
+  wallHeightM: number
+  slopesLengthM: number
+  cornersLengthM: number
+  surveyorComment?: string
+}
+
+export type WallEstimateResult = {
+  section: EstimateSection
+  selectedCount: number
+  totalRub: number
+  materialsExcluded: true
+}
+
 export type FloorPriceMappingItem = {
   /** Stable id used as EstimateLine.priceKey / id seed */
   id: string
   title: string
   unit: string
   unitPrice: number
-  source: FloorPriceSource
+  source: EstimatePriceSource
   kind: FloorWorkKind
   frontendCategorySlug?: PriceCategorySlug
   /** Exact frontend position name for conflict check when source is both/frontend */
@@ -84,4 +131,19 @@ export type FloorPriceMappingItem = {
   note?: string
   defaultEnabled: boolean
   defaultQuantityFrom: FloorQuantityField
+}
+
+export type WallPriceMappingItem = {
+  id: string
+  title: string
+  unit: string
+  unitPrice: number
+  source: EstimatePriceSource
+  kind: WallWorkKind
+  frontendCategorySlug?: PriceCategorySlug
+  frontendName?: string
+  frontendUnitPrice?: number
+  note?: string
+  defaultEnabled: boolean
+  defaultQuantityFrom: WallQuantityField
 }

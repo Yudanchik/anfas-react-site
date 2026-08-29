@@ -1,4 +1,4 @@
-import type { EstimateLine, FloorWorkKind } from '@/entities/estimate'
+import type { EstimateLine, EstimateWorkKind, FloorWorkKind } from '@/entities/estimate'
 
 const SCREED_KINDS: readonly FloorWorkKind[] = [
   'base-prep',
@@ -19,7 +19,10 @@ export function countDemolitionAreaTargets(lines: readonly EstimateLine[]): numb
 }
 
 export function countScreedAreaTargets(lines: readonly EstimateLine[]): number {
-  return lines.filter((line) => SCREED_KINDS.includes(line.kind) && line.unit === 'м²').length
+  return lines.filter(
+    (line) =>
+      (SCREED_KINDS as readonly EstimateWorkKind[]).includes(line.kind) && line.unit === 'м²',
+  ).length
 }
 
 export function countWetAreaTargets(lines: readonly EstimateLine[]): number {

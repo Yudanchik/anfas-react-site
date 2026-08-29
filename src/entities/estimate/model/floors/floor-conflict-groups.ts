@@ -1,4 +1,4 @@
-import type { EstimateLine } from './estimate.types'
+import type { EstimateLine } from '../shared/estimate.types'
 
 /**
  * Mutually exclusive alternatives within a floor estimate.

@@ -1,5 +1,5 @@
-import { calculateLineTotal } from './calculate-line-total'
-import type { EstimateLine, FloorWorkKind } from './estimate.types'
+import { calculateLineTotal } from '../shared/calculate-line-total'
+import type { EstimateLine, FloorWorkKind } from '../shared/estimate.types'
 
 export type FloorEstimateGroupId =
   | 'demolition'
@@ -59,7 +59,10 @@ export function resolveFloorEstimateGroupId(
   line: Pick<EstimateLine, 'kind' | 'source'>,
 ): FloorEstimateGroupId {
   if (line.source === 'manual') return 'manual'
-  return KIND_TO_GROUP[line.kind] ?? 'manual'
+  if (Object.prototype.hasOwnProperty.call(KIND_TO_GROUP, line.kind)) {
+    return KIND_TO_GROUP[line.kind as FloorWorkKind]
+  }
+  return 'manual'
 }
 
 export function getFloorEstimateGroupTitle(groupId: FloorEstimateGroupId): string {

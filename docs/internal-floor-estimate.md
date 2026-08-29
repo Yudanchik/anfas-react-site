@@ -52,22 +52,9 @@ pnpm build
 
 ## Extending with walls / ceilings / other sections
 
-Do **not** rewrite the floors stack. Reuse shared calc and add a parallel section package:
+See **`docs/estimate-calculator-architecture.md`** for the current folder layout.
 
-| Layer | Floors (existing) | Next section (e.g. walls) |
-|-------|-------------------|---------------------------|
-| Mapping | `floor-price.mapping.ts` | `wall-price.mapping.ts` (new whitelist) |
-| Builders / helpers | `build-floor-estimate*.ts`, `apply-floor-quantities.ts`, `get-floor-recommendation.ts` | `build-wall-estimate*.ts`, wall apply helpers |
-| Feature UI | `src/features/floor-estimate/` | `src/features/wall-estimate/` (or section tabs later) |
-| Shared calc | `calculateLineTotal`, `calculateSectionTotal`, `calculateEstimateTotal` | reuse as-is |
-| Types | `EstimateSection` / `EstimateLine` already multi-section via `sectionId` | add wall kinds to mapping; keep floor kinds untouched |
-
-Practical steps:
-
-1. Add mapping + assert vs frontend for `source=both` (same PDF-primary rule).
-2. Add pure builders/tests under `src/entities/estimate/model/`.
-3. Compose sections with `calculateEstimateTotal([floors, walls, …])`.
-4. Extend `/internal/estimate` UI with a second section block — do not fold wall prices into `FLOOR_PRICE_MAPPING`.
+Do **not** rewrite the floors stack. Reuse shared calc and add a parallel section package under `model/<section>/` and `features/estimate-calculator/<section>/`.
 
 ## Out of scope (MVP)
 
