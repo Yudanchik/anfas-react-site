@@ -11,7 +11,7 @@ export type EstimateZoneNameValidation =
 export function validateEstimateZoneName(raw: string): EstimateZoneNameValidation {
   const value = raw.trim().replace(/\s+/g, ' ')
   if (!value) {
-    return { ok: false, message: 'Укажите зону, например: кухня' }
+    return { ok: false, message: 'Укажите название зоны' }
   }
   if (value.length > ESTIMATE_ZONE_NAME_MAX_LENGTH) {
     return {

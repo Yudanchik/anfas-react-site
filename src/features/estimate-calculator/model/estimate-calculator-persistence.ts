@@ -2,11 +2,14 @@ import {
   buildFloorEstimateLines,
   buildWallEstimateLines,
   findFloorMappingItem,
+  findWallMappingItem,
   isZonedEstimateLine,
+  noteEstimateZoneIds,
   noteManualLineIds,
   noteZonedLineIds,
   type DemolitionCoveringOption,
   type EstimateLine,
+  type EstimateZone,
   type FloorEstimateInput,
   type ScreedTypeOption,
   type WallDemolitionCoveringOption,
@@ -23,8 +26,9 @@ import type { EstimateTabId } from '../ui/EstimateTabs'
 
 export const ESTIMATE_CALCULATOR_STORAGE_KEY = 'anfas:estimate-calculator:v1'
 
-/** Версия схемы снимка в localStorage; при несовпадении parse возвращает null. */
-const SNAPSHOT_VERSION = 1 as const
+/** Версия схемы снимка в localStorage. */
+const SNAPSHOT_VERSION = 2 as const
+const LEGACY_SNAPSHOT_VERSION = 1 as const
 
 export type PersistedEstimateLine = {
   id: string
@@ -34,6 +38,7 @@ export type PersistedEstimateLine = {
   unitPrice: number
   coefficient: number
   comment?: string
+  zoneId?: string
   zoneName?: string
   source?: EstimateLine['source']
   title?: string
@@ -60,6 +65,7 @@ export type WallScenarioDraftState = {
 export type EstimateCalculatorSnapshot = {
   version: typeof SNAPSHOT_VERSION
   activeTab: EstimateTabId
+  zones: EstimateZone[]
   floors: {
     input: FloorEstimateInput
     lines: PersistedEstimateLine[]
@@ -156,6 +162,41 @@ function parseWallInput(raw: unknown): WallEstimateInput {
   }
 }
 
+function parsePersistedZone(raw: unknown): EstimateZone | null {
+  if (!isRecord(raw)) return null
+  const id = asString(raw.id).trim()
+  const name = asString(raw.name).trim()
+  if (!id || !name) return null
+  return {
+    id,
+    name,
+    floorArea: asNonNegative(raw.floorArea),
+    demolitionFloorArea: asNonNegative(
+      raw.demolitionFloorArea ?? raw.demolitionArea,
+    ),
+    screedArea: asNonNegative(raw.screedArea),
+    wetArea: asNonNegative(raw.wetArea),
+    wallArea: asNonNegative(raw.wallArea),
+    demolitionWallArea: asNonNegative(raw.demolitionWallArea),
+    plasterArea: asNonNegative(raw.plasterArea),
+    puttyArea: asNonNegative(raw.puttyArea),
+    finishArea: asNonNegative(raw.finishArea),
+    slopesLength: asNonNegative(raw.slopesLength),
+    cornersLength: asNonNegative(raw.cornersLength),
+    comment: asString(raw.comment).trim() || undefined,
+  }
+}
+
+function parsePersistedZones(raw: unknown): EstimateZone[] {
+  if (!Array.isArray(raw)) return []
+  const zones: EstimateZone[] = []
+  for (const entry of raw) {
+    const zone = parsePersistedZone(entry)
+    if (zone) zones.push(zone)
+  }
+  return zones
+}
+
 function parsePersistedLine(raw: unknown): PersistedEstimateLine | null {
   if (!isRecord(raw)) return null
   const id = asString(raw.id)
@@ -173,6 +214,8 @@ function parsePersistedLine(raw: unknown): PersistedEstimateLine | null {
 
   const comment = asString(raw.comment)
   if (comment) line.comment = comment
+  const zoneId = asString(raw.zoneId).trim()
+  if (zoneId) line.zoneId = zoneId
   const zoneName = asString(raw.zoneName)
   if (zoneName) line.zoneName = zoneName
 
@@ -201,16 +244,23 @@ function isTabId(value: unknown): value is EstimateTabId {
   return value === 'floors' || value === 'walls'
 }
 
-/** Разбор снимка калькулятора; `null`, если payload отсутствует или повреждён. */
+function isSupportedSnapshotVersion(value: unknown): value is 1 | 2 {
+  return value === SNAPSHOT_VERSION || value === LEGACY_SNAPSHOT_VERSION
+}
+
+/** Разбор снимка калькулятора; `null`, если payload отсутствует или повреждён. v1 → v2. */
 export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculatorSnapshot | null {
   if (!isRecord(raw)) return null
-  if (raw.version !== SNAPSHOT_VERSION) return null
+  if (!isSupportedSnapshotVersion(raw.version)) return null
   if (!isTabId(raw.activeTab)) return null
   if (!isRecord(raw.floors) || !isRecord(raw.walls)) return null
+
+  const zones = raw.version === LEGACY_SNAPSHOT_VERSION ? [] : parsePersistedZones(raw.zones)
 
   const snapshot: EstimateCalculatorSnapshot = {
     version: SNAPSHOT_VERSION,
     activeTab: raw.activeTab,
+    zones,
     floors: {
       input: parseFloorInput(raw.floors.input),
       lines: parsePersistedLines(raw.floors.lines),
@@ -269,6 +319,7 @@ export function serializeEstimateLine(line: EstimateLine): PersistedEstimateLine
     source: line.source,
   }
   if (line.comment) persisted.comment = line.comment
+  if (line.zoneId) persisted.zoneId = line.zoneId
   if (line.zoneName) persisted.zoneName = line.zoneName
   if (line.source === 'manual' || isZonedEstimateLine(line)) {
     persisted.title = line.title
@@ -279,8 +330,28 @@ export function serializeEstimateLine(line: EstimateLine): PersistedEstimateLine
   return persisted
 }
 
+export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
+  return {
+    id: zone.id,
+    name: zone.name,
+    floorArea: zone.floorArea,
+    demolitionFloorArea: zone.demolitionFloorArea,
+    screedArea: zone.screedArea,
+    wetArea: zone.wetArea,
+    wallArea: zone.wallArea,
+    demolitionWallArea: zone.demolitionWallArea,
+    plasterArea: zone.plasterArea,
+    puttyArea: zone.puttyArea,
+    finishArea: zone.finishArea,
+    slopesLength: zone.slopesLength,
+    cornersLength: zone.cornersLength,
+    comment: zone.comment,
+  }
+}
+
 export function buildEstimateCalculatorSnapshot(params: {
   activeTab: EstimateTabId
+  zones?: readonly EstimateZone[]
   floorsInput: FloorEstimateInput
   floorsLines: readonly EstimateLine[]
   wallsInput: WallEstimateInput
@@ -291,6 +362,7 @@ export function buildEstimateCalculatorSnapshot(params: {
   return {
     version: SNAPSHOT_VERSION,
     activeTab: params.activeTab,
+    zones: (params.zones ?? []).map(serializeEstimateZone),
     floors: {
       input: { ...params.floorsInput },
       lines: params.floorsLines.map(serializeEstimateLine),
@@ -311,6 +383,7 @@ export function buildEstimateCalculatorSnapshot(params: {
 function applyPersistedPatches(
   baseLines: readonly EstimateLine[],
   persisted: readonly PersistedEstimateLine[],
+  sectionFallback: 'floors' | 'walls',
 ): EstimateLine[] {
   if (persisted.length === 0) return [...baseLines]
 
@@ -334,6 +407,7 @@ function applyPersistedPatches(
       unitPrice: asNonNegative(patch.unitPrice),
       coefficient: asNonNegative(patch.coefficient, 1) || 1,
       comment: patch.comment?.trim() || undefined,
+      zoneId: patch.zoneId?.trim() || undefined,
       zoneName: patch.zoneName?.trim() || undefined,
     }
   })
@@ -343,15 +417,20 @@ function applyPersistedPatches(
     if (usedPersistedIds.has(patch.id)) continue
 
     if (isZonedEstimateLine(patch)) {
-      const mapping = findFloorMappingItem(patch.priceKey)
+      const sectionId = asString(patch.sectionId, sectionFallback)
+      const floorMapping = sectionId === 'walls' ? undefined : findFloorMappingItem(patch.priceKey)
+      const wallMapping = sectionId === 'walls' ? findWallMappingItem(patch.priceKey) : undefined
+      const mapping = floorMapping ?? wallMapping
       const title = asString(patch.title).trim() || mapping?.title || ''
       const unit = asString(patch.unit).trim() || mapping?.unit || 'м²'
       if (!title) continue
       extras.push({
         id: patch.id,
         priceKey: patch.priceKey,
-        sectionId: asString(patch.sectionId, mapping ? 'floors' : baseLines[0]?.sectionId ?? 'floors'),
-        kind: (patch.kind ?? mapping?.kind ?? 'other-rough') as EstimateLine['kind'],
+        sectionId,
+        kind: (patch.kind ??
+          mapping?.kind ??
+          (sectionFallback === 'floors' ? 'other-rough' : 'other')) as EstimateLine['kind'],
         title,
         unit,
         unitPrice: asNonNegative(patch.unitPrice, mapping?.unitPrice ?? 0),
@@ -359,6 +438,7 @@ function applyPersistedPatches(
         coefficient: asNonNegative(patch.coefficient, 1) || 1,
         enabled: asBoolean(patch.enabled, true),
         comment: patch.comment?.trim() || undefined,
+        zoneId: patch.zoneId?.trim() || undefined,
         zoneName: patch.zoneName?.trim() || undefined,
         source: (patch.source as EstimateLine['source']) ?? mapping?.source ?? 'pdf',
         frontendCategorySlug: mapping?.frontendCategorySlug,
@@ -375,7 +455,7 @@ function applyPersistedPatches(
     extras.push({
       id: patch.id,
       priceKey: patch.priceKey,
-      sectionId: asString(patch.sectionId, baseLines[0]?.sectionId ?? 'floors'),
+      sectionId: asString(patch.sectionId, sectionFallback),
       kind: (patch.kind ?? 'other') as EstimateLine['kind'],
       title,
       unit,
@@ -405,11 +485,11 @@ export function restoreFloorEstimateState(
   const base = buildFloorEstimateLines(input)
   return {
     input,
-    lines: snapshot ? applyPersistedPatches(base, snapshot.floors.lines) : base,
+    lines: snapshot ? applyPersistedPatches(base, snapshot.floors.lines, 'floors') : base,
   }
 }
 
-/** То же для стен (пока без zoned clones в UI). */
+/** То же для стен, включая zoned clones. */
 export function restoreWallEstimateState(
   snapshot: EstimateCalculatorSnapshot | null,
 ): { input: WallEstimateInput; lines: EstimateLine[] } {
@@ -417,8 +497,14 @@ export function restoreWallEstimateState(
   const base = buildWallEstimateLines(input)
   return {
     input,
-    lines: snapshot ? applyPersistedPatches(base, snapshot.walls.lines) : base,
+    lines: snapshot ? applyPersistedPatches(base, snapshot.walls.lines, 'walls') : base,
   }
+}
+
+export function restoreEstimateZones(snapshot: EstimateCalculatorSnapshot | null): EstimateZone[] {
+  const zones = snapshot?.zones ? snapshot.zones.map(serializeEstimateZone) : []
+  noteEstimateZoneIds(zones)
+  return zones
 }
 
 export function restoreFloorPresetDraft(

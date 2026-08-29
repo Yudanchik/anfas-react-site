@@ -3,7 +3,6 @@
 @use './estimate-ui' as eu;
 
 .intro {
-  max-width: 920px;
   margin-bottom: 4px;
 }
 
@@ -94,33 +93,62 @@
   }
 }
 
-.recommendation {
+.sections {
+  @include eu.panel;
+
   margin-top: 14px;
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  background: var(--ink);
-  color: var(--paper);
+  max-width: none;
+  padding: 14px;
 }
 
-.recommendationLabel {
+.sectionsLabel {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   font-size: 10px;
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--amber) 80%, var(--paper));
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
 }
 
-.recommendationText {
+.sectionsList {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.45;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.recommendationHint {
-  margin: 8px 0 0;
-  font-size: 11px;
-  line-height: 1.4;
-  color: color-mix(in srgb, var(--paper) 68%, transparent);
+.sectionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--paper-deep) 35%, var(--paper));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 35%);
+
+  &[data-active='true'] {
+    border-color: color-mix(in srgb, var(--amber) 45%, transparent);
+    background: color-mix(in srgb, var(--amber) 10%, var(--paper));
+    box-shadow: inset 3px 0 0 var(--amber);
+  }
+}
+
+.sectionName {
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+}
+
+.sectionMeta {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-medium);
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
 }

@@ -17,6 +17,24 @@
   @include eu.section-lead;
 }
 
+.targetRow {
+  display: grid;
+  grid-template-columns: auto minmax(10rem, 16rem);
+  gap: 8px 12px;
+  align-items: center;
+  margin-bottom: 12px;
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.targetLabel {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

@@ -7,6 +7,7 @@ export type CreateZonedFloorEstimateLineParams = {
   priceKey: string
   quantity: number
   zoneName: string
+  zoneId?: string
   comment?: string
 }
 
@@ -29,6 +30,7 @@ export function createZonedFloorEstimateLine(
     kind: item.kind,
     quantity: params.quantity,
     zoneName: params.zoneName,
+    zoneId: params.zoneId,
     comment: params.comment,
     source: item.source,
     frontendCategorySlug: item.frontendCategorySlug,

@@ -10,11 +10,16 @@ import {
   buildFloorEstimateLines,
   calculateEstimateTotal,
   calculateLineTotal,
+  calculateSectionTotal,
   createManualEstimateLine,
   FLOOR_PRICE_MAPPING,
   getDefaultOpenFloorGroupIds,
   getFloorRecommendation,
   groupFloorEstimateLines,
+  removeManualEstimateLine,
+  removeRemovableEstimateLine,
+  enableCanonicalEstimateLine,
+  createZonedFloorEstimateLine,
   updateEstimateLine,
 } from '../index'
 
@@ -218,6 +223,59 @@ describe('floor estimate domain', () => {
       unitPrice: 500,
     })[0]
     assert.equal(calculateLineTotal(overridden), 1800)
+  })
+
+  it('removes manual lines without touching canonical mapping rows', () => {
+    const base = buildFloorEstimateLines(sampleInput)
+    const manual = createManualEstimateLine({
+      title: 'Временная строка',
+      unit: 'м²',
+      unitPrice: 100,
+      quantity: 2,
+    })
+    const lines = [...base, manual]
+    const next = removeManualEstimateLine(lines, manual.id)
+    assert.equal(next.some((line) => line.id === manual.id), false)
+    assert.equal(next.length, base.length)
+    assert.equal(
+      removeManualEstimateLine(lines, base[0]!.id).length,
+      lines.length,
+    )
+    assert.equal(calculateSectionTotal({ lines: next }), calculateSectionTotal({ lines: base }))
+  })
+
+  it('enables canonical row for general price-work add without creating a clone', () => {
+    const base = buildFloorEstimateLines(sampleInput)
+    const { lines, ok } = enableCanonicalEstimateLine(base, {
+      priceKey: 'demolition-laminate',
+      quantity: 12,
+      comment: 'общие',
+    })
+    assert.equal(ok, true)
+    const row = lines.find((line) => line.priceKey === 'demolition-laminate' && !line.zoneId)
+    assert.ok(row)
+    assert.equal(row?.enabled, true)
+    assert.equal(row?.quantity, 12)
+    assert.equal(row?.comment, 'общие')
+    assert.equal(lines.length, base.length)
+  })
+
+  it('removes zoned clones but keeps canonical rows', () => {
+    const base = buildFloorEstimateLines(sampleInput)
+    const zoned = createZonedFloorEstimateLine({
+      priceKey: 'demolition-laminate',
+      quantity: 3,
+      zoneName: 'Кухня',
+      zoneId: 'zone-1',
+    })
+    assert.ok(zoned)
+    const lines = [...base, zoned]
+    const next = removeRemovableEstimateLine(lines, zoned.id)
+    assert.equal(next.length, base.length)
+    assert.equal(
+      removeRemovableEstimateLine(lines, base[0]!.id).length,
+      lines.length,
+    )
   })
 
   it('groups lines and computes group totals from enabled rows only', () => {

@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import {
   applyDemolitionAreaToDemolitionWorks,
   applyFloorPreset,
+  applyFloorPresetToZone,
   applyScreedAreaToScreedWorks,
   applyTotalAreaToSquareMeterWorks,
   applyWetAreaToWaterproofing,
@@ -11,9 +12,12 @@ import {
   countEnabledLines,
   createManualEstimateLine,
   createZonedFloorEstimateLine,
+  enableCanonicalEstimateLine,
   getFloorRecommendation,
+  removeRemovableEstimateLine,
   updateEstimateLine,
   type EstimateLine,
+  type EstimateZone,
   type FloorEstimateInput,
   type FloorPresetApplication,
 } from '@/entities/estimate'
@@ -96,13 +100,25 @@ export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {})
     return affected
   }
 
-  function applyPreset(application: FloorPresetApplication): { label: string; addedCount: number } {
-    let result = applyFloorPreset(lines, input, application)
+  function applyPreset(
+    application: FloorPresetApplication,
+    target?: { zone?: EstimateZone },
+  ): { label: string; addedCount: number; zoneName?: string } {
+    const zone = target?.zone
+    let result = zone
+      ? applyFloorPresetToZone(lines, zone, application)
+      : applyFloorPreset(lines, input, application)
     setLines((prev) => {
-      result = applyFloorPreset(prev, input, application)
+      result = zone
+        ? applyFloorPresetToZone(prev, zone, application)
+        : applyFloorPreset(prev, input, application)
       return result.lines
     })
-    return { label: result.presetLabel, addedCount: result.addedCount }
+    return {
+      label: result.presetLabel,
+      addedCount: result.addedCount,
+      zoneName: zone?.name,
+    }
   }
 
   function addManualLine(params: {
@@ -114,16 +130,42 @@ export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {})
     setLines((prev) => [...prev, createManualEstimateLine(params)])
   }
 
+  function removeManualLine(lineId: string) {
+    setLines((prev) => removeRemovableEstimateLine(prev, lineId))
+  }
+
   function addZonedLine(params: {
     priceKey: string
     quantity: number
     zoneName: string
+    zoneId?: string
     comment?: string
   }): boolean {
+    if (!params.zoneId && !params.zoneName.trim()) {
+      let ok = false
+      setLines((prev) => {
+        const result = enableCanonicalEstimateLine(prev, params)
+        ok = result.ok
+        return result.lines
+      })
+      return ok
+    }
     const line = createZonedFloorEstimateLine(params)
     if (!line) return false
     setLines((prev) => [...prev, line])
     return true
+  }
+
+  function removeLinesByZoneId(zoneId: string) {
+    setLines((prev) => prev.filter((line) => line.zoneId !== zoneId))
+  }
+
+  function syncZoneName(zoneId: string, zoneName: string) {
+    const name = zoneName.trim()
+    if (!name) return
+    setLines((prev) =>
+      prev.map((line) => (line.zoneId === zoneId ? { ...line, zoneName: name } : line)),
+    )
   }
 
   function resetEstimate() {
@@ -152,7 +194,10 @@ export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {})
     applyWetArea,
     applyPreset,
     addManualLine,
+    removeManualLine,
     addZonedLine,
+    removeLinesByZoneId,
+    syncZoneName,
     resetEstimate,
     replaceEstimate,
   }

@@ -32,6 +32,9 @@ export {
   applyQuantityToMatchingLines,
   createManualEstimateLine,
   noteManualLineIds,
+  removeManualEstimateLine,
+  removeRemovableEstimateLine,
+  enableCanonicalEstimateLine,
   updateEstimateLine,
 } from './shared/estimate-line-helpers'
 export {
@@ -41,18 +44,36 @@ export {
 } from './shared/estimate-zoned-line'
 export type { CreateZonedEstimateLineParams } from './shared/estimate-zoned-line'
 export {
+  createEstimateZone,
+  ESTIMATE_ZONE_NAME_TEMPLATES,
+  EMPTY_ESTIMATE_ZONE_FIELDS,
+  isEstimateZoneId,
+  lineBelongsToZone,
+  noteEstimateZoneIds,
+  removeEstimateLinesByZoneId,
+  removeEstimateZone,
+  syncEstimateLineZoneNames,
+  updateEstimateZone,
+} from './shared/estimate-zone'
+export type { EstimateZone, EstimateZoneId } from './shared/estimate-zone'
+export {
+  attachZonesToSelectedSections,
   calculateSelectedSectionsGrandTotal,
   countSelectedSectionRows,
+  ESTIMATE_GENERAL_WORKS_TITLE,
   ESTIMATE_SECTION_LABELS,
   getCombinedSelectedEstimateLines,
   getSelectedEstimateLines,
   getSelectedEstimateSections,
+  groupSelectedSectionItemsByZone,
   resolveEstimateSectionTitle,
 } from './shared/get-selected-estimate-lines'
 export type {
   EstimateSectionSelection,
   SelectedEstimateLineView,
   SelectedEstimateSectionGroup,
+  SelectedEstimateSectionWithZones,
+  SelectedEstimateZoneGroup,
 } from './shared/get-selected-estimate-lines'
 export { formatEstimatePositionCount } from './shared/format-estimate-position-count'
 
@@ -102,12 +123,15 @@ export { createZonedFloorEstimateLine } from './floors/create-zoned-floor-estima
 export type { CreateZonedFloorEstimateLineParams } from './floors/create-zoned-floor-estimate-line'
 export {
   disableConflictingAlternatives,
+  disableConflictingAlternativesInZone,
   FLOOR_CONFLICT_GROUPS,
   getFloorConflictGroupId,
 } from './floors/floor-conflict-groups'
 export {
   applyFloorPreset,
+  applyFloorPresetToZone,
   formatFloorPresetFeedback,
+  formatFloorPresetZoneFeedback,
   getFloorPresetLabel,
 } from './floors/apply-floor-preset'
 export type {
@@ -158,6 +182,7 @@ export {
 export type { WallEstimateGroup, WallEstimateGroupId } from './walls/wall-estimate-groups'
 export {
   disableWallConflictingAlternatives,
+  disableWallConflictingAlternativesInZone,
   getWallConflictGroupId,
   WALL_CONFLICT_GROUPS,
   WALL_PAINT_FINISH_KEYS,
@@ -165,8 +190,10 @@ export {
 } from './walls/wall-conflict-groups'
 export {
   applyWallScenario,
+  applyWallScenarioToZone,
   formatWallScenarioFeedback,
   formatWallScenarioLabel,
+  formatWallScenarioZoneFeedback,
   isWallFinishPriceKey,
   resolveWallScenarioKeys,
   wallScenarioIncludesFinish,
@@ -180,3 +207,16 @@ export type {
   WallStateOption,
   WallWallpaperTypeOption,
 } from './walls/apply-wall-scenario'
+export {
+  createZonedWallEstimateLine,
+  findWallMappingItem,
+} from './walls/create-zoned-wall-estimate-line'
+export type { CreateZonedWallEstimateLineParams } from './walls/create-zoned-wall-estimate-line'
+export {
+  getWallZoneMappingOptions,
+  WALL_ZONE_WORK_CATEGORIES,
+} from './walls/wall-zone-catalog'
+export type {
+  WallZoneWorkCategory,
+  WallZoneWorkCategoryId,
+} from './walls/wall-zone-catalog'

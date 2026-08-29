@@ -7,14 +7,19 @@ import {
   applyWallPlasterArea,
   applyWallPuttyArea,
   applyWallScenario,
+  applyWallScenarioToZone,
   applyWallSlopesLength,
   applyWallTotalAreaToSquareMeterWorks,
   buildWallEstimateLines,
   calculateSectionTotal,
   countEnabledLines,
   createManualWallEstimateLine,
+  createZonedWallEstimateLine,
+  enableCanonicalEstimateLine,
   updateEstimateLine,
+  removeRemovableEstimateLine,
   type EstimateLine,
+  type EstimateZone,
   type WallEstimateInput,
   type WallScenarioApplication,
 } from '@/entities/estimate'
@@ -118,13 +123,23 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
 
   function applyScenario(
     application: WallScenarioApplication,
-  ): { label: string; addedCount: number } {
-    let result = applyWallScenario(lines, input, application)
+    target?: { zone?: EstimateZone },
+  ): { label: string; addedCount: number; zoneName?: string } {
+    const zone = target?.zone
+    let result = zone
+      ? applyWallScenarioToZone(lines, zone, application)
+      : applyWallScenario(lines, input, application)
     setLines((prev) => {
-      result = applyWallScenario(prev, input, application)
+      result = zone
+        ? applyWallScenarioToZone(prev, zone, application)
+        : applyWallScenario(prev, input, application)
       return result.lines
     })
-    return { label: result.scenarioLabel, addedCount: result.addedCount }
+    return {
+      label: result.scenarioLabel,
+      addedCount: result.addedCount,
+      zoneName: zone?.name,
+    }
   }
 
   function addManualLine(params: {
@@ -134,6 +149,44 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
     quantity: number
   }) {
     setLines((prev) => [...prev, createManualWallEstimateLine(params)])
+  }
+
+  function removeManualLine(lineId: string) {
+    setLines((prev) => removeRemovableEstimateLine(prev, lineId))
+  }
+
+  function addZonedLine(params: {
+    priceKey: string
+    quantity: number
+    zoneName: string
+    zoneId?: string
+    comment?: string
+  }): boolean {
+    if (!params.zoneId && !params.zoneName.trim()) {
+      let ok = false
+      setLines((prev) => {
+        const result = enableCanonicalEstimateLine(prev, params)
+        ok = result.ok
+        return result.lines
+      })
+      return ok
+    }
+    const line = createZonedWallEstimateLine(params)
+    if (!line) return false
+    setLines((prev) => [...prev, line])
+    return true
+  }
+
+  function removeLinesByZoneId(zoneId: string) {
+    setLines((prev) => prev.filter((line) => line.zoneId !== zoneId))
+  }
+
+  function syncZoneName(zoneId: string, zoneName: string) {
+    const name = zoneName.trim()
+    if (!name) return
+    setLines((prev) =>
+      prev.map((line) => (line.zoneId === zoneId ? { ...line, zoneName: name } : line)),
+    )
   }
 
   function resetEstimate() {
@@ -163,6 +216,10 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
     applyLinearMeters,
     applyScenario,
     addManualLine,
+    removeManualLine,
+    addZonedLine,
+    removeLinesByZoneId,
+    syncZoneName,
     resetEstimate,
     replaceEstimate,
   }

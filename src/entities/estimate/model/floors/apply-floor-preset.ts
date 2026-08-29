@@ -1,7 +1,12 @@
 import { normalizeNonNegative } from '../shared/calculate-line-total'
 import { isZonedEstimateLine } from '../shared/estimate-zoned-line'
-import { disableConflictingAlternatives } from './floor-conflict-groups'
 import type { EstimateLine, FloorEstimateInput } from '../shared/estimate.types'
+import type { EstimateZone } from '../shared/estimate-zone'
+import { createZonedFloorEstimateLine } from './create-zoned-floor-estimate-line'
+import {
+  disableConflictingAlternatives,
+  disableConflictingAlternativesInZone,
+} from './floor-conflict-groups'
 
 export type DemolitionCoveringOption =
   | 'laminate'
@@ -108,8 +113,81 @@ export function applyFloorPreset(
   }
 }
 
+/**
+ * Сценарий полов для зоны: upsert zoned clones с `zoneId`, qty из полей зоны.
+ * Canonical и другие зоны не трогает; conflicts только внутри зоны.
+ */
+export function applyFloorPresetToZone(
+  lines: readonly EstimateLine[],
+  zone: EstimateZone,
+  application: FloorPresetApplication,
+): ApplyFloorPresetResult {
+  const input = floorInputFromZone(zone)
+  const { keys, quantity, presetId } = resolvePresetPlan(application, input)
+  const qty = normalizeNonNegative(quantity)
+  let next = disableConflictingAlternativesInZone(lines, keys, zone.id)
+
+  for (const priceKey of keys) {
+    const existingIndex = next.findIndex(
+      (line) =>
+        isZonedEstimateLine(line) &&
+        line.zoneId === zone.id &&
+        line.priceKey === priceKey &&
+        line.source !== 'manual',
+    )
+
+    if (existingIndex >= 0) {
+      const existing = next[existingIndex]
+      next = next.map((line, index) =>
+        index === existingIndex
+          ? {
+              ...existing,
+              enabled: true,
+              quantity: qty > 0 ? qty : existing.quantity,
+              zoneName: zone.name,
+              zoneId: zone.id,
+            }
+          : line,
+      )
+      continue
+    }
+
+    const created = createZonedFloorEstimateLine({
+      priceKey,
+      quantity: qty,
+      zoneName: zone.name,
+      zoneId: zone.id,
+    })
+    if (created) next = [...next, created]
+  }
+
+  return {
+    lines: next,
+    addedCount: keys.length,
+    presetLabel: PRESET_LABELS[presetId],
+  }
+}
+
 export function formatFloorPresetFeedback(label: string, addedCount: number): string {
   return `Выбран сценарий «${label}», добавлено ${addedCount} строк`
+}
+
+export function formatFloorPresetZoneFeedback(
+  label: string,
+  zoneName: string,
+  addedCount: number,
+): string {
+  return `Сценарий «${label}» применён к зоне «${zoneName}», строк: ${addedCount}`
+}
+
+function floorInputFromZone(zone: EstimateZone): FloorEstimateInput {
+  return {
+    totalFloorArea: zone.floorArea,
+    demolitionArea: zone.demolitionFloorArea,
+    screedArea: zone.screedArea,
+    wetZonesArea: zone.wetArea,
+    avgDeltaMm: 0,
+  }
 }
 
 function resolvePresetPlan(

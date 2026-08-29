@@ -2,7 +2,7 @@
 
 | Поле | Значение |
 |------|----------|
-| Статус | **Stage 1 IN PROGRESS (zoned floors + finish labour) — no commit yet** |
+| Статус | **Superseded by Stage 5 zones** — see `estimate-calculator-zones.md` (completed locally) |
 | Branch | `feature/estimate-calculator-floors` |
 | Route | `/internal/estimate` |
 | Дата аудита | 2026-08-29 |

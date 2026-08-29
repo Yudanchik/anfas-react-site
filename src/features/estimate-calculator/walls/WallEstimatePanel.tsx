@@ -1,18 +1,23 @@
 import { useMemo } from 'react'
 
-import { groupWallEstimateLines, type EstimateLine } from '@/entities/estimate'
+import { groupWallEstimateLines, type EstimateLine, type EstimateZone } from '@/entities/estimate'
 
 import type { WallScenarioDraftState } from '../model/estimate-calculator-persistence'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
 import { EstimateManualLine } from '../ui/EstimateManualLine'
+import { EstimateSectionLines } from '../ui/EstimateSectionLines'
+import { EstimateZonesAndMeasures } from '../ui/EstimateZonesAndMeasures'
 import { WallEstimateHelpers } from './WallEstimateHelpers'
-import { WallEstimateInputs } from './WallEstimateInputs'
 import { WallEstimateScenarios } from './WallEstimateScenarios'
+import { WallZoneWorkAdd } from './WallZoneWorkAdd'
 import type { WallEstimateEditor } from './use-wall-estimate-editor'
 import styles from '../ui/EstimateCalculatorWorkspace.module.scss'
 
 type WallEstimatePanelProps = {
   editor: WallEstimateEditor
+  zones: readonly EstimateZone[]
+  onZonesChange: (zones: EstimateZone[]) => void
+  onDeleteZone: (zoneId: string) => void
   scenarioDraft: WallScenarioDraftState
   onScenarioDraftChange: (patch: Partial<WallScenarioDraftState>) => void
   onResetSection: () => void
@@ -20,6 +25,9 @@ type WallEstimatePanelProps = {
 
 export function WallEstimatePanel({
   editor,
+  zones,
+  onZonesChange,
+  onDeleteZone,
   scenarioDraft,
   onScenarioDraftChange,
   onResetSection,
@@ -29,13 +37,21 @@ export function WallEstimatePanel({
   return (
     <div className={styles.workspace}>
       <div className={styles.zone}>
-        <WallEstimateInputs input={editor.input} onChange={editor.patchInput} />
+        <EstimateZonesAndMeasures
+          section="walls"
+          zones={zones}
+          onZonesChange={onZonesChange}
+          onDeleteZone={onDeleteZone}
+          generalInput={editor.input}
+          onGeneralChange={editor.patchInput}
+        />
       </div>
 
       <div className={styles.zoneAlt}>
         <WallEstimateScenarios
           draft={scenarioDraft}
           onDraftChange={onScenarioDraftChange}
+          zones={zones}
           onApplyScenario={editor.applyScenario}
         />
       </div>
@@ -57,17 +73,37 @@ export function WallEstimatePanel({
           onApplyLinearMeters={editor.applyLinearMeters}
           onReset={onResetSection}
         />
-        <EstimateManualLine titleId="wall-estimate-manual-title" onAdd={editor.addManualLine} />
       </div>
 
       <div className={styles.zoneAlt}>
-        <EstimateGroupedTable
+        <EstimateSectionLines
           idPrefix="wall-estimate"
           title="Строки сметы — стены"
-          groups={groups}
-          onToggle={editor.toggleLine}
-          onPatchLine={patchLineAdapter(editor.patchLine)}
-        />
+          pricePanel={
+            <WallZoneWorkAdd
+              zones={zones}
+              onZonesChange={onZonesChange}
+              embedded
+              onAdd={editor.addZonedLine}
+            />
+          }
+          manualPanel={
+            <EstimateManualLine
+              titleId="wall-estimate-manual-title"
+              embedded
+              onAdd={editor.addManualLine}
+            />
+          }
+        >
+          <EstimateGroupedTable
+            idPrefix="wall-estimate"
+            embedded
+            groups={groups}
+            onToggle={editor.toggleLine}
+            onPatchLine={patchLineAdapter(editor.patchLine)}
+            onRemoveManualLine={editor.removeManualLine}
+          />
+        </EstimateSectionLines>
       </div>
     </div>
   )

@@ -4,7 +4,7 @@ import type { EstimateLine, EstimateWorkKind } from './estimate.types'
 /**
  * Zoned clone lines: отдельная строка сметы для зоны (кухня, коридор…).
  * Уникальный `id`, тот же `priceKey`, что у позиции прайса; строки без зоны остаются общими.
- * Conflict groups их не отключают. Сейчас используется на полах; стены могут переиспользовать позже.
+ * Conflict groups их не отключают. Используется на полах и стенах.
  */
 
 const ZONE_ID_PATTERN = /:zone-(\d+)$/
@@ -39,6 +39,7 @@ export type CreateZonedEstimateLineParams = {
   kind: EstimateWorkKind
   quantity: number
   zoneName: string
+  zoneId?: string
   comment?: string
   source?: EstimateLine['source']
   frontendCategorySlug?: EstimateLine['frontendCategorySlug']
@@ -53,6 +54,7 @@ export type CreateZonedEstimateLineParams = {
 export function createZonedEstimateLine(params: CreateZonedEstimateLineParams): EstimateLine {
   zoneLineCounter += 1
   const zoneName = params.zoneName.trim()
+  const zoneId = params.zoneId?.trim()
   const comment = params.comment?.trim()
 
   return {
@@ -66,6 +68,7 @@ export function createZonedEstimateLine(params: CreateZonedEstimateLineParams): 
     quantity: normalizeNonNegative(params.quantity),
     coefficient: normalizePositiveCoefficient(params.coefficient ?? 1),
     enabled: true,
+    zoneId: zoneId || undefined,
     zoneName: zoneName || undefined,
     comment: comment || undefined,
     source: params.source ?? 'pdf',

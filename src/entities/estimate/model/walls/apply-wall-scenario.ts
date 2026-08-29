@@ -1,11 +1,17 @@
-import { disableWallConflictingAlternatives } from './wall-conflict-groups'
+import { isZonedEstimateLine } from '../shared/estimate-zoned-line'
+import type { EstimateLine, WallEstimateInput, WallQuantityField, WallWorkKind } from '../shared/estimate.types'
+import type { EstimateZone } from '../shared/estimate-zone'
 import {
   resolveFinishQuantity,
   resolvePlasterQuantity,
   resolvePuttyQuantity,
   resolveWallDefaultQuantity,
 } from './build-wall-estimate-lines'
-import type { EstimateLine, WallEstimateInput, WallQuantityField, WallWorkKind } from '../shared/estimate.types'
+import { createZonedWallEstimateLine } from './create-zoned-wall-estimate-line'
+import {
+  disableWallConflictingAlternatives,
+  disableWallConflictingAlternativesInZone,
+} from './wall-conflict-groups'
 import { WALL_PRICE_MAPPING } from './wall-price.mapping'
 
 /**
@@ -108,6 +114,65 @@ export function applyWallScenario(
   }
 }
 
+/**
+ * Сценарий стен для зоны: upsert zoned clones с `zoneId`, qty из полей зоны.
+ * Canonical и другие зоны не трогает; conflicts только внутри зоны.
+ */
+export function applyWallScenarioToZone(
+  lines: readonly EstimateLine[],
+  zone: EstimateZone,
+  application: WallScenarioApplication,
+): ApplyWallScenarioResult {
+  const input = wallInputFromZone(zone)
+  const keys = resolveWallScenarioKeys(application)
+  let next = disableWallConflictingAlternativesInZone(lines, keys, zone.id)
+
+  for (const priceKey of keys) {
+    const mappingItem = MAPPING_BY_ID.get(priceKey)
+    const field = resolveScenarioQuantityField(mappingItem?.kind, mappingItem?.defaultQuantityFrom)
+    const qty = resolveScenarioQuantity(field, input)
+
+    const existingIndex = next.findIndex(
+      (line) =>
+        isZonedEstimateLine(line) &&
+        line.zoneId === zone.id &&
+        line.priceKey === priceKey &&
+        line.source !== 'manual',
+    )
+
+    if (existingIndex >= 0) {
+      const existing = next[existingIndex]
+      next = next.map((line, index) =>
+        index === existingIndex
+          ? {
+              ...existing,
+              enabled: true,
+              quantity: qty > 0 ? qty : existing.quantity,
+              zoneName: zone.name,
+              zoneId: zone.id,
+            }
+          : line,
+      )
+      continue
+    }
+
+    const created = createZonedWallEstimateLine({
+      priceKey,
+      quantity: qty,
+      zoneName: zone.name,
+      zoneId: zone.id,
+    })
+    if (created) next = [...next, created]
+  }
+
+  return {
+    lines: next,
+    addedCount: keys.length,
+    scenarioLabel: formatWallScenarioLabel(application),
+    enabledPriceKeys: keys,
+  }
+}
+
 export function resolveWallScenarioKeys(
   application: WallScenarioApplication,
 ): readonly string[] {
@@ -186,6 +251,28 @@ export function formatWallScenarioFeedback(label: string, addedCount: number): s
   return `Выбран сценарий «${label}», добавлено ${addedCount} строк`
 }
 
+export function formatWallScenarioZoneFeedback(
+  label: string,
+  zoneName: string,
+  addedCount: number,
+): string {
+  return `Сценарий «${label}» применён к зоне «${zoneName}», строк: ${addedCount}`
+}
+
+function wallInputFromZone(zone: EstimateZone): WallEstimateInput {
+  return {
+    totalWallArea: zone.wallArea,
+    demolitionArea: zone.demolitionWallArea,
+    plasterArea: zone.plasterArea,
+    puttyArea: zone.puttyArea,
+    finishArea: zone.finishArea,
+    wallHeightM: 0,
+    slopesLengthM: zone.slopesLength,
+    cornersLengthM: zone.cornersLength,
+    surveyorComment: '',
+  }
+}
+
 function enableWallScenarioKeys(
   lines: readonly EstimateLine[],
   keys: readonly string[],
@@ -196,6 +283,7 @@ function enableWallScenarioKeys(
 
   return withConflictsDisabled.map((line) => {
     if (line.source === 'manual') return line
+    if (isZonedEstimateLine(line)) return line
     if (!keySet.has(line.priceKey)) return line
 
     const mappingItem = MAPPING_BY_ID.get(line.priceKey)

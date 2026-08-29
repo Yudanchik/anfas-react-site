@@ -100,3 +100,52 @@ export function updateEstimateLine(
     }
   })
 }
+
+/** Удаляет только ручную строку (`source=manual`); canonical/zoned не трогает. */
+export function removeManualEstimateLine(
+  lines: readonly EstimateLine[],
+  lineId: string,
+): EstimateLine[] {
+  return lines.filter((line) => !(line.id === lineId && line.source === 'manual'))
+}
+
+/**
+ * Удаляет ручную строку или zoned clone (`:zone-N`).
+ * Canonical mapping rows не трогает.
+ */
+export function removeRemovableEstimateLine(
+  lines: readonly EstimateLine[],
+  lineId: string,
+): EstimateLine[] {
+  return lines.filter((line) => {
+    if (line.id !== lineId) return true
+    if (line.source === 'manual') return false
+    if (isZonedEstimateLine(line)) return false
+    return true
+  })
+}
+
+/**
+ * Включает и обновляет canonical-строку прайса (без zoneId / не zoned clone).
+ * Для «Добавить работу из прайса → Общие работы».
+ */
+export function enableCanonicalEstimateLine(
+  lines: readonly EstimateLine[],
+  params: { priceKey: string; quantity: number; comment?: string },
+): { lines: EstimateLine[]; ok: boolean } {
+  let ok = false
+  const comment = params.comment?.trim()
+  const next = lines.map((line) => {
+    if (line.source === 'manual') return line
+    if (isZonedEstimateLine(line) || line.zoneId) return line
+    if (line.priceKey !== params.priceKey) return line
+    ok = true
+    return {
+      ...line,
+      enabled: true,
+      quantity: normalizeNonNegative(params.quantity),
+      comment: comment || line.comment,
+    }
+  })
+  return { lines: next, ok }
+}

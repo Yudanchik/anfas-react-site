@@ -1,10 +1,13 @@
 import type { EstimateLine } from '../shared/estimate.types'
-import { isZonedEstimateLine } from '../shared/estimate-zoned-line'
+import {
+  collectConflictDisabledKeys,
+  disableConflictingKeysInScope,
+} from '../shared/estimate-conflict-scope'
 
 /**
  * Mutually exclusive альтернативы внутри сметы полов.
  * Включение одного `priceKey` через preset отключает остальные ключи группы.
- * Ручные строки и zoned clone lines не трогаем.
+ * Ручные строки и zoned clone lines (object-level) не трогаем.
  */
 export const FLOOR_CONFLICT_GROUPS: Readonly<Record<string, readonly string[]>> = {
   'demolition-covering': [
@@ -55,30 +58,33 @@ export function getFloorConflictGroupId(priceKey: string): string | undefined {
 
 /**
  * Отключает «соседей» в той же conflict group для каждого включаемого ключа.
- * Сами включаемые ключи, ручные строки и zoned clones не отключает.
+ * Object-level: не трогает manual и zoned clones.
  */
 export function disableConflictingAlternatives(
   lines: readonly EstimateLine[],
   enabledPriceKeys: readonly string[],
 ): EstimateLine[] {
-  const disabledKeys = new Set<string>()
+  const disabledKeys = collectConflictDisabledKeys(
+    enabledPriceKeys,
+    FLOOR_CONFLICT_GROUPS,
+    PRICE_KEY_TO_CONFLICT_GROUP,
+  )
+  return disableConflictingKeysInScope(lines, disabledKeys, { zoneId: null })
+}
 
-  for (const priceKey of enabledPriceKeys) {
-    const groupId = PRICE_KEY_TO_CONFLICT_GROUP.get(priceKey)
-    if (!groupId) continue
-    const groupKeys = FLOOR_CONFLICT_GROUPS[groupId] ?? []
-    for (const key of groupKeys) {
-      if (key !== priceKey) disabledKeys.add(key)
-    }
-  }
-
-  if (disabledKeys.size === 0) return [...lines]
-
-  return lines.map((line) => {
-    if (line.source === 'manual') return line
-    if (isZonedEstimateLine(line)) return line
-    if (!disabledKeys.has(line.priceKey)) return line
-    if (!line.enabled) return line
-    return { ...line, enabled: false }
-  })
+/**
+ * Conflict groups только внутри зоны.
+ * Canonical / другие зоны / manual не трогает.
+ */
+export function disableConflictingAlternativesInZone(
+  lines: readonly EstimateLine[],
+  enabledPriceKeys: readonly string[],
+  zoneId: string,
+): EstimateLine[] {
+  const disabledKeys = collectConflictDisabledKeys(
+    enabledPriceKeys,
+    FLOOR_CONFLICT_GROUPS,
+    PRICE_KEY_TO_CONFLICT_GROUP,
+  )
+  return disableConflictingKeysInScope(lines, disabledKeys, { zoneId })
 }

@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import {
+  ESTIMATE_GENERAL_WORKS_TITLE,
   formatWallScenarioFeedback,
+  formatWallScenarioZoneFeedback,
+  type EstimateZone,
   type WallDemolitionCoveringOption,
   type WallFinishTargetOption,
   type WallPaintLayersOption,
@@ -17,11 +20,18 @@ import styles from './WallEstimateScenarios.module.scss'
 type WallEstimateScenariosProps = {
   draft: WallScenarioDraftState
   onDraftChange: (patch: Partial<WallScenarioDraftState>) => void
-  onApplyScenario: (application: WallScenarioApplication) => {
+  zones?: readonly EstimateZone[]
+  onApplyScenario: (
+    application: WallScenarioApplication,
+    target?: { zone?: EstimateZone },
+  ) => {
     label: string
     addedCount: number
+    zoneName?: string
   }
 }
+
+const GENERAL_TARGET = 'general'
 
 const STATE_OPTIONS: ReadonlyArray<{ value: WallStateOption; label: string }> = [
   { value: 'from-scratch', label: 'С нуля' },
@@ -63,9 +73,11 @@ const PAINT_OPTIONS: ReadonlyArray<{ value: WallPaintLayersOption; label: string
 export function WallEstimateScenarios({
   draft,
   onDraftChange,
+  zones = [],
   onApplyScenario,
 }: WallEstimateScenariosProps) {
   const { state, finishTarget, demolitionCovering, wallpaperType, paintLayers } = draft
+  const [targetId, setTargetId] = useState(GENERAL_TARGET)
   const [status, setStatus] = useState<string | null>(null)
 
   const finishDisabled = state === 'demolition-only' || state === 'local-leveling'
@@ -73,6 +85,18 @@ export function WallEstimateScenarios({
   const showDemolitionCovering = state === 'demolition-only'
   const showWallpaperType = finishTarget === 'wallpaper' && !finishDisabled
   const showPaintLayers = finishTarget === 'paint' && !finishDisabled
+
+  const targetOptions = useMemo(
+    () => [
+      { value: GENERAL_TARGET, label: ESTIMATE_GENERAL_WORKS_TITLE },
+      ...zones.map((zone) => ({ value: zone.id, label: zone.name })),
+    ],
+    [zones],
+  )
+  const resolvedTargetId = targetOptions.some((option) => option.value === targetId)
+    ? targetId
+    : GENERAL_TARGET
+  const selectedZone = zones.find((zone) => zone.id === resolvedTargetId)
 
   function handleApply() {
     const resolvedFinish: WallFinishTargetOption = finishDisabled
@@ -89,8 +113,15 @@ export function WallEstimateScenarios({
       paintLayers: resolvedFinish === 'paint' ? paintLayers : undefined,
     }
 
-    const result = onApplyScenario(application)
-    setStatus(formatWallScenarioFeedback(result.label, result.addedCount))
+    const result = onApplyScenario(
+      application,
+      selectedZone ? { zone: selectedZone } : undefined,
+    )
+    setStatus(
+      result.zoneName
+        ? formatWallScenarioZoneFeedback(result.label, result.zoneName, result.addedCount)
+        : formatWallScenarioFeedback(result.label, result.addedCount),
+    )
   }
 
   return (
@@ -100,9 +131,19 @@ export function WallEstimateScenarios({
           Сценарий стен
         </h2>
         <p className={styles.lead}>
-          Выберите состояние стен и целевой результат — калькулятор добавит типовые работы. После
-          этого смету можно вручную уточнить.
+          Выберите сценарий и примените его к общим работам или конкретной зоне. После применения
+          смету можно вручную уточнить.
         </p>
+      </div>
+
+      <div className={styles.targetRow}>
+        <span className={styles.targetLabel}>Применить к</span>
+        <EstimateSelect
+          value={resolvedTargetId}
+          options={targetOptions}
+          ariaLabel="Применить сценарий стен к"
+          onChange={setTargetId}
+        />
       </div>
 
       <div className={styles.grid}>

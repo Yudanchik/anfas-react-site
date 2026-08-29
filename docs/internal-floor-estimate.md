@@ -1,5 +1,10 @@
 # Internal floor estimate calculator — usage notes
 
+> **Актуальная документация** (на русском): папка [`docs/estimate-calculator/`](./estimate-calculator/README.md)
+> ([README](./estimate-calculator/README.md), [architecture](./estimate-calculator/architecture.md), [zones](./estimate-calculator/zones.md), [floors](./estimate-calculator/scenarios-floors.md), [walls](./estimate-calculator/scenarios-walls.md)).
+>
+> Этот файл — исторические заметки раннего floors MVP. Ниже оставлены ключевые ссылки; детали сценариев и зон смотрите в `docs/estimate-calculator/`.
+
 ## Route
 
 `/internal/estimate`
@@ -8,23 +13,21 @@
 - Header link «Смета» is **branch convenience only** (`SiteHeader` → `INTERNAL_NAV`)
 - **Before merge to `dev`:** separately decide whether to keep, hide (e.g. DEV-only), or remove the header link
 
-## What it does
+## What it does now
 
-Internal labour-only estimate for rough floors:
+Internal labour-only estimate on the same route for:
 
-- demolition of floor coverings / screed / plinth
-- base prep, primers
-- semi-dry / wet screed chains
-- self-leveling floor
-- wet-zone waterproofing
-- optional waste lines (manual enable)
-- manual labour rows
+- **Floors** — rough works, presets, zones
+- **Walls** — scenarios, zones
+- Object zones, summary tree, local persistence v2
+- Materials are never included
 
 ## Price source
 
-- Primary: PDF whitelist in `src/entities/estimate/model/floors/floor-price.mapping.ts`
-- Frontend `prices.data.ts` used only for `source=both` conflict checks
-- Public price data is not modified by the calculator
+- Floors: `src/entities/estimate/model/floors/floor-price.mapping.ts`
+- Walls: `src/entities/estimate/model/walls/wall-price.mapping.ts`
+- Frontend `prices.data.ts` — conflict checks for `source=both` only
+- Public price / Strapi data is not modified by the calculator
 
 ## Formulas
 
@@ -33,36 +36,23 @@ lineTotal = Math.round(quantity * unitPrice * coefficient)
 total = sum(lineTotal for enabled lines)
 ```
 
-- disabled / empty / negative quantity → 0
-- invalid coefficient → 1
-- materials are never included
-
-## Recommendations
-
-`getFloorRecommendation(avgDeltaMm)` suggests keys by height delta.
-It never enables rows automatically.
-
 ## Checks
 
 ```bash
 pnpm test:floor-estimate
+pnpm test:wall-estimate
+pnpm test:estimate
 pnpm check
 pnpm build
 ```
 
-## Extending with walls / ceilings / other sections
+## Extending
 
-Актуальная раскладка и правила расширения: **`docs/estimate-calculator/`**
-([README](./estimate-calculator/README.md), [architecture](./estimate-calculator/architecture.md)).
+See [architecture.md](./estimate-calculator/architecture.md). Candidates: ceilings / plumbing / electrics. PDF/export — future separate package.
 
-Do **not** rewrite the floors stack. Reuse shared calc and add a parallel section package under `model/<section>/` and `features/estimate-calculator/<section>/`.
+## Out of scope (still)
 
-## Out of scope (исторический MVP floors)
-
-Ниже — ограничения раннего floors MVP. Стены уже на том же route; persistence есть.
-
-- materials
-- finish floor coverings (laminate/quartz/parquet install)
-- ceilings / electro / plumbing (ещё нет)
-- auth / admin / PDF export
-- Strapi / CMS / production deploy
+- materials in totals
+- auth / admin
+- PDF export (not implemented)
+- Strapi / CMS / production deploy «заодно»

@@ -5,6 +5,14 @@
   @include eu.panel;
 }
 
+.embedded {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--paper-deep) 28%, var(--paper));
+}
+
 .title {
   @include eu.section-title;
 
@@ -46,4 +54,25 @@
   margin: 8px 0 0;
   color: #8a1f1f;
   font-size: 12px;
+}
+
+.status {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1.4;
+
+  &[data-kind='success'] {
+    border-color: color-mix(in srgb, #2f6b45 28%, transparent);
+    background: color-mix(in srgb, #2f6b45 10%, var(--paper));
+    color: color-mix(in srgb, #1f4d30 82%, var(--ink));
+  }
+
+  &[data-kind='error'] {
+    border-color: color-mix(in srgb, #a33b3b 30%, transparent);
+    background: color-mix(in srgb, #a33b3b 9%, var(--paper));
+    color: color-mix(in srgb, #7a2a2a 85%, var(--ink));
+  }
 }

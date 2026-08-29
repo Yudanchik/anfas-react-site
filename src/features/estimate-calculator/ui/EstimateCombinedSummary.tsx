@@ -1,13 +1,30 @@
 import { useId, useState } from 'react'
 
-import type { SelectedEstimateSectionGroup } from '@/entities/estimate'
+import type { SelectedEstimateSectionWithZones, SelectedEstimateZoneGroup } from '@/entities/estimate'
+import { ESTIMATE_GENERAL_WORKS_TITLE } from '@/entities/estimate'
 import { formatPriceValue } from '@/entities/price/lib/price-helpers'
 
 import styles from './EstimateCombinedSummary.module.scss'
 
 type EstimateCombinedSummaryProps = {
-  sections: readonly SelectedEstimateSectionGroup[]
+  sections: readonly SelectedEstimateSectionWithZones[]
   grandTotalRub: number
+}
+
+function zoneToggleKey(sectionId: string, zone: SelectedEstimateZoneGroup): string {
+  return `${sectionId}:${zone.zoneId ?? 'general'}:${zone.zoneTitle}`
+}
+
+/** Stable DOM id without Cyrillic/colons (aria-controls / labelledby). */
+function zoneDomId(sectionId: string, zone: SelectedEstimateZoneGroup): string {
+  const raw = `${sectionId}-${zone.zoneId ?? 'general'}`
+  return raw.replace(/[^a-zA-Z0-9_-]+/g, '-')
+}
+
+function zoneDisplayTitle(zone: SelectedEstimateZoneGroup): string {
+  return zone.zoneTitle === ESTIMATE_GENERAL_WORKS_TITLE
+    ? zone.zoneTitle
+    : `Зона: ${zone.zoneTitle}`
 }
 
 export function EstimateCombinedSummary({
@@ -16,6 +33,7 @@ export function EstimateCombinedSummary({
 }: EstimateCombinedSummaryProps) {
   const [expanded, setExpanded] = useState(false)
   const [openSectionIds, setOpenSectionIds] = useState(() => new Set<string>())
+  const [openZoneKeys, setOpenZoneKeys] = useState(() => new Set<string>())
   const panelId = useId()
   const titleId = 'estimate-combined-summary-title'
   const selectedCount = sections.reduce((sum, section) => sum + section.selectedCount, 0)
@@ -30,6 +48,19 @@ export function EstimateCombinedSummary({
       const next = new Set(prev)
       if (next.has(sectionId)) next.delete(sectionId)
       else next.add(sectionId)
+      return next
+    })
+  }
+
+  function isZoneOpen(key: string): boolean {
+    return openZoneKeys.has(key)
+  }
+
+  function toggleZone(key: string) {
+    setOpenZoneKeys((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
       return next
     })
   }
@@ -70,7 +101,7 @@ export function EstimateCombinedSummary({
         aria-labelledby={titleId}
       >
         <p className={styles.lead}>
-          Здесь собраны выбранные позиции по всем разделам. Материалы пока не учитываются.
+          Здесь собраны выбранные позиции по разделам и зонам. Материалы пока не учитываются.
         </p>
 
         {!hasRows ? (
@@ -119,37 +150,81 @@ export function EstimateCombinedSummary({
                     role="region"
                     aria-labelledby={sectionTitleId}
                   >
-                    <ul className={styles.list}>
-                      {section.items.map((item) => {
-                        const showCoefficient = item.line.coefficient !== 1
+                    <div className={styles.zoneGroups}>
+                      {section.zones.map((zone) => {
+                        const key = zoneToggleKey(section.sectionId, zone)
+                        const zoneOpen = isZoneOpen(key)
+                        const safeId = zoneDomId(section.sectionId, zone)
+                        const zoneTitleId = `estimate-summary-zone-${safeId}`
+                        const zonePanelId = `estimate-summary-zone-panel-${safeId}`
+                        const title = zoneDisplayTitle(zone)
+
                         return (
-                          <li key={item.line.id} className={styles.item}>
-                            <div className={styles.itemMain}>
-                              <span className={styles.group}>{item.groupTitle}</span>
-                              {item.line.zoneName ? (
-                                <span className={styles.zone}>Зона: {item.line.zoneName}</span>
-                              ) : null}
-                              <span className={styles.work}>{item.line.title}</span>
-                            </div>
-                            <div className={styles.itemMeta}>
-                              <span>
-                                {item.line.quantity} {item.line.unit}
+                          <div key={key} className={styles.zoneBlock}>
+                            <button
+                              type="button"
+                              className={styles.zoneToggle}
+                              data-open={zoneOpen ? 'true' : 'false'}
+                              aria-expanded={zoneOpen}
+                              aria-controls={zonePanelId}
+                              onClick={() => toggleZone(key)}
+                            >
+                              <span
+                                className={styles.chevron}
+                                data-open={zoneOpen ? 'true' : 'false'}
+                                aria-hidden="true"
+                              />
+                              <span className={styles.zoneTitle} id={zoneTitleId}>
+                                {title}
                               </span>
-                              <span>× {formatPriceValue(item.line.unitPrice)} ₽</span>
-                              {showCoefficient ? (
-                                <span>× коэф. {item.line.coefficient}</span>
-                              ) : null}
-                              <strong className={styles.itemTotal}>
-                                {formatPriceValue(item.lineTotal)} ₽
+                              <span className={styles.zoneMeta}>
+                                Позиций: {zone.selectedCount}
+                              </span>
+                              <strong className={styles.zoneTotal}>
+                                {formatPriceValue(zone.subtotalRub)} ₽
                               </strong>
+                            </button>
+
+                            <div
+                              className={styles.zonePanel}
+                              id={zonePanelId}
+                              hidden={!zoneOpen}
+                              role="region"
+                              aria-labelledby={zoneTitleId}
+                            >
+                              <ul className={styles.list}>
+                                {zone.items.map((item) => {
+                                  const showCoefficient = item.line.coefficient !== 1
+                                  return (
+                                    <li key={item.line.id} className={styles.item}>
+                                      <div className={styles.itemMain}>
+                                        <span className={styles.group}>{item.groupTitle}</span>
+                                        <span className={styles.work}>{item.line.title}</span>
+                                      </div>
+                                      <div className={styles.itemMeta}>
+                                        <span>
+                                          {item.line.quantity} {item.line.unit}
+                                        </span>
+                                        <span>× {formatPriceValue(item.line.unitPrice)} ₽</span>
+                                        {showCoefficient ? (
+                                          <span>× коэф. {item.line.coefficient}</span>
+                                        ) : null}
+                                        <strong className={styles.itemTotal}>
+                                          {formatPriceValue(item.lineTotal)} ₽
+                                        </strong>
+                                      </div>
+                                      {item.line.comment ? (
+                                        <p className={styles.comment}>{item.line.comment}</p>
+                                      ) : null}
+                                    </li>
+                                  )
+                                })}
+                              </ul>
                             </div>
-                            {item.line.comment ? (
-                              <p className={styles.comment}>{item.line.comment}</p>
-                            ) : null}
-                          </li>
+                          </div>
                         )
                       })}
-                    </ul>
+                    </div>
 
                     <div className={styles.sectionSubtotal}>
                       <span>Итого · {section.sectionTitle}</span>

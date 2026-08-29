@@ -57,7 +57,7 @@ export function getSelectedEstimateLines(
   for (const line of section.lines) {
     if (!line.enabled) continue
     const lineTotal = calculateLineTotal(line)
-    if (lineTotal <= 0 && line.source !== 'manual' && !line.zoneName) continue
+    if (lineTotal <= 0 && line.source !== 'manual' && !line.zoneName && !line.zoneId) continue
 
     selected.push({
       line,
@@ -113,4 +113,77 @@ export function countSelectedSectionRows(
   groups: readonly SelectedEstimateSectionGroup[],
 ): number {
   return groups.reduce((sum, group) => sum + group.selectedCount, 0)
+}
+
+export const ESTIMATE_GENERAL_WORKS_TITLE = 'Общие работы'
+
+export type SelectedEstimateZoneGroup = {
+  /** `null` = общие работы раздела */
+  zoneId: string | null
+  zoneTitle: string
+  items: readonly SelectedEstimateLineView[]
+  selectedCount: number
+  subtotalRub: number
+}
+
+export type SelectedEstimateSectionWithZones = SelectedEstimateSectionGroup & {
+  zones: readonly SelectedEstimateZoneGroup[]
+}
+
+/**
+ * Presentational: section → зона / общие работы → строки.
+ * Пустые зоны не создаёт. Итог секции не пересчитывает заново — сумма zone subtots.
+ */
+export function groupSelectedSectionItemsByZone(
+  section: SelectedEstimateSectionGroup,
+  zoneNameById?: ReadonlyMap<string, string>,
+): SelectedEstimateZoneGroup[] {
+  const buckets = new Map<string, SelectedEstimateLineView[]>()
+  const order: string[] = []
+
+  for (const item of section.items) {
+    const key = item.line.zoneId ?? (item.line.zoneName ? `name:${item.line.zoneName}` : 'general')
+    if (!buckets.has(key)) {
+      buckets.set(key, [])
+      order.push(key)
+    }
+    buckets.get(key)?.push(item)
+  }
+
+  // Общие работы — всегда первыми, если есть
+  order.sort((a, b) => {
+    if (a === 'general') return -1
+    if (b === 'general') return 1
+    return 0
+  })
+
+  return order.map((key) => {
+    const items = buckets.get(key) ?? []
+    const sample = items[0]?.line
+    const zoneId = sample?.zoneId ?? null
+    let zoneTitle = ESTIMATE_GENERAL_WORKS_TITLE
+    if (key !== 'general') {
+      zoneTitle =
+        (zoneId && zoneNameById?.get(zoneId)) ||
+        sample?.zoneName ||
+        'Зона'
+    }
+    return {
+      zoneId,
+      zoneTitle,
+      items,
+      selectedCount: items.length,
+      subtotalRub: items.reduce((sum, item) => sum + item.lineTotal, 0),
+    }
+  })
+}
+
+export function attachZonesToSelectedSections(
+  sections: readonly SelectedEstimateSectionGroup[],
+  zoneNameById?: ReadonlyMap<string, string>,
+): SelectedEstimateSectionWithZones[] {
+  return sections.map((section) => ({
+    ...section,
+    zones: groupSelectedSectionItemsByZone(section, zoneNameById),
+  }))
 }

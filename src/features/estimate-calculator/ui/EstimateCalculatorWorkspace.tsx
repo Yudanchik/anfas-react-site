@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
+  attachZonesToSelectedSections,
   buildFloorEstimateLines,
   buildWallEstimateLines,
   calculateEstimateTotal,
@@ -10,11 +11,13 @@ import {
   getFloorEstimateGroupTitle,
   getSelectedEstimateSections,
   getWallEstimateGroupTitle,
+  removeEstimateZone,
   resolveFloorEstimateGroupId,
   resolveWallEstimateGroupId,
   WALL_PRICE_MAPPING,
   WALL_SECTION_ID,
   WALL_SECTION_TITLE,
+  type EstimateZone,
 } from '@/entities/estimate'
 import { useFloorEstimateEditor } from '@/features/floor-estimate/model/use-floor-estimate-editor'
 
@@ -26,6 +29,7 @@ import {
   EMPTY_FLOOR_INPUT,
   EMPTY_WALL_INPUT,
   readEstimateCalculatorSnapshot,
+  restoreEstimateZones,
   restoreFloorEstimateState,
   restoreFloorPresetDraft,
   restoreWallEstimateState,
@@ -49,6 +53,7 @@ export function EstimateCalculatorWorkspace() {
       snapshot,
       floors: restoreFloorEstimateState(snapshot),
       walls: restoreWallEstimateState(snapshot),
+      zones: restoreEstimateZones(snapshot),
       floorPresets: restoreFloorPresetDraft(snapshot),
       wallScenarios: restoreWallScenarioDraft(snapshot),
       activeTab: (snapshot?.activeTab ?? 'floors') as EstimateTabId,
@@ -56,6 +61,7 @@ export function EstimateCalculatorWorkspace() {
   })
 
   const [activeTab, setActiveTab] = useState<EstimateTabId>(initial.activeTab)
+  const [zones, setZones] = useState<EstimateZone[]>(initial.zones)
   const [floorPresetDraft, setFloorPresetDraft] = useState<FloorPresetDraftState>(
     initial.floorPresets,
   )
@@ -76,6 +82,7 @@ export function EstimateCalculatorWorkspace() {
     writeEstimateCalculatorSnapshot(
       buildEstimateCalculatorSnapshot({
         activeTab,
+        zones,
         floorsInput: floors.input,
         floorsLines: floors.lines,
         wallsInput: walls.input,
@@ -86,6 +93,7 @@ export function EstimateCalculatorWorkspace() {
     )
   }, [
     activeTab,
+    zones,
     floors.input,
     floors.lines,
     walls.input,
@@ -94,9 +102,28 @@ export function EstimateCalculatorWorkspace() {
     wallScenarioDraft,
   ])
 
+  function handleZonesChange(nextZones: EstimateZone[]) {
+    const prevById = new Map(zones.map((zone) => [zone.id, zone]))
+    for (const zone of nextZones) {
+      const prev = prevById.get(zone.id)
+      if (prev && prev.name !== zone.name) {
+        floors.syncZoneName(zone.id, zone.name)
+        walls.syncZoneName(zone.id, zone.name)
+      }
+    }
+    setZones(nextZones)
+  }
+
+  function handleDeleteZone(zoneId: string) {
+    floors.removeLinesByZoneId(zoneId)
+    walls.removeLinesByZoneId(zoneId)
+    setZones((prev) => removeEstimateZone(prev, zoneId))
+  }
+
   function resetAllEstimate() {
     clearEstimateCalculatorSnapshot()
     setActiveTab('floors')
+    setZones([])
     setFloorPresetDraft({ ...DEFAULT_FLOOR_PRESETS })
     setWallScenarioDraft({ ...DEFAULT_WALL_SCENARIOS })
     floors.replaceEstimate({
@@ -114,25 +141,29 @@ export function EstimateCalculatorWorkspace() {
     setWallScenarioDraft({ ...DEFAULT_WALL_SCENARIOS })
   }
 
-  const selectedSections = useMemo(
-    () =>
-      getSelectedEstimateSections([
-        {
-          sectionId: FLOOR_SECTION_ID,
-          sectionTitle: 'Полы',
-          lines: floors.lines,
-          resolveGroupTitle: (line) =>
-            getFloorEstimateGroupTitle(resolveFloorEstimateGroupId(line)),
-        },
-        {
-          sectionId: WALL_SECTION_ID,
-          sectionTitle: 'Стены',
-          lines: walls.lines,
-          resolveGroupTitle: (line) => getWallEstimateGroupTitle(resolveWallEstimateGroupId(line)),
-        },
-      ]),
-    [floors.lines, walls.lines],
+  const zoneNameById = useMemo(
+    () => new Map(zones.map((zone) => [zone.id, zone.name])),
+    [zones],
   )
+
+  const selectedSections = useMemo(() => {
+    const sections = getSelectedEstimateSections([
+      {
+        sectionId: FLOOR_SECTION_ID,
+        sectionTitle: 'Полы',
+        lines: floors.lines,
+        resolveGroupTitle: (line) =>
+          getFloorEstimateGroupTitle(resolveFloorEstimateGroupId(line)),
+      },
+      {
+        sectionId: WALL_SECTION_ID,
+        sectionTitle: 'Стены',
+        lines: walls.lines,
+        resolveGroupTitle: (line) => getWallEstimateGroupTitle(resolveWallEstimateGroupId(line)),
+      },
+    ])
+    return attachZonesToSelectedSections(sections, zoneNameById)
+  }, [floors.lines, walls.lines, zoneNameById])
 
   const grandTotalRub = useMemo(
     () =>
@@ -166,6 +197,9 @@ export function EstimateCalculatorWorkspace() {
       >
         <FloorEstimatePanel
           editor={floors}
+          zones={zones}
+          onZonesChange={handleZonesChange}
+          onDeleteZone={handleDeleteZone}
           presetDraft={floorPresetDraft}
           onPresetDraftChange={(patch) =>
             setFloorPresetDraft((prev) => ({ ...prev, ...patch }))
@@ -182,6 +216,9 @@ export function EstimateCalculatorWorkspace() {
       >
         <WallEstimatePanel
           editor={walls}
+          zones={zones}
+          onZonesChange={handleZonesChange}
+          onDeleteZone={handleDeleteZone}
           scenarioDraft={wallScenarioDraft}
           onScenarioDraftChange={(patch) =>
             setWallScenarioDraft((prev) => ({ ...prev, ...patch }))

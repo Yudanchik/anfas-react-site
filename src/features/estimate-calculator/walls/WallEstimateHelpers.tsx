@@ -47,17 +47,14 @@ export function WallEstimateHelpers({
 
   return (
     <section className={styles.wrap} aria-labelledby="wall-estimate-helpers-title">
-      <div className={styles.copy}>
-        <h2 className={styles.title} id="wall-estimate-helpers-title">
+      <details className={styles.details}>
+        <summary className={styles.summary} id="wall-estimate-helpers-title">
           Быстрые действия
-        </h2>
+        </summary>
         <p className={styles.text}>
-          Кнопки подставляют площади из параметров замера в подходящие строки сметы. Работы сами не
-          включаются.
+          Подставляют площади в строки раздела, но не включают работы. После сценариев по зонам
+          обычно нужны реже.
         </p>
-      </div>
-
-      <div className={styles.actionsPanel}>
         <div className={styles.actions}>
           <button
             type="button"
@@ -107,27 +104,25 @@ export function WallEstimateHelpers({
           >
             Откосы / углы
           </button>
+          <button
+            type="button"
+            className={styles.danger}
+            aria-label="Сбросить только раздел стены"
+            title="Полы и их автосохранение не затрагиваются"
+            onClick={() => {
+              onReset()
+              setStatus(formatWallQuickActionFeedback('reset'))
+            }}
+          >
+            Сбросить стены
+          </button>
         </div>
-
-        <button
-          type="button"
-          className={styles.danger}
-          aria-label="Сбросить только раздел стены"
-          title="Полы и их автосохранение не затрагиваются"
-          onClick={() => {
-            onReset()
-            setStatus(formatWallQuickActionFeedback('reset'))
-          }}
-        >
-          Сбросить стены
-        </button>
-
         {status ? (
           <p className={styles.status} role="status" aria-live="polite">
             {status}
           </p>
         ) : null}
-      </div>
+      </details>
     </section>
   )
 }

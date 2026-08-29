@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
+  createEstimateZone,
+  ESTIMATE_GENERAL_WORKS_TITLE,
   FLOOR_ZONE_WORK_CATEGORIES,
   getFloorZoneMappingOptions,
+  type EstimateZone,
   type FloorZoneWorkCategoryId,
 } from '@/entities/estimate'
 
@@ -11,11 +14,19 @@ import { EstimateNumberInput } from '../ui/EstimateNumberInput'
 import { EstimateSelect } from '../ui/EstimateSelect'
 import styles from './FloorZoneWorkAdd.module.scss'
 
+const GENERAL_ZONE = '__general__'
+const CUSTOM_ZONE = '__custom__'
+
 type FloorZoneWorkAddProps = {
+  zones?: readonly EstimateZone[]
+  onZonesChange?: (zones: EstimateZone[]) => void
+  /** Без своей рамки/заголовка — внутри панели «Строки сметы». */
+  embedded?: boolean
   onAdd: (params: {
     priceKey: string
     quantity: number
     zoneName: string
+    zoneId?: string
     comment?: string
   }) => boolean
 }
@@ -29,11 +40,17 @@ type StatusState = {
 
 const SUCCESS_CLEAR_MS = 4500
 
-export function FloorZoneWorkAdd({ onAdd }: FloorZoneWorkAddProps) {
+export function FloorZoneWorkAdd({
+  zones = [],
+  onZonesChange,
+  embedded = false,
+  onAdd,
+}: FloorZoneWorkAddProps) {
   const [categoryId, setCategoryId] = useState<FloorZoneWorkCategoryId>('demolition')
   const options = useMemo(() => getFloorZoneMappingOptions(categoryId), [categoryId])
   const [priceKey, setPriceKey] = useState(() => options[0]?.id ?? '')
-  const [zoneName, setZoneName] = useState('')
+  const [zoneSelect, setZoneSelect] = useState(GENERAL_ZONE)
+  const [customZoneName, setCustomZoneName] = useState('')
   const [quantity, setQuantity] = useState(0)
   const [comment, setComment] = useState('')
   const [status, setStatus] = useState<StatusState | null>(null)
@@ -46,6 +63,21 @@ export function FloorZoneWorkAdd({ onAdd }: FloorZoneWorkAddProps) {
       : (selectedOptions[0]?.id ?? '')
   const selectedWork = selectedOptions.find((item) => item.id === effectivePriceKey)
   const quantityUnit = selectedWork?.unit ?? 'м²'
+
+  const zoneSelectOptions = useMemo(
+    () => [
+      { value: GENERAL_ZONE, label: ESTIMATE_GENERAL_WORKS_TITLE },
+      ...zones.map((zone) => ({ value: zone.id, label: `Зона: ${zone.name}` })),
+      { value: CUSTOM_ZONE, label: 'Свободная зона…' },
+    ],
+    [zones],
+  )
+
+  const resolvedZoneSelect = useMemo(() => {
+    if (zoneSelect === GENERAL_ZONE || zoneSelect === CUSTOM_ZONE) return zoneSelect
+    if (zones.some((zone) => zone.id === zoneSelect)) return zoneSelect
+    return GENERAL_ZONE
+  }, [zones, zoneSelect])
 
   const categorySelectOptions = useMemo(
     () =>
@@ -104,10 +136,33 @@ export function FloorZoneWorkAdd({ onAdd }: FloorZoneWorkAddProps) {
       return
     }
 
-    const zone = validateEstimateZoneName(zoneName)
-    if (!zone.ok) {
-      setError(zone.message)
-      return
+    const selectedZone = zones.find((zone) => zone.id === resolvedZoneSelect)
+    let zoneName = ''
+    let zoneId: string | undefined
+    let targetLabel = ESTIMATE_GENERAL_WORKS_TITLE
+
+    if (resolvedZoneSelect === GENERAL_ZONE) {
+      zoneName = ''
+      zoneId = undefined
+    } else if (selectedZone) {
+      zoneName = selectedZone.name
+      zoneId = selectedZone.id
+      targetLabel = `Зона: ${selectedZone.name}`
+    } else {
+      const zone = validateEstimateZoneName(customZoneName)
+      if (!zone.ok) {
+        setError(zone.message)
+        return
+      }
+      if (!onZonesChange) {
+        setError('Сначала добавьте зону в блоке «Зоны и замеры»')
+        return
+      }
+      const created = createEstimateZone({ name: zone.value })
+      onZonesChange([...zones, created])
+      zoneName = created.name
+      zoneId = created.id
+      targetLabel = `Зона: ${created.name}`
     }
 
     if (!(quantity > 0)) {
@@ -118,7 +173,8 @@ export function FloorZoneWorkAdd({ onAdd }: FloorZoneWorkAddProps) {
     const ok = onAdd({
       priceKey: effectivePriceKey,
       quantity,
-      zoneName: zone.value,
+      zoneName,
+      zoneId,
       comment: comment.trim() || undefined,
     })
     if (!ok) {
@@ -127,23 +183,33 @@ export function FloorZoneWorkAdd({ onAdd }: FloorZoneWorkAddProps) {
     }
 
     setSuccess(
-      `Работа добавлена в смету: ${selectedWork.title}, зона: ${zone.value}, объём: ${quantity} ${selectedWork.unit}`,
+      `Работа добавлена в смету: ${selectedWork.title}, ${targetLabel}, объём: ${quantity} ${selectedWork.unit}`,
     )
     setQuantity(0)
     setComment('')
   }
 
   return (
-    <section className={styles.wrap} aria-labelledby="floor-zone-work-add-title">
-      <div className={styles.head}>
-        <h2 className={styles.title} id="floor-zone-work-add-title">
-          Добавить работу по зоне
-        </h2>
-        <p className={styles.lead}>
-          Добавляет отдельную работу из прайса для конкретной зоны: кухни, коридора, санузла или
-          комнаты. Уже добавленные строки не затираются.
+    <section
+      className={embedded ? styles.embedded : styles.wrap}
+      aria-labelledby={embedded ? undefined : 'floor-zone-work-add-title'}
+    >
+      {embedded ? (
+        <p className={styles.embeddedHint}>
+          Точечное исключение: одна работа из прайса для зоны. Для типового набора используйте
+          сценарий.
         </p>
-      </div>
+      ) : (
+        <div className={styles.head}>
+          <h2 className={styles.title} id="floor-zone-work-add-title">
+            Добавить работу по зоне
+          </h2>
+          <p className={styles.lead}>
+            Точечное исключение: одна работа из прайса для зоны. Для типового набора используйте
+            сценарий с «Применить к» зоне.
+          </p>
+        </div>
+      )}
 
       <div className={styles.form}>
         <div className={styles.field}>
@@ -168,16 +234,28 @@ export function FloorZoneWorkAdd({ onAdd }: FloorZoneWorkAddProps) {
           />
         </div>
 
-        <label className={styles.field}>
-          <span className={styles.label}>Зона</span>
-          <input
-            className={styles.control}
-            value={zoneName}
-            placeholder="Кухня"
-            maxLength={60}
-            onChange={(event) => setZoneName(event.target.value)}
+        <div className={styles.field}>
+          <span className={styles.label}>Куда добавить</span>
+          <EstimateSelect
+            value={resolvedZoneSelect}
+            options={zoneSelectOptions}
+            ariaLabel="Общие работы или зона"
+            onChange={setZoneSelect}
           />
-        </label>
+        </div>
+
+        {resolvedZoneSelect === CUSTOM_ZONE ? (
+          <label className={styles.field}>
+            <span className={styles.label}>Название свободной зоны</span>
+            <input
+              className={styles.control}
+              value={customZoneName}
+              placeholder="Кухня"
+              maxLength={60}
+              onChange={(event) => setCustomZoneName(event.target.value)}
+            />
+          </label>
+        ) : null}
 
         <label className={styles.field} htmlFor="floor-zone-work-quantity">
           <span className={styles.label}>

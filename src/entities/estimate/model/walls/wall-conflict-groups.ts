@@ -1,4 +1,8 @@
 import type { EstimateLine } from '../shared/estimate.types'
+import {
+  collectConflictDisabledKeys,
+  disableConflictingKeysInScope,
+} from '../shared/estimate-conflict-scope'
 
 /**
  * Mutually exclusive альтернативы внутри сметы стен.
@@ -59,25 +63,13 @@ export function getWallConflictGroupId(priceKey: string): string | undefined {
   return PRICE_KEY_TO_CONFLICT_GROUP.get(priceKey)
 }
 
-/**
- * Отключает «соседей» в conflict group и взаимоисключение обои↔покраска.
- * Включаемые в этом проходе ключи и ручные строки не отключает.
- */
-export function disableWallConflictingAlternatives(
-  lines: readonly EstimateLine[],
-  enabledPriceKeys: readonly string[],
-): EstimateLine[] {
-  const disabledKeys = new Set<string>()
+function collectWallDisabledKeys(enabledPriceKeys: readonly string[]): Set<string> {
+  const disabledKeys = collectConflictDisabledKeys(
+    enabledPriceKeys,
+    WALL_CONFLICT_GROUPS,
+    PRICE_KEY_TO_CONFLICT_GROUP,
+  )
   const enabledSet = new Set(enabledPriceKeys)
-
-  for (const priceKey of enabledPriceKeys) {
-    const groupId = PRICE_KEY_TO_CONFLICT_GROUP.get(priceKey)
-    if (!groupId) continue
-    const groupKeys = WALL_CONFLICT_GROUPS[groupId] ?? []
-    for (const key of groupKeys) {
-      if (key !== priceKey) disabledKeys.add(key)
-    }
-  }
 
   const enablesWallpaper = WALL_WALLPAPER_FINISH_KEYS.some((key) => enabledSet.has(key))
   const enablesPaintFinish = WALL_PAINT_FINISH_KEYS.some((key) => enabledSet.has(key))
@@ -89,15 +81,32 @@ export function disableWallConflictingAlternatives(
     for (const key of WALL_WALLPAPER_FINISH_KEYS) disabledKeys.add(key)
   }
 
-  // Не отключаем ключи, которые явно включаем в этом проходе.
   for (const key of enabledPriceKeys) disabledKeys.delete(key)
+  return disabledKeys
+}
 
-  if (disabledKeys.size === 0) return [...lines]
+/**
+ * Отключает «соседей» в conflict group и взаимоисключение обои↔покраска.
+ * Object-level: не трогает manual и zoned clones.
+ */
+export function disableWallConflictingAlternatives(
+  lines: readonly EstimateLine[],
+  enabledPriceKeys: readonly string[],
+): EstimateLine[] {
+  return disableConflictingKeysInScope(lines, collectWallDisabledKeys(enabledPriceKeys), {
+    zoneId: null,
+  })
+}
 
-  return lines.map((line) => {
-    if (line.source === 'manual') return line
-    if (!disabledKeys.has(line.priceKey)) return line
-    if (!line.enabled) return line
-    return { ...line, enabled: false }
+/**
+ * Conflict groups стен только внутри зоны.
+ */
+export function disableWallConflictingAlternativesInZone(
+  lines: readonly EstimateLine[],
+  enabledPriceKeys: readonly string[],
+  zoneId: string,
+): EstimateLine[] {
+  return disableConflictingKeysInScope(lines, collectWallDisabledKeys(enabledPriceKeys), {
+    zoneId,
   })
 }

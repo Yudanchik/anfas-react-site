@@ -7,6 +7,21 @@
   margin-top: 14px;
 }
 
+.embedded {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--paper-deep) 28%, var(--paper));
+}
+
+.embeddedHint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}
+
 .head {
   margin-bottom: 12px;
 }

@@ -154,12 +154,55 @@
   color: #7a1f1f;
 
   &:hover:not(:disabled) {
-    border-color: color-mix(in srgb, #9b2c2c 60%, transparent);
-    background: color-mix(in srgb, #9b2c2c 14%, var(--paper));
+    border-color: color-mix(in srgb, #9b2c2c 72%, transparent);
+    background: color-mix(in srgb, #9b2c2c 18%, var(--paper));
+    color: #6b1515;
   }
 
   &:focus-visible {
-    outline-color: #9b2c2c;
+    outline: 2px solid #9b2c2c;
+    outline-offset: 1px;
+    border-color: color-mix(in srgb, #9b2c2c 70%, transparent);
+  }
+
+  &:disabled {
+    border-color: color-mix(in srgb, var(--ink) 14%, transparent);
+    background: color-mix(in srgb, var(--ink) 4%, var(--paper));
+    color: color-mix(in srgb, var(--ink) 42%, transparent);
+    opacity: 1;
+  }
+}
+
+/** Единый chevron для accordion/header кнопок калькулятора. */
+@mixin accordion-chevron {
+  display: grid;
+  flex: 0 0 1.5rem;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  border-radius: 999px;
+  background: var(--paper);
+
+  &::before {
+    box-sizing: border-box;
+    width: 0.34rem;
+    height: 0.34rem;
+    border-right: 2px solid color-mix(in srgb, var(--ink) 72%, transparent);
+    border-bottom: 2px solid color-mix(in srgb, var(--ink) 72%, transparent);
+    content: '';
+    transform: rotate(-45deg);
+    transform-origin: center center;
+    transition: transform 0.15s ease;
+  }
+
+  &[data-open='true'] {
+    border-color: color-mix(in srgb, var(--amber) 55%, transparent);
+    background: color-mix(in srgb, var(--amber) 18%, var(--paper));
+  }
+
+  &[data-open='true']::before {
+    transform: rotate(45deg);
   }
 }
 

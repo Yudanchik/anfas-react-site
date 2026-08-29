@@ -37,17 +37,14 @@ export function FloorEstimateHelpers({
 
   return (
     <section className={styles.wrap} aria-labelledby="floor-estimate-helpers-title">
-      <div className={styles.copy}>
-        <h2 className={styles.title} id="floor-estimate-helpers-title">
+      <details className={styles.details}>
+        <summary className={styles.summary} id="floor-estimate-helpers-title">
           Быстрые действия
-        </h2>
+        </summary>
         <p className={styles.text}>
-          Кнопки подставляют площади из параметров замера в подходящие строки сметы. Работы сами не
-          включаются.
+          Подставляют площади в строки раздела, но не включают работы. После сценариев по зонам
+          обычно нужны реже.
         </p>
-      </div>
-
-      <div className={styles.actionsPanel}>
         <div className={styles.actions}>
           <button
             type="button"
@@ -81,30 +78,25 @@ export function FloorEstimateHelpers({
           >
             Мокрые зоны → гидро
           </button>
+          <button
+            type="button"
+            className={styles.danger}
+            aria-label="Сбросить всю смету: полы, стены и автосохранение на этом устройстве"
+            title="Сбросит полы, стены и автосохранение на этом устройстве"
+            onClick={() => {
+              onReset()
+              setStatus(formatQuickActionFeedback('reset'))
+            }}
+          >
+            Сбросить всю смету
+          </button>
         </div>
-
-        <button
-          type="button"
-          className={styles.danger}
-          aria-label="Сбросить всю смету: полы, стены и автосохранение на этом устройстве"
-          title="Сбросит полы, стены и автосохранение на этом устройстве"
-          onClick={() => {
-            onReset()
-            setStatus(formatQuickActionFeedback('reset'))
-          }}
-        >
-          Сбросить всю смету
-        </button>
-        <p className={styles.hint}>
-          Сбросит полы, стены и сохранённые данные калькулятора на этом устройстве.
-        </p>
-
         {status ? (
           <p className={styles.status} role="status" aria-live="polite">
             {status}
           </p>
         ) : null}
-      </div>
+      </details>
     </section>
   )
 }

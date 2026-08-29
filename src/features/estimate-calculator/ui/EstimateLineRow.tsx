@@ -1,5 +1,5 @@
 import type { EstimateLine } from '@/entities/estimate'
-import { calculateLineTotal } from '@/entities/estimate'
+import { calculateLineTotal, isZonedEstimateLine } from '@/entities/estimate'
 import { formatPriceValue } from '@/entities/price/lib/price-helpers'
 
 import { EstimateNumberInput } from './EstimateNumberInput'
@@ -12,10 +12,26 @@ type EstimateLineRowProps = {
     lineId: string,
     patch: Partial<Pick<EstimateLine, 'quantity' | 'unitPrice' | 'coefficient' | 'comment'>>,
   ) => void
+  onRemoveManualLine?: (lineId: string) => void
 }
 
-export function EstimateLineRow({ line, onToggle, onPatchLine }: EstimateLineRowProps) {
+function sourceTooltip(line: EstimateLine): string | undefined {
+  const parts: string[] = []
+  if (line.source && line.source !== 'manual') parts.push(`Источник: ${line.source}`)
+  if (line.note?.trim()) parts.push(line.note.trim())
+  return parts.length > 0 ? parts.join(' · ') : undefined
+}
+
+export function EstimateLineRow({
+  line,
+  onToggle,
+  onPatchLine,
+  onRemoveManualLine,
+}: EstimateLineRowProps) {
   const total = calculateLineTotal(line)
+  const canRemove =
+    Boolean(onRemoveManualLine) && (line.source === 'manual' || isZonedEstimateLine(line))
+  const tooltip = sourceTooltip(line)
 
   return (
     <tr data-enabled={line.enabled ? 'true' : 'false'}>
@@ -28,12 +44,14 @@ export function EstimateLineRow({ line, onToggle, onPatchLine }: EstimateLineRow
         />
       </td>
       <td>
-        <span className={styles.workTitle}>{line.title}</span>
-        {line.zoneName ? <span className={styles.meta}>Зона: {line.zoneName}</span> : null}
-        <span className={styles.meta}>
-          {line.source}
-          {line.note ? ` · ${line.note}` : ''}
-        </span>
+        <div className={styles.workCell}>
+          <span className={styles.workTitle} title={tooltip}>
+            {line.title}
+          </span>
+          {line.zoneName ? (
+            <span className={styles.zoneBadge}>Зона: {line.zoneName}</span>
+          ) : null}
+        </div>
       </td>
       <td>{line.unit}</td>
       <td>
@@ -69,6 +87,18 @@ export function EstimateLineRow({ line, onToggle, onPatchLine }: EstimateLineRow
           aria-label={`Комментарий: ${line.title}`}
           onChange={(event) => onPatchLine(line.id, { comment: event.target.value })}
         />
+      </td>
+      <td className={styles.rowActions}>
+        {canRemove ? (
+          <button
+            type="button"
+            className={styles.removeBtn}
+            aria-label={`Удалить строку: ${line.title}`}
+            onClick={() => onRemoveManualLine?.(line.id)}
+          >
+            Удалить
+          </button>
+        ) : null}
       </td>
     </tr>
   )

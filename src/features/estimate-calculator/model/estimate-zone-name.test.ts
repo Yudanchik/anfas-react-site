@@ -11,7 +11,7 @@ describe('validateEstimateZoneName', () => {
     const result = validateEstimateZoneName('   ')
     assert.equal(result.ok, false)
     if (!result.ok) {
-      assert.match(result.message, /зону/i)
+      assert.equal(result.message, 'Укажите название зоны')
     }
   })
 

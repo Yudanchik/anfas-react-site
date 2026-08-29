@@ -34,7 +34,7 @@ export function EstimateIntro({
       </h1>
       <p className={styles.lead}>
         Быстрый черновик для сметчика: сценарии подставляют типовой набор, все строки остаются
-        видимыми и редактируемыми. Цены — whitelist mapping (PDF + сверка с превью).
+        видимыми и редактируемыми.
       </p>
 
       <p className={styles.warning} role="status">
@@ -58,17 +58,30 @@ export function EstimateIntro({
         </div>
       </dl>
 
-      <aside className={styles.recommendation} aria-label="Сводка по разделам">
-        <span className={styles.recommendationLabel}>Разделы</span>
-        <p className={styles.recommendationText}>
-          Полы: {formatEstimatePositionCount(floorsSelectedCount)} ·{' '}
-          {formatPriceValue(floorsTotalRub)} ₽. Стены:{' '}
-          {formatEstimatePositionCount(wallsSelectedCount)} · {formatPriceValue(wallsTotalRub)} ₽.
-        </p>
-        <p className={styles.recommendationHint}>
-          Площадь и рекомендации сами работы не включают — только явный сценарий или ручное
-          включение.
-        </p>
+      <aside className={styles.sections} aria-label="Сводка по разделам">
+        <span className={styles.sectionsLabel}>Разделы</span>
+        <ul className={styles.sectionsList}>
+          <li
+            className={styles.sectionCard}
+            data-active={floorsSelectedCount > 0 ? 'true' : 'false'}
+          >
+            <span className={styles.sectionName}>Полы</span>
+            <span className={styles.sectionMeta}>
+              {formatEstimatePositionCount(floorsSelectedCount)} ·{' '}
+              {formatPriceValue(floorsTotalRub)} ₽
+            </span>
+          </li>
+          <li
+            className={styles.sectionCard}
+            data-active={wallsSelectedCount > 0 ? 'true' : 'false'}
+          >
+            <span className={styles.sectionName}>Стены</span>
+            <span className={styles.sectionMeta}>
+              {formatEstimatePositionCount(wallsSelectedCount)} ·{' '}
+              {formatPriceValue(wallsTotalRub)} ₽
+            </span>
+          </li>
+        </ul>
       </aside>
     </section>
   )

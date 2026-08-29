@@ -1,8 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import {
+  ESTIMATE_GENERAL_WORKS_TITLE,
   formatFloorPresetFeedback,
+  formatFloorPresetZoneFeedback,
   type DemolitionCoveringOption,
+  type EstimateZone,
   type FloorPresetApplication,
   type ScreedTypeOption,
   type WasteTripOption,
@@ -19,14 +22,20 @@ type FloorPresetDraft = {
   wasteTrip: WasteTripOption
 }
 
+const GENERAL_TARGET = 'general'
+
 type FloorEstimatePresetsProps = {
   draft?: FloorPresetDraft
   onDraftChange?: (patch: Partial<FloorPresetDraft>) => void
+  zones?: readonly EstimateZone[]
   demolitionArea: number
   screedArea: number
   totalFloorArea: number
   wetZonesArea: number
-  onApplyPreset: (application: FloorPresetApplication) => { label: string; addedCount: number }
+  onApplyPreset: (
+    application: FloorPresetApplication,
+    target?: { zone?: EstimateZone },
+  ) => { label: string; addedCount: number; zoneName?: string }
 }
 
 const DEFAULT_DRAFT: FloorPresetDraft = {
@@ -66,6 +75,7 @@ const WASTE_OPTIONS: ReadonlyArray<{ value: WasteTripOption; label: string }> = 
 export function FloorEstimatePresets({
   draft: controlledDraft,
   onDraftChange,
+  zones = [],
   demolitionArea,
   screedArea,
   totalFloorArea,
@@ -75,6 +85,7 @@ export function FloorEstimatePresets({
   const [uncontrolledDraft, setUncontrolledDraft] = useState<FloorPresetDraft>(DEFAULT_DRAFT)
   const draft = controlledDraft ?? uncontrolledDraft
   const { covering, screedType, layers, wasteTrip } = draft
+  const [targetId, setTargetId] = useState(GENERAL_TARGET)
   const [status, setStatus] = useState<string | null>(null)
 
   function patchDraft(patch: Partial<FloorPresetDraft>) {
@@ -82,11 +93,38 @@ export function FloorEstimatePresets({
     else setUncontrolledDraft((prev) => ({ ...prev, ...patch }))
   }
 
-  const screedQty = screedArea > 0 ? screedArea : totalFloorArea
+  const targetOptions = useMemo(
+    () => [
+      { value: GENERAL_TARGET, label: ESTIMATE_GENERAL_WORKS_TITLE },
+      ...zones.map((zone) => ({ value: zone.id, label: zone.name })),
+    ],
+    [zones],
+  )
+
+  const resolvedTargetId = targetOptions.some((option) => option.value === targetId)
+    ? targetId
+    : GENERAL_TARGET
+  const effectiveZone = zones.find((zone) => zone.id === resolvedTargetId)
+  const effectiveDemolition = effectiveZone ? effectiveZone.demolitionFloorArea : demolitionArea
+  const effectiveScreed = effectiveZone
+    ? effectiveZone.screedArea > 0
+      ? effectiveZone.screedArea
+      : effectiveZone.floorArea
+    : screedArea > 0
+      ? screedArea
+      : totalFloorArea
+  const effectiveWet = effectiveZone ? effectiveZone.wetArea : wetZonesArea
 
   function apply(application: FloorPresetApplication) {
-    const result = onApplyPreset(application)
-    setStatus(formatFloorPresetFeedback(result.label, result.addedCount))
+    const result = onApplyPreset(
+      application,
+      effectiveZone ? { zone: effectiveZone } : undefined,
+    )
+    setStatus(
+      result.zoneName
+        ? formatFloorPresetZoneFeedback(result.label, result.zoneName, result.addedCount)
+        : formatFloorPresetFeedback(result.label, result.addedCount),
+    )
   }
 
   return (
@@ -96,9 +134,19 @@ export function FloorEstimatePresets({
           Сценарии
         </h2>
         <p className={styles.lead}>
-          Сценарий добавляет типовой набор работ в смету и подставляет площади из параметров замера.
-          После применения каждую строку можно изменить вручную.
+          Выберите сценарий и примените его к общим работам или конкретной зоне. После применения
+          каждую строку можно изменить вручную.
         </p>
+      </div>
+
+      <div className={styles.targetRow}>
+        <span className={styles.targetLabel}>Применить к</span>
+        <EstimateSelect
+          value={resolvedTargetId}
+          options={targetOptions}
+          ariaLabel="Применить сценарий пола к"
+          onChange={setTargetId}
+        />
       </div>
 
       <div className={styles.grid}>
@@ -119,7 +167,7 @@ export function FloorEstimatePresets({
           <button
             type="button"
             className={styles.action}
-            disabled={!(demolitionArea > 0)}
+            disabled={!(effectiveDemolition > 0)}
             onClick={() => apply({ presetId: 'demolition-covering', covering })}
           >
             Применить
@@ -143,7 +191,7 @@ export function FloorEstimatePresets({
           <button
             type="button"
             className={styles.action}
-            disabled={!(screedQty > 0)}
+            disabled={!(effectiveScreed > 0)}
             onClick={() => apply({ presetId: 'screed-on-slab', screedType })}
           >
             Применить
@@ -159,7 +207,7 @@ export function FloorEstimatePresets({
           <button
             type="button"
             className={styles.action}
-            disabled={!(screedQty > 0)}
+            disabled={!(effectiveScreed > 0)}
             onClick={() => apply({ presetId: 'self-leveling' })}
           >
             Применить
@@ -183,7 +231,7 @@ export function FloorEstimatePresets({
           <button
             type="button"
             className={styles.action}
-            disabled={!(wetZonesArea > 0)}
+            disabled={!(effectiveWet > 0)}
             onClick={() => apply({ presetId: 'wet-zones', layers })}
           >
             Применить

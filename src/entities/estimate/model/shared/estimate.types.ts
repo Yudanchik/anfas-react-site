@@ -62,6 +62,8 @@ export type EstimateLine = {
   coefficient: number
   enabled: boolean
   comment?: string
+  /** Стабильная ссылка на `EstimateZone.id`. Без значения — общие работы раздела. */
+  zoneId?: string
   /** Название зоны для zoned clone line (например «Кухня»). Без зоны — общая работа. */
   zoneName?: string
   source: EstimatePriceSource
