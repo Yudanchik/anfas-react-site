@@ -9,20 +9,20 @@ import { FLOOR_PRICE_MAPPING, FLOOR_SECTION_ID } from './floor-price.mapping'
 
 export type BuildFloorEstimateLinesOptions = {
   mapping?: readonly FloorPriceMappingItem[]
-  /** Override enabled flags by priceKey */
+  /** Переопределить `enabled` по `priceKey` */
   enabledByKey?: Readonly<Record<string, boolean>>
-  /** Override quantity by priceKey */
+  /** Переопределить объём по `priceKey` */
   quantityByKey?: Readonly<Record<string, number>>
-  /** Override unitPrice by priceKey */
+  /** Переопределить цену по `priceKey` */
   unitPriceByKey?: Readonly<Record<string, number>>
-  /** Override coefficient by priceKey */
+  /** Переопределить коэффициент по `priceKey` */
   coefficientByKey?: Readonly<Record<string, number>>
 }
 
 /**
- * Builds editable estimate lines from floor mapping + surveyor input.
- * Assumptions: labour-only prices from FLOOR_PRICE_MAPPING; materials excluded.
- * Quantity defaults come from input fields; enabled defaults stay false for mapped rows.
+ * Собирает редактируемые строки полов из mapping + параметров замера.
+ * Цены — только работа (`FLOOR_PRICE_MAPPING`); материалы не входят.
+ * Объёмы по умолчанию из полей ввода; mapped-строки по умолчанию выключены.
  */
 export function buildFloorEstimateLines(
   input: FloorEstimateInput,

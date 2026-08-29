@@ -7,6 +7,10 @@
 
 .title {
   @include eu.section-title;
+}
+
+.lead {
+  @include eu.section-lead;
 
   margin-bottom: 12px;
 }

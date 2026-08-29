@@ -21,13 +21,12 @@ export type SelectedEstimateSectionGroup = {
   sectionTitle: string
   items: readonly SelectedEstimateLineView[]
   selectedCount: number
-  /** Sum of already line-rounded totals (same source as calculateLineTotal). */
+  /** Сумма уже округлённых построчных итогов (тот же источник, что `calculateLineTotal`). */
   subtotalRub: number
 }
 
 /**
- * Known section labels for future sections.
- * Prefer `sectionTitle` from the selection payload when provided.
+ * Подписи разделов на будущее. Если в payload уже есть `sectionTitle` — предпочитаем его.
  */
 export const ESTIMATE_SECTION_LABELS: Readonly<Record<string, string>> = {
   floors: 'Полы',
@@ -45,8 +44,9 @@ export function resolveEstimateSectionTitle(sectionId: string, fallback?: string
 }
 
 /**
- * Presentational filter for final estimate blocks.
- * Uses calculateLineTotal — does not redefine formulas.
+ * Выбранные строки для итоговой сметы (включённые).
+ * Считает через `calculateLineTotal`, формулы не дублирует.
+ * Строки без зоны — обычные общие работы раздела.
  */
 export function getSelectedEstimateLines(
   section: EstimateSectionSelection,
@@ -57,7 +57,7 @@ export function getSelectedEstimateLines(
   for (const line of section.lines) {
     if (!line.enabled) continue
     const lineTotal = calculateLineTotal(line)
-    if (lineTotal <= 0 && line.source !== 'manual') continue
+    if (lineTotal <= 0 && line.source !== 'manual' && !line.zoneName) continue
 
     selected.push({
       line,
@@ -78,9 +78,8 @@ export function getCombinedSelectedEstimateLines(
 }
 
 /**
- * Groups selected lines by section for the combined summary.
- * Empty sections are omitted. Order follows the input `sections` array
- * so new sections (ceilings, plumbing, …) appear by registration order.
+ * Группирует выбранные строки по разделам для сводной сметы.
+ * Пустые разделы пропускает; порядок = порядок входного массива `sections`.
  */
 export function getSelectedEstimateSections(
   sections: readonly EstimateSectionSelection[],
@@ -103,7 +102,7 @@ export function getSelectedEstimateSections(
   return groups
 }
 
-/** Grand total from section groups (sum of section subtots = sum of rounded line totals). */
+/** Общий итог по группам разделов (= сумма округлённых построчных итогов). */
 export function calculateSelectedSectionsGrandTotal(
   groups: readonly SelectedEstimateSectionGroup[],
 ): number {

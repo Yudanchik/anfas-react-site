@@ -18,9 +18,9 @@
     "lint:styles": "stylelint \"src/**/*.{css,scss}\"",
     "format": "prettier --write .",
     "check": "pnpm typecheck && pnpm lint && pnpm lint:styles",
-    "test:floor-estimate": "tsx --test src/entities/estimate/model/floors/floor-estimate.test.ts",
+    "test:floor-estimate": "tsx --test src/entities/estimate/model/floors/floor-estimate.test.ts src/entities/estimate/model/floors/floor-zoned-line.test.ts",
     "test:wall-estimate": "tsx --test src/entities/estimate/model/walls/wall-estimate.test.ts",
-    "test:estimate": "tsx --test src/entities/estimate/model/floors/floor-estimate.test.ts src/entities/estimate/model/walls/wall-estimate.test.ts src/entities/estimate/model/shared/format-estimate-position-count.test.ts src/features/estimate-calculator/model/estimate-calculator-persistence.test.ts src/features/estimate-calculator/model/estimate-number-input.test.ts",
+    "test:estimate": "tsx --test src/entities/estimate/model/floors/floor-estimate.test.ts src/entities/estimate/model/floors/floor-zoned-line.test.ts src/entities/estimate/model/walls/wall-estimate.test.ts src/entities/estimate/model/shared/format-estimate-position-count.test.ts src/features/estimate-calculator/model/estimate-calculator-persistence.test.ts src/features/estimate-calculator/model/estimate-number-input.test.ts src/features/estimate-calculator/model/estimate-zone-name.test.ts",
     "sync:youtube": "node scripts/sync-youtube.mjs"
   },
   "dependencies": {

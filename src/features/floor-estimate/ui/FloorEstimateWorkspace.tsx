@@ -35,7 +35,6 @@ export function FloorEstimateWorkspace() {
 
       <div className={styles.zone}>
         <FloorEstimateHelpers
-          recommendation={editor.recommendation}
           totalFloorArea={editor.input.totalFloorArea}
           demolitionArea={editor.input.demolitionArea}
           screedArea={editor.input.screedArea}

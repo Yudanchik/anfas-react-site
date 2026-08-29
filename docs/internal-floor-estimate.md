@@ -22,7 +22,7 @@ Internal labour-only estimate for rough floors:
 
 ## Price source
 
-- Primary: PDF whitelist in `src/entities/estimate/model/floor-price.mapping.ts`
+- Primary: PDF whitelist in `src/entities/estimate/model/floors/floor-price.mapping.ts`
 - Frontend `prices.data.ts` used only for `source=both` conflict checks
 - Public price data is not modified by the calculator
 
@@ -52,14 +52,17 @@ pnpm build
 
 ## Extending with walls / ceilings / other sections
 
-See **`docs/estimate-calculator-architecture.md`** for the current folder layout.
+Актуальная раскладка и правила расширения: **`docs/estimate-calculator/`**
+([README](./estimate-calculator/README.md), [architecture](./estimate-calculator/architecture.md)).
 
 Do **not** rewrite the floors stack. Reuse shared calc and add a parallel section package under `model/<section>/` and `features/estimate-calculator/<section>/`.
 
-## Out of scope (MVP)
+## Out of scope (исторический MVP floors)
+
+Ниже — ограничения раннего floors MVP. Стены уже на том же route; persistence есть.
 
 - materials
-- finish coverings (laminate/quartz/parquet install)
-- walls / ceilings / electro / plumbing sections
-- auth / admin / persistence / PDF export
+- finish floor coverings (laminate/quartz/parquet install)
+- ceilings / electro / plumbing (ещё нет)
+- auth / admin / PDF export
 - Strapi / CMS / production deploy

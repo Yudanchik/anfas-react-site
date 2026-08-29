@@ -1,6 +1,6 @@
 /**
- * Compatibility shim: prefer getSelectedEstimateLines / getCombinedSelectedEstimateLines
- * from `@/entities/estimate` (shared domain).
+ * Совместимость: предпочтительнее `getSelectedEstimateLines` / `getCombinedSelectedEstimateLines`
+ * из `@/entities/estimate` (shared domain).
  */
 export {
   getCombinedSelectedEstimateLines,
@@ -17,7 +17,7 @@ import {
   type SelectedEstimateLineView,
 } from '@/entities/estimate'
 
-/** Floors-only helper kept for existing FloorEstimateSummary. */
+/** Обёртка только для полов — для старого `FloorEstimateSummary`. */
 export function getSelectedFloorEstimateLines(
   lines: readonly EstimateLine[],
 ): SelectedEstimateLineView[] {

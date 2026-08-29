@@ -102,4 +102,55 @@ describe('estimate calculator persistence', () => {
     assert.equal(manual.quantity, 3)
     assert.equal(manual.unitPrice, 500)
   })
+
+  it('restores zoned clone lines with zoneName without overwriting canonical rows', () => {
+    const base = restoreFloorEstimateState(null)
+    const snapshot: EstimateCalculatorSnapshot = {
+      version: 1,
+      activeTab: 'floors',
+      floors: {
+        input: base.input,
+        lines: [
+          {
+            id: 'floors:demolition-laminate',
+            priceKey: 'demolition-laminate',
+            enabled: false,
+            quantity: 0,
+            unitPrice: 300,
+            coefficient: 1,
+            source: 'both',
+          },
+          {
+            id: 'floors:zone-3',
+            priceKey: 'demolition-laminate',
+            enabled: true,
+            quantity: 20,
+            unitPrice: 300,
+            coefficient: 1,
+            source: 'both',
+            title: 'Демонтаж ламината',
+            unit: 'м²',
+            sectionId: 'floors',
+            kind: 'demolition',
+            zoneName: 'Кухня',
+          },
+        ],
+      },
+      walls: {
+        input: restoreWallEstimateState(null).input,
+        lines: [],
+      },
+    }
+
+    const restored = restoreFloorEstimateState(snapshot)
+    const canonical = restored.lines.find((line) => line.id === 'floors:demolition-laminate')
+    const zoned = restored.lines.find((line) => line.id === 'floors:zone-3')
+    assert.ok(canonical)
+    assert.equal(canonical.enabled, false)
+    assert.ok(zoned)
+    assert.equal(zoned.enabled, true)
+    assert.equal(zoned.quantity, 20)
+    assert.equal(zoned.zoneName, 'Кухня')
+    assert.equal(zoned.priceKey, 'demolition-laminate')
+  })
 })

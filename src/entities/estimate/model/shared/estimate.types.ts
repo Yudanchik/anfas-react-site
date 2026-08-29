@@ -2,7 +2,7 @@ import type { PriceCategorySlug } from '../../../price/model/price.types'
 
 export type EstimatePriceSource = 'pdf' | 'frontend' | 'both' | 'manual'
 
-/** @deprecated Prefer EstimatePriceSource — kept for floors call sites */
+/** @deprecated Предпочитайте `EstimatePriceSource` — оставлен для старых call sites полов. */
 export type FloorPriceSource = EstimatePriceSource
 
 export type FloorWorkKind =
@@ -13,6 +13,8 @@ export type FloorWorkKind =
   | 'screed-wet'
   | 'self-leveling'
   | 'waterproofing'
+  | 'finish-floor'
+  | 'finish-plinth'
   | 'waste'
   | 'other-rough'
 
@@ -60,6 +62,8 @@ export type EstimateLine = {
   coefficient: number
   enabled: boolean
   comment?: string
+  /** Название зоны для zoned clone line (например «Кухня»). Без зоны — общая работа. */
+  zoneName?: string
   source: EstimatePriceSource
   frontendCategorySlug?: PriceCategorySlug
   note?: string
@@ -117,7 +121,7 @@ export type WallEstimateResult = {
 }
 
 export type FloorPriceMappingItem = {
-  /** Stable id used as EstimateLine.priceKey / id seed */
+  /** Стабильный id → `EstimateLine.priceKey` / основа `id` строки */
   id: string
   title: string
   unit: string
@@ -125,7 +129,7 @@ export type FloorPriceMappingItem = {
   source: EstimatePriceSource
   kind: FloorWorkKind
   frontendCategorySlug?: PriceCategorySlug
-  /** Exact frontend position name for conflict check when source is both/frontend */
+  /** Точное имя позиции на сайте для сверки, если `source` = both/frontend */
   frontendName?: string
   frontendUnitPrice?: number
   note?: string

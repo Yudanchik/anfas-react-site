@@ -6,6 +6,7 @@ const PLASTER_KINDS: readonly WallWorkKind[] = ['plaster-gypsum', 'plaster-cemen
 const PUTTY_KINDS: readonly WallWorkKind[] = ['prep', 'primer', 'putty', 'reinforce']
 const FINISH_KINDS: readonly WallWorkKind[] = ['finish-paint', 'finish-wallpaper']
 
+/** Быстрые действия стен: подставить площадь, не включая работы. Zoned clones не трогает (shared helper). */
 export function applyWallTotalAreaToSquareMeterWorks(
   lines: readonly EstimateLine[],
   quantity: number,

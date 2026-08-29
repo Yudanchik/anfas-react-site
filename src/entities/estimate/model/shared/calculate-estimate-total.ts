@@ -1,7 +1,7 @@
 import { calculateSectionTotal, countEnabledLines } from './calculate-section-total'
 import type { EstimateSection } from './estimate.types'
 
-/** Sum of already line-rounded totals across sections. */
+/** Сумма уже округлённых построчных итогов по разделам. */
 export function calculateEstimateTotal(sections: readonly EstimateSection[]): number {
   return sections.reduce((sum, section) => sum + calculateSectionTotal(section), 0)
 }

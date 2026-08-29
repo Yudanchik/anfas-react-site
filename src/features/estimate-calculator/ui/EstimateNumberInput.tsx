@@ -5,6 +5,7 @@ import {
   formatEstimateNumberDisplay,
   getEstimateNumberFocusDraft,
   parseEstimateNumberInput,
+  sanitizeEstimateNumberDraft,
 } from '../model/estimate-number-input'
 import styles from './EstimateNumberInput.module.scss'
 
@@ -45,7 +46,7 @@ export function EstimateNumberInput({
         setDraft(null)
       }}
       onChange={(event) => {
-        const next = event.target.value
+        const next = sanitizeEstimateNumberDraft(event.target.value)
         setDraft(next)
         onValueChange(parseEstimateNumberInput(next))
       }}

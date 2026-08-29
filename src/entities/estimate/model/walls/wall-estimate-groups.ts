@@ -97,8 +97,8 @@ export function groupWallEstimateLines(lines: readonly EstimateLine[]): WallEsti
 }
 
 /**
- * Default open accordion ids for wall estimate groups.
- * Stage 3: always collapsed unless the user opens a group in the session.
+ * Какие группы аккордеона стен открыть по умолчанию.
+ * Всегда свёрнуты, пока пользователь сам не раскроет в сессии.
  */
 export function getDefaultOpenWallGroupIds(
   _groups: readonly WallEstimateGroup[],

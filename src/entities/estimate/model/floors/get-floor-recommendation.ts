@@ -38,8 +38,8 @@ const MESSAGES: Record<FloorRecommendationLevel, string> = {
 }
 
 /**
- * Builds recommendation text/suggested keys from average floor height delta (mm).
- * Does NOT enable estimate lines — estimator applies suggestions manually.
+ * Текст и suggested `priceKey` по среднему перепаду пола (мм).
+ * Строки сметы сам не включает — сметчик применяет подсказку вручную или через сценарий.
  */
 export function getFloorRecommendation(avgDeltaMm: number): FloorRecommendation {
   const delta = Number.isFinite(avgDeltaMm) && avgDeltaMm > 0 ? avgDeltaMm : 0

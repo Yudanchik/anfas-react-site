@@ -5,6 +5,7 @@ import {
   formatEstimateNumberDisplay,
   getEstimateNumberFocusDraft,
   parseEstimateNumberInput,
+  sanitizeEstimateNumberDraft,
 } from './estimate-number-input'
 
 describe('estimate number input helpers', () => {
@@ -15,10 +16,19 @@ describe('estimate number input helpers', () => {
     assert.equal(parseEstimateNumberInput('abc'), 0)
   })
 
-  it('parses decimals with comma or dot and rejects negatives', () => {
+  it('strips letters and keeps a single decimal separator', () => {
+    assert.equal(sanitizeEstimateNumberDraft('12a3'), '123')
+    assert.equal(sanitizeEstimateNumberDraft('12,5м'), '12,5')
+    assert.equal(sanitizeEstimateNumberDraft('1.2.3'), '1.23')
+    assert.equal(sanitizeEstimateNumberDraft('1,2,3'), '1,23')
+    assert.equal(sanitizeEstimateNumberDraft('-12,5'), '12,5')
+  })
+
+  it('parses decimals with comma or dot; minus is stripped (not stored as negative)', () => {
     assert.equal(parseEstimateNumberInput('12,5'), 12.5)
     assert.equal(parseEstimateNumberInput('12.5'), 12.5)
-    assert.equal(parseEstimateNumberInput('-3'), 0)
+    assert.equal(parseEstimateNumberInput('12abc,5'), 12.5)
+    assert.equal(parseEstimateNumberInput('-3'), 3)
     assert.equal(parseEstimateNumberInput('02332'), 2332)
   })
 

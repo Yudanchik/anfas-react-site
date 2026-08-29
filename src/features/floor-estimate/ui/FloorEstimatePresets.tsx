@@ -8,6 +8,7 @@ import {
   type WasteTripOption,
   type WaterproofingLayersOption,
 } from '@/entities/estimate'
+import { EstimateSelect } from '@/features/estimate-calculator/ui/EstimateSelect'
 
 import styles from './FloorEstimatePresets.module.scss'
 
@@ -94,7 +95,10 @@ export function FloorEstimatePresets({
         <h2 className={styles.title} id="floor-estimate-presets-title">
           Сценарии
         </h2>
-        <p className={styles.lead}>Явно включают типовой набор. Площадь сама строки не включает.</p>
+        <p className={styles.lead}>
+          Сценарий добавляет типовой набор работ в смету и подставляет площади из параметров замера.
+          После применения каждую строку можно изменить вручную.
+        </p>
       </div>
 
       <div className={styles.grid}>
@@ -103,22 +107,15 @@ export function FloorEstimatePresets({
             <h3 className={styles.cardTitle}>Демонтаж покрытия</h3>
             <span className={styles.badge}>Демонтаж</span>
           </div>
-          <label className={styles.field}>
+          <div className={styles.field}>
             <span>Тип</span>
-            <select
-              className={styles.select}
+            <EstimateSelect
               value={covering}
-              onChange={(event) =>
-                patchDraft({ covering: event.target.value as DemolitionCoveringOption })
-              }
-            >
-              {DEMOLITION_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+              options={DEMOLITION_OPTIONS}
+              onChange={(next) => patchDraft({ covering: next as DemolitionCoveringOption })}
+              ariaLabel="Тип демонтажа покрытия"
+            />
+          </div>
           <button
             type="button"
             className={styles.action}
@@ -134,22 +131,15 @@ export function FloorEstimatePresets({
             <h3 className={styles.cardTitle}>Стяжка по плите</h3>
             <span className={styles.badge}>Стяжка</span>
           </div>
-          <label className={styles.field}>
+          <div className={styles.field}>
             <span>Тип</span>
-            <select
-              className={styles.select}
+            <EstimateSelect
               value={screedType}
-              onChange={(event) =>
-                patchDraft({ screedType: event.target.value as ScreedTypeOption })
-              }
-            >
-              {SCREED_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+              options={SCREED_OPTIONS}
+              onChange={(next) => patchDraft({ screedType: next as ScreedTypeOption })}
+              ariaLabel="Тип стяжки"
+            />
+          </div>
           <button
             type="button"
             className={styles.action}
@@ -181,22 +171,15 @@ export function FloorEstimatePresets({
             <h3 className={styles.cardTitle}>Мокрые зоны</h3>
             <span className={styles.badge}>Гидро</span>
           </div>
-          <label className={styles.field}>
+          <div className={styles.field}>
             <span>Гидроизоляция</span>
-            <select
-              className={styles.select}
+            <EstimateSelect
               value={layers}
-              onChange={(event) =>
-                patchDraft({ layers: event.target.value as WaterproofingLayersOption })
-              }
-            >
-              {HYDRO_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+              options={HYDRO_OPTIONS}
+              onChange={(next) => patchDraft({ layers: next as WaterproofingLayersOption })}
+              ariaLabel="Гидроизоляция"
+            />
+          </div>
           <button
             type="button"
             className={styles.action}
@@ -212,22 +195,15 @@ export function FloorEstimatePresets({
             <h3 className={styles.cardTitle}>Вывоз мусора</h3>
             <span className={styles.badgeMuted}>Опционально</span>
           </div>
-          <label className={styles.field}>
+          <div className={styles.field}>
             <span>Вариант</span>
-            <select
-              className={styles.select}
+            <EstimateSelect
               value={wasteTrip}
-              onChange={(event) =>
-                patchDraft({ wasteTrip: event.target.value as WasteTripOption })
-              }
-            >
-              {WASTE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+              options={WASTE_OPTIONS}
+              onChange={(next) => patchDraft({ wasteTrip: next as WasteTripOption })}
+              ariaLabel="Вариант вывоза мусора"
+            />
+          </div>
           <button
             type="button"
             className={styles.action}

@@ -19,9 +19,9 @@ export type BuildWallEstimateLinesOptions = {
 const FINISH_KINDS: readonly WallWorkKind[] = ['finish-paint', 'finish-wallpaper']
 
 /**
- * Builds editable wall estimate lines from mapping + surveyor input.
- * Assumptions: labour-only prices; materials excluded; mapped rows start disabled.
- * Finish kinds use `finishArea` (with putty/total fallback) even if mapping field is puttyArea.
+ * Собирает редактируемые строки стен из mapping + параметров замера.
+ * Цены — только работа; материалы не входят; mapped-строки стартуют выключенными.
+ * Финишные kinds берут `finishArea` (с fallback на putty/total), даже если в mapping указано иначе.
  */
 export function buildWallEstimateLines(
   input: WallEstimateInput,

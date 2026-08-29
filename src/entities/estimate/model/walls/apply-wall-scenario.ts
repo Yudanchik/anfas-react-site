@@ -88,9 +88,9 @@ const FINISH_LABELS: Record<WallFinishTargetOption, string> = {
 const MAPPING_BY_ID = new Map(WALL_PRICE_MAPPING.map((item) => [item.id, item]))
 
 /**
- * Applies an explicit wall scenario: enables curated keys, sets quantities from inputs,
- * disables conflicting alternatives. Never touches manual rows or unrelated enabled lines
- * outside conflict groups. Does not run from area input alone.
+ * Применяет сценарий стен: включает набор ключей, подставляет объёмы, гасит конфликты.
+ * Быстрый черновик, не финальная истина. Ручные и несвязанные включённые строки
+ * вне conflict groups не затирает. Сам по полям площади не запускается.
  */
 export function applyWallScenario(
   lines: readonly EstimateLine[],
@@ -122,7 +122,7 @@ export function resolveWallScenarioKeys(
       keys.push('plaster-local-fix', 'putty-local-3mm')
       break
     case 'finish-only':
-      // finish only — no prep chain
+      // Только финиш — без цепочки подготовки
       break
     case 'from-scratch':
       keys.push(
@@ -165,7 +165,7 @@ export function resolveWallScenarioKeys(
     keys.push(PAINT_KEYS[application.paintLayers ?? 'paint-2'])
   }
 
-  // Deduplicate while preserving order
+  // Без дублей, порядок включения сохраняем
   return [...new Set(keys)]
 }
 

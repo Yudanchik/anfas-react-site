@@ -7,7 +7,7 @@ export {
   updateEstimateLine,
 } from '../shared/estimate-line-helpers'
 
-/** Applies area to all м² works except waste (waste stays manual). */
+/** Подставляет площадь во все работы в м², кроме вывоза мусора (его объём — вручную). */
 export function applyTotalAreaToSquareMeterWorks(
   lines: readonly EstimateLine[],
   quantity: number,

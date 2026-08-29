@@ -29,6 +29,9 @@ export function WallEstimateInputs({ input, onChange }: WallEstimateInputsProps)
       <h2 className={styles.title} id="wall-estimate-inputs-title">
         Параметры стен
       </h2>
+      <p className={styles.lead}>
+        Введите площади и замеры объекта. Эти значения используются сценариями и быстрыми действиями.
+      </p>
       <div className={styles.grid}>
         {fields.map((field) => (
           <label key={field.key} className={styles.field}>

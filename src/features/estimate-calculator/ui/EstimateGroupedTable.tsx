@@ -15,7 +15,7 @@ type EstimateGroupedTableProps = {
   lead?: string
   idPrefix: string
   groups: readonly EstimateGroupedTableGroup[]
-  /** @deprecated Ignored — groups stay collapsed until the user opens them. */
+  /** @deprecated Игнорируется — группы свёрнуты, пока пользователь сам не откроет. */
   defaultOpenGroupIds?: readonly string[]
   onToggle: (lineId: string) => void
   onPatchLine: (
@@ -26,7 +26,7 @@ type EstimateGroupedTableProps = {
 
 export function EstimateGroupedTable({
   title = 'Строки сметы',
-  lead = 'Группы можно раскрывать. Итог считает domain-формула.',
+  lead = 'Группы можно раскрывать. Итог считается по выбранным строкам.',
   idPrefix,
   groups,
   onToggle,

@@ -11,6 +11,7 @@ import {
 } from '@/entities/estimate'
 
 import type { WallScenarioDraftState } from '../model/estimate-calculator-persistence'
+import { EstimateSelect } from '../ui/EstimateSelect'
 import styles from './WallEstimateScenarios.module.scss'
 
 type WallEstimateScenariosProps = {
@@ -99,7 +100,8 @@ export function WallEstimateScenarios({
           Сценарий стен
         </h2>
         <p className={styles.lead}>
-          Быстрый черновик: состояние × результат. Строки остаются видимыми и редактируемыми.
+          Выберите состояние стен и целевой результат — калькулятор добавит типовые работы. После
+          этого смету можно вручную уточнить.
         </p>
       </div>
 
@@ -110,13 +112,14 @@ export function WallEstimateScenarios({
             <span className={styles.badge}>Черновик</span>
           </div>
 
-          <label className={styles.field}>
+          <div className={styles.field}>
             <span>Состояние стен</span>
-            <select
-              className={styles.select}
+            <EstimateSelect
               value={state}
-              onChange={(event) => {
-                const next = event.target.value as WallStateOption
+              options={STATE_OPTIONS}
+              ariaLabel="Состояние стен"
+              onChange={(nextValue) => {
+                const next = nextValue as WallStateOption
                 const patch: Partial<WallScenarioDraftState> = { state: next }
                 if (next === 'demolition-only' || next === 'local-leveling') {
                   patch.finishTarget = 'none'
@@ -126,92 +129,66 @@ export function WallEstimateScenarios({
                 }
                 onDraftChange(patch)
               }}
-            >
-              {STATE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+            />
+          </div>
 
-          <label className={styles.field}>
+          <div className={styles.field}>
             <span>Целевой результат</span>
-            <select
-              className={styles.select}
+            <EstimateSelect
               value={finishDisabled ? 'none' : finishTarget}
               disabled={finishDisabled}
-              onChange={(event) =>
-                onDraftChange({ finishTarget: event.target.value as WallFinishTargetOption })
-              }
-            >
-              {FINISH_OPTIONS.filter((option) =>
+              options={FINISH_OPTIONS.filter((option) =>
                 needsFinishChoice ? option.value !== 'none' : true,
-              ).map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+              )}
+              ariaLabel="Целевой результат"
+              onChange={(next) =>
+                onDraftChange({ finishTarget: next as WallFinishTargetOption })
+              }
+            />
+          </div>
 
           {showDemolitionCovering ? (
-            <label className={styles.field}>
+            <div className={styles.field}>
               <span>Что демонтируем</span>
-              <select
-                className={styles.select}
+              <EstimateSelect
                 value={demolitionCovering}
-                onChange={(event) =>
+                options={DEMOLITION_OPTIONS}
+                ariaLabel="Что демонтируем"
+                onChange={(next) =>
                   onDraftChange({
-                    demolitionCovering: event.target.value as WallDemolitionCoveringOption,
+                    demolitionCovering: next as WallDemolitionCoveringOption,
                   })
                 }
-              >
-                {DEMOLITION_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+              />
+            </div>
           ) : null}
 
           {showWallpaperType ? (
-            <label className={styles.field}>
+            <div className={styles.field}>
               <span>Тип обоев</span>
-              <select
-                className={styles.select}
+              <EstimateSelect
                 value={wallpaperType}
-                onChange={(event) =>
-                  onDraftChange({ wallpaperType: event.target.value as WallWallpaperTypeOption })
+                options={WALLPAPER_OPTIONS}
+                ariaLabel="Тип обоев"
+                onChange={(next) =>
+                  onDraftChange({ wallpaperType: next as WallWallpaperTypeOption })
                 }
-              >
-                {WALLPAPER_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+              />
+            </div>
           ) : null}
 
           {showPaintLayers ? (
-            <label className={styles.field}>
+            <div className={styles.field}>
               <span>Покраска</span>
-              <select
-                className={styles.select}
+              <EstimateSelect
                 value={paintLayers}
-                onChange={(event) =>
-                  onDraftChange({ paintLayers: event.target.value as WallPaintLayersOption })
+                options={PAINT_OPTIONS}
+                ariaLabel="Покраска"
+                onChange={(next) =>
+                  onDraftChange({ paintLayers: next as WallPaintLayersOption })
                 }
-              >
-                {PAINT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+              />
+            </div>
           ) : null}
 
           <button type="button" className={styles.action} onClick={handleApply}>

@@ -14,8 +14,8 @@
 
 Связанные docs:
 
-- Architecture: `docs/estimate-calculator-architecture.md`
-- Floors usage: `docs/internal-floor-estimate.md`
+- Docs pack: `docs/estimate-calculator/` (README, architecture, scenarios-floors, scenarios-walls)
+- Floors usage (legacy notes): `docs/internal-floor-estimate.md`
 - Floors task history: `.cursor/task/estimate-calculator-floors.md`
 
 ---
@@ -56,7 +56,7 @@ features/floor-estimate/      — floor-specific inputs/presets/helpers/editor (
 ```
 
 Public API: `@/entities/estimate` barrel.  
-Docs: `docs/estimate-calculator-architecture.md`.
+Docs: `docs/estimate-calculator/` (бывший `docs/estimate-calculator-architecture.md` перенесён в `architecture.md`).
 
 ### Follow-ups (Stage 3)
 
@@ -551,7 +551,7 @@ src/features/estimate-shell/  # optional: tabs + combined summary (можно в
 - [x] wall inputs / compact scenario selects / grouped table
 - [x] combined summary
 - [x] domain folder split shared/floors/walls
-- [x] docs/estimate-calculator-architecture.md
+- [x] docs/estimate-calculator/ (README, architecture, scenarios-floors, scenarios-walls)
 
 ### Stage 3 — UX/state polish — DONE
 

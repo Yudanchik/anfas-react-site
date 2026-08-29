@@ -1,7 +1,10 @@
 import {
   buildFloorEstimateLines,
   buildWallEstimateLines,
+  findFloorMappingItem,
+  isZonedEstimateLine,
   noteManualLineIds,
+  noteZonedLineIds,
   type DemolitionCoveringOption,
   type EstimateLine,
   type FloorEstimateInput,
@@ -20,6 +23,7 @@ import type { EstimateTabId } from '../ui/EstimateTabs'
 
 export const ESTIMATE_CALCULATOR_STORAGE_KEY = 'anfas:estimate-calculator:v1'
 
+/** Версия схемы снимка в localStorage; при несовпадении parse возвращает null. */
 const SNAPSHOT_VERSION = 1 as const
 
 export type PersistedEstimateLine = {
@@ -30,6 +34,7 @@ export type PersistedEstimateLine = {
   unitPrice: number
   coefficient: number
   comment?: string
+  zoneName?: string
   source?: EstimateLine['source']
   title?: string
   unit?: string
@@ -168,6 +173,8 @@ function parsePersistedLine(raw: unknown): PersistedEstimateLine | null {
 
   const comment = asString(raw.comment)
   if (comment) line.comment = comment
+  const zoneName = asString(raw.zoneName)
+  if (zoneName) line.zoneName = zoneName
 
   if (typeof raw.source === 'string') {
     line.source = raw.source as EstimateLine['source']
@@ -194,7 +201,7 @@ function isTabId(value: unknown): value is EstimateTabId {
   return value === 'floors' || value === 'walls'
 }
 
-/** Pure parse — returns null if payload is missing/corrupt. */
+/** Разбор снимка калькулятора; `null`, если payload отсутствует или повреждён. */
 export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculatorSnapshot | null {
   if (!isRecord(raw)) return null
   if (raw.version !== SNAPSHOT_VERSION) return null
@@ -262,7 +269,8 @@ export function serializeEstimateLine(line: EstimateLine): PersistedEstimateLine
     source: line.source,
   }
   if (line.comment) persisted.comment = line.comment
-  if (line.source === 'manual') {
+  if (line.zoneName) persisted.zoneName = line.zoneName
+  if (line.source === 'manual' || isZonedEstimateLine(line)) {
     persisted.title = line.title
     persisted.unit = line.unit
     persisted.kind = line.kind
@@ -296,6 +304,10 @@ export function buildEstimateCalculatorSnapshot(params: {
   }
 }
 
+/**
+ * Накладывает сохранённые патчи на строки из mapping.
+ * Zoned clones и manual не мержатся в canonical по `priceKey` — восстанавливаются отдельными extras.
+ */
 function applyPersistedPatches(
   baseLines: readonly EstimateLine[],
   persisted: readonly PersistedEstimateLine[],
@@ -306,13 +318,14 @@ function applyPersistedPatches(
   const byPriceKey = new Map<string, PersistedEstimateLine>()
   for (const line of persisted) {
     if (line.source === 'manual') continue
+    if (isZonedEstimateLine(line)) continue
     if (!byPriceKey.has(line.priceKey)) byPriceKey.set(line.priceKey, line)
   }
 
   const usedPersistedIds = new Set<string>()
   const restored = baseLines.map((line) => {
     const patch = byId.get(line.id) ?? byPriceKey.get(line.priceKey)
-    if (!patch || patch.source === 'manual') return line
+    if (!patch || patch.source === 'manual' || isZonedEstimateLine(patch)) return line
     usedPersistedIds.add(patch.id)
     return {
       ...line,
@@ -321,18 +334,45 @@ function applyPersistedPatches(
       unitPrice: asNonNegative(patch.unitPrice),
       coefficient: asNonNegative(patch.coefficient, 1) || 1,
       comment: patch.comment?.trim() || undefined,
+      zoneName: patch.zoneName?.trim() || undefined,
     }
   })
 
-  const manuals: EstimateLine[] = []
+  const extras: EstimateLine[] = []
   for (const patch of persisted) {
-    if (patch.source !== 'manual' && !patch.priceKey.startsWith('manual')) continue
     if (usedPersistedIds.has(patch.id)) continue
+
+    if (isZonedEstimateLine(patch)) {
+      const mapping = findFloorMappingItem(patch.priceKey)
+      const title = asString(patch.title).trim() || mapping?.title || ''
+      const unit = asString(patch.unit).trim() || mapping?.unit || 'м²'
+      if (!title) continue
+      extras.push({
+        id: patch.id,
+        priceKey: patch.priceKey,
+        sectionId: asString(patch.sectionId, mapping ? 'floors' : baseLines[0]?.sectionId ?? 'floors'),
+        kind: (patch.kind ?? mapping?.kind ?? 'other-rough') as EstimateLine['kind'],
+        title,
+        unit,
+        unitPrice: asNonNegative(patch.unitPrice, mapping?.unitPrice ?? 0),
+        quantity: asNonNegative(patch.quantity),
+        coefficient: asNonNegative(patch.coefficient, 1) || 1,
+        enabled: asBoolean(patch.enabled, true),
+        comment: patch.comment?.trim() || undefined,
+        zoneName: patch.zoneName?.trim() || undefined,
+        source: (patch.source as EstimateLine['source']) ?? mapping?.source ?? 'pdf',
+        frontendCategorySlug: mapping?.frontendCategorySlug,
+        note: mapping?.note,
+      })
+      continue
+    }
+
+    if (patch.source !== 'manual' && !patch.priceKey.startsWith('manual')) continue
     const title = asString(patch.title).trim()
     const unit = asString(patch.unit).trim() || 'м²'
     if (!title) continue
 
-    manuals.push({
+    extras.push({
       id: patch.id,
       priceKey: patch.priceKey,
       sectionId: asString(patch.sectionId, baseLines[0]?.sectionId ?? 'floors'),
@@ -348,11 +388,16 @@ function applyPersistedPatches(
     })
   }
 
-  const lines = [...restored, ...manuals]
+  const lines = [...restored, ...extras]
   noteManualLineIds(lines)
+  noteZonedLineIds(lines)
   return lines
 }
 
+/**
+ * Восстанавливает полы: параметры замера + строки из mapping с патчами и zoned clones из снимка.
+ * Без снимка — чистый build из пустого ввода.
+ */
 export function restoreFloorEstimateState(
   snapshot: EstimateCalculatorSnapshot | null,
 ): { input: FloorEstimateInput; lines: EstimateLine[] } {
@@ -364,6 +409,7 @@ export function restoreFloorEstimateState(
   }
 }
 
+/** То же для стен (пока без zoned clones в UI). */
 export function restoreWallEstimateState(
   snapshot: EstimateCalculatorSnapshot | null,
 ): { input: WallEstimateInput; lines: EstimateLine[] } {
@@ -400,12 +446,13 @@ export function readEstimateCalculatorSnapshot(): EstimateCalculatorSnapshot | n
   }
 }
 
+/** Пишет снимок в localStorage; ошибки квоты / private mode молча игнорирует. */
 export function writeEstimateCalculatorSnapshot(snapshot: EstimateCalculatorSnapshot): void {
   if (typeof window === 'undefined') return
   try {
     window.localStorage.setItem(ESTIMATE_CALCULATOR_STORAGE_KEY, JSON.stringify(snapshot))
   } catch {
-    // Quota / private mode — ignore.
+    // Квота / private mode — игнорируем.
   }
 }
 
@@ -414,7 +461,7 @@ export function clearEstimateCalculatorSnapshot(): void {
   try {
     window.localStorage.removeItem(ESTIMATE_CALCULATOR_STORAGE_KEY)
   } catch {
-    // ignore
+    // игнорируем
   }
 }
 

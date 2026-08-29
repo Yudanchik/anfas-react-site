@@ -1,7 +1,5 @@
 import { useState } from 'react'
 
-import type { FloorRecommendation } from '@/entities/estimate'
-
 import {
   formatQuickActionFeedback,
   type QuickActionKind,
@@ -9,7 +7,6 @@ import {
 import styles from './FloorEstimateHelpers.module.scss'
 
 type FloorEstimateHelpersProps = {
-  recommendation: FloorRecommendation
   totalFloorArea: number
   demolitionArea: number
   screedArea: number
@@ -22,7 +19,6 @@ type FloorEstimateHelpersProps = {
 }
 
 export function FloorEstimateHelpers({
-  recommendation,
   totalFloorArea,
   demolitionArea,
   screedArea,
@@ -45,13 +41,9 @@ export function FloorEstimateHelpers({
         <h2 className={styles.title} id="floor-estimate-helpers-title">
           Быстрые действия
         </h2>
-        <p className={styles.text}>{recommendation.message}</p>
-        <p className={styles.hint}>
-          Кнопки ниже только подставляют объёмы в подходящие строки. Работы не включаются
-          автоматически.
-        </p>
-        <p className={styles.hint}>
-          Чтобы добавить работы в смету, включите строки вручную или примените сценарий.
+        <p className={styles.text}>
+          Кнопки подставляют площади из параметров замера в подходящие строки сметы. Работы сами не
+          включаются.
         </p>
       </div>
 

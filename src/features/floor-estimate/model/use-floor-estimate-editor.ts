@@ -10,6 +10,7 @@ import {
   calculateSectionTotal,
   countEnabledLines,
   createManualEstimateLine,
+  createZonedFloorEstimateLine,
   getFloorRecommendation,
   updateEstimateLine,
   type EstimateLine,
@@ -113,6 +114,18 @@ export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {})
     setLines((prev) => [...prev, createManualEstimateLine(params)])
   }
 
+  function addZonedLine(params: {
+    priceKey: string
+    quantity: number
+    zoneName: string
+    comment?: string
+  }): boolean {
+    const line = createZonedFloorEstimateLine(params)
+    if (!line) return false
+    setLines((prev) => [...prev, line])
+    return true
+  }
+
   function resetEstimate() {
     setInput(EMPTY_INPUT)
     setLines(buildFloorEstimateLines(EMPTY_INPUT))
@@ -139,6 +152,7 @@ export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {})
     applyWetArea,
     applyPreset,
     addManualLine,
+    addZonedLine,
     resetEstimate,
     replaceEstimate,
   }

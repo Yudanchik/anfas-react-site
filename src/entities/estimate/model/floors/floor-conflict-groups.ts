@@ -1,9 +1,10 @@
 import type { EstimateLine } from '../shared/estimate.types'
+import { isZonedEstimateLine } from '../shared/estimate-zoned-line'
 
 /**
- * Mutually exclusive alternatives within a floor estimate.
- * Enabling one key via a preset disables other keys in the same group.
- * Manual rows (`source=manual`) are never touched.
+ * Mutually exclusive альтернативы внутри сметы полов.
+ * Включение одного `priceKey` через preset отключает остальные ключи группы.
+ * Ручные строки и zoned clone lines не трогаем.
  */
 export const FLOOR_CONFLICT_GROUPS: Readonly<Record<string, readonly string[]>> = {
   'demolition-covering': [
@@ -53,8 +54,8 @@ export function getFloorConflictGroupId(priceKey: string): string | undefined {
 }
 
 /**
- * Disables siblings in the same conflict group for each enabled key.
- * Does not disable the enabled keys themselves or manual rows.
+ * Отключает «соседей» в той же conflict group для каждого включаемого ключа.
+ * Сами включаемые ключи, ручные строки и zoned clones не отключает.
  */
 export function disableConflictingAlternatives(
   lines: readonly EstimateLine[],
@@ -75,6 +76,7 @@ export function disableConflictingAlternatives(
 
   return lines.map((line) => {
     if (line.source === 'manual') return line
+    if (isZonedEstimateLine(line)) return line
     if (!disabledKeys.has(line.priceKey)) return line
     if (!line.enabled) return line
     return { ...line, enabled: false }

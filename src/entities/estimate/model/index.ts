@@ -35,6 +35,12 @@ export {
   updateEstimateLine,
 } from './shared/estimate-line-helpers'
 export {
+  createZonedEstimateLine,
+  isZonedEstimateLine,
+  noteZonedLineIds,
+} from './shared/estimate-zoned-line'
+export type { CreateZonedEstimateLineParams } from './shared/estimate-zoned-line'
+export {
   calculateSelectedSectionsGrandTotal,
   countSelectedSectionRows,
   ESTIMATE_SECTION_LABELS,
@@ -83,6 +89,17 @@ export {
   resolveFloorEstimateGroupId,
 } from './floors/floor-estimate-groups'
 export type { FloorEstimateGroup, FloorEstimateGroupId } from './floors/floor-estimate-groups'
+export {
+  FLOOR_ZONE_WORK_CATEGORIES,
+  findFloorMappingItem,
+  getFloorZoneMappingOptions,
+} from './floors/floor-zone-catalog'
+export type {
+  FloorZoneWorkCategory,
+  FloorZoneWorkCategoryId,
+} from './floors/floor-zone-catalog'
+export { createZonedFloorEstimateLine } from './floors/create-zoned-floor-estimate-line'
+export type { CreateZonedFloorEstimateLineParams } from './floors/create-zoned-floor-estimate-line'
 export {
   disableConflictingAlternatives,
   FLOOR_CONFLICT_GROUPS,

@@ -9,6 +9,7 @@ import { FloorEstimatePresets } from '@/features/floor-estimate/ui/FloorEstimate
 import type { FloorPresetDraftState } from '../model/estimate-calculator-persistence'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
 import { EstimateManualLine } from '../ui/EstimateManualLine'
+import { FloorZoneWorkAdd } from './FloorZoneWorkAdd'
 import styles from '../ui/EstimateCalculatorWorkspace.module.scss'
 
 type FloorEstimatePanelProps = {
@@ -42,11 +43,11 @@ export function FloorEstimatePanel({
           wetZonesArea={editor.input.wetZonesArea}
           onApplyPreset={editor.applyPreset}
         />
+        <FloorZoneWorkAdd onAdd={editor.addZonedLine} />
       </div>
 
       <div className={styles.zone}>
         <FloorEstimateHelpers
-          recommendation={editor.recommendation}
           totalFloorArea={editor.input.totalFloorArea}
           demolitionArea={editor.input.demolitionArea}
           screedArea={editor.input.screedArea}

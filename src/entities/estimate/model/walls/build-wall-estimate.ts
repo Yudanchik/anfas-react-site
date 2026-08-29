@@ -7,6 +7,7 @@ import {
 import type { WallEstimateInput, WallEstimateResult } from '../shared/estimate.types'
 import { WALL_SECTION_ID, WALL_SECTION_TITLE } from './wall-price.mapping'
 
+/** Сводка раздела «Стены»: строки и итог; `materialsExcluded: true`. */
 export function buildWallEstimate(
   input: WallEstimateInput,
   options?: BuildWallEstimateLinesOptions,

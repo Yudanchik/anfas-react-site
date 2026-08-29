@@ -1,4 +1,5 @@
 import { normalizeNonNegative } from '../shared/calculate-line-total'
+import { isZonedEstimateLine } from '../shared/estimate-zoned-line'
 import { disableConflictingAlternatives } from './floor-conflict-groups'
 import type { EstimateLine, FloorEstimateInput } from '../shared/estimate.types'
 
@@ -36,7 +37,7 @@ export type FloorPresetApplication =
 
 export type ApplyFloorPresetResult = {
   lines: EstimateLine[]
-  /** Lines turned on by this preset (package size). */
+  /** Сколько строк включил этот сценарий (размер пакета). */
   addedCount: number
   presetLabel: string
 }
@@ -88,9 +89,9 @@ const WASTE_KEYS: Record<WasteTripOption, readonly string[]> = {
 }
 
 /**
- * Applies an explicit estimator scenario: enables a curated key set, sets quantities,
- * and disables conflicting alternatives. Never touches manual rows or unrelated enabled lines
- * outside conflict groups. Does not run from area input / recommendation alone.
+ * Явный сценарий сметчика: включает набор ключей, подставляет объёмы, гасит конфликты.
+ * Быстрый черновик, не финальная истина. Ручные строки и zoned clones не затирает;
+ * несвязанные включённые строки вне conflict groups оставляет. Сам по площади/рекомендации не запускается.
  */
 export function applyFloorPreset(
   lines: readonly EstimateLine[],
@@ -168,6 +169,7 @@ function enablePresetKeys(
 
   return withConflictsDisabled.map((line) => {
     if (line.source === 'manual') return line
+    if (isZonedEstimateLine(line)) return line
     if (!keySet.has(line.priceKey)) return line
     return {
       ...line,

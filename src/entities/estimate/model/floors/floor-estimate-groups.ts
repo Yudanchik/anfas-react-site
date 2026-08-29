@@ -7,6 +7,8 @@ export type FloorEstimateGroupId =
   | 'screed'
   | 'self-leveling'
   | 'waterproofing'
+  | 'finish-floor'
+  | 'finish-plinth'
   | 'waste'
   | 'manual'
 
@@ -25,6 +27,8 @@ const GROUP_ORDER: readonly FloorEstimateGroupId[] = [
   'screed',
   'self-leveling',
   'waterproofing',
+  'finish-floor',
+  'finish-plinth',
   'waste',
   'manual',
 ]
@@ -35,6 +39,8 @@ const GROUP_TITLES: Record<FloorEstimateGroupId, string> = {
   screed: 'Стяжка',
   'self-leveling': 'Наливной пол / ровнитель',
   waterproofing: 'Гидроизоляция',
+  'finish-floor': 'Чистовое покрытие',
+  'finish-plinth': 'Плинтус',
   waste: 'Вывоз мусора',
   manual: 'Ручные строки',
 }
@@ -47,13 +53,15 @@ const KIND_TO_GROUP: Record<FloorWorkKind, FloorEstimateGroupId> = {
   'screed-wet': 'screed',
   'self-leveling': 'self-leveling',
   waterproofing: 'waterproofing',
+  'finish-floor': 'finish-floor',
+  'finish-plinth': 'finish-plinth',
   waste: 'waste',
   'other-rough': 'manual',
 }
 
 /**
- * Maps an estimate line to a UI accordion group.
- * Manual rows always land in `manual`, regardless of kind.
+ * Куда положить строку в аккордеоне UI.
+ * Ручные строки всегда в `manual`; zoned clones остаются в группе своего `kind`.
  */
 export function resolveFloorEstimateGroupId(
   line: Pick<EstimateLine, 'kind' | 'source'>,
@@ -69,7 +77,7 @@ export function getFloorEstimateGroupTitle(groupId: FloorEstimateGroupId): strin
   return GROUP_TITLES[groupId]
 }
 
-/** Builds ordered groups with selected counts and line-rounded totals. */
+/** Группы в порядке UI: счётчики выбранного и округлённые итоги по `calculateLineTotal`. */
 export function groupFloorEstimateLines(lines: readonly EstimateLine[]): FloorEstimateGroup[] {
   const buckets = new Map<FloorEstimateGroupId, EstimateLine[]>()
   for (const id of GROUP_ORDER) buckets.set(id, [])
@@ -94,8 +102,8 @@ export function groupFloorEstimateLines(lines: readonly EstimateLine[]): FloorEs
 }
 
 /**
- * Default open accordion ids for floor estimate groups.
- * Stage 3: always collapsed unless the user opens a group in the session.
+ * Какие группы аккордеона открыть по умолчанию.
+ * Всегда свёрнуты, пока пользователь сам не раскроет в сессии.
  */
 export function getDefaultOpenFloorGroupIds(
   _groups: readonly FloorEstimateGroup[],

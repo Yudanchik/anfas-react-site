@@ -27,6 +27,9 @@ export function FloorEstimateInputs({ input, onChange }: FloorEstimateInputsProp
       <h2 className={styles.title} id="floor-estimate-inputs-title">
         Параметры замера
       </h2>
+      <p className={styles.lead}>
+        Введите площади и замеры объекта. Эти значения используются сценариями и быстрыми действиями.
+      </p>
       <div className={styles.grid}>
         {fields.map((field) => (
           <label key={field.key} className={styles.field}>

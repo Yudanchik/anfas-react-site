@@ -1,9 +1,10 @@
 import { normalizeNonNegative, normalizePositiveCoefficient } from './calculate-line-total'
 import type { EstimateLine, EstimateWorkKind } from './estimate.types'
+import { isZonedEstimateLine } from './estimate-zoned-line'
 
 /**
- * Applies a quantity to matching estimate lines.
- * Does not toggle enabled — estimator includes rows manually.
+ * Подставляет объём в подходящие строки (быстрые действия).
+ * Не включает работы и не трогает zoned clone lines — зоны правятся отдельно.
  */
 export function applyQuantityToMatchingLines(
   lines: readonly EstimateLine[],
@@ -11,14 +12,16 @@ export function applyQuantityToMatchingLines(
   quantity: number,
 ): EstimateLine[] {
   const nextQuantity = normalizeNonNegative(quantity)
-  return lines.map((line) => (predicate(line) ? { ...line, quantity: nextQuantity } : line))
+  return lines.map((line) =>
+    !isZonedEstimateLine(line) && predicate(line) ? { ...line, quantity: nextQuantity } : line,
+  )
 }
 
 let manualLineCounter = 0
 
 /**
- * Bumps the manual id counter past any restored `manual-N` priceKeys
- * so newly added manual rows do not collide after localStorage hydrate.
+ * Сдвигает счётчик ручных строк после восстановления из localStorage,
+ * чтобы новые `manual-N` не пересеклись с уже сохранёнными.
  */
 export function noteManualLineIds(lines: readonly EstimateLine[]): void {
   for (const line of lines) {
@@ -33,8 +36,7 @@ export function noteManualLineIds(lines: readonly EstimateLine[]): void {
 }
 
 /**
- * Creates a manual estimate row (not from price mapping).
- * Materials are still out of scope — this is labour-only.
+ * Ручная строка сметы (не из прайса). Материалы по-прежнему не считаем — только работа.
  */
 export function createManualEstimateLine(params: {
   title: string
@@ -70,7 +72,10 @@ export function updateEstimateLine(
   lines: readonly EstimateLine[],
   lineId: string,
   patch: Partial<
-    Pick<EstimateLine, 'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'>
+    Pick<
+      EstimateLine,
+      'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit' | 'zoneName'
+    >
   >,
 ): EstimateLine[] {
   return lines.map((line) => {
@@ -88,6 +93,8 @@ export function updateEstimateLine(
           ? line.coefficient
           : normalizePositiveCoefficient(patch.coefficient),
       comment: patch.comment === undefined ? line.comment : patch.comment.trim() || undefined,
+      zoneName:
+        patch.zoneName === undefined ? line.zoneName : patch.zoneName.trim() || undefined,
       title: patch.title === undefined ? line.title : patch.title.trim() || line.title,
       unit: patch.unit === undefined ? line.unit : patch.unit.trim() || line.unit,
     }

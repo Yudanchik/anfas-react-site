@@ -273,6 +273,12 @@
   color: color-mix(in srgb, var(--ink) 55%, transparent);
 }
 
+.zone {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+
 .work {
   font-size: 13px;
   font-weight: var(--weight-medium);

@@ -70,7 +70,7 @@ export function EstimateCombinedSummary({
         aria-labelledby={titleId}
       >
         <p className={styles.lead}>
-          Выбранные позиции по разделам. Сценарий — черновик, не истина.
+          Здесь собраны выбранные позиции по всем разделам. Материалы пока не учитываются.
         </p>
 
         {!hasRows ? (
@@ -126,6 +126,9 @@ export function EstimateCombinedSummary({
                           <li key={item.line.id} className={styles.item}>
                             <div className={styles.itemMain}>
                               <span className={styles.group}>{item.groupTitle}</span>
+                              {item.line.zoneName ? (
+                                <span className={styles.zone}>Зона: {item.line.zoneName}</span>
+                              ) : null}
                               <span className={styles.work}>{item.line.title}</span>
                             </div>
                             <div className={styles.itemMeta}>

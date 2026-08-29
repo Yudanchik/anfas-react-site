@@ -29,6 +29,7 @@ export function EstimateLineRow({ line, onToggle, onPatchLine }: EstimateLineRow
       </td>
       <td>
         <span className={styles.workTitle}>{line.title}</span>
+        {line.zoneName ? <span className={styles.meta}>Зона: {line.zoneName}</span> : null}
         <span className={styles.meta}>
           {line.source}
           {line.note ? ` · ${line.note}` : ''}

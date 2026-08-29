@@ -13,8 +13,8 @@ export type WallMappingConflict = {
 }
 
 /**
- * Stops Stage 1 if a `both`/`frontend` mapping price disagrees with public preview data.
- * Does not mutate prices.data.ts.
+ * Ловит расхождение цен mapping (`both`/`frontend`) с публичным preview.
+ * `prices.data.ts` не меняет.
  */
 export function findWallMappingConflicts(
   mapping: readonly WallPriceMappingItem[] = WALL_PRICE_MAPPING,

@@ -1,9 +1,9 @@
 import type { EstimateLine } from '../shared/estimate.types'
 
 /**
- * Mutually exclusive alternatives within a wall estimate.
- * Enabling one key via a scenario disables other keys in the same group.
- * Manual rows (`source=manual`) are never touched.
+ * Mutually exclusive альтернативы внутри сметы стен.
+ * Включение ключа через сценарий отключает остальные в группе.
+ * Ручные строки (`source=manual`) не трогаем.
  */
 export const WALL_CONFLICT_GROUPS: Readonly<Record<string, readonly string[]>> = {
   'demolition-covering': [
@@ -27,7 +27,7 @@ export const WALL_CONFLICT_GROUPS: Readonly<Record<string, readonly string[]>> =
   'slopes-panel': ['slopes-sandwich', 'slopes-ruspanel'],
 }
 
-/** Wallpaper end finish vs paint end finish (флизелин под покраску совместим с покраской). */
+/** Финиш обоями vs покраска (флизелин под покраску совместим с покраской). */
 export const WALL_WALLPAPER_FINISH_KEYS = [
   'wallpaper-flizelin',
   'wallpaper-vinyl-match',
@@ -60,9 +60,8 @@ export function getWallConflictGroupId(priceKey: string): string | undefined {
 }
 
 /**
- * Disables siblings in the same conflict group for each enabled key,
- * plus wallpaper↔paint end-finish exclusivity.
- * Does not disable the enabled keys themselves or manual rows.
+ * Отключает «соседей» в conflict group и взаимоисключение обои↔покраска.
+ * Включаемые в этом проходе ключи и ручные строки не отключает.
  */
 export function disableWallConflictingAlternatives(
   lines: readonly EstimateLine[],
@@ -90,7 +89,7 @@ export function disableWallConflictingAlternatives(
     for (const key of WALL_WALLPAPER_FINISH_KEYS) disabledKeys.add(key)
   }
 
-  // Never disable keys we are explicitly enabling in this pass.
+  // Не отключаем ключи, которые явно включаем в этом проходе.
   for (const key of enabledPriceKeys) disabledKeys.delete(key)
 
   if (disabledKeys.size === 0) return [...lines]

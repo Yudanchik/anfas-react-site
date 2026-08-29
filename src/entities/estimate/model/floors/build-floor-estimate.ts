@@ -5,6 +5,7 @@ import type { FloorEstimateInput, FloorEstimateResult } from '../shared/estimate
 import { FLOOR_SECTION_ID, FLOOR_SECTION_TITLE } from './floor-price.mapping'
 import { getFloorRecommendation } from './get-floor-recommendation'
 
+/** Сводка раздела «Полы»: строки, рекомендация по перепаду, итог; `materialsExcluded: true`. */
 export function buildFloorEstimate(
   input: FloorEstimateInput,
   options?: BuildFloorEstimateLinesOptions,

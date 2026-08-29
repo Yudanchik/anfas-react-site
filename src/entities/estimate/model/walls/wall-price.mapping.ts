@@ -4,12 +4,10 @@ export const WALL_SECTION_ID = 'walls'
 export const WALL_SECTION_TITLE = 'Стены (черновые / подготовка / финиш labour)'
 
 /**
- * Explicit whitelist of wall works for internal estimate Stage 1.
- *
- * Primary source: PDF `anfas-price-list.pdf` (2026).
- * Frontend `prices.data.ts` used only for verification when `source` is `both`.
- * Materials, decorative coatings, tile cladding, GKL partitions, masonry, soundproofing — excluded.
- * Paint / wallpaper rows are labour-only (`materialsExcluded` on estimate result).
+ * Явный whitelist работ по стенам для внутреннего калькулятора.
+ * Основной источник: PDF `anfas-price-list.pdf`. `prices.data.ts` — сверка при `source` both.
+ * Материалы, декоративные покрытия, плитка, ГКл-перегородки и т.п. — вне scope.
+ * Покраска/обои — только labour (`materialsExcluded` в результате сметы).
  */
 export const WALL_PRICE_MAPPING: readonly WallPriceMappingItem[] = [
   // —— Демонтаж ——

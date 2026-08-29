@@ -13,8 +13,8 @@ export type FloorMappingConflict = {
 }
 
 /**
- * Stops Stage 1 if a `both`/`frontend` mapping price disagrees with public preview data.
- * Does not mutate prices.data.ts.
+ * Ловит расхождение цен mapping (`both`/`frontend`) с публичным preview.
+ * `prices.data.ts` не меняет.
  */
 export function findFloorMappingConflicts(
   mapping: readonly FloorPriceMappingItem[] = FLOOR_PRICE_MAPPING,

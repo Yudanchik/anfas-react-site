@@ -1,0 +1,116 @@
+@use 'media' as mq;
+@use '../ui/estimate-ui' as eu;
+
+.wrap {
+  @include eu.panel-muted;
+
+  margin-top: 14px;
+}
+
+.head {
+  margin-bottom: 12px;
+}
+
+.title {
+  @include eu.section-title;
+}
+
+.lead {
+  @include eu.section-lead;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.85fr) minmax(0, 1.6fr) minmax(7rem, 0.9fr);
+  gap: 10px 12px;
+  align-items: end;
+
+  @include mq.media(tablet) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include mq.media(phone) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.workField {
+  min-width: 0;
+}
+
+.commentField {
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: end;
+  min-width: 0;
+}
+
+.label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  align-items: baseline;
+  font-size: 11px;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--ink) 68%, transparent);
+}
+
+.unit {
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--ink) 48%, transparent);
+}
+
+.control {
+  @include eu.control;
+
+  min-width: 0;
+}
+
+.selectWork {
+  min-width: 0;
+}
+
+.submit {
+  @include eu.button-primary;
+
+  width: 100%;
+  height: var(--fe-control-h, 36px);
+  white-space: nowrap;
+}
+
+.status {
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1.4;
+
+  &[data-kind='success'] {
+    border-color: color-mix(in srgb, #2f6b45 28%, transparent);
+    background: color-mix(in srgb, #2f6b45 10%, var(--paper));
+    color: color-mix(in srgb, #1f4d30 82%, var(--ink));
+  }
+
+  &[data-kind='error'] {
+    border-color: color-mix(in srgb, #a33b3b 30%, transparent);
+    background: color-mix(in srgb, #a33b3b 9%, var(--paper));
+    color: color-mix(in srgb, #7a2a2a 85%, var(--ink));
+  }
+
+  &[data-kind='info'] {
+    border-color: color-mix(in srgb, var(--ink) 14%, transparent);
+    background: color-mix(in srgb, var(--ink) 4%, var(--paper));
+    color: color-mix(in srgb, var(--ink) 70%, transparent);
+  }
+}

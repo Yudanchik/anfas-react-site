@@ -1,6 +1,6 @@
 /**
- * Russian plural for estimate line counts: «1 позиция», «2 позиции», «5 позиций».
- * Does not affect totals — presentation only.
+ * Склонение числа позиций для UI: «1 позиция», «2 позиции», «5 позиций».
+ * На итоги сметы не влияет.
  */
 export function formatEstimatePositionCount(count: number): string {
   const n = Math.abs(Math.trunc(Number.isFinite(count) ? count : 0))
