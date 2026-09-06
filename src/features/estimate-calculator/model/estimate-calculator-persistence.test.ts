@@ -5,6 +5,7 @@ import {
   buildEstimateCalculatorSnapshot,
   parseEstimateCalculatorSnapshot,
   restoreCeilingEstimateState,
+  restoreElectricEstimateState,
   restoreEstimateZones,
   restoreFloorEstimateState,
   restoreTileEstimateState,
@@ -129,6 +130,17 @@ describe('estimate calculator persistence', () => {
           tileCornerLength: 0,
           tileHolesCount: 0,
           tileRepairCount: 0,
+          electricSocketsCount: 0,
+          electricSwitchesCount: 0,
+          electricLightPointsCount: 0,
+          electricDataPointsCount: 0,
+          electricStrobeLength: 0,
+          electricCableLength: 0,
+          electricSocketBoxesCount: 0,
+          electricJunctionBoxesCount: 0,
+          electricPanelModulesCount: 0,
+          electricWarmFloorArea: 0,
+          electricApplianceConnectionsCount: 0,
         },
       ],
       floors: {
@@ -501,6 +513,17 @@ describe('estimate calculator persistence', () => {
           tileCornerLength: 8,
           tileHolesCount: 3,
           tileRepairCount: 0,
+          electricSocketsCount: 0,
+          electricSwitchesCount: 0,
+          electricLightPointsCount: 0,
+          electricDataPointsCount: 0,
+          electricStrobeLength: 0,
+          electricCableLength: 0,
+          electricSocketBoxesCount: 0,
+          electricJunctionBoxesCount: 0,
+          electricPanelModulesCount: 0,
+          electricWarmFloorArea: 0,
+          electricApplianceConnectionsCount: 0,
         },
       ],
       floorsInput: restoreFloorEstimateState(null).input,
@@ -547,5 +570,138 @@ describe('estimate calculator persistence', () => {
     assert.equal(clad.enabled, true)
     assert.equal(clad.quantity, 28)
     assert.equal(clad.comment, 'ok')
+  })
+
+  it('parses a v2 snapshot without electrics and restores empty electrics', () => {
+    const v2NoElectrics = {
+      version: 2,
+      activeTab: 'tile',
+      zones: [],
+      floors: {
+        input: {
+          totalFloorArea: 10,
+          demolitionArea: 0,
+          screedArea: 0,
+          wetZonesArea: 0,
+          avgDeltaMm: 0,
+          surveyorComment: '',
+        },
+        lines: [],
+      },
+      walls: {
+        input: {
+          totalWallArea: 20,
+          demolitionArea: 0,
+          plasterArea: 0,
+          puttyArea: 0,
+          finishArea: 0,
+          wallHeightM: 0,
+          slopesLengthM: 0,
+          cornersLengthM: 0,
+          surveyorComment: '',
+        },
+        lines: [],
+      },
+    }
+
+    const parsed = parseEstimateCalculatorSnapshot(v2NoElectrics)
+    assert.ok(parsed)
+    const electrics = restoreElectricEstimateState(parsed)
+    assert.equal(electrics.input.electricSocketsCount, 0)
+    assert.equal(electrics.input.electricCableLength, 0)
+    assert.ok(electrics.lines.length > 0)
+    assert.ok(electrics.lines.every((line) => line.enabled === false))
+    assert.ok(electrics.lines.every((line) => line.sectionId === 'electrics'))
+  })
+
+  it('round-trips electric fields and zone electric measures', () => {
+    const snapshot = buildEstimateCalculatorSnapshot({
+      activeTab: 'electrics',
+      zones: [
+        {
+          id: 'zone-e1',
+          name: 'Кухня',
+          zoneType: 'kitchen',
+          floorArea: 0,
+          demolitionFloorArea: 0,
+          screedArea: 0,
+          wetArea: 0,
+          wallArea: 0,
+          demolitionWallArea: 0,
+          plasterArea: 0,
+          puttyArea: 0,
+          finishArea: 0,
+          slopesLength: 0,
+          cornersLength: 0,
+          ceilingArea: 0,
+          demolitionCeilingArea: 0,
+          plasterCeilingArea: 0,
+          puttyCeilingArea: 0,
+          finishCeilingArea: 0,
+          tileFloorArea: 0,
+          tileWallArea: 0,
+          tileBacksplashArea: 0,
+          tileCuttingLength: 0,
+          tileCornerLength: 0,
+          tileHolesCount: 0,
+          tileRepairCount: 0,
+          electricSocketsCount: 10,
+          electricSwitchesCount: 4,
+          electricLightPointsCount: 6,
+          electricDataPointsCount: 2,
+          electricStrobeLength: 18,
+          electricCableLength: 35,
+          electricSocketBoxesCount: 10,
+          electricJunctionBoxesCount: 2,
+          electricPanelModulesCount: 0,
+          electricWarmFloorArea: 0,
+          electricApplianceConnectionsCount: 3,
+        },
+      ],
+      floorsInput: restoreFloorEstimateState(null).input,
+      floorsLines: restoreFloorEstimateState(null).lines,
+      wallsInput: restoreWallEstimateState(null).input,
+      wallsLines: restoreWallEstimateState(null).lines,
+      electricInput: {
+        electricSocketsCount: 10,
+        electricSwitchesCount: 4,
+        electricLightPointsCount: 6,
+        electricDataPointsCount: 2,
+        electricStrobeLength: 18,
+        electricCableLength: 35,
+        electricSocketBoxesCount: 10,
+        electricJunctionBoxesCount: 2,
+        electricPanelModulesCount: 12,
+        electricWarmFloorArea: 0,
+        electricApplianceConnectionsCount: 3,
+        surveyorComment: 'electric note',
+      },
+      electricLines: restoreElectricEstimateState(null).lines.map((line) =>
+        line.priceKey === 'finish-outlet-switch'
+          ? { ...line, enabled: true, quantity: 10, comment: 'ok' }
+          : line,
+      ),
+      electricScenarios: {
+        state: 'kitchen',
+      },
+    })
+
+    const parsed = parseEstimateCalculatorSnapshot(JSON.parse(JSON.stringify(snapshot)))
+    assert.ok(parsed)
+    assert.equal(parsed.activeTab, 'electrics')
+    assert.equal(parsed.zones[0]?.electricSocketsCount, 10)
+    assert.equal(parsed.zones[0]?.electricCableLength, 35)
+    assert.equal(parsed.zones[0]?.electricApplianceConnectionsCount, 3)
+    assert.equal(parsed.zones[0]?.zoneType, 'kitchen')
+    assert.equal(parsed.electricScenarios?.state, 'kitchen')
+
+    const electrics = restoreElectricEstimateState(parsed)
+    assert.equal(electrics.input.electricSocketsCount, 10)
+    assert.equal(electrics.input.surveyorComment, 'electric note')
+    const outlet = electrics.lines.find((line) => line.priceKey === 'finish-outlet-switch')
+    assert.ok(outlet)
+    assert.equal(outlet.enabled, true)
+    assert.equal(outlet.quantity, 10)
+    assert.equal(outlet.comment, 'ok')
   })
 })

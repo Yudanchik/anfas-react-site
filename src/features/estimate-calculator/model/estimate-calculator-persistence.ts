@@ -1,9 +1,11 @@
 import {
   buildCeilingEstimateLines,
+  buildElectricEstimateLines,
   buildFloorEstimateLines,
   buildTileEstimateLines,
   buildWallEstimateLines,
   findCeilingMappingItem,
+  findElectricMappingItem,
   findFloorMappingItem,
   findTileMappingItem,
   findWallMappingItem,
@@ -18,6 +20,8 @@ import {
   type CeilingPaintLayersOption,
   type CeilingStateOption,
   type DemolitionCoveringOption,
+  type ElectricEstimateInput,
+  type ElectricStateOption,
   type EstimateLine,
   type EstimateZone,
   type FloorEstimateInput,
@@ -91,6 +95,10 @@ export type TileScenarioDraftState = {
   demolitionSurfaces: TileDemolitionSurfacesOption
 }
 
+export type ElectricScenarioDraftState = {
+  state: ElectricStateOption
+}
+
 export type EstimateCalculatorSnapshot = {
   version: typeof SNAPSHOT_VERSION
   activeTab: EstimateTabId
@@ -111,10 +119,15 @@ export type EstimateCalculatorSnapshot = {
     input: TileEstimateInput
     lines: PersistedEstimateLine[]
   }
+  electrics?: {
+    input: ElectricEstimateInput
+    lines: PersistedEstimateLine[]
+  }
   floorPresets?: FloorPresetDraftState
   wallScenarios?: WallScenarioDraftState
   ceilingScenarios?: CeilingScenarioDraftState
   tileScenarios?: TileScenarioDraftState
+  electricScenarios?: ElectricScenarioDraftState
 }
 
 const EMPTY_FLOOR_INPUT: FloorEstimateInput = {
@@ -158,6 +171,21 @@ const EMPTY_TILE_INPUT: TileEstimateInput = {
   surveyorComment: '',
 }
 
+const EMPTY_ELECTRIC_INPUT: ElectricEstimateInput = {
+  electricSocketsCount: 0,
+  electricSwitchesCount: 0,
+  electricLightPointsCount: 0,
+  electricDataPointsCount: 0,
+  electricStrobeLength: 0,
+  electricCableLength: 0,
+  electricSocketBoxesCount: 0,
+  electricJunctionBoxesCount: 0,
+  electricPanelModulesCount: 0,
+  electricWarmFloorArea: 0,
+  electricApplianceConnectionsCount: 0,
+  surveyorComment: '',
+}
+
 const DEFAULT_FLOOR_PRESETS: FloorPresetDraftState = {
   covering: 'laminate',
   screedType: 'semidry-up-to-80',
@@ -185,6 +213,10 @@ const DEFAULT_TILE_SCENARIOS: TileScenarioDraftState = {
   cladFormat: '301-1300',
   grout: 'cement',
   demolitionSurfaces: 'both',
+}
+
+const DEFAULT_ELECTRIC_SCENARIOS: ElectricScenarioDraftState = {
+  state: 'apartment-from-scratch',
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -261,6 +293,24 @@ function parseTileInput(raw: unknown): TileEstimateInput {
   }
 }
 
+function parseElectricInput(raw: unknown): ElectricEstimateInput {
+  if (!isRecord(raw)) return { ...EMPTY_ELECTRIC_INPUT }
+  return {
+    electricSocketsCount: asNonNegative(raw.electricSocketsCount),
+    electricSwitchesCount: asNonNegative(raw.electricSwitchesCount),
+    electricLightPointsCount: asNonNegative(raw.electricLightPointsCount),
+    electricDataPointsCount: asNonNegative(raw.electricDataPointsCount),
+    electricStrobeLength: asNonNegative(raw.electricStrobeLength),
+    electricCableLength: asNonNegative(raw.electricCableLength),
+    electricSocketBoxesCount: asNonNegative(raw.electricSocketBoxesCount),
+    electricJunctionBoxesCount: asNonNegative(raw.electricJunctionBoxesCount),
+    electricPanelModulesCount: asNonNegative(raw.electricPanelModulesCount),
+    electricWarmFloorArea: asNonNegative(raw.electricWarmFloorArea),
+    electricApplianceConnectionsCount: asNonNegative(raw.electricApplianceConnectionsCount),
+    surveyorComment: asString(raw.surveyorComment, ''),
+  }
+}
+
 function parsePersistedZone(raw: unknown): EstimateZone | null {
   if (!isRecord(raw)) return null
   const id = asString(raw.id).trim()
@@ -295,6 +345,17 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
     tileCornerLength: asNonNegative(raw.tileCornerLength),
     tileHolesCount: asNonNegative(raw.tileHolesCount),
     tileRepairCount: asNonNegative(raw.tileRepairCount),
+    electricSocketsCount: asNonNegative(raw.electricSocketsCount),
+    electricSwitchesCount: asNonNegative(raw.electricSwitchesCount),
+    electricLightPointsCount: asNonNegative(raw.electricLightPointsCount),
+    electricDataPointsCount: asNonNegative(raw.electricDataPointsCount),
+    electricStrobeLength: asNonNegative(raw.electricStrobeLength),
+    electricCableLength: asNonNegative(raw.electricCableLength),
+    electricSocketBoxesCount: asNonNegative(raw.electricSocketBoxesCount),
+    electricJunctionBoxesCount: asNonNegative(raw.electricJunctionBoxesCount),
+    electricPanelModulesCount: asNonNegative(raw.electricPanelModulesCount),
+    electricWarmFloorArea: asNonNegative(raw.electricWarmFloorArea),
+    electricApplianceConnectionsCount: asNonNegative(raw.electricApplianceConnectionsCount),
     comment: asString(raw.comment).trim() || undefined,
   }
 }
@@ -353,7 +414,13 @@ function parsePersistedLines(raw: unknown): PersistedEstimateLine[] {
 }
 
 function isTabId(value: unknown): value is EstimateTabId {
-  return value === 'floors' || value === 'walls' || value === 'ceilings' || value === 'tile'
+  return (
+    value === 'floors' ||
+    value === 'walls' ||
+    value === 'ceilings' ||
+    value === 'tile' ||
+    value === 'electrics'
+  )
 }
 
 function isSupportedSnapshotVersion(value: unknown): value is 1 | 2 {
@@ -393,6 +460,12 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
           lines: parsePersistedLines(raw.tile.lines),
         }
       : { input: { ...EMPTY_TILE_INPUT }, lines: [] },
+    electrics: isRecord(raw.electrics)
+      ? {
+          input: parseElectricInput(raw.electrics.input),
+          lines: parsePersistedLines(raw.electrics.lines),
+        }
+      : { input: { ...EMPTY_ELECTRIC_INPUT }, lines: [] },
   }
 
   if (isRecord(raw.floorPresets)) {
@@ -465,6 +538,15 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
     }
   }
 
+  if (isRecord(raw.electricScenarios)) {
+    snapshot.electricScenarios = {
+      state: asString(
+        raw.electricScenarios.state,
+        DEFAULT_ELECTRIC_SCENARIOS.state,
+      ) as ElectricStateOption,
+    }
+  }
+
   return snapshot
 }
 
@@ -518,6 +600,17 @@ export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
     tileCornerLength: zone.tileCornerLength,
     tileHolesCount: zone.tileHolesCount,
     tileRepairCount: zone.tileRepairCount,
+    electricSocketsCount: zone.electricSocketsCount,
+    electricSwitchesCount: zone.electricSwitchesCount,
+    electricLightPointsCount: zone.electricLightPointsCount,
+    electricDataPointsCount: zone.electricDataPointsCount,
+    electricStrobeLength: zone.electricStrobeLength,
+    electricCableLength: zone.electricCableLength,
+    electricSocketBoxesCount: zone.electricSocketBoxesCount,
+    electricJunctionBoxesCount: zone.electricJunctionBoxesCount,
+    electricPanelModulesCount: zone.electricPanelModulesCount,
+    electricWarmFloorArea: zone.electricWarmFloorArea,
+    electricApplianceConnectionsCount: zone.electricApplianceConnectionsCount,
     comment: zone.comment,
   }
 }
@@ -533,10 +626,13 @@ export function buildEstimateCalculatorSnapshot(params: {
   ceilingsLines?: readonly EstimateLine[]
   tileInput?: TileEstimateInput
   tileLines?: readonly EstimateLine[]
+  electricInput?: ElectricEstimateInput
+  electricLines?: readonly EstimateLine[]
   floorPresets?: FloorPresetDraftState
   wallScenarios?: WallScenarioDraftState
   ceilingScenarios?: CeilingScenarioDraftState
   tileScenarios?: TileScenarioDraftState
+  electricScenarios?: ElectricScenarioDraftState
 }): EstimateCalculatorSnapshot {
   return {
     version: SNAPSHOT_VERSION,
@@ -558,10 +654,15 @@ export function buildEstimateCalculatorSnapshot(params: {
       input: { ...(params.tileInput ?? EMPTY_TILE_INPUT) },
       lines: (params.tileLines ?? []).map(serializeEstimateLine),
     },
+    electrics: {
+      input: { ...(params.electricInput ?? EMPTY_ELECTRIC_INPUT) },
+      lines: (params.electricLines ?? []).map(serializeEstimateLine),
+    },
     floorPresets: params.floorPresets,
     wallScenarios: params.wallScenarios,
     ceilingScenarios: params.ceilingScenarios,
     tileScenarios: params.tileScenarios,
+    electricScenarios: params.electricScenarios,
   }
 }
 
@@ -572,7 +673,7 @@ export function buildEstimateCalculatorSnapshot(params: {
 function applyPersistedPatches(
   baseLines: readonly EstimateLine[],
   persisted: readonly PersistedEstimateLine[],
-  sectionFallback: 'floors' | 'walls' | 'ceilings' | 'tile',
+  sectionFallback: 'floors' | 'walls' | 'ceilings' | 'tile' | 'electrics',
 ): EstimateLine[] {
   if (persisted.length === 0) return [...baseLines]
 
@@ -614,7 +715,9 @@ function applyPersistedPatches(
             ? findCeilingMappingItem(patch.priceKey)
             : sectionId === 'tile'
               ? findTileMappingItem(patch.priceKey)
-              : findFloorMappingItem(patch.priceKey)
+              : sectionId === 'electrics'
+                ? findElectricMappingItem(patch.priceKey)
+                : findFloorMappingItem(patch.priceKey)
       const title = asString(patch.title).trim() || mapping?.title || ''
       const unit = asString(patch.unit).trim() || mapping?.unit || 'м²'
       if (!title) continue
@@ -727,6 +830,22 @@ export function restoreTileEstimateState(
   }
 }
 
+/**
+ * То же для электрики, включая zoned clones.
+ * Толерантно к снимкам без секции `electrics` — тогда пустой ввод и чистый build.
+ */
+export function restoreElectricEstimateState(
+  snapshot: EstimateCalculatorSnapshot | null,
+): { input: ElectricEstimateInput; lines: EstimateLine[] } {
+  const electrics = snapshot?.electrics
+  const input = electrics ? electrics.input : { ...EMPTY_ELECTRIC_INPUT }
+  const base = buildElectricEstimateLines(input)
+  return {
+    input,
+    lines: electrics ? applyPersistedPatches(base, electrics.lines, 'electrics') : base,
+  }
+}
+
 export function restoreEstimateZones(snapshot: EstimateCalculatorSnapshot | null): EstimateZone[] {
   const zones = snapshot?.zones ? snapshot.zones.map(serializeEstimateZone) : []
   noteEstimateZoneIds(zones)
@@ -759,6 +878,14 @@ export function restoreTileScenarioDraft(
   snapshot: EstimateCalculatorSnapshot | null,
 ): TileScenarioDraftState {
   return snapshot?.tileScenarios ? { ...snapshot.tileScenarios } : { ...DEFAULT_TILE_SCENARIOS }
+}
+
+export function restoreElectricScenarioDraft(
+  snapshot: EstimateCalculatorSnapshot | null,
+): ElectricScenarioDraftState {
+  return snapshot?.electricScenarios
+    ? { ...snapshot.electricScenarios }
+    : { ...DEFAULT_ELECTRIC_SCENARIOS }
 }
 
 export function readEstimateCalculatorSnapshot(): EstimateCalculatorSnapshot | null {
@@ -796,8 +923,10 @@ export {
   EMPTY_WALL_INPUT,
   EMPTY_CEILING_INPUT,
   EMPTY_TILE_INPUT,
+  EMPTY_ELECTRIC_INPUT,
   DEFAULT_FLOOR_PRESETS,
   DEFAULT_WALL_SCENARIOS,
   DEFAULT_CEILING_SCENARIOS,
   DEFAULT_TILE_SCENARIOS,
+  DEFAULT_ELECTRIC_SCENARIOS,
 }

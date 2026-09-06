@@ -52,7 +52,31 @@ export type TileWorkKind =
   | 'accessory'
   | 'other'
 
-export type EstimateWorkKind = FloorWorkKind | WallWorkKind | CeilingWorkKind | TileWorkKind
+export type ElectricWorkKind =
+  | 'demolition'
+  | 'layout'
+  | 'chase'
+  | 'cable'
+  | 'conduit'
+  | 'boxes'
+  | 'switching'
+  | 'panel'
+  | 'protection'
+  | 'earthing'
+  | 'underfloor'
+  | 'finish-outlet'
+  | 'finish-light'
+  | 'low-current'
+  | 'appliance'
+  | 'check'
+  | 'other'
+
+export type EstimateWorkKind =
+  | FloorWorkKind
+  | WallWorkKind
+  | CeilingWorkKind
+  | TileWorkKind
+  | ElectricWorkKind
 
 export type FloorQuantityField =
   | 'totalFloorArea'
@@ -88,6 +112,20 @@ export type TileQuantityField =
   | 'cornerLength'
   | 'holesCount'
   | 'repairCount'
+  | 'manual'
+
+export type ElectricQuantityField =
+  | 'electricSocketsCount'
+  | 'electricSwitchesCount'
+  | 'electricLightPointsCount'
+  | 'electricDataPointsCount'
+  | 'electricStrobeLength'
+  | 'electricCableLength'
+  | 'electricSocketBoxesCount'
+  | 'electricJunctionBoxesCount'
+  | 'electricPanelModulesCount'
+  | 'electricWarmFloorArea'
+  | 'electricApplianceConnectionsCount'
   | 'manual'
 
 export type EstimateLine = {
@@ -196,6 +234,28 @@ export type TileEstimateResult = {
   materialsExcluded: true
 }
 
+export type ElectricEstimateInput = {
+  electricSocketsCount: number
+  electricSwitchesCount: number
+  electricLightPointsCount: number
+  electricDataPointsCount: number
+  electricStrobeLength: number
+  electricCableLength: number
+  electricSocketBoxesCount: number
+  electricJunctionBoxesCount: number
+  electricPanelModulesCount: number
+  electricWarmFloorArea: number
+  electricApplianceConnectionsCount: number
+  surveyorComment?: string
+}
+
+export type ElectricEstimateResult = {
+  section: EstimateSection
+  selectedCount: number
+  totalRub: number
+  materialsExcluded: true
+}
+
 export type FloorPriceMappingItem = {
   /** Стабильный id → `EstimateLine.priceKey` / основа `id` строки */
   id: string
@@ -256,4 +316,19 @@ export type TilePriceMappingItem = {
   note?: string
   defaultEnabled: boolean
   defaultQuantityFrom: TileQuantityField
+}
+
+export type ElectricPriceMappingItem = {
+  id: string
+  title: string
+  unit: string
+  unitPrice: number
+  source: EstimatePriceSource
+  kind: ElectricWorkKind
+  frontendCategorySlug?: PriceCategorySlug
+  frontendName?: string
+  frontendUnitPrice?: number
+  note?: string
+  defaultEnabled: boolean
+  defaultQuantityFrom: ElectricQuantityField
 }

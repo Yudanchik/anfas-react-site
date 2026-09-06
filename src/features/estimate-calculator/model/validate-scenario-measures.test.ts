@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
+import { createEstimateZone } from '@/entities/estimate'
+
 import {
   canApplyCeilingScenario,
   canApplyFloorPreset,
@@ -88,34 +90,10 @@ describe('validateFloorPresetMeasures', () => {
     const result = validateFloorPresetMeasures({
       application: { presetId: 'wet-zones', layers: 'acrylic-2' },
       input: { ...emptyFloorInput, wetZonesArea: 5 },
-      zone: {
-        id: 'zone-1',
+      zone: createEstimateZone({
         name: 'Санузел',
-        zoneType: 'other' as const,
-        floorArea: 4,
-        demolitionFloorArea: 0,
-        screedArea: 0,
-        wetArea: 0,
-        wallArea: 0,
-        demolitionWallArea: 0,
-        plasterArea: 0,
-        puttyArea: 0,
-        finishArea: 0,
-        slopesLength: 0,
-        cornersLength: 0,
-        ceilingArea: 0,
-        demolitionCeilingArea: 0,
-        plasterCeilingArea: 0,
-        puttyCeilingArea: 0,
-        finishCeilingArea: 0,
-        tileFloorArea: 0,
-        tileWallArea: 0,
-        tileBacksplashArea: 0,
-        tileCuttingLength: 0,
-        tileCornerLength: 0,
-        tileHolesCount: 0,
-        tileRepairCount: 0,
-      },
+        fields: { zoneType: 'other', floorArea: 4 },
+      }),
     })
     assert.equal(result.ok, false)
     if (!result.ok) {
@@ -198,34 +176,10 @@ describe('validateCeilingScenarioMeasures', () => {
     const result = validateCeilingScenarioMeasures({
       application: { state: 'prefinish', finishTarget: 'paint' },
       input: { ...emptyCeilingInput, totalCeilingArea: 50 },
-      zone: {
-        id: 'zone-2',
+      zone: createEstimateZone({
         name: 'Кухня',
-        zoneType: 'other' as const,
-        floorArea: 10,
-        demolitionFloorArea: 0,
-        screedArea: 0,
-        wetArea: 0,
-        wallArea: 0,
-        demolitionWallArea: 0,
-        plasterArea: 0,
-        puttyArea: 0,
-        finishArea: 0,
-        slopesLength: 0,
-        cornersLength: 0,
-        ceilingArea: 0,
-        demolitionCeilingArea: 0,
-        plasterCeilingArea: 0,
-        puttyCeilingArea: 0,
-        finishCeilingArea: 0,
-        tileFloorArea: 0,
-        tileWallArea: 0,
-        tileBacksplashArea: 0,
-        tileCuttingLength: 0,
-        tileCornerLength: 0,
-        tileHolesCount: 0,
-        tileRepairCount: 0,
-      },
+        fields: { zoneType: 'other', floorArea: 10 },
+      }),
     })
     assert.equal(result.ok, false)
     if (!result.ok) {
@@ -279,34 +233,10 @@ describe('canApply helpers and disabled hints', () => {
   })
 
   it('disables scenario for zero zone fields and enables when zone fields are filled', () => {
-    const emptyZone = {
-      id: 'zone-3',
+    const emptyZone = createEstimateZone({
       name: 'Комната',
-        zoneType: 'other' as const,
-      floorArea: 0,
-      demolitionFloorArea: 0,
-      screedArea: 0,
-      wetArea: 0,
-      wallArea: 0,
-      demolitionWallArea: 0,
-      plasterArea: 0,
-      puttyArea: 0,
-      finishArea: 0,
-      slopesLength: 0,
-      cornersLength: 0,
-      ceilingArea: 0,
-      demolitionCeilingArea: 0,
-      plasterCeilingArea: 0,
-      puttyCeilingArea: 0,
-      finishCeilingArea: 0,
-      tileFloorArea: 0,
-      tileWallArea: 0,
-      tileBacksplashArea: 0,
-      tileCuttingLength: 0,
-      tileCornerLength: 0,
-      tileHolesCount: 0,
-      tileRepairCount: 0,
-    }
+      fields: { zoneType: 'other' },
+    })
     assert.equal(
       canApplyCeilingScenario({
         application: { state: 'prefinish', finishTarget: 'paint' },
@@ -367,34 +297,15 @@ describe('validateTileScenarioMeasures', () => {
   })
 
   it('blocks kitchen-backsplash for bathroom zone even with measures', () => {
-    const bathroomZone = {
-      id: 'zone-bath',
+    const bathroomZone = createEstimateZone({
       name: 'Санузел',
-      zoneType: 'bathroom' as const,
-      floorArea: 0,
-      demolitionFloorArea: 0,
-      screedArea: 0,
-      wetArea: 0,
-      wallArea: 0,
-      demolitionWallArea: 0,
-      plasterArea: 0,
-      puttyArea: 0,
-      finishArea: 0,
-      slopesLength: 0,
-      cornersLength: 0,
-      ceilingArea: 0,
-      demolitionCeilingArea: 0,
-      plasterCeilingArea: 0,
-      puttyCeilingArea: 0,
-      finishCeilingArea: 0,
-      tileFloorArea: 4,
-      tileWallArea: 12,
-      tileBacksplashArea: 3,
-      tileCuttingLength: 0,
-      tileCornerLength: 0,
-      tileHolesCount: 0,
-      tileRepairCount: 0,
-    }
+      fields: {
+        zoneType: 'bathroom',
+        tileFloorArea: 4,
+        tileWallArea: 12,
+        tileBacksplashArea: 3,
+      },
+    })
     const result = validateTileScenarioMeasures({
       application: { state: 'kitchen-backsplash', cladFormat: 'mosaic' },
       input: { ...emptyTileInput, backsplashArea: 3 },

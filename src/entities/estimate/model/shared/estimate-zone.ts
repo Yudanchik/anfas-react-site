@@ -1,7 +1,7 @@
 import { normalizeNonNegative } from './calculate-line-total'
 
 /**
- * Зона объекта: именованное помещение с площадями для сценариев floors/walls/ceilings/tile.
+ * Зона объекта: именованное помещение с площадями для сценариев floors/walls/ceilings/tile/electrics.
  * Не путать с id zoned clone lines (`floors:zone-N`) — здесь сущность `zone-N`.
  */
 export type EstimateZoneId = string
@@ -36,6 +36,17 @@ export type EstimateZone = {
   tileCornerLength: number
   tileHolesCount: number
   tileRepairCount: number
+  electricSocketsCount: number
+  electricSwitchesCount: number
+  electricLightPointsCount: number
+  electricDataPointsCount: number
+  electricStrobeLength: number
+  electricCableLength: number
+  electricSocketBoxesCount: number
+  electricJunctionBoxesCount: number
+  electricPanelModulesCount: number
+  electricWarmFloorArea: number
+  electricApplianceConnectionsCount: number
   comment?: string
 }
 
@@ -99,6 +110,17 @@ export const EMPTY_ESTIMATE_ZONE_FIELDS: Omit<EstimateZone, 'id' | 'name'> = {
   tileCornerLength: 0,
   tileHolesCount: 0,
   tileRepairCount: 0,
+  electricSocketsCount: 0,
+  electricSwitchesCount: 0,
+  electricLightPointsCount: 0,
+  electricDataPointsCount: 0,
+  electricStrobeLength: 0,
+  electricCableLength: 0,
+  electricSocketBoxesCount: 0,
+  electricJunctionBoxesCount: 0,
+  electricPanelModulesCount: 0,
+  electricWarmFloorArea: 0,
+  electricApplianceConnectionsCount: 0,
   comment: undefined,
 }
 
@@ -219,6 +241,19 @@ export function createEstimateZone(params: {
     tileCornerLength: normalizeNonNegative(fields.tileCornerLength ?? 0),
     tileHolesCount: normalizeNonNegative(fields.tileHolesCount ?? 0),
     tileRepairCount: normalizeNonNegative(fields.tileRepairCount ?? 0),
+    electricSocketsCount: normalizeNonNegative(fields.electricSocketsCount ?? 0),
+    electricSwitchesCount: normalizeNonNegative(fields.electricSwitchesCount ?? 0),
+    electricLightPointsCount: normalizeNonNegative(fields.electricLightPointsCount ?? 0),
+    electricDataPointsCount: normalizeNonNegative(fields.electricDataPointsCount ?? 0),
+    electricStrobeLength: normalizeNonNegative(fields.electricStrobeLength ?? 0),
+    electricCableLength: normalizeNonNegative(fields.electricCableLength ?? 0),
+    electricSocketBoxesCount: normalizeNonNegative(fields.electricSocketBoxesCount ?? 0),
+    electricJunctionBoxesCount: normalizeNonNegative(fields.electricJunctionBoxesCount ?? 0),
+    electricPanelModulesCount: normalizeNonNegative(fields.electricPanelModulesCount ?? 0),
+    electricWarmFloorArea: normalizeNonNegative(fields.electricWarmFloorArea ?? 0),
+    electricApplianceConnectionsCount: normalizeNonNegative(
+      fields.electricApplianceConnectionsCount ?? 0,
+    ),
     comment: fields.comment?.trim() || undefined,
   }
 }
@@ -320,6 +355,50 @@ export function updateEstimateZone(
         patch.tileRepairCount === undefined
           ? zone.tileRepairCount
           : normalizeNonNegative(patch.tileRepairCount),
+      electricSocketsCount:
+        patch.electricSocketsCount === undefined
+          ? zone.electricSocketsCount
+          : normalizeNonNegative(patch.electricSocketsCount),
+      electricSwitchesCount:
+        patch.electricSwitchesCount === undefined
+          ? zone.electricSwitchesCount
+          : normalizeNonNegative(patch.electricSwitchesCount),
+      electricLightPointsCount:
+        patch.electricLightPointsCount === undefined
+          ? zone.electricLightPointsCount
+          : normalizeNonNegative(patch.electricLightPointsCount),
+      electricDataPointsCount:
+        patch.electricDataPointsCount === undefined
+          ? zone.electricDataPointsCount
+          : normalizeNonNegative(patch.electricDataPointsCount),
+      electricStrobeLength:
+        patch.electricStrobeLength === undefined
+          ? zone.electricStrobeLength
+          : normalizeNonNegative(patch.electricStrobeLength),
+      electricCableLength:
+        patch.electricCableLength === undefined
+          ? zone.electricCableLength
+          : normalizeNonNegative(patch.electricCableLength),
+      electricSocketBoxesCount:
+        patch.electricSocketBoxesCount === undefined
+          ? zone.electricSocketBoxesCount
+          : normalizeNonNegative(patch.electricSocketBoxesCount),
+      electricJunctionBoxesCount:
+        patch.electricJunctionBoxesCount === undefined
+          ? zone.electricJunctionBoxesCount
+          : normalizeNonNegative(patch.electricJunctionBoxesCount),
+      electricPanelModulesCount:
+        patch.electricPanelModulesCount === undefined
+          ? zone.electricPanelModulesCount
+          : normalizeNonNegative(patch.electricPanelModulesCount),
+      electricWarmFloorArea:
+        patch.electricWarmFloorArea === undefined
+          ? zone.electricWarmFloorArea
+          : normalizeNonNegative(patch.electricWarmFloorArea),
+      electricApplianceConnectionsCount:
+        patch.electricApplianceConnectionsCount === undefined
+          ? zone.electricApplianceConnectionsCount
+          : normalizeNonNegative(patch.electricApplianceConnectionsCount),
       comment:
         patch.comment === undefined ? zone.comment : patch.comment.trim() || undefined,
     }

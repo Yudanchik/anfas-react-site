@@ -1,0 +1,418 @@
+import type {
+  ElectricPriceMappingItem,
+  ElectricQuantityField,
+  ElectricWorkKind,
+} from '../shared/estimate.types'
+
+export const ELECTRIC_SECTION_ID = 'electrics'
+export const ELECTRIC_SECTION_TITLE = 'Электрика (labour)'
+
+/**
+ * Whitelist labour-работ по электрике для внутреннего калькулятора.
+ * Primary: PDF `anfas-price-list.pdf`. Frontend — сверка при `source=both`.
+ * Вне scope: материалы (кабель, автоматы, светильники), ТВ-кронштейн,
+ * Wi-Fi/домофон/видеозвонок, полный монтаж кондиционера, водяной тёплый пол,
+ * заполнение штробы (общестрой), вызов электрика 15000.
+ */
+
+type Kind = ElectricWorkKind
+type From = ElectricQuantityField
+
+/** PDF-only labour позиция (без сверки с публичным прайсом). */
+function pdf(
+  id: string,
+  title: string,
+  unit: string,
+  unitPrice: number,
+  kind: Kind,
+  from: From,
+): ElectricPriceMappingItem {
+  return {
+    id,
+    title,
+    unit,
+    unitPrice,
+    source: 'pdf',
+    kind,
+    defaultEnabled: false,
+    defaultQuantityFrom: from,
+  }
+}
+
+/** Позиция, сверяемая с публичным прайсом (`elektroremontazh` / `demontazh`). */
+function both(
+  id: string,
+  title: string,
+  unit: string,
+  unitPrice: number,
+  kind: Kind,
+  from: From,
+  frontendCategorySlug: 'elektroremontazh' | 'demontazh',
+): ElectricPriceMappingItem {
+  return {
+    id,
+    title,
+    unit,
+    unitPrice,
+    source: 'both',
+    kind,
+    frontendCategorySlug,
+    frontendName: title,
+    frontendUnitPrice: unitPrice,
+    defaultEnabled: false,
+    defaultQuantityFrom: from,
+  }
+}
+
+export const ELECTRIC_PRICE_MAPPING: readonly ElectricPriceMappingItem[] = [
+  // —— Демонтаж ——
+  both(
+    'demolition-old-electrics',
+    'Демонтаж старой электрики',
+    'комплекс',
+    10000,
+    'demolition',
+    'manual',
+    'demontazh',
+  ),
+  pdf('demolition-outlets', 'Демонтаж розеток и выключателей', 'шт.', 200, 'demolition', 'electricSocketsCount'),
+  pdf('demolition-luminaires', 'Демонтаж светильников', 'шт.', 300, 'demolition', 'electricLightPointsCount'),
+  pdf('demolition-cable', 'Демонтаж старого кабеля', 'м. пог.', 150, 'demolition', 'electricCableLength'),
+  pdf('demolition-chandelier', 'Демонтаж люстры', 'шт.', 550, 'demolition', 'manual'),
+  pdf('demolition-ceiling-cable', 'Демонтаж кабеля с потолка', 'м²', 250, 'demolition', 'manual'),
+
+  // —— Разметка / обследование ——
+  pdf('layout-routes', 'Разметка трасс электропроводки', 'м. пог.', 120, 'layout', 'electricCableLength'),
+  pdf('layout-supply-points', 'Разметка точек электроснабжения', 'точка', 250, 'layout', 'electricSocketsCount'),
+  pdf('layout-podrozetnik', 'Разметка подрозетников', 'шт.', 200, 'layout', 'electricSocketBoxesCount'),
+  pdf('layout-panel', 'Разметка места установки электрощита', 'шт.', 700, 'layout', 'manual'),
+  pdf('layout-survey', 'Электротехническое обследование объекта', 'комплекс', 3000, 'layout', 'manual'),
+
+  // —— Штробление / отверстия / ниши ——
+  both(
+    'chase-concrete-to-35',
+    'Изготовление электромонтажной штробы до 35 мм в бетоне',
+    'м. пог.',
+    825,
+    'chase',
+    'electricStrobeLength',
+    'elektroremontazh',
+  ),
+  pdf('chase-brick-to-35', 'Изготовление электромонтажной штробы до 35 мм в кирпиче', 'м. пог.', 675, 'chase', 'electricStrobeLength'),
+  pdf('chase-concrete-35-60', 'Изготовление электромонтажной штробы до 60 мм в бетоне', 'м. пог.', 1050, 'chase', 'electricStrobeLength'),
+  pdf('chase-brick-35-60', 'Изготовление электромонтажной штробы до 60 мм в кирпиче', 'м. пог.', 900, 'chase', 'electricStrobeLength'),
+  pdf('chase-ufh-sensor', 'Изготовление штробы под датчик тёплого пола', 'м. пог.', 525, 'chase', 'manual'),
+  pdf('niche-gkl', 'Изготовление ниши под электрощит в гипсокартоне', 'шт.', 3500, 'chase', 'manual'),
+  pdf('niche-block', 'Изготовление ниши под электрощит в блоке', 'шт.', 6500, 'chase', 'manual'),
+  pdf('niche-concrete', 'Изготовление ниши под электрощит в бетоне', 'шт.', 9500, 'chase', 'manual'),
+  both(
+    'hole-podrozetnik-gkl',
+    'Изготовление отверстия под подрозетник в гипсокартоне',
+    'шт.',
+    350,
+    'chase',
+    'electricSocketBoxesCount',
+    'elektroremontazh',
+  ),
+  pdf('hole-podrozetnik-brick', 'Изготовление отверстия под подрозетник в кирпиче/блоке', 'шт.', 600, 'chase', 'electricSocketBoxesCount'),
+  pdf('hole-podrozetnik-concrete', 'Изготовление отверстия под подрозетник в бетоне', 'шт.', 900, 'chase', 'electricSocketBoxesCount'),
+  pdf('hole-group-concrete', 'Изготовление группы отверстий под блок подрозетников', 'шт.', 700, 'chase', 'electricSocketBoxesCount'),
+  pdf('hole-through', 'Изготовление сквозного отверстия под кабельную трассу', 'шт.', 700, 'chase', 'manual'),
+
+  // —— Прокладка кабеля ——
+  both(
+    'cable-chase-1-5-2-5',
+    'Прокладка кабеля 1,5–2,5 мм² в готовой штробе',
+    'м. пог.',
+    160,
+    'cable',
+    'electricCableLength',
+    'elektroremontazh',
+  ),
+  both(
+    'cable-open-1-5-2-5',
+    'Прокладка силового кабеля 1,5–2,5 мм² открытым способом на крепёж',
+    'м. пог.',
+    180,
+    'cable',
+    'electricCableLength',
+    'elektroremontazh',
+  ),
+  pdf('cable-open-4-6', 'Прокладка силового кабеля 4–6 мм² открытым способом на крепёж', 'м. пог.', 220, 'cable', 'electricCableLength'),
+  pdf('cable-open-10', 'Прокладка силового кабеля 10 мм² открытым способом на крепёж', 'м. пог.', 280, 'cable', 'electricCableLength'),
+  pdf('cable-open-16', 'Прокладка силового кабеля 16 мм² открытым способом на крепёж', 'м. пог.', 350, 'cable', 'electricCableLength'),
+  pdf('cable-chase-4-6', 'Прокладка силового кабеля 4–6 мм² в готовой штробе', 'м. пог.', 200, 'cable', 'electricCableLength'),
+  pdf('cable-chase-10', 'Прокладка силового кабеля 10 мм² в готовой штробе', 'м. пог.', 260, 'cable', 'electricCableLength'),
+  pdf('cable-ceiling', 'Прокладка кабеля по потолку на крепёж', 'м. пог.', 170, 'cable', 'electricCableLength'),
+  pdf('cable-ceiling-corrugated', 'Прокладка кабеля по потолку в гофре', 'м. пог.', 190, 'cable', 'electricCableLength'),
+  pdf('cable-low-current', 'Прокладка слаботочного кабеля', 'м. пог.', 130, 'cable', 'electricCableLength'),
+  pdf('cable-utp', 'Прокладка кабеля UTP (интернет)', 'м. пог.', 150, 'cable', 'electricCableLength'),
+  pdf('cable-tv', 'Прокладка телевизионного кабеля', 'м. пог.', 150, 'cable', 'electricCableLength'),
+  pdf('cable-cooktop', 'Прокладка силового кабеля для варочной панели', 'м. пог.', 260, 'cable', 'electricCableLength'),
+  pdf('cable-ufh-sensor', 'Прокладка кабеля датчика тёплого пола', 'м. пог.', 150, 'cable', 'manual'),
+  pdf('cable-ufh-power', 'Прокладка питающего кабеля электрического тёплого пола', 'м. пог.', 200, 'cable', 'manual'),
+  pdf('cable-tray', 'Прокладка кабеля в кабельном лотке', 'м. пог.', 160, 'cable', 'electricCableLength'),
+  pdf('cable-channel', 'Прокладка кабеля в кабель-канале', 'м. пог.', 170, 'cable', 'electricCableLength'),
+
+  // —— Трубы / гофра / короба (монтаж) ——
+  pdf('conduit-gopher-pull', 'Протяжка кабеля в готовую гофротрубу', 'м. пог.', 90, 'conduit', 'electricCableLength'),
+  pdf('conduit-gopher-pull-large', 'Протяжка кабеля в гофротрубу большого сечения', 'м. пог.', 160, 'conduit', 'electricCableLength'),
+  pdf('conduit-gopher-mount', 'Монтаж гофрированной трубы', 'м. пог.', 120, 'conduit', 'electricCableLength'),
+  pdf('conduit-pvc-rigid', 'Монтаж жёсткой ПВХ-трубы', 'м. пог.', 180, 'conduit', 'electricCableLength'),
+  pdf('conduit-metal-hose', 'Монтаж металлорукава', 'м. пог.', 200, 'conduit', 'electricCableLength'),
+  pdf('conduit-cable-channel', 'Монтаж кабель-канала', 'м. пог.', 200, 'conduit', 'electricCableLength'),
+  pdf('conduit-tray-mount', 'Монтаж кабельного лотка', 'м. пог.', 350, 'conduit', 'electricCableLength'),
+
+  // —— Подрозетники / коробки ——
+  both(
+    'podrozetnik-fix',
+    'Монтаж и фиксация подрозетника в готовое отверстие',
+    'шт.',
+    700,
+    'boxes',
+    'electricSocketBoxesCount',
+    'elektroremontazh',
+  ),
+  both(
+    'podrozetnik-block-2',
+    'Монтаж блока подрозетников из 2 мест',
+    'шт.',
+    1200,
+    'boxes',
+    'electricSocketBoxesCount',
+    'elektroremontazh',
+  ),
+  pdf('podrozetnik-gkl-mount', 'Монтаж подрозетника в гипсокартон', 'шт.', 600, 'boxes', 'electricSocketBoxesCount'),
+  pdf('podrozetnik-block-3', 'Монтаж блока подрозетников из 3 мест', 'шт.', 1700, 'boxes', 'electricSocketBoxesCount'),
+  pdf('podrozetnik-block-4', 'Монтаж блока подрозетников из 4 мест', 'шт.', 2200, 'boxes', 'electricSocketBoxesCount'),
+  pdf('podrozetnik-block-5', 'Монтаж блока подрозетников из 5 мест', 'шт.', 2700, 'boxes', 'electricSocketBoxesCount'),
+  pdf('podrozetnik-level', 'Выравнивание подрозетников в один уровень', 'шт.', 300, 'boxes', 'electricSocketBoxesCount'),
+  pdf('boxes-strip-wires', 'Зачистка и подготовка проводов в подрозетниках', 'шт.', 150, 'boxes', 'electricSocketBoxesCount'),
+  pdf('boxes-temp-plug', 'Установка временной заглушки в подрозетник', 'шт.', 100, 'boxes', 'electricSocketBoxesCount'),
+  pdf('junction-box-mount', 'Монтаж распределительной коробки', 'шт.', 500, 'boxes', 'electricJunctionBoxesCount'),
+  pdf('cable-outlet-box', 'Монтаж кабельного вывода', 'шт.', 250, 'boxes', 'electricSocketBoxesCount'),
+
+  // —— Коммутация ——
+  both(
+    'junction-wago',
+    'Коммутация кабелей в распределительной коробке через WAGO',
+    'шт.',
+    1200,
+    'switching',
+    'electricJunctionBoxesCount',
+    'elektroremontazh',
+  ),
+  pdf('switching-crimp', 'Опрессовка соединений проводов гильзами', 'шт.', 150, 'switching', 'electricJunctionBoxesCount'),
+  pdf('switching-mark-line', 'Маркировка кабельной линии', 'шт.', 50, 'switching', 'electricCableLength'),
+  pdf('switching-ring-out', 'Прозвонка кабельной линии', 'шт.', 500, 'switching', 'manual'),
+  pdf('switching-integrity', 'Проверка целостности кабельной линии', 'шт.', 500, 'switching', 'manual'),
+  pdf('switching-mark-scheme', 'Составление и маркировка схемы электропроводки', 'комплекс', 3000, 'switching', 'manual'),
+  pdf('junction-crimp', 'Коммутация в распределительной коробке опрессовкой', 'шт.', 1000, 'switching', 'electricJunctionBoxesCount'),
+  pdf('junction-solder', 'Коммутация в распределительной коробке пайкой', 'шт.', 1400, 'switching', 'electricJunctionBoxesCount'),
+
+  // —— Электрощит ——
+  both(
+    'panel-enclosure-outdoor-12',
+    'Монтаж корпуса электрощита наружного типа до 12 модулей',
+    'шт.',
+    5400,
+    'panel',
+    'manual',
+    'elektroremontazh',
+  ),
+  pdf('panel-enclosure-outdoor-18', 'Монтаж корпуса электрощита наружного типа до 18 модулей', 'шт.', 6600, 'panel', 'manual'),
+  pdf('panel-enclosure-outdoor-24', 'Монтаж корпуса электрощита наружного типа до 24 модулей', 'шт.', 7800, 'panel', 'manual'),
+  pdf('panel-enclosure-indoor-12', 'Монтаж корпуса электрощита встраиваемого типа до 12 модулей', 'шт.', 6000, 'panel', 'manual'),
+  pdf('panel-enclosure-indoor-18', 'Монтаж корпуса электрощита встраиваемого типа до 18 модулей', 'шт.', 7200, 'panel', 'manual'),
+  pdf('panel-enclosure-indoor-24', 'Монтаж корпуса электрощита встраиваемого типа до 24 модулей', 'шт.', 8400, 'panel', 'manual'),
+  both(
+    'panel-assembly-12',
+    'Сборка электрощита до 12 модулей',
+    'шт.',
+    16200,
+    'panel',
+    'manual',
+    'elektroremontazh',
+  ),
+  pdf('panel-assembly-18', 'Сборка электрощита до 18 модулей', 'шт.', 24300, 'panel', 'manual'),
+  pdf('panel-assembly-24', 'Сборка электрощита до 24 модулей', 'шт.', 32400, 'panel', 'manual'),
+  pdf('panel-din-rail', 'Монтаж DIN-рейки в электрощите', 'шт.', 300, 'panel', 'manual'),
+  pdf('panel-bus', 'Монтаж шины (нулевой/заземления) в электрощите', 'шт.', 500, 'panel', 'manual'),
+  pdf('panel-cable-org', 'Организация кабеля в электрощите', 'комплекс', 2500, 'panel', 'manual'),
+  pdf('panel-mark-breakers', 'Маркировка автоматов в электрощите', 'шт.', 100, 'panel', 'electricPanelModulesCount'),
+  pdf('panel-rebuild', 'Реконструкция существующего электрощита', 'комплекс', 8000, 'panel', 'manual'),
+
+  // —— Защита / автоматы / счётчики ——
+  both(
+    'breaker-1p',
+    'Монтаж и подключение автоматического выключателя 1P',
+    'шт.',
+    700,
+    'protection',
+    'electricPanelModulesCount',
+    'elektroremontazh',
+  ),
+  both(
+    'rcd-1pn',
+    'Монтаж и подключение УЗО/дифавтомата 1P+N',
+    'шт.',
+    1200,
+    'protection',
+    'electricPanelModulesCount',
+    'elektroremontazh',
+  ),
+  both(
+    'meter-1ph',
+    'Монтаж и подключение однофазного счётчика',
+    'шт.',
+    3500,
+    'protection',
+    'manual',
+    'elektroremontazh',
+  ),
+  pdf('breaker-2p', 'Монтаж и подключение автоматического выключателя 2P', 'шт.', 1000, 'protection', 'electricPanelModulesCount'),
+  pdf('breaker-3p', 'Монтаж и подключение автоматического выключателя 3P', 'шт.', 1400, 'protection', 'electricPanelModulesCount'),
+  pdf('rcd-3p', 'Монтаж и подключение УЗО/дифавтомата 3P+N', 'шт.', 1800, 'protection', 'electricPanelModulesCount'),
+  pdf('voltage-relay', 'Монтаж и подключение реле напряжения', 'шт.', 1200, 'protection', 'electricPanelModulesCount'),
+  pdf('meter-3ph', 'Монтаж и подключение трёхфазного счётчика', 'шт.', 4500, 'protection', 'manual'),
+  pdf('transformer', 'Монтаж и подключение понижающего трансформатора', 'шт.', 1500, 'protection', 'manual'),
+  pdf('terminals', 'Монтаж клеммных колодок', 'шт.', 400, 'protection', 'electricPanelModulesCount'),
+  pdf('line-connect-220', 'Подключение кабельной линии 220В', 'шт.', 500, 'protection', 'electricPanelModulesCount'),
+  pdf('line-connect-380', 'Подключение кабельной линии 380В', 'шт.', 800, 'protection', 'electricPanelModulesCount'),
+  pdf('comb-bus', 'Монтаж гребёнчатой шины в электрощите', 'шт.', 400, 'protection', 'electricPanelModulesCount'),
+
+  // —— Заземление / ДСУП ——
+  pdf('earthing-dsup-system', 'Устройство системы дополнительного уравнивания потенциалов (ДСУП)', 'комплекс', 9500, 'earthing', 'manual'),
+  pdf('earthing-dsup-box', 'Монтаж коробки уравнивания потенциалов', 'шт.', 1500, 'earthing', 'manual'),
+  pdf('earthing-bath', 'Заземление ванны', 'шт.', 800, 'earthing', 'manual'),
+  pdf('earthing-towel', 'Заземление полотенцесушителя', 'шт.', 800, 'earthing', 'manual'),
+  pdf('earthing-dsup-conductor', 'Прокладка проводника ДСУП', 'м. пог.', 150, 'earthing', 'electricCableLength'),
+  pdf('earthing-continuity-check', 'Проверка непрерывности цепи заземления', 'шт.', 500, 'earthing', 'manual'),
+
+  // —— Тёплый пол (электрический) ——
+  pdf('underfloor-layout', 'Разметка укладки электрического тёплого пола', 'м²', 200, 'underfloor', 'electricWarmFloorArea'),
+  pdf('ufh-install-small', 'Монтаж электрического тёплого пола общим объёмом до 4 м²', 'комплекс', 5000, 'underfloor', 'manual'),
+  both(
+    'ufh-install-large',
+    'Монтаж электрического тёплого пола общим объёмом более 4 м²',
+    'м²',
+    1100,
+    'underfloor',
+    'electricWarmFloorArea',
+    'elektroremontazh',
+  ),
+  pdf('underfloor-tubes', 'Монтаж гофротрубки под датчик тёплого пола', 'шт.', 400, 'underfloor', 'manual'),
+  pdf('underfloor-check', 'Проверка сопротивления нагревательного мата тёплого пола', 'шт.', 500, 'underfloor', 'manual'),
+
+  // —— Финишный монтаж: розетки / выключатели ——
+  both(
+    'finish-outlet-switch',
+    'Монтаж и подключение розетки или выключателя в готовый подрозетник',
+    'шт.',
+    650,
+    'finish-outlet',
+    'electricSocketsCount',
+    'elektroremontazh',
+  ),
+  both(
+    'finish-power-outlet-cook',
+    'Монтаж и подключение силовой розетки для варочной панели/духового шкафа',
+    'шт.',
+    1800,
+    'finish-outlet',
+    'electricSocketsCount',
+    'elektroremontazh',
+  ),
+  pdf('finish-outlet-wet', 'Монтаж и подключение влагозащищённой розетки', 'шт.', 900, 'finish-outlet', 'electricSocketsCount'),
+  pdf('finish-outlet-block-2', 'Монтаж и подключение блока из 2 розеток', 'шт.', 1200, 'finish-outlet', 'electricSocketsCount'),
+  pdf('finish-outlet-block-3', 'Монтаж и подключение блока из 3 розеток', 'шт.', 1700, 'finish-outlet', 'electricSocketsCount'),
+  pdf('finish-outlet-block-4', 'Монтаж и подключение блока из 4 розеток', 'шт.', 2200, 'finish-outlet', 'electricSocketsCount'),
+  pdf('finish-outlet-frame', 'Монтаж рамки блока розеток/выключателей', 'шт.', 200, 'finish-outlet', 'electricSocketsCount'),
+  pdf('finish-switch-key', 'Монтаж и подключение клавишного выключателя', 'шт.', 650, 'finish-outlet', 'electricSwitchesCount'),
+  pdf('finish-outlet-blank', 'Монтаж заглушки в рамку', 'шт.', 100, 'finish-outlet', 'electricSocketsCount'),
+  pdf('finish-thermostat', 'Монтаж и подключение терморегулятора', 'шт.', 1200, 'finish-outlet', 'electricSocketsCount'),
+  pdf('finish-ufh-thermostat', 'Монтаж и подключение терморегулятора тёплого пола', 'шт.', 1800, 'finish-outlet', 'manual'),
+  pdf('finish-pass-through', 'Монтаж и подключение проходного выключателя', 'шт.', 1000, 'finish-outlet', 'electricSwitchesCount'),
+  pdf('finish-leak-sensor', 'Монтаж и подключение датчика протечки воды', 'шт.', 900, 'finish-outlet', 'manual'),
+  pdf('finish-rj45', 'Монтаж и подключение компьютерной розетки RJ45', 'шт.', 700, 'finish-outlet', 'electricDataPointsCount'),
+  pdf('finish-tv', 'Монтаж и подключение телевизионной розетки', 'шт.', 700, 'finish-outlet', 'electricDataPointsCount'),
+
+  // —— Финишный монтаж: освещение ——
+  both(
+    'finish-pendant',
+    'Монтаж и подключение светильника подвесного типа',
+    'шт.',
+    1800,
+    'finish-light',
+    'electricLightPointsCount',
+    'elektroremontazh',
+  ),
+  both(
+    'finish-spot',
+    'Монтаж и подключение встраиваемого точечного светильника',
+    'шт.',
+    800,
+    'finish-light',
+    'electricLightPointsCount',
+    'elektroremontazh',
+  ),
+  both(
+    'finish-chandelier-std',
+    'Стандартный монтаж люстры, включая сборку и подключение',
+    'шт.',
+    4500,
+    'finish-light',
+    'manual',
+    'elektroremontazh',
+  ),
+  both(
+    'finish-led-in-profile',
+    'Монтаж и подключение светодиодной ленты в профиль',
+    'м. пог.',
+    1200,
+    'finish-light',
+    'manual',
+    'elektroremontazh',
+  ),
+  pdf('finish-surface-ceiling', 'Монтаж и подключение накладного потолочного светильника', 'шт.', 1300, 'finish-light', 'electricLightPointsCount'),
+  pdf('finish-wall-sconce', 'Монтаж и подключение настенного бра', 'шт.', 2200, 'finish-light', 'electricLightPointsCount'),
+  pdf('finish-decorative-spot', 'Монтаж и подключение декоративного точечного светильника', 'шт.', 1200, 'finish-light', 'electricLightPointsCount'),
+  pdf('finish-chandelier-complex', 'Монтаж люстры повышенной сложности', 'шт.', 6500, 'finish-light', 'manual'),
+  pdf('finish-chandelier-heavy', 'Монтаж тяжёлой люстры с усиленным креплением', 'шт.', 9500, 'finish-light', 'manual'),
+  pdf('finish-mirror-light', 'Монтаж и подключение подсветки зеркала', 'шт.', 1500, 'finish-light', 'electricLightPointsCount'),
+  pdf('finish-track-bus', 'Монтаж и подключение трекового шинопровода', 'м. пог.', 1500, 'finish-light', 'manual'),
+  pdf('finish-magnetic-bus', 'Монтаж и подключение магнитного шинопровода', 'м. пог.', 2500, 'finish-light', 'manual'),
+  pdf('finish-led-strip', 'Монтаж и подключение светодиодной ленты', 'м. пог.', 900, 'finish-light', 'manual'),
+  pdf('finish-led-psu', 'Монтаж и подключение блока питания светодиодной ленты', 'шт.', 800, 'finish-light', 'manual'),
+  pdf('finish-led-controller', 'Монтаж и подключение контроллера светодиодной ленты', 'шт.', 900, 'finish-light', 'manual'),
+  pdf('finish-dimmer', 'Монтаж и подключение диммера', 'шт.', 1000, 'finish-light', 'electricSwitchesCount'),
+
+  // —— Слаботочные системы ——
+  pdf('low-current-panel', 'Монтаж слаботочного щита', 'шт.', 6000, 'low-current', 'manual'),
+  pdf('low-current-org-cables', 'Организация слаботочных кабелей', 'комплекс', 2000, 'low-current', 'manual'),
+  pdf('low-current-internet-connect', 'Подключение интернета в слаботочном щите', 'шт.', 800, 'low-current', 'electricDataPointsCount'),
+  pdf('low-current-tv-connect', 'Подключение телевидения в слаботочном щите', 'шт.', 800, 'low-current', 'electricDataPointsCount'),
+  pdf('low-current-patch-panel', 'Монтаж патч-панели', 'шт.', 1500, 'low-current', 'manual'),
+  pdf('low-current-rj45-crimp', 'Обжим коннектора RJ45', 'шт.', 200, 'low-current', 'electricDataPointsCount'),
+  pdf('low-current-tv-crimp', 'Монтаж телевизионного разъёма', 'шт.', 200, 'low-current', 'electricDataPointsCount'),
+  pdf('low-current-test-internet', 'Тестирование интернет-линий', 'шт.', 500, 'low-current', 'electricDataPointsCount'),
+  pdf('low-current-test-tv', 'Тестирование телевизионных линий', 'шт.', 500, 'low-current', 'electricDataPointsCount'),
+
+  // —— Подключение оборудования ——
+  pdf('appliance-towel-ready', 'Подключение электрического полотенцесушителя к готовой линии', 'шт.', 1200, 'appliance', 'electricApplianceConnectionsCount'),
+  pdf('appliance-water-heater', 'Подключение накопительного водонагревателя', 'шт.', 2500, 'appliance', 'electricApplianceConnectionsCount'),
+  pdf('appliance-cooktop', 'Подключение варочной панели', 'шт.', 2000, 'appliance', 'electricApplianceConnectionsCount'),
+  pdf('appliance-oven', 'Подключение духового шкафа', 'шт.', 1800, 'appliance', 'electricApplianceConnectionsCount'),
+  pdf('appliance-hood', 'Подключение кухонной вытяжки', 'шт.', 1200, 'appliance', 'electricApplianceConnectionsCount'),
+  pdf('appliance-food-waste', 'Подключение измельчителя пищевых отходов', 'шт.', 1500, 'appliance', 'electricApplianceConnectionsCount'),
+  pdf('appliance-curtain-drive', 'Подключение электропривода штор', 'шт.', 2000, 'appliance', 'electricApplianceConnectionsCount'),
+  pdf('appliance-fan-ready', 'Подключение вентилятора к готовой линии', 'шт.', 900, 'appliance', 'electricApplianceConnectionsCount'),
+  pdf('appliance-generic', 'Подключение бытового электрооборудования', 'шт.', 1500, 'appliance', 'electricApplianceConnectionsCount'),
+  pdf('appliance-pump', 'Подключение насоса', 'шт.', 1800, 'appliance', 'electricApplianceConnectionsCount'),
+
+  // —— Проверки / защита на период отделки ——
+  pdf('check-temp-cable-protect', 'Временная защита кабеля на период отделки', 'м. пог.', 50, 'check', 'electricCableLength'),
+  pdf('check-group-after-mount', 'Проверка группы после монтажа', 'шт.', 500, 'check', 'manual'),
+  pdf('check-panel-after-assembly', 'Проверка электрощита после сборки', 'шт.', 1000, 'check', 'manual'),
+  pdf('check-final-mark', 'Финальная маркировка электрики перед отделкой', 'комплекс', 1000, 'check', 'manual'),
+]

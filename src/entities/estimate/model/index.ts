@@ -4,6 +4,11 @@ export type {
   CeilingPriceMappingItem,
   CeilingQuantityField,
   CeilingWorkKind,
+  ElectricEstimateInput,
+  ElectricEstimateResult,
+  ElectricPriceMappingItem,
+  ElectricQuantityField,
+  ElectricWorkKind,
   EstimateLine,
   EstimatePriceSource,
   EstimateSection,
@@ -401,3 +406,81 @@ export {
   TILE_SCENARIO_OPTIONS,
 } from './tile/tile-scenario-options'
 export type { TileScenarioOptionMeta } from './tile/tile-scenario-options'
+
+export {
+  ELECTRIC_PRICE_MAPPING,
+  ELECTRIC_SECTION_ID,
+  ELECTRIC_SECTION_TITLE,
+} from './electrics/electric-price.mapping'
+export {
+  assertElectricMappingMatchesFrontend,
+  findElectricMappingConflicts,
+} from './electrics/assert-electric-mapping'
+export type { ElectricMappingConflict } from './electrics/assert-electric-mapping'
+export {
+  buildElectricEstimateLines,
+  resolveElectricDefaultQuantity,
+} from './electrics/build-electric-estimate-lines'
+export type { BuildElectricEstimateLinesOptions } from './electrics/build-electric-estimate-lines'
+export { buildElectricEstimate } from './electrics/build-electric-estimate'
+export {
+  applyElectricCableLength,
+  applyElectricLightPointsCount,
+  applyElectricSocketsCount,
+  applyElectricStrobeLength,
+  applyElectricSwitchesCount,
+  applyElectricWarmFloorArea,
+  createManualElectricEstimateLine,
+} from './electrics/apply-electric-quantities'
+export {
+  getDefaultOpenElectricGroupIds,
+  getElectricEstimateGroupTitle,
+  groupElectricEstimateLines,
+  resolveElectricEstimateGroupId,
+} from './electrics/electric-estimate-groups'
+export type {
+  ElectricEstimateGroup,
+  ElectricEstimateGroupId,
+} from './electrics/electric-estimate-groups'
+export {
+  disableElectricConflictingAlternatives,
+  disableElectricConflictingAlternativesInZone,
+  ELECTRIC_CONFLICT_GROUPS,
+  getElectricConflictGroupId,
+} from './electrics/electric-conflict-groups'
+export {
+  applyElectricScenario,
+  applyElectricScenarioToZone,
+  electricInputFromZone,
+  formatElectricScenarioFeedback,
+  formatElectricScenarioLabel,
+  formatElectricScenarioZoneFeedback,
+  resolveElectricScenarioKeys,
+} from './electrics/apply-electric-scenario'
+export type {
+  ApplyElectricScenarioResult,
+  ElectricScenarioApplication,
+  ElectricStateOption,
+} from './electrics/apply-electric-scenario'
+export {
+  createZonedElectricEstimateLine,
+  findElectricMappingItem,
+} from './electrics/create-zoned-electric-estimate-line'
+export type { CreateZonedElectricEstimateLineParams } from './electrics/create-zoned-electric-estimate-line'
+export {
+  ELECTRIC_ZONE_WORK_CATEGORIES,
+  getElectricZoneMappingOptions,
+} from './electrics/electric-zone-catalog'
+export type {
+  ElectricZoneWorkCategory,
+  ElectricZoneWorkCategoryId,
+} from './electrics/electric-zone-catalog'
+export {
+  ELECTRIC_SCENARIO_OPTIONS,
+  formatElectricScenarioZoneMismatchMessage,
+  getElectricScenarioOptionLabel,
+  getElectricScenarioRecommendedZoneTypes,
+  isElectricScenarioAllowedForZone,
+  resolveElectricScenarioOptionsForZone,
+} from './electrics/electric-scenario-options'
+export type { ElectricScenarioOptionMeta } from './electrics/electric-scenario-options'
