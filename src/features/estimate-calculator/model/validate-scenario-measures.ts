@@ -1,6 +1,8 @@
 import type {
   CeilingEstimateInput,
   CeilingScenarioApplication,
+  ElectricEstimateInput,
+  ElectricScenarioApplication,
   EstimateZone,
   FloorEstimateInput,
   FloorPresetApplication,
@@ -10,7 +12,9 @@ import type {
   WallScenarioApplication,
 } from '@/entities/estimate'
 import {
+  formatElectricScenarioZoneMismatchMessage,
   formatTileScenarioZoneMismatchMessage,
+  isElectricScenarioAllowedForZone,
   isTileScenarioAllowedForZone,
 } from '@/entities/estimate'
 
@@ -32,6 +36,9 @@ const CEILING_ZONE = 'В выбранной зоне нет нужных зам�
 const TILE_GENERAL =
   'Заполните замеры раздела перед применением сценария'
 const TILE_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
+const ELECTRIC_GENERAL =
+  'Заполните замеры раздела перед применением сценария'
+const ELECTRIC_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
 
 export function getScenarioMeasuresDisabledHint(forZone: boolean): string {
   return forZone ? SCENARIO_MEASURES_HINT_ZONE : SCENARIO_MEASURES_HINT_GENERAL
@@ -206,6 +213,63 @@ export function validateTileScenarioMeasures(params: {
   }
 }
 
+/** Электрика: проверка счётчиков и совместимости сценария с типом зоны. */
+export function validateElectricScenarioMeasures(params: {
+  application: ElectricScenarioApplication
+  input: ElectricEstimateInput
+  zone?: EstimateZone
+}): ScenarioMeasureCheck {
+  const { application, input, zone } = params
+  const forZone = Boolean(zone)
+
+  const zoneType = zone ? zone.zoneType : null
+  if (!isElectricScenarioAllowedForZone(application.state, zoneType)) {
+    return {
+      ok: false,
+      message: formatElectricScenarioZoneMismatchMessage(application.state),
+    }
+  }
+
+  const fail = (): ScenarioMeasureCheck => ({
+    ok: false,
+    message: forZone ? ELECTRIC_ZONE : ELECTRIC_GENERAL,
+  })
+
+  const sockets = zone ? zone.electricSocketsCount : input.electricSocketsCount
+  const switches = zone ? zone.electricSwitchesCount : input.electricSwitchesCount
+  const lights = zone ? zone.electricLightPointsCount : input.electricLightPointsCount
+  const data = zone ? zone.electricDataPointsCount : input.electricDataPointsCount
+  const strobe = zone ? zone.electricStrobeLength : input.electricStrobeLength
+  const cable = zone ? zone.electricCableLength : input.electricCableLength
+  const boxes = zone ? zone.electricSocketBoxesCount : input.electricSocketBoxesCount
+  const junctions = zone ? zone.electricJunctionBoxesCount : input.electricJunctionBoxesCount
+  const warmFloor = zone ? zone.electricWarmFloorArea : input.electricWarmFloorArea
+  const appliances = zone
+    ? zone.electricApplianceConnectionsCount
+    : input.electricApplianceConnectionsCount
+
+  const pointsAndRoutes = [sockets, switches, lights, data, strobe, cable, boxes, junctions]
+
+  switch (application.state) {
+    case 'demolition-only':
+    case 'panel-only':
+      return { ok: true }
+    case 'lighting-only':
+      return positive(lights) ? { ok: true } : fail()
+    case 'outlets-switches':
+      return anyPositive([sockets, switches]) ? { ok: true } : fail()
+    case 'low-current':
+      return anyPositive([data, cable]) ? { ok: true } : fail()
+    case 'kitchen':
+      return anyPositive([...pointsAndRoutes, appliances]) ? { ok: true } : fail()
+    case 'bathroom':
+      return anyPositive([...pointsAndRoutes, appliances, warmFloor]) ? { ok: true } : fail()
+    case 'room-rewire':
+    case 'apartment-from-scratch':
+      return anyPositive(pointsAndRoutes) ? { ok: true } : fail()
+  }
+}
+
 /** Lightweight wrappers for UI disabled-state (reuse validate*). */
 export function canApplyFloorPreset(params: {
   application: FloorPresetApplication
@@ -237,4 +301,12 @@ export function canApplyTileScenario(params: {
   zone?: EstimateZone
 }): boolean {
   return validateTileScenarioMeasures(params).ok
+}
+
+export function canApplyElectricScenario(params: {
+  application: ElectricScenarioApplication
+  input: ElectricEstimateInput
+  zone?: EstimateZone
+}): boolean {
+  return validateElectricScenarioMeasures(params).ok
 }

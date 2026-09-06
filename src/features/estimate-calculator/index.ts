@@ -13,3 +13,6 @@ export type { CeilingEstimateEditor } from './ceilings/use-ceiling-estimate-edit
 export { TileEstimatePanel } from './tile/TileEstimatePanel'
 export { useTileEstimateEditor } from './tile/use-tile-estimate-editor'
 export type { TileEstimateEditor } from './tile/use-tile-estimate-editor'
+export { ElectricEstimatePanel } from './electrics/ElectricEstimatePanel'
+export { useElectricEstimateEditor } from './electrics/use-electric-estimate-editor'
+export type { ElectricEstimateEditor } from './electrics/use-electric-estimate-editor'

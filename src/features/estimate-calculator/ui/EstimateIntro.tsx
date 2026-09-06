@@ -8,15 +8,18 @@ type EstimateIntroProps = {
   wallsSelectedCount: number
   ceilingsSelectedCount: number
   tileSelectedCount: number
+  electricsSelectedCount: number
   floorsTotalRub: number
   wallsTotalRub: number
   ceilingsTotalRub: number
   tileTotalRub: number
+  electricsTotalRub: number
   grandTotalRub: number
   floorsMappingCount: number
   wallsMappingCount: number
   ceilingsMappingCount: number
   tileMappingCount: number
+  electricsMappingCount: number
 }
 
 export function EstimateIntro({
@@ -24,18 +27,25 @@ export function EstimateIntro({
   wallsSelectedCount,
   ceilingsSelectedCount,
   tileSelectedCount,
+  electricsSelectedCount,
   floorsTotalRub,
   wallsTotalRub,
   ceilingsTotalRub,
   tileTotalRub,
+  electricsTotalRub,
   grandTotalRub,
   floorsMappingCount,
   wallsMappingCount,
   ceilingsMappingCount,
   tileMappingCount,
+  electricsMappingCount,
 }: EstimateIntroProps) {
   const selectedCount =
-    floorsSelectedCount + wallsSelectedCount + ceilingsSelectedCount + tileSelectedCount
+    floorsSelectedCount +
+    wallsSelectedCount +
+    ceilingsSelectedCount +
+    tileSelectedCount +
+    electricsSelectedCount
 
   return (
     <section className={styles.intro} aria-labelledby="estimate-calculator-title">
@@ -43,7 +53,7 @@ export function EstimateIntro({
       <h1 className={styles.title} id="estimate-calculator-title">
         Калькулятор сметы
         <br />
-        <em>полы, стены, потолки и плитка</em>
+        <em>полы, стены, потолки, плитка и электрика</em>
       </h1>
       <p className={styles.lead}>
         Быстрый черновик для сметчика: сценарии подставляют типовой набор, все строки остаются
@@ -56,10 +66,10 @@ export function EstimateIntro({
 
       <dl className={styles.stats}>
         <div>
-          <dt>Позиций (полы / стены / потолки / плитка)</dt>
+          <dt>Позиций (полы / стены / потолки / плитка / электрика)</dt>
           <dd>
             {floorsMappingCount} / {wallsMappingCount} / {ceilingsMappingCount} /{' '}
-            {tileMappingCount}
+            {tileMappingCount} / {electricsMappingCount}
           </dd>
         </div>
         <div>
@@ -113,6 +123,16 @@ export function EstimateIntro({
             <span className={styles.sectionMeta}>
               {formatEstimatePositionCount(tileSelectedCount)} ·{' '}
               {formatPriceValue(tileTotalRub)} ₽
+            </span>
+          </li>
+          <li
+            className={styles.sectionCard}
+            data-active={electricsSelectedCount > 0 ? 'true' : 'false'}
+          >
+            <span className={styles.sectionName}>Электрика</span>
+            <span className={styles.sectionMeta}>
+              {formatEstimatePositionCount(electricsSelectedCount)} ·{' '}
+              {formatPriceValue(electricsTotalRub)} ₽
             </span>
           </li>
         </ul>

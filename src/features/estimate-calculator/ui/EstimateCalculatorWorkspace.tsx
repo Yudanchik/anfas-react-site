@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   attachZonesToSelectedSections,
   buildCeilingEstimateLines,
+  buildElectricEstimateLines,
   buildFloorEstimateLines,
   buildTileEstimateLines,
   buildWallEstimateLines,
@@ -10,16 +11,21 @@ import {
   CEILING_PRICE_MAPPING,
   CEILING_SECTION_ID,
   CEILING_SECTION_TITLE,
+  ELECTRIC_PRICE_MAPPING,
+  ELECTRIC_SECTION_ID,
+  ELECTRIC_SECTION_TITLE,
   FLOOR_PRICE_MAPPING,
   FLOOR_SECTION_ID,
   FLOOR_SECTION_TITLE,
   getCeilingEstimateGroupTitle,
+  getElectricEstimateGroupTitle,
   getFloorEstimateGroupTitle,
   getSelectedEstimateSections,
   getTileEstimateGroupTitle,
   getWallEstimateGroupTitle,
   removeEstimateZone,
   resolveCeilingEstimateGroupId,
+  resolveElectricEstimateGroupId,
   resolveFloorEstimateGroupId,
   resolveTileEstimateGroupId,
   resolveWallEstimateGroupId,
@@ -37,16 +43,20 @@ import {
   buildEstimateCalculatorSnapshot,
   clearEstimateCalculatorSnapshot,
   DEFAULT_CEILING_SCENARIOS,
+  DEFAULT_ELECTRIC_SCENARIOS,
   DEFAULT_FLOOR_PRESETS,
   DEFAULT_TILE_SCENARIOS,
   DEFAULT_WALL_SCENARIOS,
   EMPTY_CEILING_INPUT,
+  EMPTY_ELECTRIC_INPUT,
   EMPTY_FLOOR_INPUT,
   EMPTY_TILE_INPUT,
   EMPTY_WALL_INPUT,
   readEstimateCalculatorSnapshot,
   restoreCeilingEstimateState,
   restoreCeilingScenarioDraft,
+  restoreElectricEstimateState,
+  restoreElectricScenarioDraft,
   restoreEstimateZones,
   restoreFloorEstimateState,
   restoreFloorPresetDraft,
@@ -56,12 +66,15 @@ import {
   restoreWallScenarioDraft,
   writeEstimateCalculatorSnapshot,
   type CeilingScenarioDraftState,
+  type ElectricScenarioDraftState,
   type FloorPresetDraftState,
   type TileScenarioDraftState,
   type WallScenarioDraftState,
 } from '../model/estimate-calculator-persistence'
 import { CeilingEstimatePanel } from '../ceilings/CeilingEstimatePanel'
 import { useCeilingEstimateEditor } from '../ceilings/use-ceiling-estimate-editor'
+import { ElectricEstimatePanel } from '../electrics/ElectricEstimatePanel'
+import { useElectricEstimateEditor } from '../electrics/use-electric-estimate-editor'
 import { FloorEstimatePanel } from '../floors/FloorEstimatePanel'
 import { TileEstimatePanel } from '../tile/TileEstimatePanel'
 import { useTileEstimateEditor } from '../tile/use-tile-estimate-editor'
@@ -81,11 +94,13 @@ export function EstimateCalculatorWorkspace() {
       walls: restoreWallEstimateState(snapshot),
       ceilings: restoreCeilingEstimateState(snapshot),
       tile: restoreTileEstimateState(snapshot),
+      electrics: restoreElectricEstimateState(snapshot),
       zones: restoreEstimateZones(snapshot),
       floorPresets: restoreFloorPresetDraft(snapshot),
       wallScenarios: restoreWallScenarioDraft(snapshot),
       ceilingScenarios: restoreCeilingScenarioDraft(snapshot),
       tileScenarios: restoreTileScenarioDraft(snapshot),
+      electricScenarios: restoreElectricScenarioDraft(snapshot),
       activeTab: (snapshot?.activeTab ?? 'floors') as EstimateTabId,
     }
   })
@@ -104,12 +119,16 @@ export function EstimateCalculatorWorkspace() {
   const [tileScenarioDraft, setTileScenarioDraft] = useState<TileScenarioDraftState>(
     initial.tileScenarios,
   )
+  const [electricScenarioDraft, setElectricScenarioDraft] = useState<ElectricScenarioDraftState>(
+    initial.electricScenarios,
+  )
   const [globalFeedbackEpoch, setGlobalFeedbackEpoch] = useState(0)
 
   const floors = useFloorEstimateEditor(initial.floors)
   const walls = useWallEstimateEditor(initial.walls)
   const ceilings = useCeilingEstimateEditor(initial.ceilings)
   const tile = useTileEstimateEditor(initial.tile)
+  const electrics = useElectricEstimateEditor(initial.electrics)
   const skipFirstPersist = useRef(true)
 
   useEffect(() => {
@@ -130,10 +149,13 @@ export function EstimateCalculatorWorkspace() {
         ceilingsLines: ceilings.lines,
         tileInput: tile.input,
         tileLines: tile.lines,
+        electricInput: electrics.input,
+        electricLines: electrics.lines,
         floorPresets: floorPresetDraft,
         wallScenarios: wallScenarioDraft,
         ceilingScenarios: ceilingScenarioDraft,
         tileScenarios: tileScenarioDraft,
+        electricScenarios: electricScenarioDraft,
       }),
     )
   }, [
@@ -147,10 +169,13 @@ export function EstimateCalculatorWorkspace() {
     ceilings.lines,
     tile.input,
     tile.lines,
+    electrics.input,
+    electrics.lines,
     floorPresetDraft,
     wallScenarioDraft,
     ceilingScenarioDraft,
     tileScenarioDraft,
+    electricScenarioDraft,
   ])
 
   function handleZonesChange(nextZones: EstimateZone[]) {
@@ -162,6 +187,7 @@ export function EstimateCalculatorWorkspace() {
         walls.syncZoneName(zone.id, zone.name)
         ceilings.syncZoneName(zone.id, zone.name)
         tile.syncZoneName(zone.id, zone.name)
+        electrics.syncZoneName(zone.id, zone.name)
       }
     }
     setZones(nextZones)
@@ -172,6 +198,7 @@ export function EstimateCalculatorWorkspace() {
     walls.removeLinesByZoneId(zoneId)
     ceilings.removeLinesByZoneId(zoneId)
     tile.removeLinesByZoneId(zoneId)
+    electrics.removeLinesByZoneId(zoneId)
     setZones((prev) => removeEstimateZone(prev, zoneId))
   }
 
@@ -184,6 +211,7 @@ export function EstimateCalculatorWorkspace() {
     setWallScenarioDraft({ ...DEFAULT_WALL_SCENARIOS })
     setCeilingScenarioDraft({ ...DEFAULT_CEILING_SCENARIOS })
     setTileScenarioDraft({ ...DEFAULT_TILE_SCENARIOS })
+    setElectricScenarioDraft({ ...DEFAULT_ELECTRIC_SCENARIOS })
     floors.replaceEstimate({
       input: { ...EMPTY_FLOOR_INPUT },
       lines: buildFloorEstimateLines(EMPTY_FLOOR_INPUT),
@@ -200,6 +228,10 @@ export function EstimateCalculatorWorkspace() {
       input: { ...EMPTY_TILE_INPUT },
       lines: buildTileEstimateLines(EMPTY_TILE_INPUT),
     })
+    electrics.replaceEstimate({
+      input: { ...EMPTY_ELECTRIC_INPUT },
+      lines: buildElectricEstimateLines(EMPTY_ELECTRIC_INPUT),
+    })
   }
 
   function resetWallsSection() {
@@ -215,6 +247,11 @@ export function EstimateCalculatorWorkspace() {
   function resetTileSection() {
     tile.resetEstimate()
     setTileScenarioDraft({ ...DEFAULT_TILE_SCENARIOS })
+  }
+
+  function resetElectricsSection() {
+    electrics.resetEstimate()
+    setElectricScenarioDraft({ ...DEFAULT_ELECTRIC_SCENARIOS })
   }
 
   const zoneNameById = useMemo(
@@ -251,9 +288,16 @@ export function EstimateCalculatorWorkspace() {
         resolveGroupTitle: (line) =>
           getTileEstimateGroupTitle(resolveTileEstimateGroupId(line)),
       },
+      {
+        sectionId: ELECTRIC_SECTION_ID,
+        sectionTitle: 'Электрика',
+        lines: electrics.lines,
+        resolveGroupTitle: (line) =>
+          getElectricEstimateGroupTitle(resolveElectricEstimateGroupId(line)),
+      },
     ])
     return attachZonesToSelectedSections(sections, zoneNameById)
-  }, [floors.lines, walls.lines, ceilings.lines, tile.lines, zoneNameById])
+  }, [floors.lines, walls.lines, ceilings.lines, tile.lines, electrics.lines, zoneNameById])
 
   const grandTotalRub = useMemo(
     () =>
@@ -262,8 +306,9 @@ export function EstimateCalculatorWorkspace() {
         { id: WALL_SECTION_ID, title: WALL_SECTION_TITLE, lines: walls.lines },
         { id: CEILING_SECTION_ID, title: CEILING_SECTION_TITLE, lines: ceilings.lines },
         { id: TILE_SECTION_ID, title: TILE_SECTION_TITLE, lines: tile.lines },
+        { id: ELECTRIC_SECTION_ID, title: ELECTRIC_SECTION_TITLE, lines: electrics.lines },
       ]),
-    [floors.lines, walls.lines, ceilings.lines, tile.lines],
+    [floors.lines, walls.lines, ceilings.lines, tile.lines, electrics.lines],
   )
 
   return (
@@ -274,15 +319,18 @@ export function EstimateCalculatorWorkspace() {
           wallsSelectedCount={walls.selectedCount}
           ceilingsSelectedCount={ceilings.selectedCount}
           tileSelectedCount={tile.selectedCount}
+          electricsSelectedCount={electrics.selectedCount}
           floorsTotalRub={floors.totalRub}
           wallsTotalRub={walls.totalRub}
           ceilingsTotalRub={ceilings.totalRub}
           tileTotalRub={tile.totalRub}
+          electricsTotalRub={electrics.totalRub}
           grandTotalRub={grandTotalRub}
           floorsMappingCount={FLOOR_PRICE_MAPPING.length}
           wallsMappingCount={WALL_PRICE_MAPPING.length}
           ceilingsMappingCount={CEILING_PRICE_MAPPING.length}
           tileMappingCount={TILE_PRICE_MAPPING.length}
+          electricsMappingCount={ELECTRIC_PRICE_MAPPING.length}
         />
         <EstimateTabs activeTab={activeTab} onChange={setActiveTab} />
       </div>
@@ -363,6 +411,26 @@ export function EstimateCalculatorWorkspace() {
             setTileScenarioDraft((prev) => ({ ...prev, ...patch }))
           }
           onResetSection={resetTileSection}
+          globalFeedbackEpoch={globalFeedbackEpoch}
+        />
+      </div>
+
+      <div
+        id="estimate-panel-electrics"
+        role="tabpanel"
+        aria-labelledby="estimate-tab-electrics"
+        hidden={activeTab !== 'electrics'}
+      >
+        <ElectricEstimatePanel
+          editor={electrics}
+          zones={zones}
+          onZonesChange={handleZonesChange}
+          onDeleteZone={handleDeleteZone}
+          scenarioDraft={electricScenarioDraft}
+          onScenarioDraftChange={(patch) =>
+            setElectricScenarioDraft((prev) => ({ ...prev, ...patch }))
+          }
+          onResetSection={resetElectricsSection}
           globalFeedbackEpoch={globalFeedbackEpoch}
         />
       </div>

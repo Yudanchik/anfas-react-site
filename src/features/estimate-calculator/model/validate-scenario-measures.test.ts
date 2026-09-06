@@ -5,6 +5,7 @@ import { createEstimateZone } from '@/entities/estimate'
 
 import {
   canApplyCeilingScenario,
+  canApplyElectricScenario,
   canApplyFloorPreset,
   canApplyTileScenario,
   canApplyWallScenario,
@@ -12,6 +13,7 @@ import {
   SCENARIO_MEASURES_HINT_GENERAL,
   SCENARIO_MEASURES_HINT_ZONE,
   validateCeilingScenarioMeasures,
+  validateElectricScenarioMeasures,
   validateFloorPresetMeasures,
   validateTileScenarioMeasures,
   validateWallScenarioMeasures,
@@ -323,5 +325,71 @@ describe('validateTileScenarioMeasures', () => {
       }),
       false,
     )
+  })
+})
+
+const emptyElectricInput = {
+  electricSocketsCount: 0,
+  electricSwitchesCount: 0,
+  electricLightPointsCount: 0,
+  electricDataPointsCount: 0,
+  electricStrobeLength: 0,
+  electricCableLength: 0,
+  electricSocketBoxesCount: 0,
+  electricJunctionBoxesCount: 0,
+  electricPanelModulesCount: 0,
+  electricWarmFloorArea: 0,
+  electricApplianceConnectionsCount: 0,
+  surveyorComment: '',
+}
+
+describe('validateElectricScenarioMeasures', () => {
+  it('rejects outlets-switches with zero counters', () => {
+    const result = validateElectricScenarioMeasures({
+      application: { state: 'outlets-switches' },
+      input: emptyElectricInput,
+    })
+    assert.equal(result.ok, false)
+  })
+
+  it('accepts lighting-only when light points are set', () => {
+    const result = validateElectricScenarioMeasures({
+      application: { state: 'lighting-only' },
+      input: { ...emptyElectricInput, electricLightPointsCount: 6 },
+    })
+    assert.equal(result.ok, true)
+  })
+
+  it('allows panel-only and demolition-only without counters', () => {
+    assert.equal(
+      canApplyElectricScenario({
+        application: { state: 'panel-only' },
+        input: emptyElectricInput,
+      }),
+      true,
+    )
+    assert.equal(
+      canApplyElectricScenario({
+        application: { state: 'demolition-only' },
+        input: emptyElectricInput,
+      }),
+      true,
+    )
+  })
+
+  it('blocks kitchen scenario for bathroom zone even with measures', () => {
+    const bathroomZone = createEstimateZone({
+      name: 'Санузел',
+      fields: { zoneType: 'bathroom', electricSocketsCount: 4 },
+    })
+    const result = validateElectricScenarioMeasures({
+      application: { state: 'kitchen' },
+      input: { ...emptyElectricInput, electricSocketsCount: 4 },
+      zone: bathroomZone,
+    })
+    assert.equal(result.ok, false)
+    if (!result.ok) {
+      assert.match(result.message, /кухни/)
+    }
   })
 })
