@@ -55,17 +55,31 @@ export {
 export type { CreateZonedEstimateLineParams } from './shared/estimate-zoned-line'
 export {
   createEstimateZone,
-  ESTIMATE_ZONE_NAME_TEMPLATES,
   EMPTY_ESTIMATE_ZONE_FIELDS,
+  ESTIMATE_ZONE_NAME_TEMPLATES,
+  ESTIMATE_ZONE_TEMPLATES,
+  ESTIMATE_ZONE_TYPE_LABELS,
+  ESTIMATE_ZONE_TYPE_OPTIONS,
   isEstimateZoneId,
+  isEstimateZoneType,
   lineBelongsToZone,
+  normalizeEstimateZoneType,
   noteEstimateZoneIds,
   removeEstimateLinesByZoneId,
   removeEstimateZone,
   syncEstimateLineZoneNames,
   updateEstimateZone,
 } from './shared/estimate-zone'
-export type { EstimateZone, EstimateZoneId } from './shared/estimate-zone'
+export type { EstimateZone, EstimateZoneId, EstimateZoneType } from './shared/estimate-zone'
+export {
+  partitionScenariosByZoneType,
+  scenarioMatchesZoneType,
+} from './shared/estimate-zone-scenario-filter'
+export type {
+  PartitionScenariosByZoneResult,
+  ScenarioWithZoneTypes,
+  ScenarioZoneScope,
+} from './shared/estimate-zone-scenario-filter'
 export {
   attachZonesToSelectedSections,
   calculateSelectedSectionsGrandTotal,
@@ -376,3 +390,9 @@ export type {
   TileZoneWorkCategory,
   TileZoneWorkCategoryId,
 } from './tile/tile-zone-catalog'
+export {
+  getTileScenarioRecommendedZoneTypes,
+  resolveTileScenarioOptionsForZone,
+  TILE_SCENARIO_OPTIONS,
+} from './tile/tile-scenario-options'
+export type { TileScenarioOptionMeta } from './tile/tile-scenario-options'

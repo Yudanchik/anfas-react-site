@@ -49,12 +49,12 @@ describe('tile estimate domain', () => {
     assert.doesNotThrow(() => assertTileMappingMatchesFrontend())
   })
 
-  it('uses PDF 1300 for wall tile demolition (not both/FE 900)', () => {
+  it('uses PDF/FE 900 for wall tile demolition (source=both)', () => {
     const wallDemo = TILE_PRICE_MAPPING.find((item) => item.id === 'demolition-wall-tile')
     assert.ok(wallDemo)
-    assert.equal(wallDemo.source, 'pdf')
-    assert.equal(wallDemo.unitPrice, 1300)
-    assert.match(wallDemo.note ?? '', /FE.*900/)
+    assert.equal(wallDemo.source, 'both')
+    assert.equal(wallDemo.unitPrice, 900)
+    assert.equal(wallDemo.unit, 'м²')
   })
 
   it('excludes hydro/svp/membrane/profile keys from mapping', () => {

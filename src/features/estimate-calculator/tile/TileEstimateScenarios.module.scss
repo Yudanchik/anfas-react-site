@@ -116,6 +116,25 @@
   color: color-mix(in srgb, var(--ink) 58%, transparent);
 }
 
+.showAllBtn {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  color: var(--amber-deep, #8a5a00);
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ink);
+  }
+}
+
 .action {
   @include eu.button-primary;
 

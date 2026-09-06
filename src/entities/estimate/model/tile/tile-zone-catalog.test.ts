@@ -38,6 +38,6 @@ describe('tile zone work catalog', () => {
     assert.ok(line)
     assert.equal(line?.zoneId, 'zone-1')
     assert.equal(line?.zoneName, 'Санузел')
-    assert.equal(line?.unitPrice, 1300)
+    assert.equal(line?.unitPrice, 900)
   })
 })

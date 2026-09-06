@@ -42,10 +42,11 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 ### Плитка: пересечения и SoT
 
 - PDF `anfas-price-list.pdf` — source of truth для `TILE_PRICE_MAPPING`.
-- `source: both` только при совпадении цены и единицы с frontend preview.
-- Известное расхождение: демонтаж стеновой плитки — **PDF 1300** (в Tile), FE/Walls — 900 (Walls не меняем).
+- `source: both` только при совпадении цены и единицы с frontend preview **и** PDF.
+- Демонтаж стеновой плитки: PDF/FE/Walls/Tile = **900** ₽/м² (`source: both`). Ранее ошибочно фиксировали 1300 из плохого extract PDF.
 - Гидроизоляция **не** в Tile mapping; канон — Floors.
 - Floors/Walls tile-related keys **не удаляем**; Tile имеет собственные `priceKey`.
+- Soft-filter сценариев по `EstimateZone.zoneType` (helper `partitionScenariosByZoneType`) — сначала Tile.
 
 ## UI
 

@@ -91,6 +91,7 @@ describe('validateFloorPresetMeasures', () => {
       zone: {
         id: 'zone-1',
         name: 'Санузел',
+        zoneType: 'other' as const,
         floorArea: 4,
         demolitionFloorArea: 0,
         screedArea: 0,
@@ -200,6 +201,7 @@ describe('validateCeilingScenarioMeasures', () => {
       zone: {
         id: 'zone-2',
         name: 'Кухня',
+        zoneType: 'other' as const,
         floorArea: 10,
         demolitionFloorArea: 0,
         screedArea: 0,
@@ -280,6 +282,7 @@ describe('canApply helpers and disabled hints', () => {
     const emptyZone = {
       id: 'zone-3',
       name: 'Комната',
+        zoneType: 'other' as const,
       floorArea: 0,
       demolitionFloorArea: 0,
       screedArea: 0,

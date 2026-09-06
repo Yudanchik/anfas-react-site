@@ -1,14 +1,18 @@
 import { normalizeNonNegative } from './calculate-line-total'
 
 /**
- * Зона объекта: именованное помещение с площадями для сценариев floors/walls.
+ * Зона объекта: именованное помещение с площадями для сценариев floors/walls/ceilings/tile.
  * Не путать с id zoned clone lines (`floors:zone-N`) — здесь сущность `zone-N`.
  */
 export type EstimateZoneId = string
 
+/** Тип помещения для мягкой фильтрации сценариев (не блокирует ручной выбор). */
+export type EstimateZoneType = 'kitchen' | 'bathroom' | 'room' | 'corridor' | 'other'
+
 export type EstimateZone = {
   id: EstimateZoneId
   name: string
+  zoneType: EstimateZoneType
   floorArea: number
   demolitionFloorArea: number
   screedArea: number
@@ -35,14 +39,43 @@ export type EstimateZone = {
   comment?: string
 }
 
-export const ESTIMATE_ZONE_NAME_TEMPLATES = [
-  'Кухня',
-  'Коридор',
-  'Санузел',
-  'Комната',
+export const ESTIMATE_ZONE_TYPE_LABELS: Readonly<Record<EstimateZoneType, string>> = {
+  kitchen: 'Кухня',
+  bathroom: 'Санузел',
+  room: 'Комната',
+  corridor: 'Коридор',
+  other: 'Другое',
+}
+
+export const ESTIMATE_ZONE_TYPE_OPTIONS: ReadonlyArray<{
+  value: EstimateZoneType
+  label: string
+}> = [
+  { value: 'kitchen', label: ESTIMATE_ZONE_TYPE_LABELS.kitchen },
+  { value: 'bathroom', label: ESTIMATE_ZONE_TYPE_LABELS.bathroom },
+  { value: 'room', label: ESTIMATE_ZONE_TYPE_LABELS.room },
+  { value: 'corridor', label: ESTIMATE_ZONE_TYPE_LABELS.corridor },
+  { value: 'other', label: ESTIMATE_ZONE_TYPE_LABELS.other },
+]
+
+/** Быстрые шаблоны зон: имя + тип. */
+export const ESTIMATE_ZONE_TEMPLATES: ReadonlyArray<{
+  name: string
+  zoneType: EstimateZoneType
+}> = [
+  { name: 'Кухня', zoneType: 'kitchen' },
+  { name: 'Коридор', zoneType: 'corridor' },
+  { name: 'Санузел', zoneType: 'bathroom' },
+  { name: 'Комната', zoneType: 'room' },
 ] as const
 
+/** @deprecated Используйте `ESTIMATE_ZONE_TEMPLATES`. */
+export const ESTIMATE_ZONE_NAME_TEMPLATES = ESTIMATE_ZONE_TEMPLATES.map(
+  (template) => template.name,
+) as readonly string[]
+
 export const EMPTY_ESTIMATE_ZONE_FIELDS: Omit<EstimateZone, 'id' | 'name'> = {
+  zoneType: 'other',
   floorArea: 0,
   demolitionFloorArea: 0,
   screedArea: 0,
@@ -70,11 +103,26 @@ export const EMPTY_ESTIMATE_ZONE_FIELDS: Omit<EstimateZone, 'id' | 'name'> = {
 }
 
 const ZONE_ENTITY_ID_PATTERN = /^zone-(\d+)$/
+const ZONE_TYPES = new Set<EstimateZoneType>([
+  'kitchen',
+  'bathroom',
+  'room',
+  'corridor',
+  'other',
+])
 
 let zoneEntityCounter = 0
 
 export function isEstimateZoneId(value: string): boolean {
   return ZONE_ENTITY_ID_PATTERN.test(value)
+}
+
+export function isEstimateZoneType(value: unknown): value is EstimateZoneType {
+  return typeof value === 'string' && ZONE_TYPES.has(value as EstimateZoneType)
+}
+
+export function normalizeEstimateZoneType(value: unknown): EstimateZoneType {
+  return isEstimateZoneType(value) ? value : 'other'
 }
 
 /** Сдвигает счётчик после hydrate из localStorage. */
@@ -98,6 +146,7 @@ export function createEstimateZone(params: {
   return {
     id: `zone-${zoneEntityCounter}`,
     name: params.name.trim(),
+    zoneType: normalizeEstimateZoneType(fields.zoneType),
     floorArea: normalizeNonNegative(fields.floorArea ?? 0),
     demolitionFloorArea: normalizeNonNegative(fields.demolitionFloorArea ?? 0),
     screedArea: normalizeNonNegative(fields.screedArea ?? 0),
@@ -135,6 +184,10 @@ export function updateEstimateZone(
     return {
       ...zone,
       name: patch.name === undefined ? zone.name : patch.name.trim() || zone.name,
+      zoneType:
+        patch.zoneType === undefined
+          ? zone.zoneType
+          : normalizeEstimateZoneType(patch.zoneType),
       floorArea:
         patch.floorArea === undefined ? zone.floorArea : normalizeNonNegative(patch.floorArea),
       demolitionFloorArea:

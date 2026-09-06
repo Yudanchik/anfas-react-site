@@ -8,6 +8,7 @@ import {
   findTileMappingItem,
   findWallMappingItem,
   isZonedEstimateLine,
+  normalizeEstimateZoneType,
   noteEstimateZoneIds,
   noteManualLineIds,
   noteZonedLineIds,
@@ -268,6 +269,7 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
   return {
     id,
     name,
+    zoneType: normalizeEstimateZoneType(raw.zoneType),
     floorArea: asNonNegative(raw.floorArea),
     demolitionFloorArea: asNonNegative(
       raw.demolitionFloorArea ?? raw.demolitionArea,
@@ -492,6 +494,7 @@ export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
   return {
     id: zone.id,
     name: zone.name,
+    zoneType: zone.zoneType,
     floorArea: zone.floorArea,
     demolitionFloorArea: zone.demolitionFloorArea,
     screedArea: zone.screedArea,

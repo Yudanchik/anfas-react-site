@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import {
   ESTIMATE_GENERAL_WORKS_TITLE,
   formatTileScenarioFeedback,
   formatTileScenarioLabel,
   formatTileScenarioZoneFeedback,
+  resolveTileScenarioOptionsForZone,
   type EstimateZone,
   type TileCladFormatOption,
   type TileDemolitionSurfacesOption,
@@ -41,20 +42,6 @@ type TileEstimateScenariosProps = {
 }
 
 const GENERAL_TARGET = 'general'
-
-const STATE_OPTIONS: ReadonlyArray<{ value: TileStateOption; label: string }> = [
-  { value: 'bathroom-from-scratch', label: 'Санузел с нуля' },
-  {
-    value: 'bathroom-replacement',
-    label: 'Замена плитки в санузле (демонтаж плитки)',
-  },
-  { value: 'floor-only', label: 'Плитка на пол' },
-  { value: 'walls-only', label: 'Плитка на стены' },
-  { value: 'kitchen-backsplash', label: 'Кухонный фартук' },
-  { value: 'large-format', label: 'Крупный формат' },
-  { value: 'demolition-only', label: 'Только демонтаж плитки' },
-  { value: 'grout-repair-only', label: 'Только затирка / ремонт' },
-]
 
 const CLAD_FORMAT_OPTIONS: ReadonlyArray<{ value: TileCladFormatOption; label: string }> = [
   { value: '301-1300', label: '301–1300' },
@@ -115,6 +102,7 @@ export function TileEstimateScenarios({
 }: TileEstimateScenariosProps) {
   const { state, cladFormat, grout, demolitionSurfaces } = draft
   const [targetId, setTargetId] = useState(GENERAL_TARGET)
+  const [showAllScenarios, setShowAllScenarios] = useState(false)
   const { status, setSuccess, setError } = useEstimateStatusMessage({
     clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
   })
@@ -134,9 +122,42 @@ export function TileEstimateScenarios({
     ? targetId
     : GENERAL_TARGET
   const selectedZone = zones.find((zone) => zone.id === resolvedTargetId)
+  const filterZoneType = selectedZone ? selectedZone.zoneType : null
+
+  const { primary, other } = useMemo(
+    () => resolveTileScenarioOptionsForZone(filterZoneType, showAllScenarios),
+    [filterZoneType, showAllScenarios],
+  )
+
+  const stateOptions = useMemo(
+    () => primary.map((option) => ({ value: option.id, label: option.label })),
+    [primary],
+  )
+
+  const visibleStateIds = useMemo(
+    () => new Set(stateOptions.map((option) => option.value)),
+    [stateOptions],
+  )
+
+  useEffect(() => {
+    if (showAllScenarios || visibleStateIds.has(state)) return
+    const fallback = primary[0]?.id
+    if (!fallback || fallback === state) return
+    const patch: Partial<TileScenarioDraftState> = { state: fallback }
+    if (fallback === 'large-format' && cladFormat === '301-1300') {
+      patch.cladFormat = '1701-3600'
+    }
+    onDraftChange(patch)
+  }, [visibleStateIds, state, primary, showAllScenarios, cladFormat, onDraftChange])
+
+  useEffect(() => {
+    if (filterZoneType === null || filterZoneType === 'other') {
+      setShowAllScenarios(false)
+    }
+  }, [filterZoneType])
 
   const application: TileScenarioApplication = {
-    state,
+    state: visibleStateIds.has(state) ? state : (primary[0]?.id ?? state),
     cladFormat: showClad ? cladFormat : undefined,
     grout: showGrout ? grout : undefined,
     demolitionSurfaces: showDemoSurfaces ? demolitionSurfaces : undefined,
@@ -152,6 +173,9 @@ export function TileEstimateScenarios({
     : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
 
   const previewLabel = formatTileScenarioLabel(application)
+  const hasOtherScenarios = !showAllScenarios && other.length > 0
+  const canCollapseToRecommended =
+    showAllScenarios && filterZoneType !== null && filterZoneType !== 'other'
 
   function handleApply() {
     const check = validateTileScenarioMeasures({
@@ -193,7 +217,10 @@ export function TileEstimateScenarios({
           value={resolvedTargetId}
           options={targetOptions}
           ariaLabel="Применить сценарий плитки к"
-          onChange={setTargetId}
+          onChange={(next) => {
+            setTargetId(next)
+            setShowAllScenarios(false)
+          }}
         />
       </div>
 
@@ -207,8 +234,8 @@ export function TileEstimateScenarios({
           <div className={styles.field}>
             <span>Сценарий</span>
             <EstimateSelect
-              value={state}
-              options={STATE_OPTIONS}
+              value={application.state}
+              options={stateOptions}
               ariaLabel="Сценарий плитки"
               onChange={(nextValue) => {
                 const next = nextValue as TileStateOption
@@ -220,6 +247,26 @@ export function TileEstimateScenarios({
               }}
             />
           </div>
+
+          {hasOtherScenarios ? (
+            <button
+              type="button"
+              className={styles.showAllBtn}
+              onClick={() => setShowAllScenarios(true)}
+            >
+              Показать все сценарии ({other.length})
+            </button>
+          ) : null}
+
+          {canCollapseToRecommended ? (
+            <button
+              type="button"
+              className={styles.showAllBtn}
+              onClick={() => setShowAllScenarios(false)}
+            >
+              Только подходящие к типу зоны
+            </button>
+          ) : null}
 
           {showClad ? (
             <div className={styles.field}>

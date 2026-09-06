@@ -2,10 +2,12 @@ import { useState } from 'react'
 
 import {
   createEstimateZone,
-  ESTIMATE_ZONE_NAME_TEMPLATES,
+  ESTIMATE_ZONE_TEMPLATES,
+  ESTIMATE_ZONE_TYPE_OPTIONS,
   updateEstimateZone,
   type CeilingEstimateInput,
   type EstimateZone,
+  type EstimateZoneType,
   type FloorEstimateInput,
   type TileEstimateInput,
   type WallEstimateInput,
@@ -15,6 +17,7 @@ import { validateEstimateZoneName } from '../model/estimate-zone-name'
 import { EstimateClearableInput } from './EstimateClearableInput'
 import { EstimateConfirmDialog } from './EstimateConfirmDialog'
 import { EstimateNumberInput } from './EstimateNumberInput'
+import { EstimateSelect } from './EstimateSelect'
 import styles from './EstimateZonesAndMeasures.module.scss'
 
 type EstimateZonesAndMeasuresProps =
@@ -149,13 +152,16 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
   const [error, setError] = useState<string | null>(null)
   const [pendingDelete, setPendingDelete] = useState<EstimateZone | null>(null)
 
-  function addZone(name: string) {
+  function addZone(name: string, zoneType: EstimateZoneType = 'other') {
     const validated = validateEstimateZoneName(name)
     if (!validated.ok) {
       setError(validated.message)
       return
     }
-    const zone = createEstimateZone({ name: validated.value })
+    const zone = createEstimateZone({
+      name: validated.value,
+      fields: { zoneType },
+    })
     onZonesChange([...zones, zone])
     setDraftName('')
     setError(null)
@@ -273,6 +279,17 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                     savedName={zone.name}
                     onCommit={(name) => patchZone(zone.id, { name })}
                   />
+                  <label className={styles.field}>
+                    <span className={styles.label}>Тип зоны</span>
+                    <EstimateSelect
+                      value={zone.zoneType}
+                      options={ESTIMATE_ZONE_TYPE_OPTIONS}
+                      ariaLabel={`Тип зоны ${zone.name}`}
+                      onChange={(next) =>
+                        patchZone(zone.id, { zoneType: next as EstimateZoneType })
+                      }
+                    />
+                  </label>
                   {section === 'floors' ? (
                     <FloorZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
                   ) : section === 'walls' ? (
@@ -300,14 +317,14 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
 
       <div className={styles.addBlock}>
         <div className={styles.templates}>
-          {ESTIMATE_ZONE_NAME_TEMPLATES.map((name) => (
+          {ESTIMATE_ZONE_TEMPLATES.map((template) => (
             <button
-              key={name}
+              key={template.name}
               type="button"
               className={styles.template}
-              onClick={() => addZone(name)}
+              onClick={() => addZone(template.name, template.zoneType)}
             >
-              {name}
+              {template.name}
             </button>
           ))}
         </div>

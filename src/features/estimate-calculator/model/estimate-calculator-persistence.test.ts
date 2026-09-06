@@ -105,6 +105,7 @@ describe('estimate calculator persistence', () => {
         {
           id: 'zone-1',
           name: 'Кухня',
+          zoneType: 'kitchen',
           floorArea: 12,
           demolitionFloorArea: 12,
           screedArea: 12,
@@ -374,6 +375,24 @@ describe('estimate calculator persistence', () => {
     assert.equal(ceilingPaint.comment, 'ok')
   })
 
+  it('defaults missing zoneType to other when restoring zones', () => {
+    const parsed = parseEstimateCalculatorSnapshot({
+      version: 2,
+      activeTab: 'floors',
+      zones: [{ id: 'zone-2', name: 'Старая зона', floorArea: 10 }],
+      floors: {
+        input: restoreFloorEstimateState(null).input,
+        lines: [],
+      },
+      walls: {
+        input: restoreWallEstimateState(null).input,
+        lines: [],
+      },
+    })
+    assert.ok(parsed)
+    assert.equal(parsed.zones[0]?.zoneType, 'other')
+  })
+
   it('parses a v2 snapshot without tile and restores empty tile', () => {
     const v2NoTile = {
       version: 2,
@@ -434,6 +453,7 @@ describe('estimate calculator persistence', () => {
         {
           id: 'zone-9',
           name: 'Санузел',
+          zoneType: 'bathroom',
           floorArea: 0,
           demolitionFloorArea: 0,
           screedArea: 0,
@@ -492,6 +512,7 @@ describe('estimate calculator persistence', () => {
     assert.equal(parsed.zones[0]?.tileFloorArea, 7)
     assert.equal(parsed.zones[0]?.tileWallArea, 21)
     assert.equal(parsed.zones[0]?.tileHolesCount, 3)
+    assert.equal(parsed.zones[0]?.zoneType, 'bathroom')
     assert.equal(parsed.tileScenarios?.cladFormat, '301-1300')
 
     const tile = restoreTileEstimateState(parsed)
