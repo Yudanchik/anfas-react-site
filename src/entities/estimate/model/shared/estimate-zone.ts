@@ -1,7 +1,7 @@
 import { normalizeNonNegative } from './calculate-line-total'
 
 /**
- * Зона объекта: именованное помещение с площадями для сценариев floors/walls/ceilings/tile/electrics.
+ * Зона объекта: именованное помещение с площадями для сценариев floors/walls/ceilings/tile/electrics/plumbing.
  * Не путать с id zoned clone lines (`floors:zone-N`) — здесь сущность `zone-N`.
  */
 export type EstimateZoneId = string
@@ -47,6 +47,23 @@ export type EstimateZone = {
   electricPanelModulesCount: number
   electricWarmFloorArea: number
   electricApplianceConnectionsCount: number
+  plumbingWaterPointsCount: number
+  plumbingSewerPointsCount: number
+  plumbingWaterPipeLength: number
+  plumbingSewerPipeLength: number
+  plumbingCollectorsCount: number
+  plumbingToiletsCount: number
+  plumbingSinksCount: number
+  plumbingBathtubsCount: number
+  plumbingShowersCount: number
+  plumbingMixersCount: number
+  plumbingInstallationsCount: number
+  plumbingDrainsCount: number
+  plumbingWasherConnectionsCount: number
+  plumbingDishwasherConnectionsCount: number
+  plumbingWaterHeatersCount: number
+  plumbingTowelWarmersCount: number
+  plumbingWarmFloorArea: number
   comment?: string
 }
 
@@ -121,6 +138,23 @@ export const EMPTY_ESTIMATE_ZONE_FIELDS: Omit<EstimateZone, 'id' | 'name'> = {
   electricPanelModulesCount: 0,
   electricWarmFloorArea: 0,
   electricApplianceConnectionsCount: 0,
+  plumbingWaterPointsCount: 0,
+  plumbingSewerPointsCount: 0,
+  plumbingWaterPipeLength: 0,
+  plumbingSewerPipeLength: 0,
+  plumbingCollectorsCount: 0,
+  plumbingToiletsCount: 0,
+  plumbingSinksCount: 0,
+  plumbingBathtubsCount: 0,
+  plumbingShowersCount: 0,
+  plumbingMixersCount: 0,
+  plumbingInstallationsCount: 0,
+  plumbingDrainsCount: 0,
+  plumbingWasherConnectionsCount: 0,
+  plumbingDishwasherConnectionsCount: 0,
+  plumbingWaterHeatersCount: 0,
+  plumbingTowelWarmersCount: 0,
+  plumbingWarmFloorArea: 0,
   comment: undefined,
 }
 
@@ -254,6 +288,27 @@ export function createEstimateZone(params: {
     electricApplianceConnectionsCount: normalizeNonNegative(
       fields.electricApplianceConnectionsCount ?? 0,
     ),
+    plumbingWaterPointsCount: normalizeNonNegative(fields.plumbingWaterPointsCount ?? 0),
+    plumbingSewerPointsCount: normalizeNonNegative(fields.plumbingSewerPointsCount ?? 0),
+    plumbingWaterPipeLength: normalizeNonNegative(fields.plumbingWaterPipeLength ?? 0),
+    plumbingSewerPipeLength: normalizeNonNegative(fields.plumbingSewerPipeLength ?? 0),
+    plumbingCollectorsCount: normalizeNonNegative(fields.plumbingCollectorsCount ?? 0),
+    plumbingToiletsCount: normalizeNonNegative(fields.plumbingToiletsCount ?? 0),
+    plumbingSinksCount: normalizeNonNegative(fields.plumbingSinksCount ?? 0),
+    plumbingBathtubsCount: normalizeNonNegative(fields.plumbingBathtubsCount ?? 0),
+    plumbingShowersCount: normalizeNonNegative(fields.plumbingShowersCount ?? 0),
+    plumbingMixersCount: normalizeNonNegative(fields.plumbingMixersCount ?? 0),
+    plumbingInstallationsCount: normalizeNonNegative(fields.plumbingInstallationsCount ?? 0),
+    plumbingDrainsCount: normalizeNonNegative(fields.plumbingDrainsCount ?? 0),
+    plumbingWasherConnectionsCount: normalizeNonNegative(
+      fields.plumbingWasherConnectionsCount ?? 0,
+    ),
+    plumbingDishwasherConnectionsCount: normalizeNonNegative(
+      fields.plumbingDishwasherConnectionsCount ?? 0,
+    ),
+    plumbingWaterHeatersCount: normalizeNonNegative(fields.plumbingWaterHeatersCount ?? 0),
+    plumbingTowelWarmersCount: normalizeNonNegative(fields.plumbingTowelWarmersCount ?? 0),
+    plumbingWarmFloorArea: normalizeNonNegative(fields.plumbingWarmFloorArea ?? 0),
     comment: fields.comment?.trim() || undefined,
   }
 }
@@ -399,6 +454,74 @@ export function updateEstimateZone(
         patch.electricApplianceConnectionsCount === undefined
           ? zone.electricApplianceConnectionsCount
           : normalizeNonNegative(patch.electricApplianceConnectionsCount),
+      plumbingWaterPointsCount:
+        patch.plumbingWaterPointsCount === undefined
+          ? zone.plumbingWaterPointsCount
+          : normalizeNonNegative(patch.plumbingWaterPointsCount),
+      plumbingSewerPointsCount:
+        patch.plumbingSewerPointsCount === undefined
+          ? zone.plumbingSewerPointsCount
+          : normalizeNonNegative(patch.plumbingSewerPointsCount),
+      plumbingWaterPipeLength:
+        patch.plumbingWaterPipeLength === undefined
+          ? zone.plumbingWaterPipeLength
+          : normalizeNonNegative(patch.plumbingWaterPipeLength),
+      plumbingSewerPipeLength:
+        patch.plumbingSewerPipeLength === undefined
+          ? zone.plumbingSewerPipeLength
+          : normalizeNonNegative(patch.plumbingSewerPipeLength),
+      plumbingCollectorsCount:
+        patch.plumbingCollectorsCount === undefined
+          ? zone.plumbingCollectorsCount
+          : normalizeNonNegative(patch.plumbingCollectorsCount),
+      plumbingToiletsCount:
+        patch.plumbingToiletsCount === undefined
+          ? zone.plumbingToiletsCount
+          : normalizeNonNegative(patch.plumbingToiletsCount),
+      plumbingSinksCount:
+        patch.plumbingSinksCount === undefined
+          ? zone.plumbingSinksCount
+          : normalizeNonNegative(patch.plumbingSinksCount),
+      plumbingBathtubsCount:
+        patch.plumbingBathtubsCount === undefined
+          ? zone.plumbingBathtubsCount
+          : normalizeNonNegative(patch.plumbingBathtubsCount),
+      plumbingShowersCount:
+        patch.plumbingShowersCount === undefined
+          ? zone.plumbingShowersCount
+          : normalizeNonNegative(patch.plumbingShowersCount),
+      plumbingMixersCount:
+        patch.plumbingMixersCount === undefined
+          ? zone.plumbingMixersCount
+          : normalizeNonNegative(patch.plumbingMixersCount),
+      plumbingInstallationsCount:
+        patch.plumbingInstallationsCount === undefined
+          ? zone.plumbingInstallationsCount
+          : normalizeNonNegative(patch.plumbingInstallationsCount),
+      plumbingDrainsCount:
+        patch.plumbingDrainsCount === undefined
+          ? zone.plumbingDrainsCount
+          : normalizeNonNegative(patch.plumbingDrainsCount),
+      plumbingWasherConnectionsCount:
+        patch.plumbingWasherConnectionsCount === undefined
+          ? zone.plumbingWasherConnectionsCount
+          : normalizeNonNegative(patch.plumbingWasherConnectionsCount),
+      plumbingDishwasherConnectionsCount:
+        patch.plumbingDishwasherConnectionsCount === undefined
+          ? zone.plumbingDishwasherConnectionsCount
+          : normalizeNonNegative(patch.plumbingDishwasherConnectionsCount),
+      plumbingWaterHeatersCount:
+        patch.plumbingWaterHeatersCount === undefined
+          ? zone.plumbingWaterHeatersCount
+          : normalizeNonNegative(patch.plumbingWaterHeatersCount),
+      plumbingTowelWarmersCount:
+        patch.plumbingTowelWarmersCount === undefined
+          ? zone.plumbingTowelWarmersCount
+          : normalizeNonNegative(patch.plumbingTowelWarmersCount),
+      plumbingWarmFloorArea:
+        patch.plumbingWarmFloorArea === undefined
+          ? zone.plumbingWarmFloorArea
+          : normalizeNonNegative(patch.plumbingWarmFloorArea),
       comment:
         patch.comment === undefined ? zone.comment : patch.comment.trim() || undefined,
     }

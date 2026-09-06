@@ -9,6 +9,11 @@ export type {
   ElectricPriceMappingItem,
   ElectricQuantityField,
   ElectricWorkKind,
+  PlumbingEstimateInput,
+  PlumbingEstimateResult,
+  PlumbingPriceMappingItem,
+  PlumbingQuantityField,
+  PlumbingWorkKind,
   EstimateLine,
   EstimatePriceSource,
   EstimateSection,
@@ -484,3 +489,80 @@ export {
   resolveElectricScenarioOptionsForZone,
 } from './electrics/electric-scenario-options'
 export type { ElectricScenarioOptionMeta } from './electrics/electric-scenario-options'
+
+export {
+  PLUMBING_PRICE_MAPPING,
+  PLUMBING_SECTION_ID,
+  PLUMBING_SECTION_TITLE,
+} from './plumbing/plumbing-price.mapping'
+export {
+  assertPlumbingMappingMatchesFrontend,
+  findPlumbingMappingConflicts,
+} from './plumbing/assert-plumbing-mapping'
+export type { PlumbingMappingConflict } from './plumbing/assert-plumbing-mapping'
+export {
+  buildPlumbingEstimateLines,
+  resolvePlumbingDefaultQuantity,
+} from './plumbing/build-plumbing-estimate-lines'
+export type { BuildPlumbingEstimateLinesOptions } from './plumbing/build-plumbing-estimate-lines'
+export { buildPlumbingEstimate } from './plumbing/build-plumbing-estimate'
+export {
+  applyPlumbingSewerPipeLength,
+  applyPlumbingSewerPointsCount,
+  applyPlumbingWarmFloorArea,
+  applyPlumbingWaterPipeLength,
+  applyPlumbingWaterPointsCount,
+  createManualPlumbingEstimateLine,
+} from './plumbing/apply-plumbing-quantities'
+export {
+  getDefaultOpenPlumbingGroupIds,
+  getPlumbingEstimateGroupTitle,
+  groupPlumbingEstimateLines,
+  resolvePlumbingEstimateGroupId,
+} from './plumbing/plumbing-estimate-groups'
+export type {
+  PlumbingEstimateGroup,
+  PlumbingEstimateGroupId,
+} from './plumbing/plumbing-estimate-groups'
+export {
+  disablePlumbingConflictingAlternatives,
+  disablePlumbingConflictingAlternativesInZone,
+  PLUMBING_CONFLICT_GROUPS,
+  getPlumbingConflictGroupId,
+} from './plumbing/plumbing-conflict-groups'
+export {
+  applyPlumbingScenario,
+  applyPlumbingScenarioToZone,
+  formatPlumbingScenarioFeedback,
+  formatPlumbingScenarioLabel,
+  formatPlumbingScenarioZoneFeedback,
+  plumbingInputFromZone,
+  resolvePlumbingScenarioKeys,
+} from './plumbing/apply-plumbing-scenario'
+export type {
+  ApplyPlumbingScenarioResult,
+  PlumbingScenarioApplication,
+  PlumbingStateOption,
+} from './plumbing/apply-plumbing-scenario'
+export {
+  createZonedPlumbingEstimateLine,
+  findPlumbingMappingItem,
+} from './plumbing/create-zoned-plumbing-estimate-line'
+export type { CreateZonedPlumbingEstimateLineParams } from './plumbing/create-zoned-plumbing-estimate-line'
+export {
+  PLUMBING_ZONE_WORK_CATEGORIES,
+  getPlumbingZoneMappingOptions,
+} from './plumbing/plumbing-zone-catalog'
+export type {
+  PlumbingZoneWorkCategory,
+  PlumbingZoneWorkCategoryId,
+} from './plumbing/plumbing-zone-catalog'
+export {
+  PLUMBING_SCENARIO_OPTIONS,
+  formatPlumbingScenarioZoneMismatchMessage,
+  getPlumbingScenarioOptionLabel,
+  getPlumbingScenarioRecommendedZoneTypes,
+  isPlumbingScenarioAllowedForZone,
+  resolvePlumbingScenarioOptionsForZone,
+} from './plumbing/plumbing-scenario-options'
+export type { PlumbingScenarioOptionMeta } from './plumbing/plumbing-scenario-options'

@@ -2,11 +2,13 @@ import {
   buildCeilingEstimateLines,
   buildElectricEstimateLines,
   buildFloorEstimateLines,
+  buildPlumbingEstimateLines,
   buildTileEstimateLines,
   buildWallEstimateLines,
   findCeilingMappingItem,
   findElectricMappingItem,
   findFloorMappingItem,
+  findPlumbingMappingItem,
   findTileMappingItem,
   findWallMappingItem,
   isZonedEstimateLine,
@@ -25,6 +27,8 @@ import {
   type EstimateLine,
   type EstimateZone,
   type FloorEstimateInput,
+  type PlumbingEstimateInput,
+  type PlumbingStateOption,
   type ScreedTypeOption,
   type TileCladFormatOption,
   type TileDemolitionSurfacesOption,
@@ -99,6 +103,10 @@ export type ElectricScenarioDraftState = {
   state: ElectricStateOption
 }
 
+export type PlumbingScenarioDraftState = {
+  state: PlumbingStateOption
+}
+
 export type EstimateCalculatorSnapshot = {
   version: typeof SNAPSHOT_VERSION
   activeTab: EstimateTabId
@@ -123,11 +131,16 @@ export type EstimateCalculatorSnapshot = {
     input: ElectricEstimateInput
     lines: PersistedEstimateLine[]
   }
+  plumbing?: {
+    input: PlumbingEstimateInput
+    lines: PersistedEstimateLine[]
+  }
   floorPresets?: FloorPresetDraftState
   wallScenarios?: WallScenarioDraftState
   ceilingScenarios?: CeilingScenarioDraftState
   tileScenarios?: TileScenarioDraftState
   electricScenarios?: ElectricScenarioDraftState
+  plumbingScenarios?: PlumbingScenarioDraftState
 }
 
 const EMPTY_FLOOR_INPUT: FloorEstimateInput = {
@@ -186,6 +199,27 @@ const EMPTY_ELECTRIC_INPUT: ElectricEstimateInput = {
   surveyorComment: '',
 }
 
+const EMPTY_PLUMBING_INPUT: PlumbingEstimateInput = {
+  plumbingWaterPointsCount: 0,
+  plumbingSewerPointsCount: 0,
+  plumbingWaterPipeLength: 0,
+  plumbingSewerPipeLength: 0,
+  plumbingCollectorsCount: 0,
+  plumbingToiletsCount: 0,
+  plumbingSinksCount: 0,
+  plumbingBathtubsCount: 0,
+  plumbingShowersCount: 0,
+  plumbingMixersCount: 0,
+  plumbingInstallationsCount: 0,
+  plumbingDrainsCount: 0,
+  plumbingWasherConnectionsCount: 0,
+  plumbingDishwasherConnectionsCount: 0,
+  plumbingWaterHeatersCount: 0,
+  plumbingTowelWarmersCount: 0,
+  plumbingWarmFloorArea: 0,
+  surveyorComment: '',
+}
+
 const DEFAULT_FLOOR_PRESETS: FloorPresetDraftState = {
   covering: 'laminate',
   screedType: 'semidry-up-to-80',
@@ -217,6 +251,10 @@ const DEFAULT_TILE_SCENARIOS: TileScenarioDraftState = {
 
 const DEFAULT_ELECTRIC_SCENARIOS: ElectricScenarioDraftState = {
   state: 'apartment-from-scratch',
+}
+
+const DEFAULT_PLUMBING_SCENARIOS: PlumbingScenarioDraftState = {
+  state: 'bathroom-from-scratch',
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -311,6 +349,30 @@ function parseElectricInput(raw: unknown): ElectricEstimateInput {
   }
 }
 
+function parsePlumbingInput(raw: unknown): PlumbingEstimateInput {
+  if (!isRecord(raw)) return { ...EMPTY_PLUMBING_INPUT }
+  return {
+    plumbingWaterPointsCount: asNonNegative(raw.plumbingWaterPointsCount),
+    plumbingSewerPointsCount: asNonNegative(raw.plumbingSewerPointsCount),
+    plumbingWaterPipeLength: asNonNegative(raw.plumbingWaterPipeLength),
+    plumbingSewerPipeLength: asNonNegative(raw.plumbingSewerPipeLength),
+    plumbingCollectorsCount: asNonNegative(raw.plumbingCollectorsCount),
+    plumbingToiletsCount: asNonNegative(raw.plumbingToiletsCount),
+    plumbingSinksCount: asNonNegative(raw.plumbingSinksCount),
+    plumbingBathtubsCount: asNonNegative(raw.plumbingBathtubsCount),
+    plumbingShowersCount: asNonNegative(raw.plumbingShowersCount),
+    plumbingMixersCount: asNonNegative(raw.plumbingMixersCount),
+    plumbingInstallationsCount: asNonNegative(raw.plumbingInstallationsCount),
+    plumbingDrainsCount: asNonNegative(raw.plumbingDrainsCount),
+    plumbingWasherConnectionsCount: asNonNegative(raw.plumbingWasherConnectionsCount),
+    plumbingDishwasherConnectionsCount: asNonNegative(raw.plumbingDishwasherConnectionsCount),
+    plumbingWaterHeatersCount: asNonNegative(raw.plumbingWaterHeatersCount),
+    plumbingTowelWarmersCount: asNonNegative(raw.plumbingTowelWarmersCount),
+    plumbingWarmFloorArea: asNonNegative(raw.plumbingWarmFloorArea),
+    surveyorComment: asString(raw.surveyorComment, ''),
+  }
+}
+
 function parsePersistedZone(raw: unknown): EstimateZone | null {
   if (!isRecord(raw)) return null
   const id = asString(raw.id).trim()
@@ -356,6 +418,23 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
     electricPanelModulesCount: asNonNegative(raw.electricPanelModulesCount),
     electricWarmFloorArea: asNonNegative(raw.electricWarmFloorArea),
     electricApplianceConnectionsCount: asNonNegative(raw.electricApplianceConnectionsCount),
+    plumbingWaterPointsCount: asNonNegative(raw.plumbingWaterPointsCount),
+    plumbingSewerPointsCount: asNonNegative(raw.plumbingSewerPointsCount),
+    plumbingWaterPipeLength: asNonNegative(raw.plumbingWaterPipeLength),
+    plumbingSewerPipeLength: asNonNegative(raw.plumbingSewerPipeLength),
+    plumbingCollectorsCount: asNonNegative(raw.plumbingCollectorsCount),
+    plumbingToiletsCount: asNonNegative(raw.plumbingToiletsCount),
+    plumbingSinksCount: asNonNegative(raw.plumbingSinksCount),
+    plumbingBathtubsCount: asNonNegative(raw.plumbingBathtubsCount),
+    plumbingShowersCount: asNonNegative(raw.plumbingShowersCount),
+    plumbingMixersCount: asNonNegative(raw.plumbingMixersCount),
+    plumbingInstallationsCount: asNonNegative(raw.plumbingInstallationsCount),
+    plumbingDrainsCount: asNonNegative(raw.plumbingDrainsCount),
+    plumbingWasherConnectionsCount: asNonNegative(raw.plumbingWasherConnectionsCount),
+    plumbingDishwasherConnectionsCount: asNonNegative(raw.plumbingDishwasherConnectionsCount),
+    plumbingWaterHeatersCount: asNonNegative(raw.plumbingWaterHeatersCount),
+    plumbingTowelWarmersCount: asNonNegative(raw.plumbingTowelWarmersCount),
+    plumbingWarmFloorArea: asNonNegative(raw.plumbingWarmFloorArea),
     comment: asString(raw.comment).trim() || undefined,
   }
 }
@@ -419,7 +498,8 @@ function isTabId(value: unknown): value is EstimateTabId {
     value === 'walls' ||
     value === 'ceilings' ||
     value === 'tile' ||
-    value === 'electrics'
+    value === 'electrics' ||
+    value === 'plumbing'
   )
 }
 
@@ -466,6 +546,12 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
           lines: parsePersistedLines(raw.electrics.lines),
         }
       : { input: { ...EMPTY_ELECTRIC_INPUT }, lines: [] },
+    plumbing: isRecord(raw.plumbing)
+      ? {
+          input: parsePlumbingInput(raw.plumbing.input),
+          lines: parsePersistedLines(raw.plumbing.lines),
+        }
+      : { input: { ...EMPTY_PLUMBING_INPUT }, lines: [] },
   }
 
   if (isRecord(raw.floorPresets)) {
@@ -547,6 +633,15 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
     }
   }
 
+  if (isRecord(raw.plumbingScenarios)) {
+    snapshot.plumbingScenarios = {
+      state: asString(
+        raw.plumbingScenarios.state,
+        DEFAULT_PLUMBING_SCENARIOS.state,
+      ) as PlumbingStateOption,
+    }
+  }
+
   return snapshot
 }
 
@@ -611,6 +706,23 @@ export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
     electricPanelModulesCount: zone.electricPanelModulesCount,
     electricWarmFloorArea: zone.electricWarmFloorArea,
     electricApplianceConnectionsCount: zone.electricApplianceConnectionsCount,
+    plumbingWaterPointsCount: zone.plumbingWaterPointsCount,
+    plumbingSewerPointsCount: zone.plumbingSewerPointsCount,
+    plumbingWaterPipeLength: zone.plumbingWaterPipeLength,
+    plumbingSewerPipeLength: zone.plumbingSewerPipeLength,
+    plumbingCollectorsCount: zone.plumbingCollectorsCount,
+    plumbingToiletsCount: zone.plumbingToiletsCount,
+    plumbingSinksCount: zone.plumbingSinksCount,
+    plumbingBathtubsCount: zone.plumbingBathtubsCount,
+    plumbingShowersCount: zone.plumbingShowersCount,
+    plumbingMixersCount: zone.plumbingMixersCount,
+    plumbingInstallationsCount: zone.plumbingInstallationsCount,
+    plumbingDrainsCount: zone.plumbingDrainsCount,
+    plumbingWasherConnectionsCount: zone.plumbingWasherConnectionsCount,
+    plumbingDishwasherConnectionsCount: zone.plumbingDishwasherConnectionsCount,
+    plumbingWaterHeatersCount: zone.plumbingWaterHeatersCount,
+    plumbingTowelWarmersCount: zone.plumbingTowelWarmersCount,
+    plumbingWarmFloorArea: zone.plumbingWarmFloorArea,
     comment: zone.comment,
   }
 }
@@ -628,11 +740,14 @@ export function buildEstimateCalculatorSnapshot(params: {
   tileLines?: readonly EstimateLine[]
   electricInput?: ElectricEstimateInput
   electricLines?: readonly EstimateLine[]
+  plumbingInput?: PlumbingEstimateInput
+  plumbingLines?: readonly EstimateLine[]
   floorPresets?: FloorPresetDraftState
   wallScenarios?: WallScenarioDraftState
   ceilingScenarios?: CeilingScenarioDraftState
   tileScenarios?: TileScenarioDraftState
   electricScenarios?: ElectricScenarioDraftState
+  plumbingScenarios?: PlumbingScenarioDraftState
 }): EstimateCalculatorSnapshot {
   return {
     version: SNAPSHOT_VERSION,
@@ -658,11 +773,16 @@ export function buildEstimateCalculatorSnapshot(params: {
       input: { ...(params.electricInput ?? EMPTY_ELECTRIC_INPUT) },
       lines: (params.electricLines ?? []).map(serializeEstimateLine),
     },
+    plumbing: {
+      input: { ...(params.plumbingInput ?? EMPTY_PLUMBING_INPUT) },
+      lines: (params.plumbingLines ?? []).map(serializeEstimateLine),
+    },
     floorPresets: params.floorPresets,
     wallScenarios: params.wallScenarios,
     ceilingScenarios: params.ceilingScenarios,
     tileScenarios: params.tileScenarios,
     electricScenarios: params.electricScenarios,
+    plumbingScenarios: params.plumbingScenarios,
   }
 }
 
@@ -673,7 +793,7 @@ export function buildEstimateCalculatorSnapshot(params: {
 function applyPersistedPatches(
   baseLines: readonly EstimateLine[],
   persisted: readonly PersistedEstimateLine[],
-  sectionFallback: 'floors' | 'walls' | 'ceilings' | 'tile' | 'electrics',
+  sectionFallback: 'floors' | 'walls' | 'ceilings' | 'tile' | 'electrics' | 'plumbing',
 ): EstimateLine[] {
   if (persisted.length === 0) return [...baseLines]
 
@@ -717,7 +837,9 @@ function applyPersistedPatches(
               ? findTileMappingItem(patch.priceKey)
               : sectionId === 'electrics'
                 ? findElectricMappingItem(patch.priceKey)
-                : findFloorMappingItem(patch.priceKey)
+                : sectionId === 'plumbing'
+                  ? findPlumbingMappingItem(patch.priceKey)
+                  : findFloorMappingItem(patch.priceKey)
       const title = asString(patch.title).trim() || mapping?.title || ''
       const unit = asString(patch.unit).trim() || mapping?.unit || 'м²'
       if (!title) continue
@@ -846,6 +968,22 @@ export function restoreElectricEstimateState(
   }
 }
 
+/**
+ * То же для сантехники, включая zoned clones.
+ * Толерантно к снимкам без секции `plumbing` — тогда пустой ввод и чистый build.
+ */
+export function restorePlumbingEstimateState(
+  snapshot: EstimateCalculatorSnapshot | null,
+): { input: PlumbingEstimateInput; lines: EstimateLine[] } {
+  const plumbing = snapshot?.plumbing
+  const input = plumbing ? plumbing.input : { ...EMPTY_PLUMBING_INPUT }
+  const base = buildPlumbingEstimateLines(input)
+  return {
+    input,
+    lines: plumbing ? applyPersistedPatches(base, plumbing.lines, 'plumbing') : base,
+  }
+}
+
 export function restoreEstimateZones(snapshot: EstimateCalculatorSnapshot | null): EstimateZone[] {
   const zones = snapshot?.zones ? snapshot.zones.map(serializeEstimateZone) : []
   noteEstimateZoneIds(zones)
@@ -886,6 +1024,14 @@ export function restoreElectricScenarioDraft(
   return snapshot?.electricScenarios
     ? { ...snapshot.electricScenarios }
     : { ...DEFAULT_ELECTRIC_SCENARIOS }
+}
+
+export function restorePlumbingScenarioDraft(
+  snapshot: EstimateCalculatorSnapshot | null,
+): PlumbingScenarioDraftState {
+  return snapshot?.plumbingScenarios
+    ? { ...snapshot.plumbingScenarios }
+    : { ...DEFAULT_PLUMBING_SCENARIOS }
 }
 
 export function readEstimateCalculatorSnapshot(): EstimateCalculatorSnapshot | null {

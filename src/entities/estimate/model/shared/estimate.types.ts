@@ -71,12 +71,26 @@ export type ElectricWorkKind =
   | 'check'
   | 'other'
 
+export type PlumbingWorkKind =
+  | 'demolition'
+  | 'drainage'
+  | 'water-supply'
+  | 'connections'
+  | 'underfloor'
+  | 'hidden-mixer'
+  | 'manifold'
+  | 'installation'
+  | 'finish'
+  | 'check'
+  | 'other'
+
 export type EstimateWorkKind =
   | FloorWorkKind
   | WallWorkKind
   | CeilingWorkKind
   | TileWorkKind
   | ElectricWorkKind
+  | PlumbingWorkKind
 
 export type FloorQuantityField =
   | 'totalFloorArea'
@@ -126,6 +140,26 @@ export type ElectricQuantityField =
   | 'electricPanelModulesCount'
   | 'electricWarmFloorArea'
   | 'electricApplianceConnectionsCount'
+  | 'manual'
+
+export type PlumbingQuantityField =
+  | 'plumbingWaterPointsCount'
+  | 'plumbingSewerPointsCount'
+  | 'plumbingWaterPipeLength'
+  | 'plumbingSewerPipeLength'
+  | 'plumbingCollectorsCount'
+  | 'plumbingToiletsCount'
+  | 'plumbingSinksCount'
+  | 'plumbingBathtubsCount'
+  | 'plumbingShowersCount'
+  | 'plumbingMixersCount'
+  | 'plumbingInstallationsCount'
+  | 'plumbingDrainsCount'
+  | 'plumbingWasherConnectionsCount'
+  | 'plumbingDishwasherConnectionsCount'
+  | 'plumbingWaterHeatersCount'
+  | 'plumbingTowelWarmersCount'
+  | 'plumbingWarmFloorArea'
   | 'manual'
 
 export type EstimateLine = {
@@ -256,6 +290,34 @@ export type ElectricEstimateResult = {
   materialsExcluded: true
 }
 
+export type PlumbingEstimateInput = {
+  plumbingWaterPointsCount: number
+  plumbingSewerPointsCount: number
+  plumbingWaterPipeLength: number
+  plumbingSewerPipeLength: number
+  plumbingCollectorsCount: number
+  plumbingToiletsCount: number
+  plumbingSinksCount: number
+  plumbingBathtubsCount: number
+  plumbingShowersCount: number
+  plumbingMixersCount: number
+  plumbingInstallationsCount: number
+  plumbingDrainsCount: number
+  plumbingWasherConnectionsCount: number
+  plumbingDishwasherConnectionsCount: number
+  plumbingWaterHeatersCount: number
+  plumbingTowelWarmersCount: number
+  plumbingWarmFloorArea: number
+  surveyorComment?: string
+}
+
+export type PlumbingEstimateResult = {
+  section: EstimateSection
+  selectedCount: number
+  totalRub: number
+  materialsExcluded: true
+}
+
 export type FloorPriceMappingItem = {
   /** Стабильный id → `EstimateLine.priceKey` / основа `id` строки */
   id: string
@@ -331,4 +393,19 @@ export type ElectricPriceMappingItem = {
   note?: string
   defaultEnabled: boolean
   defaultQuantityFrom: ElectricQuantityField
+}
+
+export type PlumbingPriceMappingItem = {
+  id: string
+  title: string
+  unit: string
+  unitPrice: number
+  source: EstimatePriceSource
+  kind: PlumbingWorkKind
+  frontendCategorySlug?: PriceCategorySlug
+  frontendName?: string
+  frontendUnitPrice?: number
+  note?: string
+  defaultEnabled: boolean
+  defaultQuantityFrom: PlumbingQuantityField
 }

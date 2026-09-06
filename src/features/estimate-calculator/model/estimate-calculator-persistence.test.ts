@@ -8,6 +8,7 @@ import {
   restoreElectricEstimateState,
   restoreEstimateZones,
   restoreFloorEstimateState,
+  restorePlumbingEstimateState,
   restoreTileEstimateState,
   restoreWallEstimateState,
   type EstimateCalculatorSnapshot,
@@ -141,6 +142,23 @@ describe('estimate calculator persistence', () => {
           electricPanelModulesCount: 0,
           electricWarmFloorArea: 0,
           electricApplianceConnectionsCount: 0,
+          plumbingWaterPointsCount: 0,
+          plumbingSewerPointsCount: 0,
+          plumbingWaterPipeLength: 0,
+          plumbingSewerPipeLength: 0,
+          plumbingCollectorsCount: 0,
+          plumbingToiletsCount: 0,
+          plumbingSinksCount: 0,
+          plumbingBathtubsCount: 0,
+          plumbingShowersCount: 0,
+          plumbingMixersCount: 0,
+          plumbingInstallationsCount: 0,
+          plumbingDrainsCount: 0,
+          plumbingWasherConnectionsCount: 0,
+          plumbingDishwasherConnectionsCount: 0,
+          plumbingWaterHeatersCount: 0,
+          plumbingTowelWarmersCount: 0,
+          plumbingWarmFloorArea: 0,
         },
       ],
       floors: {
@@ -524,6 +542,23 @@ describe('estimate calculator persistence', () => {
           electricPanelModulesCount: 0,
           electricWarmFloorArea: 0,
           electricApplianceConnectionsCount: 0,
+          plumbingWaterPointsCount: 0,
+          plumbingSewerPointsCount: 0,
+          plumbingWaterPipeLength: 0,
+          plumbingSewerPipeLength: 0,
+          plumbingCollectorsCount: 0,
+          plumbingToiletsCount: 0,
+          plumbingSinksCount: 0,
+          plumbingBathtubsCount: 0,
+          plumbingShowersCount: 0,
+          plumbingMixersCount: 0,
+          plumbingInstallationsCount: 0,
+          plumbingDrainsCount: 0,
+          plumbingWasherConnectionsCount: 0,
+          plumbingDishwasherConnectionsCount: 0,
+          plumbingWaterHeatersCount: 0,
+          plumbingTowelWarmersCount: 0,
+          plumbingWarmFloorArea: 0,
         },
       ],
       floorsInput: restoreFloorEstimateState(null).input,
@@ -656,6 +691,23 @@ describe('estimate calculator persistence', () => {
           electricPanelModulesCount: 0,
           electricWarmFloorArea: 0,
           electricApplianceConnectionsCount: 3,
+          plumbingWaterPointsCount: 0,
+          plumbingSewerPointsCount: 0,
+          plumbingWaterPipeLength: 0,
+          plumbingSewerPipeLength: 0,
+          plumbingCollectorsCount: 0,
+          plumbingToiletsCount: 0,
+          plumbingSinksCount: 0,
+          plumbingBathtubsCount: 0,
+          plumbingShowersCount: 0,
+          plumbingMixersCount: 0,
+          plumbingInstallationsCount: 0,
+          plumbingDrainsCount: 0,
+          plumbingWasherConnectionsCount: 0,
+          plumbingDishwasherConnectionsCount: 0,
+          plumbingWaterHeatersCount: 0,
+          plumbingTowelWarmersCount: 0,
+          plumbingWarmFloorArea: 0,
         },
       ],
       floorsInput: restoreFloorEstimateState(null).input,
@@ -703,5 +755,161 @@ describe('estimate calculator persistence', () => {
     assert.equal(outlet.enabled, true)
     assert.equal(outlet.quantity, 10)
     assert.equal(outlet.comment, 'ok')
+  })
+
+  it('parses a v2 snapshot without plumbing and restores empty plumbing', () => {
+    const v2NoPlumbing = {
+      version: 2,
+      activeTab: 'electrics',
+      zones: [],
+      floors: {
+        input: {
+          totalFloorArea: 10,
+          demolitionArea: 0,
+          screedArea: 0,
+          wetZonesArea: 0,
+          avgDeltaMm: 0,
+          surveyorComment: '',
+        },
+        lines: [],
+      },
+      walls: {
+        input: {
+          totalWallArea: 20,
+          demolitionArea: 0,
+          plasterArea: 0,
+          puttyArea: 0,
+          finishArea: 0,
+          wallHeightM: 0,
+          slopesLengthM: 0,
+          cornersLengthM: 0,
+          surveyorComment: '',
+        },
+        lines: [],
+      },
+    }
+
+    const parsed = parseEstimateCalculatorSnapshot(v2NoPlumbing)
+    assert.ok(parsed)
+    const plumbing = restorePlumbingEstimateState(parsed)
+    assert.equal(plumbing.input.plumbingWaterPointsCount, 0)
+    assert.equal(plumbing.input.plumbingWarmFloorArea, 0)
+    assert.ok(plumbing.lines.length > 0)
+    assert.ok(plumbing.lines.every((line) => line.enabled === false))
+    assert.ok(plumbing.lines.every((line) => line.sectionId === 'plumbing'))
+  })
+
+  it('round-trips plumbing fields and zone plumbing measures', () => {
+    const snapshot = buildEstimateCalculatorSnapshot({
+      activeTab: 'plumbing',
+      zones: [
+        {
+          id: 'zone-p1',
+          name: 'Санузел',
+          zoneType: 'bathroom',
+          floorArea: 0,
+          demolitionFloorArea: 0,
+          screedArea: 0,
+          wetArea: 0,
+          wallArea: 0,
+          demolitionWallArea: 0,
+          plasterArea: 0,
+          puttyArea: 0,
+          finishArea: 0,
+          slopesLength: 0,
+          cornersLength: 0,
+          ceilingArea: 0,
+          demolitionCeilingArea: 0,
+          plasterCeilingArea: 0,
+          puttyCeilingArea: 0,
+          finishCeilingArea: 0,
+          tileFloorArea: 0,
+          tileWallArea: 0,
+          tileBacksplashArea: 0,
+          tileCuttingLength: 0,
+          tileCornerLength: 0,
+          tileHolesCount: 0,
+          tileRepairCount: 0,
+          electricSocketsCount: 0,
+          electricSwitchesCount: 0,
+          electricLightPointsCount: 0,
+          electricDataPointsCount: 0,
+          electricStrobeLength: 0,
+          electricCableLength: 0,
+          electricSocketBoxesCount: 0,
+          electricJunctionBoxesCount: 0,
+          electricPanelModulesCount: 0,
+          electricWarmFloorArea: 0,
+          electricApplianceConnectionsCount: 0,
+          plumbingWaterPointsCount: 6,
+          plumbingSewerPointsCount: 3,
+          plumbingWaterPipeLength: 20,
+          plumbingSewerPipeLength: 14,
+          plumbingCollectorsCount: 1,
+          plumbingToiletsCount: 1,
+          plumbingSinksCount: 1,
+          plumbingBathtubsCount: 1,
+          plumbingShowersCount: 0,
+          plumbingMixersCount: 2,
+          plumbingInstallationsCount: 1,
+          plumbingDrainsCount: 1,
+          plumbingWasherConnectionsCount: 1,
+          plumbingDishwasherConnectionsCount: 0,
+          plumbingWaterHeatersCount: 0,
+          plumbingTowelWarmersCount: 1,
+          plumbingWarmFloorArea: 4,
+        },
+      ],
+      floorsInput: restoreFloorEstimateState(null).input,
+      floorsLines: restoreFloorEstimateState(null).lines,
+      wallsInput: restoreWallEstimateState(null).input,
+      wallsLines: restoreWallEstimateState(null).lines,
+      plumbingInput: {
+        plumbingWaterPointsCount: 6,
+        plumbingSewerPointsCount: 3,
+        plumbingWaterPipeLength: 20,
+        plumbingSewerPipeLength: 14,
+        plumbingCollectorsCount: 1,
+        plumbingToiletsCount: 1,
+        plumbingSinksCount: 1,
+        plumbingBathtubsCount: 1,
+        plumbingShowersCount: 0,
+        plumbingMixersCount: 2,
+        plumbingInstallationsCount: 1,
+        plumbingDrainsCount: 1,
+        plumbingWasherConnectionsCount: 1,
+        plumbingDishwasherConnectionsCount: 0,
+        plumbingWaterHeatersCount: 0,
+        plumbingTowelWarmersCount: 1,
+        plumbingWarmFloorArea: 4,
+        surveyorComment: 'plumbing note',
+      },
+      plumbingLines: restorePlumbingEstimateState(null).lines.map((line) =>
+        line.priceKey === 'water-pipe-d16-20'
+          ? { ...line, enabled: true, quantity: 20, comment: 'ok' }
+          : line,
+      ),
+      plumbingScenarios: {
+        state: 'bathroom-from-scratch',
+      },
+    })
+
+    const parsed = parseEstimateCalculatorSnapshot(JSON.parse(JSON.stringify(snapshot)))
+    assert.ok(parsed)
+    assert.equal(parsed.activeTab, 'plumbing')
+    assert.equal(parsed.zones[0]?.plumbingWaterPointsCount, 6)
+    assert.equal(parsed.zones[0]?.plumbingWarmFloorArea, 4)
+    assert.equal(parsed.zones[0]?.plumbingToiletsCount, 1)
+    assert.equal(parsed.zones[0]?.zoneType, 'bathroom')
+    assert.equal(parsed.plumbingScenarios?.state, 'bathroom-from-scratch')
+
+    const plumbing = restorePlumbingEstimateState(parsed)
+    assert.equal(plumbing.input.plumbingWaterPipeLength, 20)
+    assert.equal(plumbing.input.surveyorComment, 'plumbing note')
+    const pipe = plumbing.lines.find((line) => line.priceKey === 'water-pipe-d16-20')
+    assert.ok(pipe)
+    assert.equal(pipe.enabled, true)
+    assert.equal(pipe.quantity, 20)
+    assert.equal(pipe.comment, 'ok')
   })
 })
