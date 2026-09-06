@@ -10,6 +10,7 @@ import {
   type EstimateZone,
   type EstimateZoneType,
   type FloorEstimateInput,
+  type PlumbingEstimateInput,
   type TileEstimateInput,
   type WallEstimateInput,
 } from '@/entities/estimate'
@@ -62,6 +63,14 @@ type EstimateZonesAndMeasuresProps =
       generalInput: ElectricEstimateInput
       onGeneralChange: (patch: Partial<ElectricEstimateInput>) => void
     }
+  | {
+      section: 'plumbing'
+      zones: readonly EstimateZone[]
+      onZonesChange: (zones: EstimateZone[]) => void
+      onDeleteZone: (zoneId: string) => void
+      generalInput: PlumbingEstimateInput
+      onGeneralChange: (patch: Partial<PlumbingEstimateInput>) => void
+    }
 
 function formatArea(value: number): string {
   return value > 0 ? String(value) : '—'
@@ -87,6 +96,10 @@ function electricGeneralSummary(input: ElectricEstimateInput): string {
   return `Розетки ${formatArea(input.electricSocketsCount)} · Свет ${formatArea(input.electricLightPointsCount)} · Кабель ${formatArea(input.electricCableLength)} м`
 }
 
+function plumbingGeneralSummary(input: PlumbingEstimateInput): string {
+  return `Точки воды ${formatArea(input.plumbingWaterPointsCount)} · Канализация ${formatArea(input.plumbingSewerPointsCount)} · ТП ${formatArea(input.plumbingWarmFloorArea)} м²`
+}
+
 function floorZoneSummary(zone: EstimateZone): string {
   return `Площадь пола ${formatArea(zone.floorArea)} м² · Демонтаж пола ${formatArea(zone.demolitionFloorArea)} м²`
 }
@@ -107,6 +120,10 @@ function electricZoneSummary(zone: EstimateZone): string {
   return `Розетки ${formatArea(zone.electricSocketsCount)} · Свет ${formatArea(zone.electricLightPointsCount)} · Кабель ${formatArea(zone.electricCableLength)} м`
 }
 
+function plumbingZoneSummary(zone: EstimateZone): string {
+  return `Точки воды ${formatArea(zone.plumbingWaterPointsCount)} · Канализация ${formatArea(zone.plumbingSewerPointsCount)} · ТП ${formatArea(zone.plumbingWarmFloorArea)} м²`
+}
+
 function sectionTitleId(section: EstimateZonesAndMeasuresProps['section']): string {
   switch (section) {
     case 'floors':
@@ -119,6 +136,8 @@ function sectionTitleId(section: EstimateZonesAndMeasuresProps['section']): stri
       return 'tile-zones-and-measures-title'
     case 'electrics':
       return 'electric-zones-and-measures-title'
+    case 'plumbing':
+      return 'plumbing-zones-and-measures-title'
   }
 }
 
@@ -134,6 +153,8 @@ function sectionLead(section: EstimateZonesAndMeasuresProps['section']): string 
       return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев плитки.'
     case 'electrics':
       return 'Общие счётчики раздела — для работ без зоны. Ниже — точки и трассы выбранных зон для сценариев электрики.'
+    case 'plumbing':
+      return 'Общие счётчики раздела — для работ без зоны. Ниже — точки, трассы и приборы выбранных зон для сценариев сантехники.'
   }
 }
 
@@ -149,6 +170,8 @@ function generalSummary(props: EstimateZonesAndMeasuresProps): string {
       return tileGeneralSummary(props.generalInput)
     case 'electrics':
       return electricGeneralSummary(props.generalInput)
+    case 'plumbing':
+      return plumbingGeneralSummary(props.generalInput)
   }
 }
 
@@ -167,6 +190,8 @@ function zoneSummary(
       return tileZoneSummary(zone)
     case 'electrics':
       return electricZoneSummary(zone)
+    case 'plumbing':
+      return plumbingZoneSummary(zone)
   }
 }
 
@@ -261,8 +286,13 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                   input={props.generalInput}
                   onChange={props.onGeneralChange}
                 />
-              ) : (
+              ) : section === 'electrics' ? (
                 <ElectricGeneralFields
+                  input={props.generalInput}
+                  onChange={props.onGeneralChange}
+                />
+              ) : (
+                <PlumbingGeneralFields
                   input={props.generalInput}
                   onChange={props.onGeneralChange}
                 />
@@ -328,8 +358,10 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                     <CeilingZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
                   ) : section === 'tile' ? (
                     <TileZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
-                  ) : (
+                  ) : section === 'electrics' ? (
                     <ElectricZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
+                  ) : (
+                    <PlumbingZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
                   )}
                   <label className={styles.field}>
                     <span className={styles.label}>Комментарий</span>
@@ -1050,6 +1082,245 @@ function ElectricMeasureGroups(props: {
             onChange={(electricApplianceConnectionsCount) =>
               onChange({ electricApplianceConnectionsCount })
             }
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function PlumbingGeneralFields(props: {
+  input: PlumbingEstimateInput
+  onChange: (patch: Partial<PlumbingEstimateInput>) => void
+}) {
+  const { input, onChange } = props
+  return (
+    <>
+      <PlumbingMeasureGroups
+        values={{
+          plumbingWaterPointsCount: input.plumbingWaterPointsCount,
+          plumbingSewerPointsCount: input.plumbingSewerPointsCount,
+          plumbingWaterPipeLength: input.plumbingWaterPipeLength,
+          plumbingSewerPipeLength: input.plumbingSewerPipeLength,
+          plumbingCollectorsCount: input.plumbingCollectorsCount,
+          plumbingToiletsCount: input.plumbingToiletsCount,
+          plumbingSinksCount: input.plumbingSinksCount,
+          plumbingBathtubsCount: input.plumbingBathtubsCount,
+          plumbingShowersCount: input.plumbingShowersCount,
+          plumbingMixersCount: input.plumbingMixersCount,
+          plumbingInstallationsCount: input.plumbingInstallationsCount,
+          plumbingDrainsCount: input.plumbingDrainsCount,
+          plumbingWasherConnectionsCount: input.plumbingWasherConnectionsCount,
+          plumbingDishwasherConnectionsCount: input.plumbingDishwasherConnectionsCount,
+          plumbingWaterHeatersCount: input.plumbingWaterHeatersCount,
+          plumbingTowelWarmersCount: input.plumbingTowelWarmersCount,
+          plumbingWarmFloorArea: input.plumbingWarmFloorArea,
+        }}
+        onChange={onChange}
+      />
+      <details className={styles.details}>
+        <summary>Комментарий замерщика</summary>
+        <textarea
+          className={styles.comment}
+          rows={2}
+          value={input.surveyorComment ?? ''}
+          onChange={(event) => onChange({ surveyorComment: event.target.value })}
+        />
+      </details>
+    </>
+  )
+}
+
+function PlumbingZoneFields(props: {
+  zone: EstimateZone
+  onPatch: (patch: Partial<Omit<EstimateZone, 'id'>>) => void
+}) {
+  const { zone, onPatch } = props
+  return (
+    <PlumbingMeasureGroups
+      values={{
+        plumbingWaterPointsCount: zone.plumbingWaterPointsCount,
+        plumbingSewerPointsCount: zone.plumbingSewerPointsCount,
+        plumbingWaterPipeLength: zone.plumbingWaterPipeLength,
+        plumbingSewerPipeLength: zone.plumbingSewerPipeLength,
+        plumbingCollectorsCount: zone.plumbingCollectorsCount,
+        plumbingToiletsCount: zone.plumbingToiletsCount,
+        plumbingSinksCount: zone.plumbingSinksCount,
+        plumbingBathtubsCount: zone.plumbingBathtubsCount,
+        plumbingShowersCount: zone.plumbingShowersCount,
+        plumbingMixersCount: zone.plumbingMixersCount,
+        plumbingInstallationsCount: zone.plumbingInstallationsCount,
+        plumbingDrainsCount: zone.plumbingDrainsCount,
+        plumbingWasherConnectionsCount: zone.plumbingWasherConnectionsCount,
+        plumbingDishwasherConnectionsCount: zone.plumbingDishwasherConnectionsCount,
+        plumbingWaterHeatersCount: zone.plumbingWaterHeatersCount,
+        plumbingTowelWarmersCount: zone.plumbingTowelWarmersCount,
+        plumbingWarmFloorArea: zone.plumbingWarmFloorArea,
+      }}
+      onChange={onPatch}
+    />
+  )
+}
+
+type PlumbingMeasureValues = {
+  plumbingWaterPointsCount: number
+  plumbingSewerPointsCount: number
+  plumbingWaterPipeLength: number
+  plumbingSewerPipeLength: number
+  plumbingCollectorsCount: number
+  plumbingToiletsCount: number
+  plumbingSinksCount: number
+  plumbingBathtubsCount: number
+  plumbingShowersCount: number
+  plumbingMixersCount: number
+  plumbingInstallationsCount: number
+  plumbingDrainsCount: number
+  plumbingWasherConnectionsCount: number
+  plumbingDishwasherConnectionsCount: number
+  plumbingWaterHeatersCount: number
+  plumbingTowelWarmersCount: number
+  plumbingWarmFloorArea: number
+}
+
+function PlumbingMeasureGroups(props: {
+  values: PlumbingMeasureValues
+  onChange: (patch: Partial<PlumbingMeasureValues>) => void
+}) {
+  const { values, onChange } = props
+  return (
+    <div className={styles.measureGroups}>
+      <div className={styles.measureGroup}>
+        <p className={styles.measureGroupTitle}>Точки</p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Водорозетки"
+            unit="шт."
+            value={values.plumbingWaterPointsCount}
+            onChange={(plumbingWaterPointsCount) => onChange({ plumbingWaterPointsCount })}
+          />
+          <NumberField
+            label="Выводы канализации"
+            unit="шт."
+            value={values.plumbingSewerPointsCount}
+            onChange={(plumbingSewerPointsCount) => onChange({ plumbingSewerPointsCount })}
+          />
+        </div>
+      </div>
+
+      <div className={styles.measureGroup}>
+        <p className={styles.measureGroupTitle}>Трассы</p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Трубы воды"
+            unit="м. пог."
+            value={values.plumbingWaterPipeLength}
+            onChange={(plumbingWaterPipeLength) => onChange({ plumbingWaterPipeLength })}
+          />
+          <NumberField
+            label="Трубы канализации"
+            unit="м. пог."
+            value={values.plumbingSewerPipeLength}
+            onChange={(plumbingSewerPipeLength) => onChange({ plumbingSewerPipeLength })}
+          />
+        </div>
+      </div>
+
+      <div className={styles.measureGroup}>
+        <p className={styles.measureGroupTitle}>Коллектор / учёт</p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Коллекторы"
+            unit="шт."
+            value={values.plumbingCollectorsCount}
+            onChange={(plumbingCollectorsCount) => onChange({ plumbingCollectorsCount })}
+          />
+        </div>
+      </div>
+
+      <div className={styles.measureGroup}>
+        <p className={styles.measureGroupTitle}>Приборы</p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Унитазы"
+            unit="шт."
+            value={values.plumbingToiletsCount}
+            onChange={(plumbingToiletsCount) => onChange({ plumbingToiletsCount })}
+          />
+          <NumberField
+            label="Раковины"
+            unit="шт."
+            value={values.plumbingSinksCount}
+            onChange={(plumbingSinksCount) => onChange({ plumbingSinksCount })}
+          />
+          <NumberField
+            label="Ванны"
+            unit="шт."
+            value={values.plumbingBathtubsCount}
+            onChange={(plumbingBathtubsCount) => onChange({ plumbingBathtubsCount })}
+          />
+          <NumberField
+            label="Души"
+            unit="шт."
+            value={values.plumbingShowersCount}
+            onChange={(plumbingShowersCount) => onChange({ plumbingShowersCount })}
+          />
+          <NumberField
+            label="Смесители"
+            unit="шт."
+            value={values.plumbingMixersCount}
+            onChange={(plumbingMixersCount) => onChange({ plumbingMixersCount })}
+          />
+          <NumberField
+            label="Инсталляции"
+            unit="шт."
+            value={values.plumbingInstallationsCount}
+            onChange={(plumbingInstallationsCount) => onChange({ plumbingInstallationsCount })}
+          />
+          <NumberField
+            label="Трапы"
+            unit="шт."
+            value={values.plumbingDrainsCount}
+            onChange={(plumbingDrainsCount) => onChange({ plumbingDrainsCount })}
+          />
+          <NumberField
+            label="Стир. машина"
+            unit="шт."
+            value={values.plumbingWasherConnectionsCount}
+            onChange={(plumbingWasherConnectionsCount) =>
+              onChange({ plumbingWasherConnectionsCount })
+            }
+          />
+          <NumberField
+            label="Посудомойка"
+            unit="шт."
+            value={values.plumbingDishwasherConnectionsCount}
+            onChange={(plumbingDishwasherConnectionsCount) =>
+              onChange({ plumbingDishwasherConnectionsCount })
+            }
+          />
+          <NumberField
+            label="Водонагреватели"
+            unit="шт."
+            value={values.plumbingWaterHeatersCount}
+            onChange={(plumbingWaterHeatersCount) => onChange({ plumbingWaterHeatersCount })}
+          />
+          <NumberField
+            label="Полотенцесушители"
+            unit="шт."
+            value={values.plumbingTowelWarmersCount}
+            onChange={(plumbingTowelWarmersCount) => onChange({ plumbingTowelWarmersCount })}
+          />
+        </div>
+      </div>
+
+      <div className={styles.measureGroup}>
+        <p className={styles.measureGroupTitle}>Водяной тёплый пол</p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Водяной ТП"
+            unit="м²"
+            value={values.plumbingWarmFloorArea}
+            onChange={(plumbingWarmFloorArea) => onChange({ plumbingWarmFloorArea })}
           />
         </div>
       </div>

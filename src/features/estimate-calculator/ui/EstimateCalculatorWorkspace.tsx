@@ -5,6 +5,7 @@ import {
   buildCeilingEstimateLines,
   buildElectricEstimateLines,
   buildFloorEstimateLines,
+  buildPlumbingEstimateLines,
   buildTileEstimateLines,
   buildWallEstimateLines,
   calculateEstimateTotal,
@@ -20,13 +21,18 @@ import {
   getCeilingEstimateGroupTitle,
   getElectricEstimateGroupTitle,
   getFloorEstimateGroupTitle,
+  getPlumbingEstimateGroupTitle,
   getSelectedEstimateSections,
   getTileEstimateGroupTitle,
   getWallEstimateGroupTitle,
+  PLUMBING_PRICE_MAPPING,
+  PLUMBING_SECTION_ID,
+  PLUMBING_SECTION_TITLE,
   removeEstimateZone,
   resolveCeilingEstimateGroupId,
   resolveElectricEstimateGroupId,
   resolveFloorEstimateGroupId,
+  resolvePlumbingEstimateGroupId,
   resolveTileEstimateGroupId,
   resolveWallEstimateGroupId,
   TILE_PRICE_MAPPING,
@@ -45,11 +51,13 @@ import {
   DEFAULT_CEILING_SCENARIOS,
   DEFAULT_ELECTRIC_SCENARIOS,
   DEFAULT_FLOOR_PRESETS,
+  DEFAULT_PLUMBING_SCENARIOS,
   DEFAULT_TILE_SCENARIOS,
   DEFAULT_WALL_SCENARIOS,
   EMPTY_CEILING_INPUT,
   EMPTY_ELECTRIC_INPUT,
   EMPTY_FLOOR_INPUT,
+  EMPTY_PLUMBING_INPUT,
   EMPTY_TILE_INPUT,
   EMPTY_WALL_INPUT,
   readEstimateCalculatorSnapshot,
@@ -60,6 +68,8 @@ import {
   restoreEstimateZones,
   restoreFloorEstimateState,
   restoreFloorPresetDraft,
+  restorePlumbingEstimateState,
+  restorePlumbingScenarioDraft,
   restoreTileEstimateState,
   restoreTileScenarioDraft,
   restoreWallEstimateState,
@@ -68,6 +78,7 @@ import {
   type CeilingScenarioDraftState,
   type ElectricScenarioDraftState,
   type FloorPresetDraftState,
+  type PlumbingScenarioDraftState,
   type TileScenarioDraftState,
   type WallScenarioDraftState,
 } from '../model/estimate-calculator-persistence'
@@ -76,6 +87,8 @@ import { useCeilingEstimateEditor } from '../ceilings/use-ceiling-estimate-edito
 import { ElectricEstimatePanel } from '../electrics/ElectricEstimatePanel'
 import { useElectricEstimateEditor } from '../electrics/use-electric-estimate-editor'
 import { FloorEstimatePanel } from '../floors/FloorEstimatePanel'
+import { PlumbingEstimatePanel } from '../plumbing/PlumbingEstimatePanel'
+import { usePlumbingEstimateEditor } from '../plumbing/use-plumbing-estimate-editor'
 import { TileEstimatePanel } from '../tile/TileEstimatePanel'
 import { useTileEstimateEditor } from '../tile/use-tile-estimate-editor'
 import { useWallEstimateEditor } from '../walls/use-wall-estimate-editor'
@@ -95,12 +108,14 @@ export function EstimateCalculatorWorkspace() {
       ceilings: restoreCeilingEstimateState(snapshot),
       tile: restoreTileEstimateState(snapshot),
       electrics: restoreElectricEstimateState(snapshot),
+      plumbing: restorePlumbingEstimateState(snapshot),
       zones: restoreEstimateZones(snapshot),
       floorPresets: restoreFloorPresetDraft(snapshot),
       wallScenarios: restoreWallScenarioDraft(snapshot),
       ceilingScenarios: restoreCeilingScenarioDraft(snapshot),
       tileScenarios: restoreTileScenarioDraft(snapshot),
       electricScenarios: restoreElectricScenarioDraft(snapshot),
+      plumbingScenarios: restorePlumbingScenarioDraft(snapshot),
       activeTab: (snapshot?.activeTab ?? 'floors') as EstimateTabId,
     }
   })
@@ -122,6 +137,9 @@ export function EstimateCalculatorWorkspace() {
   const [electricScenarioDraft, setElectricScenarioDraft] = useState<ElectricScenarioDraftState>(
     initial.electricScenarios,
   )
+  const [plumbingScenarioDraft, setPlumbingScenarioDraft] = useState<PlumbingScenarioDraftState>(
+    initial.plumbingScenarios,
+  )
   const [globalFeedbackEpoch, setGlobalFeedbackEpoch] = useState(0)
 
   const floors = useFloorEstimateEditor(initial.floors)
@@ -129,6 +147,7 @@ export function EstimateCalculatorWorkspace() {
   const ceilings = useCeilingEstimateEditor(initial.ceilings)
   const tile = useTileEstimateEditor(initial.tile)
   const electrics = useElectricEstimateEditor(initial.electrics)
+  const plumbing = usePlumbingEstimateEditor(initial.plumbing)
   const skipFirstPersist = useRef(true)
 
   useEffect(() => {
@@ -151,11 +170,14 @@ export function EstimateCalculatorWorkspace() {
         tileLines: tile.lines,
         electricInput: electrics.input,
         electricLines: electrics.lines,
+        plumbingInput: plumbing.input,
+        plumbingLines: plumbing.lines,
         floorPresets: floorPresetDraft,
         wallScenarios: wallScenarioDraft,
         ceilingScenarios: ceilingScenarioDraft,
         tileScenarios: tileScenarioDraft,
         electricScenarios: electricScenarioDraft,
+        plumbingScenarios: plumbingScenarioDraft,
       }),
     )
   }, [
@@ -171,11 +193,14 @@ export function EstimateCalculatorWorkspace() {
     tile.lines,
     electrics.input,
     electrics.lines,
+    plumbing.input,
+    plumbing.lines,
     floorPresetDraft,
     wallScenarioDraft,
     ceilingScenarioDraft,
     tileScenarioDraft,
     electricScenarioDraft,
+    plumbingScenarioDraft,
   ])
 
   function handleZonesChange(nextZones: EstimateZone[]) {
@@ -188,6 +213,7 @@ export function EstimateCalculatorWorkspace() {
         ceilings.syncZoneName(zone.id, zone.name)
         tile.syncZoneName(zone.id, zone.name)
         electrics.syncZoneName(zone.id, zone.name)
+        plumbing.syncZoneName(zone.id, zone.name)
       }
     }
     setZones(nextZones)
@@ -199,6 +225,7 @@ export function EstimateCalculatorWorkspace() {
     ceilings.removeLinesByZoneId(zoneId)
     tile.removeLinesByZoneId(zoneId)
     electrics.removeLinesByZoneId(zoneId)
+    plumbing.removeLinesByZoneId(zoneId)
     setZones((prev) => removeEstimateZone(prev, zoneId))
   }
 
@@ -212,6 +239,7 @@ export function EstimateCalculatorWorkspace() {
     setCeilingScenarioDraft({ ...DEFAULT_CEILING_SCENARIOS })
     setTileScenarioDraft({ ...DEFAULT_TILE_SCENARIOS })
     setElectricScenarioDraft({ ...DEFAULT_ELECTRIC_SCENARIOS })
+    setPlumbingScenarioDraft({ ...DEFAULT_PLUMBING_SCENARIOS })
     floors.replaceEstimate({
       input: { ...EMPTY_FLOOR_INPUT },
       lines: buildFloorEstimateLines(EMPTY_FLOOR_INPUT),
@@ -231,6 +259,10 @@ export function EstimateCalculatorWorkspace() {
     electrics.replaceEstimate({
       input: { ...EMPTY_ELECTRIC_INPUT },
       lines: buildElectricEstimateLines(EMPTY_ELECTRIC_INPUT),
+    })
+    plumbing.replaceEstimate({
+      input: { ...EMPTY_PLUMBING_INPUT },
+      lines: buildPlumbingEstimateLines(EMPTY_PLUMBING_INPUT),
     })
   }
 
@@ -252,6 +284,11 @@ export function EstimateCalculatorWorkspace() {
   function resetElectricsSection() {
     electrics.resetEstimate()
     setElectricScenarioDraft({ ...DEFAULT_ELECTRIC_SCENARIOS })
+  }
+
+  function resetPlumbingSection() {
+    plumbing.resetEstimate()
+    setPlumbingScenarioDraft({ ...DEFAULT_PLUMBING_SCENARIOS })
   }
 
   const zoneNameById = useMemo(
@@ -295,9 +332,24 @@ export function EstimateCalculatorWorkspace() {
         resolveGroupTitle: (line) =>
           getElectricEstimateGroupTitle(resolveElectricEstimateGroupId(line)),
       },
+      {
+        sectionId: PLUMBING_SECTION_ID,
+        sectionTitle: 'Сантехника',
+        lines: plumbing.lines,
+        resolveGroupTitle: (line) =>
+          getPlumbingEstimateGroupTitle(resolvePlumbingEstimateGroupId(line)),
+      },
     ])
     return attachZonesToSelectedSections(sections, zoneNameById)
-  }, [floors.lines, walls.lines, ceilings.lines, tile.lines, electrics.lines, zoneNameById])
+  }, [
+    floors.lines,
+    walls.lines,
+    ceilings.lines,
+    tile.lines,
+    electrics.lines,
+    plumbing.lines,
+    zoneNameById,
+  ])
 
   const grandTotalRub = useMemo(
     () =>
@@ -307,8 +359,9 @@ export function EstimateCalculatorWorkspace() {
         { id: CEILING_SECTION_ID, title: CEILING_SECTION_TITLE, lines: ceilings.lines },
         { id: TILE_SECTION_ID, title: TILE_SECTION_TITLE, lines: tile.lines },
         { id: ELECTRIC_SECTION_ID, title: ELECTRIC_SECTION_TITLE, lines: electrics.lines },
+        { id: PLUMBING_SECTION_ID, title: PLUMBING_SECTION_TITLE, lines: plumbing.lines },
       ]),
-    [floors.lines, walls.lines, ceilings.lines, tile.lines, electrics.lines],
+    [floors.lines, walls.lines, ceilings.lines, tile.lines, electrics.lines, plumbing.lines],
   )
 
   return (
@@ -320,17 +373,20 @@ export function EstimateCalculatorWorkspace() {
           ceilingsSelectedCount={ceilings.selectedCount}
           tileSelectedCount={tile.selectedCount}
           electricsSelectedCount={electrics.selectedCount}
+          plumbingSelectedCount={plumbing.selectedCount}
           floorsTotalRub={floors.totalRub}
           wallsTotalRub={walls.totalRub}
           ceilingsTotalRub={ceilings.totalRub}
           tileTotalRub={tile.totalRub}
           electricsTotalRub={electrics.totalRub}
+          plumbingTotalRub={plumbing.totalRub}
           grandTotalRub={grandTotalRub}
           floorsMappingCount={FLOOR_PRICE_MAPPING.length}
           wallsMappingCount={WALL_PRICE_MAPPING.length}
           ceilingsMappingCount={CEILING_PRICE_MAPPING.length}
           tileMappingCount={TILE_PRICE_MAPPING.length}
           electricsMappingCount={ELECTRIC_PRICE_MAPPING.length}
+          plumbingMappingCount={PLUMBING_PRICE_MAPPING.length}
         />
         <EstimateTabs activeTab={activeTab} onChange={setActiveTab} />
       </div>
@@ -431,6 +487,26 @@ export function EstimateCalculatorWorkspace() {
             setElectricScenarioDraft((prev) => ({ ...prev, ...patch }))
           }
           onResetSection={resetElectricsSection}
+          globalFeedbackEpoch={globalFeedbackEpoch}
+        />
+      </div>
+
+      <div
+        id="estimate-panel-plumbing"
+        role="tabpanel"
+        aria-labelledby="estimate-tab-plumbing"
+        hidden={activeTab !== 'plumbing'}
+      >
+        <PlumbingEstimatePanel
+          editor={plumbing}
+          zones={zones}
+          onZonesChange={handleZonesChange}
+          onDeleteZone={handleDeleteZone}
+          scenarioDraft={plumbingScenarioDraft}
+          onScenarioDraftChange={(patch) =>
+            setPlumbingScenarioDraft((prev) => ({ ...prev, ...patch }))
+          }
+          onResetSection={resetPlumbingSection}
           globalFeedbackEpoch={globalFeedbackEpoch}
         />
       </div>

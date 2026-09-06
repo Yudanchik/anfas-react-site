@@ -6,6 +6,8 @@ import type {
   EstimateZone,
   FloorEstimateInput,
   FloorPresetApplication,
+  PlumbingEstimateInput,
+  PlumbingScenarioApplication,
   TileEstimateInput,
   TileScenarioApplication,
   WallEstimateInput,
@@ -13,8 +15,10 @@ import type {
 } from '@/entities/estimate'
 import {
   formatElectricScenarioZoneMismatchMessage,
+  formatPlumbingScenarioZoneMismatchMessage,
   formatTileScenarioZoneMismatchMessage,
   isElectricScenarioAllowedForZone,
+  isPlumbingScenarioAllowedForZone,
   isTileScenarioAllowedForZone,
 } from '@/entities/estimate'
 
@@ -39,6 +43,9 @@ const TILE_ZONE = 'В выбранной зоне нет нужных замер
 const ELECTRIC_GENERAL =
   'Заполните замеры раздела перед применением сценария'
 const ELECTRIC_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
+const PLUMBING_GENERAL =
+  'Заполните замеры раздела перед применением сценария'
+const PLUMBING_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
 
 export function getScenarioMeasuresDisabledHint(forZone: boolean): string {
   return forZone ? SCENARIO_MEASURES_HINT_ZONE : SCENARIO_MEASURES_HINT_GENERAL
@@ -270,6 +277,91 @@ export function validateElectricScenarioMeasures(params: {
   }
 }
 
+/** Сантехника: проверка счётчиков и совместимости сценария с типом зоны. */
+export function validatePlumbingScenarioMeasures(params: {
+  application: PlumbingScenarioApplication
+  input: PlumbingEstimateInput
+  zone?: EstimateZone
+}): ScenarioMeasureCheck {
+  const { application, input, zone } = params
+  const forZone = Boolean(zone)
+
+  const zoneType = zone ? zone.zoneType : null
+  if (!isPlumbingScenarioAllowedForZone(application.state, zoneType)) {
+    return {
+      ok: false,
+      message: formatPlumbingScenarioZoneMismatchMessage(application.state),
+    }
+  }
+
+  const fail = (): ScenarioMeasureCheck => ({
+    ok: false,
+    message: forZone ? PLUMBING_ZONE : PLUMBING_GENERAL,
+  })
+
+  const waterPoints = zone ? zone.plumbingWaterPointsCount : input.plumbingWaterPointsCount
+  const sewerPoints = zone ? zone.plumbingSewerPointsCount : input.plumbingSewerPointsCount
+  const waterPipe = zone ? zone.plumbingWaterPipeLength : input.plumbingWaterPipeLength
+  const sewerPipe = zone ? zone.plumbingSewerPipeLength : input.plumbingSewerPipeLength
+  const collectors = zone ? zone.plumbingCollectorsCount : input.plumbingCollectorsCount
+  const toilets = zone ? zone.plumbingToiletsCount : input.plumbingToiletsCount
+  const sinks = zone ? zone.plumbingSinksCount : input.plumbingSinksCount
+  const bathtubs = zone ? zone.plumbingBathtubsCount : input.plumbingBathtubsCount
+  const showers = zone ? zone.plumbingShowersCount : input.plumbingShowersCount
+  const mixers = zone ? zone.plumbingMixersCount : input.plumbingMixersCount
+  const installations = zone ? zone.plumbingInstallationsCount : input.plumbingInstallationsCount
+  const drains = zone ? zone.plumbingDrainsCount : input.plumbingDrainsCount
+  const washer = zone
+    ? zone.plumbingWasherConnectionsCount
+    : input.plumbingWasherConnectionsCount
+  const dishwasher = zone
+    ? zone.plumbingDishwasherConnectionsCount
+    : input.plumbingDishwasherConnectionsCount
+  const heaters = zone ? zone.plumbingWaterHeatersCount : input.plumbingWaterHeatersCount
+  const towelWarmers = zone ? zone.plumbingTowelWarmersCount : input.plumbingTowelWarmersCount
+  const warmFloor = zone ? zone.plumbingWarmFloorArea : input.plumbingWarmFloorArea
+
+  const points = [waterPoints, sewerPoints]
+  const pipes = [waterPipe, sewerPipe]
+  const fixtures = [
+    toilets,
+    sinks,
+    bathtubs,
+    showers,
+    mixers,
+    installations,
+    drains,
+    washer,
+    dishwasher,
+    heaters,
+    towelWarmers,
+  ]
+
+  switch (application.state) {
+    case 'demolition-only':
+    case 'manifold':
+      return { ok: true }
+    case 'drainage-only':
+      return anyPositive([sewerPipe, sewerPoints, drains]) ? { ok: true } : fail()
+    case 'water-supply-only':
+      return anyPositive([waterPipe, waterPoints, collectors]) ? { ok: true } : fail()
+    case 'fixtures-only':
+      return anyPositive(fixtures) ? { ok: true } : fail()
+    case 'bath-zone':
+      return anyPositive([bathtubs, showers, mixers, drains]) ? { ok: true } : fail()
+    case 'toilet-zone':
+      return anyPositive([toilets, installations, waterPoints, sewerPoints]) ? { ok: true } : fail()
+    case 'kitchen':
+      return anyPositive([sinks, dishwasher, washer, waterPoints, sewerPoints, ...pipes])
+        ? { ok: true }
+        : fail()
+    case 'bathroom-replacement':
+      return anyPositive([toilets, sinks, bathtubs, showers, mixers]) ? { ok: true } : fail()
+    case 'bathroom-from-scratch':
+      return anyPositive([...points, ...pipes, ...fixtures, warmFloor]) ? { ok: true } : fail()
+  }
+}
+
 /** Lightweight wrappers for UI disabled-state (reuse validate*). */
 export function canApplyFloorPreset(params: {
   application: FloorPresetApplication
@@ -309,4 +401,12 @@ export function canApplyElectricScenario(params: {
   zone?: EstimateZone
 }): boolean {
   return validateElectricScenarioMeasures(params).ok
+}
+
+export function canApplyPlumbingScenario(params: {
+  application: PlumbingScenarioApplication
+  input: PlumbingEstimateInput
+  zone?: EstimateZone
+}): boolean {
+  return validatePlumbingScenarioMeasures(params).ok
 }

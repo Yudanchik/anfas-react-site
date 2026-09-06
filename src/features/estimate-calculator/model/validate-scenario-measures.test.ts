@@ -7,6 +7,7 @@ import {
   canApplyCeilingScenario,
   canApplyElectricScenario,
   canApplyFloorPreset,
+  canApplyPlumbingScenario,
   canApplyTileScenario,
   canApplyWallScenario,
   getScenarioMeasuresDisabledHint,
@@ -15,6 +16,7 @@ import {
   validateCeilingScenarioMeasures,
   validateElectricScenarioMeasures,
   validateFloorPresetMeasures,
+  validatePlumbingScenarioMeasures,
   validateTileScenarioMeasures,
   validateWallScenarioMeasures,
 } from './validate-scenario-measures'
@@ -390,6 +392,94 @@ describe('validateElectricScenarioMeasures', () => {
     assert.equal(result.ok, false)
     if (!result.ok) {
       assert.match(result.message, /кухни/)
+    }
+  })
+})
+
+const emptyPlumbingInput = {
+  plumbingWaterPointsCount: 0,
+  plumbingSewerPointsCount: 0,
+  plumbingWaterPipeLength: 0,
+  plumbingSewerPipeLength: 0,
+  plumbingCollectorsCount: 0,
+  plumbingToiletsCount: 0,
+  plumbingSinksCount: 0,
+  plumbingBathtubsCount: 0,
+  plumbingShowersCount: 0,
+  plumbingMixersCount: 0,
+  plumbingInstallationsCount: 0,
+  plumbingDrainsCount: 0,
+  plumbingWasherConnectionsCount: 0,
+  plumbingDishwasherConnectionsCount: 0,
+  plumbingWaterHeatersCount: 0,
+  plumbingTowelWarmersCount: 0,
+  plumbingWarmFloorArea: 0,
+  surveyorComment: '',
+}
+
+describe('validatePlumbingScenarioMeasures', () => {
+  it('rejects water-supply-only with zero counters', () => {
+    const result = validatePlumbingScenarioMeasures({
+      application: { state: 'water-supply-only' },
+      input: emptyPlumbingInput,
+    })
+    assert.equal(result.ok, false)
+  })
+
+  it('accepts fixtures-only when a fixture count is set', () => {
+    const result = validatePlumbingScenarioMeasures({
+      application: { state: 'fixtures-only' },
+      input: { ...emptyPlumbingInput, plumbingToiletsCount: 1 },
+    })
+    assert.equal(result.ok, true)
+  })
+
+  it('allows manifold and demolition-only without counters', () => {
+    assert.equal(
+      canApplyPlumbingScenario({
+        application: { state: 'manifold' },
+        input: emptyPlumbingInput,
+      }),
+      true,
+    )
+    assert.equal(
+      canApplyPlumbingScenario({
+        application: { state: 'demolition-only' },
+        input: emptyPlumbingInput,
+      }),
+      true,
+    )
+  })
+
+  it('blocks kitchen scenario for bathroom zone even with measures', () => {
+    const bathroomZone = createEstimateZone({
+      name: 'Санузел',
+      fields: { zoneType: 'bathroom', plumbingSinksCount: 1 },
+    })
+    const result = validatePlumbingScenarioMeasures({
+      application: { state: 'kitchen' },
+      input: { ...emptyPlumbingInput, plumbingSinksCount: 1 },
+      zone: bathroomZone,
+    })
+    assert.equal(result.ok, false)
+    if (!result.ok) {
+      assert.match(result.message, /кухни/)
+    }
+  })
+
+  it('blocks bathroom scenario for kitchen zone', () => {
+    const kitchenZone = createEstimateZone({
+      name: 'Кухня',
+      fields: { zoneType: 'kitchen', plumbingToiletsCount: 1 },
+    })
+    const result = validatePlumbingScenarioMeasures({
+      application: { state: 'bathroom-from-scratch' },
+      input: { ...emptyPlumbingInput, plumbingToiletsCount: 1 },
+      zone: kitchenZone,
+    })
+    assert.equal(result.ok, false)
+    if (!result.ok) {
+      assert.match(result.message, /санузла/)
     }
   })
 })
