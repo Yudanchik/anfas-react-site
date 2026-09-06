@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import {
   ESTIMATE_GENERAL_WORKS_TITLE,
+  ESTIMATE_ZONE_TYPE_LABELS,
   formatTileScenarioFeedback,
   formatTileScenarioLabel,
   formatTileScenarioZoneFeedback,
+  formatTileScenarioZoneMismatchMessage,
+  isTileScenarioAllowedForZone,
   resolveTileScenarioOptionsForZone,
   type EstimateZone,
   type TileCladFormatOption,
@@ -92,6 +95,23 @@ function showsDemolitionSurfaces(state: TileStateOption): boolean {
   return state === 'demolition-only'
 }
 
+function incompatibleHint(optionId: TileStateOption): string {
+  if (optionId === 'kitchen-backsplash') return 'для кухни'
+  if (optionId === 'bathroom-from-scratch' || optionId === 'bathroom-replacement') {
+    return 'для санузла'
+  }
+  return 'другой тип зоны'
+}
+
+function resolveCompatibleState(
+  state: TileStateOption,
+  zoneType: EstimateZone['zoneType'] | null,
+): TileStateOption {
+  if (isTileScenarioAllowedForZone(state, zoneType)) return state
+  const { primary } = resolveTileScenarioOptionsForZone(zoneType, false)
+  return primary[0]?.id ?? 'floor-only'
+}
+
 export function TileEstimateScenarios({
   draft,
   onDraftChange,
@@ -107,14 +127,13 @@ export function TileEstimateScenarios({
     clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
   })
 
-  const showClad = showsCladFormat(state)
-  const showGrout = showsGrout(state)
-  const showDemoSurfaces = showsDemolitionSurfaces(state)
-
   const targetOptions = useMemo(
     () => [
       { value: GENERAL_TARGET, label: ESTIMATE_GENERAL_WORKS_TITLE },
-      ...zones.map((zone) => ({ value: zone.id, label: zone.name })),
+      ...zones.map((zone) => ({
+        value: zone.id,
+        label: `${zone.name} · ${ESTIMATE_ZONE_TYPE_LABELS[zone.zoneType]}`,
+      })),
     ],
     [zones],
   )
@@ -123,59 +142,49 @@ export function TileEstimateScenarios({
     : GENERAL_TARGET
   const selectedZone = zones.find((zone) => zone.id === resolvedTargetId)
   const filterZoneType = selectedZone ? selectedZone.zoneType : null
+  const { primary, other } = resolveTileScenarioOptionsForZone(filterZoneType, false)
+  const stateOptions = primary.map((option) => ({ value: option.id, label: option.label }))
+  const compatibleState = resolveCompatibleState(state, filterZoneType)
 
-  const { primary, other } = useMemo(
-    () => resolveTileScenarioOptionsForZone(filterZoneType, showAllScenarios),
-    [filterZoneType, showAllScenarios],
-  )
-
-  const stateOptions = useMemo(
-    () => primary.map((option) => ({ value: option.id, label: option.label })),
-    [primary],
-  )
-
-  const visibleStateIds = useMemo(
-    () => new Set(stateOptions.map((option) => option.value)),
-    [stateOptions],
-  )
-
-  useEffect(() => {
-    if (showAllScenarios || visibleStateIds.has(state)) return
-    const fallback = primary[0]?.id
-    if (!fallback || fallback === state) return
-    const patch: Partial<TileScenarioDraftState> = { state: fallback }
-    if (fallback === 'large-format' && cladFormat === '301-1300') {
-      patch.cladFormat = '1701-3600'
-    }
-    onDraftChange(patch)
-  }, [visibleStateIds, state, primary, showAllScenarios, cladFormat, onDraftChange])
-
-  useEffect(() => {
-    if (filterZoneType === null || filterZoneType === 'other') {
-      setShowAllScenarios(false)
-    }
-  }, [filterZoneType])
+  const showClad = showsCladFormat(compatibleState)
+  const showGrout = showsGrout(compatibleState)
+  const showDemoSurfaces = showsDemolitionSurfaces(compatibleState)
 
   const application: TileScenarioApplication = {
-    state: visibleStateIds.has(state) ? state : (primary[0]?.id ?? state),
+    state: compatibleState,
     cladFormat: showClad ? cladFormat : undefined,
     grout: showGrout ? grout : undefined,
     demolitionSurfaces: showDemoSurfaces ? demolitionSurfaces : undefined,
   }
 
-  const canApply = canApplyTileScenario({
-    application,
-    input: generalInput,
-    zone: selectedZone,
-  })
-  const applyDisabledHint = canApply
-    ? null
-    : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
+  const zoneFitOk = isTileScenarioAllowedForZone(application.state, filterZoneType)
+  const canApply =
+    zoneFitOk &&
+    canApplyTileScenario({
+      application,
+      input: generalInput,
+      zone: selectedZone,
+    })
+  const applyDisabledHint = !zoneFitOk
+    ? formatTileScenarioZoneMismatchMessage(application.state)
+    : canApply
+      ? null
+      : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
 
   const previewLabel = formatTileScenarioLabel(application)
-  const hasOtherScenarios = !showAllScenarios && other.length > 0
-  const canCollapseToRecommended =
-    showAllScenarios && filterZoneType !== null && filterZoneType !== 'other'
+  const hasOtherScenarios = other.length > 0
+  const canCollapseExtra = showAllScenarios && hasOtherScenarios
+
+  function syncStateForZoneType(zoneType: EstimateZone['zoneType'] | null) {
+    if (isTileScenarioAllowedForZone(state, zoneType)) return
+    const next = resolveCompatibleState(state, zoneType)
+    if (next === state) return
+    const patch: Partial<TileScenarioDraftState> = { state: next }
+    if (next === 'large-format' && cladFormat === '301-1300') {
+      patch.cladFormat = '1701-3600'
+    }
+    onDraftChange(patch)
+  }
 
   function handleApply() {
     const check = validateTileScenarioMeasures({
@@ -220,6 +229,8 @@ export function TileEstimateScenarios({
           onChange={(next) => {
             setTargetId(next)
             setShowAllScenarios(false)
+            const zone = zones.find((entry) => entry.id === next)
+            syncStateForZoneType(zone ? zone.zoneType : null)
           }}
         />
       </div>
@@ -234,11 +245,15 @@ export function TileEstimateScenarios({
           <div className={styles.field}>
             <span>Сценарий</span>
             <EstimateSelect
-              value={application.state}
+              value={compatibleState}
               options={stateOptions}
               ariaLabel="Сценарий плитки"
               onChange={(nextValue) => {
                 const next = nextValue as TileStateOption
+                if (!isTileScenarioAllowedForZone(next, filterZoneType)) {
+                  setError(formatTileScenarioZoneMismatchMessage(next))
+                  return
+                }
                 const patch: Partial<TileScenarioDraftState> = { state: next }
                 if (next === 'large-format' && cladFormat === '301-1300') {
                   patch.cladFormat = '1701-3600'
@@ -248,24 +263,35 @@ export function TileEstimateScenarios({
             />
           </div>
 
-          {hasOtherScenarios ? (
+          {hasOtherScenarios && !showAllScenarios ? (
             <button
               type="button"
               className={styles.showAllBtn}
               onClick={() => setShowAllScenarios(true)}
             >
-              Показать все сценарии ({other.length})
+              Показать другие сценарии ({other.length})
             </button>
           ) : null}
 
-          {canCollapseToRecommended ? (
+          {canCollapseExtra ? (
             <button
               type="button"
               className={styles.showAllBtn}
               onClick={() => setShowAllScenarios(false)}
             >
-              Только подходящие к типу зоны
+              Скрыть другие сценарии
             </button>
+          ) : null}
+
+          {showAllScenarios && hasOtherScenarios ? (
+            <ul className={styles.otherList} aria-label="Другие сценарии (недоступны для типа зоны)">
+              {other.map((option) => (
+                <li key={option.id} className={styles.otherItem}>
+                  <span>{option.label}</span>
+                  <span className={styles.otherHint}>{incompatibleHint(option.id)}</span>
+                </li>
+              ))}
+            </ul>
           ) : null}
 
           {showClad ? (
@@ -284,11 +310,13 @@ export function TileEstimateScenarios({
 
           {showGrout ? (
             <div className={styles.field}>
-              <span>{state === 'grout-repair-only' ? 'Затирка / ремонт' : 'Затирка'}</span>
+              <span>
+                {compatibleState === 'grout-repair-only' ? 'Затирка / ремонт' : 'Затирка'}
+              </span>
               <EstimateSelect
                 value={grout}
                 options={
-                  state === 'grout-repair-only'
+                  compatibleState === 'grout-repair-only'
                     ? GROUT_OPTIONS
                     : GROUT_OPTIONS.filter((option) => option.value !== 'none')
                 }

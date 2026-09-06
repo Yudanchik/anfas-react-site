@@ -9,6 +9,10 @@ import type {
   WallEstimateInput,
   WallScenarioApplication,
 } from '@/entities/estimate'
+import {
+  formatTileScenarioZoneMismatchMessage,
+  isTileScenarioAllowedForZone,
+} from '@/entities/estimate'
 
 export type ScenarioMeasureCheck = { ok: true } | { ok: false; message: string }
 
@@ -145,7 +149,7 @@ export function validateCeilingScenarioMeasures(params: {
   }
 }
 
-/** Плитка: проверка замеров перед сценарием. */
+/** Плитка: проверка замеров и совместимости сценария с типом зоны. */
 export function validateTileScenarioMeasures(params: {
   application: TileScenarioApplication
   input: TileEstimateInput
@@ -153,6 +157,15 @@ export function validateTileScenarioMeasures(params: {
 }): ScenarioMeasureCheck {
   const { application, input, zone } = params
   const forZone = Boolean(zone)
+
+  const zoneType = zone ? zone.zoneType : null
+  if (!isTileScenarioAllowedForZone(application.state, zoneType)) {
+    return {
+      ok: false,
+      message: formatTileScenarioZoneMismatchMessage(application.state),
+    }
+  }
+
   const fail = (): ScenarioMeasureCheck => ({
     ok: false,
     message: forZone ? TILE_ZONE : TILE_GENERAL,

@@ -135,6 +135,32 @@
   }
 }
 
+.otherList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.otherItem {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: baseline;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  font-size: 11px;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}
+
+.otherHint {
+  font-size: 10px;
+  color: color-mix(in srgb, var(--ink) 48%, transparent);
+}
+
 .action {
   @include eu.button-primary;
 

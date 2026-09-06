@@ -4,6 +4,7 @@ import {
   createEstimateZone,
   ESTIMATE_ZONE_TEMPLATES,
   ESTIMATE_ZONE_TYPE_OPTIONS,
+  inferEstimateZoneTypeFromName,
   updateEstimateZone,
   type CeilingEstimateInput,
   type EstimateZone,
@@ -158,9 +159,11 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
       setError(validated.message)
       return
     }
+    const inferred =
+      zoneType === 'other' ? inferEstimateZoneTypeFromName(validated.value) : undefined
     const zone = createEstimateZone({
       name: validated.value,
-      fields: { zoneType },
+      fields: { zoneType: inferred ?? zoneType },
     })
     onZonesChange([...zones, zone])
     setDraftName('')
@@ -279,7 +282,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                     savedName={zone.name}
                     onCommit={(name) => patchZone(zone.id, { name })}
                   />
-                  <label className={styles.field}>
+                  <div className={styles.field}>
                     <span className={styles.label}>Тип зоны</span>
                     <EstimateSelect
                       value={zone.zoneType}
@@ -289,7 +292,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                         patchZone(zone.id, { zoneType: next as EstimateZoneType })
                       }
                     />
-                  </label>
+                  </div>
                   {section === 'floors' ? (
                     <FloorZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
                   ) : section === 'walls' ? (

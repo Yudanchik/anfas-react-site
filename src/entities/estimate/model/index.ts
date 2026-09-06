@@ -69,6 +69,7 @@ export {
   removeEstimateZone,
   syncEstimateLineZoneNames,
   updateEstimateZone,
+  inferEstimateZoneTypeFromName,
 } from './shared/estimate-zone'
 export type { EstimateZone, EstimateZoneId, EstimateZoneType } from './shared/estimate-zone'
 export {
@@ -391,7 +392,10 @@ export type {
   TileZoneWorkCategoryId,
 } from './tile/tile-zone-catalog'
 export {
+  formatTileScenarioZoneMismatchMessage,
+  getTileScenarioOptionLabel,
   getTileScenarioRecommendedZoneTypes,
+  isTileScenarioAllowedForZone,
   resolveTileScenarioOptionsForZone,
   TILE_SCENARIO_OPTIONS,
 } from './tile/tile-scenario-options'

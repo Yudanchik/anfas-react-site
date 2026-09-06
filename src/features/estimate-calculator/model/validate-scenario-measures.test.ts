@@ -365,4 +365,52 @@ describe('validateTileScenarioMeasures', () => {
       true,
     )
   })
+
+  it('blocks kitchen-backsplash for bathroom zone even with measures', () => {
+    const bathroomZone = {
+      id: 'zone-bath',
+      name: 'Санузел',
+      zoneType: 'bathroom' as const,
+      floorArea: 0,
+      demolitionFloorArea: 0,
+      screedArea: 0,
+      wetArea: 0,
+      wallArea: 0,
+      demolitionWallArea: 0,
+      plasterArea: 0,
+      puttyArea: 0,
+      finishArea: 0,
+      slopesLength: 0,
+      cornersLength: 0,
+      ceilingArea: 0,
+      demolitionCeilingArea: 0,
+      plasterCeilingArea: 0,
+      puttyCeilingArea: 0,
+      finishCeilingArea: 0,
+      tileFloorArea: 4,
+      tileWallArea: 12,
+      tileBacksplashArea: 3,
+      tileCuttingLength: 0,
+      tileCornerLength: 0,
+      tileHolesCount: 0,
+      tileRepairCount: 0,
+    }
+    const result = validateTileScenarioMeasures({
+      application: { state: 'kitchen-backsplash', cladFormat: 'mosaic' },
+      input: { ...emptyTileInput, backsplashArea: 3 },
+      zone: bathroomZone,
+    })
+    assert.equal(result.ok, false)
+    if (!result.ok) {
+      assert.match(result.message, /Кухонный фартук.*кухни/)
+    }
+    assert.equal(
+      canApplyTileScenario({
+        application: { state: 'kitchen-backsplash', cladFormat: 'mosaic' },
+        input: { ...emptyTileInput, backsplashArea: 3 },
+        zone: bathroomZone,
+      }),
+      false,
+    )
+  })
 })

@@ -1,6 +1,7 @@
 import type { EstimateZoneType } from '../shared/estimate-zone'
 import {
   partitionScenariosByZoneType,
+  scenarioMatchesZoneType,
   type ScenarioWithZoneTypes,
 } from '../shared/estimate-zone-scenario-filter'
 import type { TileStateOption } from './apply-tile-scenario'
@@ -10,8 +11,12 @@ export type TileScenarioOptionMeta = ScenarioWithZoneTypes<TileStateOption> & {
 }
 
 /**
- * Метаданные сценариев плитки для soft-фильтра по типу зоны.
- * `recommendedZoneTypes: 'all'` — уместны для любой зоны.
+ * Метаданные сценариев плитки для soft-фильтра / apply-guard по типу зоны.
+ *
+ * Правила применимости:
+ * - общие работы (`null`) и тип `other` — все сценарии;
+ * - иначе — `all` или список, содержащий тип зоны.
+ * «Кухонный фартук» → kitchen (+ general/other); не для bathroom/room/corridor.
  */
 export const TILE_SCENARIO_OPTIONS: readonly TileScenarioOptionMeta[] = [
   {
@@ -32,7 +37,7 @@ export const TILE_SCENARIO_OPTIONS: readonly TileScenarioOptionMeta[] = [
   {
     id: 'walls-only',
     label: 'Плитка на стены',
-    recommendedZoneTypes: ['bathroom', 'kitchen', 'other'],
+    recommendedZoneTypes: 'all',
   },
   {
     id: 'kitchen-backsplash',
@@ -64,13 +69,41 @@ export function getTileScenarioRecommendedZoneTypes(
   )
 }
 
+export function getTileScenarioOptionLabel(state: TileStateOption): string {
+  return TILE_SCENARIO_OPTIONS.find((option) => option.id === state)?.label ?? state
+}
+
+/** Можно ли применять сценарий к target (null = общие работы). */
+export function isTileScenarioAllowedForZone(
+  state: TileStateOption,
+  zoneType: EstimateZoneType | null,
+): boolean {
+  return scenarioMatchesZoneType(getTileScenarioRecommendedZoneTypes(state), zoneType)
+}
+
+export function formatTileScenarioZoneMismatchMessage(state: TileStateOption): string {
+  const label = getTileScenarioOptionLabel(state)
+  if (state === 'kitchen-backsplash') {
+    return `Сценарий «${label}» подходит для кухни. Измените тип зоны или выберите другой сценарий.`
+  }
+  if (state === 'bathroom-from-scratch' || state === 'bathroom-replacement') {
+    return `Сценарий «${label}» подходит для санузла. Измените тип зоны или выберите другой сценарий.`
+  }
+  return `Сценарий «${label}» не подходит для выбранного типа зоны. Измените тип зоны или выберите другой сценарий.`
+}
+
+/**
+ * Делит сценарии на подходящие и прочие.
+ * `showAll` не переносит incompatible в primary — UI показывает `other` как справочные
+ * (не выбираемые); apply-guard блокирует применение.
+ */
 export function resolveTileScenarioOptionsForZone(
   zoneType: EstimateZoneType | null,
-  showAll: boolean,
+  _showAll = false,
 ): {
   primary: readonly TileScenarioOptionMeta[]
   other: readonly TileScenarioOptionMeta[]
 } {
-  const result = partitionScenariosByZoneType(TILE_SCENARIO_OPTIONS, zoneType, showAll)
+  const result = partitionScenariosByZoneType(TILE_SCENARIO_OPTIONS, zoneType, false)
   return { primary: result.primary, other: result.other }
 }

@@ -125,6 +125,41 @@ export function normalizeEstimateZoneType(value: unknown): EstimateZoneType {
   return isEstimateZoneType(value) ? value : 'other'
 }
 
+/**
+ * Лёгкий inference типа по названию (только подсказки при создании).
+ * Не перезаписывает явный выбор пользователя.
+ */
+export function inferEstimateZoneTypeFromName(name: string): EstimateZoneType | undefined {
+  const normalized = name.trim().toLocaleLowerCase('ru-RU')
+  if (!normalized) return undefined
+
+  if (
+    normalized.includes('санузел') ||
+    normalized.includes('ванн') ||
+    normalized === 'с/у' ||
+    normalized === 'су' ||
+    normalized.includes('с/у') ||
+    normalized.includes('туалет') ||
+    normalized.includes('wc')
+  ) {
+    return 'bathroom'
+  }
+
+  if (normalized.includes('кухн')) return 'kitchen'
+  if (normalized.includes('коридор') || normalized.includes('прихож')) return 'corridor'
+  if (
+    normalized.includes('комнат') ||
+    normalized.includes('спальн') ||
+    normalized.includes('гостиная') ||
+    normalized.includes('кабинет') ||
+    normalized.includes('детск')
+  ) {
+    return 'room'
+  }
+
+  return undefined
+}
+
 /** Сдвигает счётчик после hydrate из localStorage. */
 export function noteEstimateZoneIds(zones: readonly EstimateZone[]): void {
   for (const zone of zones) {
