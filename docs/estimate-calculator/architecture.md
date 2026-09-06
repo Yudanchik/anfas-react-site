@@ -1,8 +1,7 @@
 # Архитектура калькулятора сметы
 
 Техническое описание для разработчиков.
-Пользовательские инструкции: [README](./README.md), [Зоны](./zones.md), [Полы](./scenarios-floors.md), [Стены](./scenarios-walls.md).
-Roadmap следующих разделов: [estimate-calculator-master-plan.md](../../.cursor/task/estimate-calculator-master-plan.md).
+Пользовательские инструкции: [README](./README.md), [Зоны](./zones.md), [Полы](./scenarios-floors.md), [Стены](./scenarios-walls.md), [Потолки](./scenarios-ceilings.md).
 
 Цены и формулы живут в domain; UI только редактирует состояние.
 
@@ -16,14 +15,16 @@ src/entities/estimate/model/
               # zone work catalog, tests
   walls/      # WALL_PRICE_MAPPING, builders, scenarios (+ toZone), groups, conflicts,
               # zone work catalog, tests
+  ceilings/   # CEILING_PRICE_MAPPING, builders, scenarios (+ toZone), groups, conflicts,
+              # zone work catalog, tests
   index.ts    # публичный barrel — импорт только из @/entities/estimate
 ```
 
 | Слой | Назначение |
 |------|------------|
-| **mapping** | Whitelist работ и цен раздела (`FLOOR_*` / `WALL_*`). Не смешивать ключи между разделами. |
+| **mapping** | Whitelist работ и цен раздела (`FLOOR_*` / `WALL_*` / `CEILING_*`). Не смешивать ключи между разделами. |
 | **builders** | Собирают строки из mapping + inputs (по умолчанию выключены). |
-| **EstimateZone** | Сущность зоны объекта (`zone-N`) с площадями floors/walls. |
+| **EstimateZone** | Сущность зоны объекта (`zone-N`) с площадями floors/walls/ceilings. |
 | **zoneId / zoneName** | На `EstimateLine`: `zoneId` — ссылка на зону; `zoneName` — snapshot для UI. Без `zoneId` у canonical = общие работы. |
 | **presets / scenarios** | Object-level: canonical rows. Zone-level (`*ToZone`): upsert clones по `(zoneId, priceKey)`. |
 | **conflict groups** | Scope: `zoneId: null` (только canonical) или конкретный `zoneId` (только clones зоны). Manual не трогают. |
@@ -34,7 +35,7 @@ src/entities/estimate/model/
 
 Формула строки (domain): `Math.round(quantity × unitPrice × coefficient)`; выключенная / пустая / отрицательная qty → 0.
 
-Id линии `floors:zone-M` / `walls:zone-M` и id сущности `zone-N` — **разные** счётчики.
+Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` и id сущности `zone-N` — **разные** счётчики.
 
 ## UI
 
@@ -44,6 +45,7 @@ src/features/estimate-calculator/
                 # section lines, summary tree, EstimateSelect, confirm dialog, clearable input
   floors/       # FloorEstimatePanel, FloorZoneWorkAdd
   walls/        # WallEstimatePanel, scenarios, helpers, WallZoneWorkAdd, editor
+  ceilings/     # CeilingEstimatePanel, scenarios, helpers, CeilingZoneWorkAdd, editor
   model/        # persistence v2, zone name validation, search filter, manual validation
 src/features/floor-estimate/   # floor editor/presets/helpers (временно рядом; optional fold later)
 src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace; noindex
@@ -61,28 +63,30 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 ## Persistence
 
 Ключ localStorage: `anfas:estimate-calculator:v1` (имя ключа историческое).
-Схема снимка: **version 2** (`zones[]` + `zoneId` на строках).
+Схема снимка: **version 2** (`zones[]` + `zoneId` на строках + optional `ceilings`).
 
 - Parse принимает **v1** и мигрирует в v2 (`zones: []`; строки floors/walls сохраняются; orphan `zoneName` без `zoneId` остаются валидными).
-- Сохраняется: вкладка, зоны, inputs, патчи строк, manual/zoned extras, draft пресетов/сценариев.
+- Блок `ceilings` **опционален** при чтении (нет → пустой input + пустые строки); при записи всегда сериализуется.
+- Поля потолка на зоне (`ceilingArea` и др.) при отсутствии → `0` (старые v2-снимки не ломаются).
+- Сохраняется: вкладка, зоны, inputs floors/walls/ceilings, патчи строк, manual/zoned extras, draft пресетов/сценариев.
 - **Не** сохраняется: открытые группы аккордеона, search query, раскрытие итоговой сметы.
 
-| Действие | Зоны | Floors | Walls |
-|----------|------|--------|-------|
-| Сбросить всю смету | очистить | очистить | очистить |
-| Сбросить стены | оставить | — | очистить |
-| Удалить зону Z | удалить Z | удалить clones с `zoneId=Z` | то же |
-| Rename зоны | обновить name | sync `zoneName` на clones | то же |
+| Действие | Зоны | Floors | Walls | Ceilings |
+|----------|------|--------|-------|----------|
+| Сбросить всю смету | очистить | очистить | очистить | очистить |
+| Сбросить раздел | оставить | только floors | только walls | только ceilings |
+| Удалить зону Z | удалить Z | удалить clones с `zoneId=Z` | то же | то же |
+| Rename зоны | обновить name | sync `zoneName` на clones | то же | то же |
 
 ## PDF / export (будущее)
 
 Отдельный слой: `model/export/` или `features/estimate-export/`.
-Не класть в floors/walls и не смешивать с mapping. Пока **нет**.
+Не класть в floors/walls/ceilings и не смешивать с mapping. Пока **нет**.
 
 ## Header «Смета»
 
 `SiteHeader` → `INTERNAL_NAV` — **branch convenience**, не в `company.navigation`.
-Перед merge в `dev`: оставить / DEV-only / убрать (см. task notes).
+Перед merge в `dev`: оставить / DEV-only / убрать.
 
 ## Как добавить следующий раздел
 
@@ -91,8 +95,9 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 3. UI: `estimate-calculator/<section>/` + tab в `EstimateTabs`.
 4. Итоги через `calculateEstimateTotal` + `getSelectedEstimateSections`.
 5. Zone-level: `*ToZone` + scoped conflicts.
+6. Persistence: tolerant optional block + zone fields с default `0`.
 
-Кандидаты и порядок: [master-plan](../../.cursor/task/estimate-calculator-master-plan.md) (потолки → плитка → электрика → сантехника → прочее → export → access).
+Следующие кандидаты: плитка → электрика → сантехника → прочее → export → internal access.
 
 ## Не делать
 
