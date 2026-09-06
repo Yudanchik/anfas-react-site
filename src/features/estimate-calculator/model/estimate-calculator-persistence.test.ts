@@ -4,6 +4,7 @@ import { describe, it } from 'node:test'
 import {
   buildEstimateCalculatorSnapshot,
   parseEstimateCalculatorSnapshot,
+  restoreCeilingEstimateState,
   restoreEstimateZones,
   restoreFloorEstimateState,
   restoreWallEstimateState,
@@ -114,6 +115,11 @@ describe('estimate calculator persistence', () => {
           finishArea: 30,
           slopesLength: 0,
           cornersLength: 0,
+          ceilingArea: 0,
+          demolitionCeilingArea: 0,
+          plasterCeilingArea: 0,
+          puttyCeilingArea: 0,
+          finishCeilingArea: 0,
         },
       ],
       floors: {
@@ -253,5 +259,110 @@ describe('estimate calculator persistence', () => {
     assert.equal(zoned.quantity, 20)
     assert.equal(zoned.zoneName, 'Кухня')
     assert.equal(zoned.priceKey, 'demolition-laminate')
+  })
+
+  it('parses a v2 snapshot without ceilings and restores empty ceilings', () => {
+    const v2NoCeilings = {
+      version: 2,
+      activeTab: 'walls',
+      zones: [],
+      floors: {
+        input: {
+          totalFloorArea: 30,
+          demolitionArea: 0,
+          screedArea: 0,
+          wetZonesArea: 0,
+          avgDeltaMm: 0,
+          surveyorComment: '',
+        },
+        lines: [],
+      },
+      walls: {
+        input: {
+          totalWallArea: 60,
+          demolitionArea: 0,
+          plasterArea: 0,
+          puttyArea: 0,
+          finishArea: 0,
+          wallHeightM: 0,
+          slopesLengthM: 0,
+          cornersLengthM: 0,
+          surveyorComment: '',
+        },
+        lines: [],
+      },
+    }
+
+    const parsed = parseEstimateCalculatorSnapshot(v2NoCeilings)
+    assert.ok(parsed)
+    assert.equal(parsed.version, 2)
+    // floors/walls inputs preserved
+    assert.equal(parsed.floors.input.totalFloorArea, 30)
+    assert.equal(parsed.walls.input.totalWallArea, 60)
+
+    // ceilings tolerated -> empty input + no lines
+    const ceilings = restoreCeilingEstimateState(parsed)
+    assert.equal(ceilings.input.totalCeilingArea, 0)
+    assert.equal(ceilings.input.demolitionArea, 0)
+    assert.ok(ceilings.lines.length > 0)
+    assert.ok(ceilings.lines.every((line) => line.enabled === false))
+    assert.ok(ceilings.lines.every((line) => line.sectionId === 'ceilings'))
+  })
+
+  it('round-trips a v2 snapshot with ceilings while preserving floors/walls', () => {
+    const snapshot = buildEstimateCalculatorSnapshot({
+      activeTab: 'ceilings',
+      zones: [],
+      floorsInput: restoreFloorEstimateState(null).input,
+      floorsLines: restoreFloorEstimateState(null).lines.map((line) =>
+        line.priceKey === 'demolition-laminate'
+          ? { ...line, enabled: true, quantity: 15 }
+          : line,
+      ),
+      wallsInput: restoreWallEstimateState(null).input,
+      wallsLines: restoreWallEstimateState(null).lines.map((line) =>
+        line.priceKey === 'paint-2' ? { ...line, enabled: true, quantity: 22 } : line,
+      ),
+      ceilingsInput: {
+        totalCeilingArea: 48,
+        demolitionArea: 12,
+        plasterArea: 40,
+        puttyArea: 40,
+        finishArea: 40,
+        surveyorComment: 'ceil note',
+      },
+      ceilingsLines: restoreCeilingEstimateState(null).lines.map((line) =>
+        line.priceKey === 'paint-ceiling-2'
+          ? { ...line, enabled: true, quantity: 40, comment: 'ok' }
+          : line,
+      ),
+    })
+
+    const parsed = parseEstimateCalculatorSnapshot(JSON.parse(JSON.stringify(snapshot)))
+    assert.ok(parsed)
+    assert.equal(parsed.activeTab, 'ceilings')
+
+    // floors + walls preserved
+    const floors = restoreFloorEstimateState(parsed)
+    const laminate = floors.lines.find((line) => line.priceKey === 'demolition-laminate')
+    assert.ok(laminate)
+    assert.equal(laminate.enabled, true)
+    assert.equal(laminate.quantity, 15)
+
+    const walls = restoreWallEstimateState(parsed)
+    const paint = walls.lines.find((line) => line.priceKey === 'paint-2')
+    assert.ok(paint)
+    assert.equal(paint.enabled, true)
+    assert.equal(paint.quantity, 22)
+
+    // ceilings restored
+    const ceilings = restoreCeilingEstimateState(parsed)
+    assert.equal(ceilings.input.totalCeilingArea, 48)
+    assert.equal(ceilings.input.surveyorComment, 'ceil note')
+    const ceilingPaint = ceilings.lines.find((line) => line.priceKey === 'paint-ceiling-2')
+    assert.ok(ceilingPaint)
+    assert.equal(ceilingPaint.enabled, true)
+    assert.equal(ceilingPaint.quantity, 40)
+    assert.equal(ceilingPaint.comment, 'ok')
   })
 })

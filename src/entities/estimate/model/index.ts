@@ -1,4 +1,9 @@
 export type {
+  CeilingEstimateInput,
+  CeilingEstimateResult,
+  CeilingPriceMappingItem,
+  CeilingQuantityField,
+  CeilingWorkKind,
   EstimateLine,
   EstimatePriceSource,
   EstimateSection,
@@ -220,3 +225,78 @@ export type {
   WallZoneWorkCategory,
   WallZoneWorkCategoryId,
 } from './walls/wall-zone-catalog'
+
+export {
+  CEILING_PRICE_MAPPING,
+  CEILING_SECTION_ID,
+  CEILING_SECTION_TITLE,
+} from './ceilings/ceiling-price.mapping'
+export {
+  assertCeilingMappingMatchesFrontend,
+  findCeilingMappingConflicts,
+} from './ceilings/assert-ceiling-mapping'
+export type { CeilingMappingConflict } from './ceilings/assert-ceiling-mapping'
+export {
+  buildCeilingEstimateLines,
+  resolveCeilingDefaultQuantity,
+  resolveCeilingFinishQuantity,
+  resolveCeilingPlasterQuantity,
+  resolveCeilingPuttyQuantity,
+} from './ceilings/build-ceiling-estimate-lines'
+export type { BuildCeilingEstimateLinesOptions } from './ceilings/build-ceiling-estimate-lines'
+export { buildCeilingEstimate } from './ceilings/build-ceiling-estimate'
+export {
+  applyCeilingDemolitionArea,
+  applyCeilingFinishArea,
+  applyCeilingPlasterArea,
+  applyCeilingPuttyArea,
+  applyCeilingTotalAreaToSquareMeterWorks,
+  createManualCeilingEstimateLine,
+} from './ceilings/apply-ceiling-quantities'
+export {
+  getCeilingEstimateGroupTitle,
+  getDefaultOpenCeilingGroupIds,
+  groupCeilingEstimateLines,
+  resolveCeilingEstimateGroupId,
+} from './ceilings/ceiling-estimate-groups'
+export type {
+  CeilingEstimateGroup,
+  CeilingEstimateGroupId,
+} from './ceilings/ceiling-estimate-groups'
+export {
+  CEILING_CONFLICT_GROUPS,
+  disableCeilingConflictingAlternatives,
+  disableCeilingConflictingAlternativesInZone,
+  getCeilingConflictGroupId,
+} from './ceilings/ceiling-conflict-groups'
+export {
+  applyCeilingScenario,
+  applyCeilingScenarioToZone,
+  ceilingScenarioIncludesFinish,
+  formatCeilingScenarioFeedback,
+  formatCeilingScenarioLabel,
+  formatCeilingScenarioZoneFeedback,
+  isCeilingFinishPriceKey,
+  resolveCeilingScenarioKeys,
+} from './ceilings/apply-ceiling-scenario'
+export type {
+  ApplyCeilingScenarioResult,
+  CeilingDemolitionCoveringOption,
+  CeilingFinishTargetOption,
+  CeilingPaintLayersOption,
+  CeilingScenarioApplication,
+  CeilingStateOption,
+} from './ceilings/apply-ceiling-scenario'
+export {
+  createZonedCeilingEstimateLine,
+  findCeilingMappingItem,
+} from './ceilings/create-zoned-ceiling-estimate-line'
+export type { CreateZonedCeilingEstimateLineParams } from './ceilings/create-zoned-ceiling-estimate-line'
+export {
+  CEILING_ZONE_WORK_CATEGORIES,
+  getCeilingZoneMappingOptions,
+} from './ceilings/ceiling-zone-catalog'
+export type {
+  CeilingZoneWorkCategory,
+  CeilingZoneWorkCategoryId,
+} from './ceilings/ceiling-zone-catalog'

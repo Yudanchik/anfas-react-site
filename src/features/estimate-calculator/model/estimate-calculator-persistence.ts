@@ -1,12 +1,19 @@
 import {
+  buildCeilingEstimateLines,
   buildFloorEstimateLines,
   buildWallEstimateLines,
+  findCeilingMappingItem,
   findFloorMappingItem,
   findWallMappingItem,
   isZonedEstimateLine,
   noteEstimateZoneIds,
   noteManualLineIds,
   noteZonedLineIds,
+  type CeilingDemolitionCoveringOption,
+  type CeilingEstimateInput,
+  type CeilingFinishTargetOption,
+  type CeilingPaintLayersOption,
+  type CeilingStateOption,
   type DemolitionCoveringOption,
   type EstimateLine,
   type EstimateZone,
@@ -62,6 +69,13 @@ export type WallScenarioDraftState = {
   paintLayers: WallPaintLayersOption
 }
 
+export type CeilingScenarioDraftState = {
+  state: CeilingStateOption
+  finishTarget: CeilingFinishTargetOption
+  demolitionCovering: CeilingDemolitionCoveringOption
+  paintLayers: CeilingPaintLayersOption
+}
+
 export type EstimateCalculatorSnapshot = {
   version: typeof SNAPSHOT_VERSION
   activeTab: EstimateTabId
@@ -74,8 +88,13 @@ export type EstimateCalculatorSnapshot = {
     input: WallEstimateInput
     lines: PersistedEstimateLine[]
   }
+  ceilings?: {
+    input: CeilingEstimateInput
+    lines: PersistedEstimateLine[]
+  }
   floorPresets?: FloorPresetDraftState
   wallScenarios?: WallScenarioDraftState
+  ceilingScenarios?: CeilingScenarioDraftState
 }
 
 const EMPTY_FLOOR_INPUT: FloorEstimateInput = {
@@ -99,6 +118,15 @@ const EMPTY_WALL_INPUT: WallEstimateInput = {
   surveyorComment: '',
 }
 
+const EMPTY_CEILING_INPUT: CeilingEstimateInput = {
+  totalCeilingArea: 0,
+  demolitionArea: 0,
+  plasterArea: 0,
+  puttyArea: 0,
+  finishArea: 0,
+  surveyorComment: '',
+}
+
 const DEFAULT_FLOOR_PRESETS: FloorPresetDraftState = {
   covering: 'laminate',
   screedType: 'semidry-up-to-80',
@@ -112,6 +140,13 @@ const DEFAULT_WALL_SCENARIOS: WallScenarioDraftState = {
   demolitionCovering: 'wallpaper',
   wallpaperType: 'flizelin',
   paintLayers: 'paint-2',
+}
+
+const DEFAULT_CEILING_SCENARIOS: CeilingScenarioDraftState = {
+  state: 'from-scratch',
+  finishTarget: 'none',
+  demolitionCovering: 'paint',
+  paintLayers: 'paint-ceiling-2',
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -162,6 +197,18 @@ function parseWallInput(raw: unknown): WallEstimateInput {
   }
 }
 
+function parseCeilingInput(raw: unknown): CeilingEstimateInput {
+  if (!isRecord(raw)) return { ...EMPTY_CEILING_INPUT }
+  return {
+    totalCeilingArea: asNonNegative(raw.totalCeilingArea),
+    demolitionArea: asNonNegative(raw.demolitionArea),
+    plasterArea: asNonNegative(raw.plasterArea),
+    puttyArea: asNonNegative(raw.puttyArea),
+    finishArea: asNonNegative(raw.finishArea),
+    surveyorComment: asString(raw.surveyorComment, ''),
+  }
+}
+
 function parsePersistedZone(raw: unknown): EstimateZone | null {
   if (!isRecord(raw)) return null
   const id = asString(raw.id).trim()
@@ -183,6 +230,11 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
     finishArea: asNonNegative(raw.finishArea),
     slopesLength: asNonNegative(raw.slopesLength),
     cornersLength: asNonNegative(raw.cornersLength),
+    ceilingArea: asNonNegative(raw.ceilingArea),
+    demolitionCeilingArea: asNonNegative(raw.demolitionCeilingArea),
+    plasterCeilingArea: asNonNegative(raw.plasterCeilingArea),
+    puttyCeilingArea: asNonNegative(raw.puttyCeilingArea),
+    finishCeilingArea: asNonNegative(raw.finishCeilingArea),
     comment: asString(raw.comment).trim() || undefined,
   }
 }
@@ -241,7 +293,7 @@ function parsePersistedLines(raw: unknown): PersistedEstimateLine[] {
 }
 
 function isTabId(value: unknown): value is EstimateTabId {
-  return value === 'floors' || value === 'walls'
+  return value === 'floors' || value === 'walls' || value === 'ceilings'
 }
 
 function isSupportedSnapshotVersion(value: unknown): value is 1 | 2 {
@@ -269,6 +321,12 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
       input: parseWallInput(raw.walls.input),
       lines: parsePersistedLines(raw.walls.lines),
     },
+    ceilings: isRecord(raw.ceilings)
+      ? {
+          input: parseCeilingInput(raw.ceilings.input),
+          lines: parsePersistedLines(raw.ceilings.lines),
+        }
+      : { input: { ...EMPTY_CEILING_INPUT }, lines: [] },
   }
 
   if (isRecord(raw.floorPresets)) {
@@ -302,6 +360,27 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.wallScenarios.paintLayers,
         DEFAULT_WALL_SCENARIOS.paintLayers,
       ) as WallPaintLayersOption,
+    }
+  }
+
+  if (isRecord(raw.ceilingScenarios)) {
+    snapshot.ceilingScenarios = {
+      state: asString(
+        raw.ceilingScenarios.state,
+        DEFAULT_CEILING_SCENARIOS.state,
+      ) as CeilingStateOption,
+      finishTarget: asString(
+        raw.ceilingScenarios.finishTarget,
+        DEFAULT_CEILING_SCENARIOS.finishTarget,
+      ) as CeilingFinishTargetOption,
+      demolitionCovering: asString(
+        raw.ceilingScenarios.demolitionCovering,
+        DEFAULT_CEILING_SCENARIOS.demolitionCovering,
+      ) as CeilingDemolitionCoveringOption,
+      paintLayers: asString(
+        raw.ceilingScenarios.paintLayers,
+        DEFAULT_CEILING_SCENARIOS.paintLayers,
+      ) as CeilingPaintLayersOption,
     }
   }
 
@@ -345,6 +424,11 @@ export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
     finishArea: zone.finishArea,
     slopesLength: zone.slopesLength,
     cornersLength: zone.cornersLength,
+    ceilingArea: zone.ceilingArea,
+    demolitionCeilingArea: zone.demolitionCeilingArea,
+    plasterCeilingArea: zone.plasterCeilingArea,
+    puttyCeilingArea: zone.puttyCeilingArea,
+    finishCeilingArea: zone.finishCeilingArea,
     comment: zone.comment,
   }
 }
@@ -356,8 +440,11 @@ export function buildEstimateCalculatorSnapshot(params: {
   floorsLines: readonly EstimateLine[]
   wallsInput: WallEstimateInput
   wallsLines: readonly EstimateLine[]
+  ceilingsInput?: CeilingEstimateInput
+  ceilingsLines?: readonly EstimateLine[]
   floorPresets?: FloorPresetDraftState
   wallScenarios?: WallScenarioDraftState
+  ceilingScenarios?: CeilingScenarioDraftState
 }): EstimateCalculatorSnapshot {
   return {
     version: SNAPSHOT_VERSION,
@@ -371,8 +458,13 @@ export function buildEstimateCalculatorSnapshot(params: {
       input: { ...params.wallsInput },
       lines: params.wallsLines.map(serializeEstimateLine),
     },
+    ceilings: {
+      input: { ...(params.ceilingsInput ?? EMPTY_CEILING_INPUT) },
+      lines: (params.ceilingsLines ?? []).map(serializeEstimateLine),
+    },
     floorPresets: params.floorPresets,
     wallScenarios: params.wallScenarios,
+    ceilingScenarios: params.ceilingScenarios,
   }
 }
 
@@ -383,7 +475,7 @@ export function buildEstimateCalculatorSnapshot(params: {
 function applyPersistedPatches(
   baseLines: readonly EstimateLine[],
   persisted: readonly PersistedEstimateLine[],
-  sectionFallback: 'floors' | 'walls',
+  sectionFallback: 'floors' | 'walls' | 'ceilings',
 ): EstimateLine[] {
   if (persisted.length === 0) return [...baseLines]
 
@@ -418,9 +510,12 @@ function applyPersistedPatches(
 
     if (isZonedEstimateLine(patch)) {
       const sectionId = asString(patch.sectionId, sectionFallback)
-      const floorMapping = sectionId === 'walls' ? undefined : findFloorMappingItem(patch.priceKey)
-      const wallMapping = sectionId === 'walls' ? findWallMappingItem(patch.priceKey) : undefined
-      const mapping = floorMapping ?? wallMapping
+      const mapping =
+        sectionId === 'walls'
+          ? findWallMappingItem(patch.priceKey)
+          : sectionId === 'ceilings'
+            ? findCeilingMappingItem(patch.priceKey)
+            : findFloorMappingItem(patch.priceKey)
       const title = asString(patch.title).trim() || mapping?.title || ''
       const unit = asString(patch.unit).trim() || mapping?.unit || 'м²'
       if (!title) continue
@@ -501,6 +596,22 @@ export function restoreWallEstimateState(
   }
 }
 
+/**
+ * То же для потолков, включая zoned clones.
+ * Толерантно к снимкам без секции `ceilings` — тогда пустой ввод и чистый build.
+ */
+export function restoreCeilingEstimateState(
+  snapshot: EstimateCalculatorSnapshot | null,
+): { input: CeilingEstimateInput; lines: EstimateLine[] } {
+  const ceilings = snapshot?.ceilings
+  const input = ceilings ? ceilings.input : { ...EMPTY_CEILING_INPUT }
+  const base = buildCeilingEstimateLines(input)
+  return {
+    input,
+    lines: ceilings ? applyPersistedPatches(base, ceilings.lines, 'ceilings') : base,
+  }
+}
+
 export function restoreEstimateZones(snapshot: EstimateCalculatorSnapshot | null): EstimateZone[] {
   const zones = snapshot?.zones ? snapshot.zones.map(serializeEstimateZone) : []
   noteEstimateZoneIds(zones)
@@ -519,6 +630,14 @@ export function restoreWallScenarioDraft(
   return snapshot?.wallScenarios
     ? { ...snapshot.wallScenarios }
     : { ...DEFAULT_WALL_SCENARIOS }
+}
+
+export function restoreCeilingScenarioDraft(
+  snapshot: EstimateCalculatorSnapshot | null,
+): CeilingScenarioDraftState {
+  return snapshot?.ceilingScenarios
+    ? { ...snapshot.ceilingScenarios }
+    : { ...DEFAULT_CEILING_SCENARIOS }
 }
 
 export function readEstimateCalculatorSnapshot(): EstimateCalculatorSnapshot | null {
@@ -554,6 +673,8 @@ export function clearEstimateCalculatorSnapshot(): void {
 export {
   EMPTY_FLOOR_INPUT,
   EMPTY_WALL_INPUT,
+  EMPTY_CEILING_INPUT,
   DEFAULT_FLOOR_PRESETS,
   DEFAULT_WALL_SCENARIOS,
+  DEFAULT_CEILING_SCENARIOS,
 }

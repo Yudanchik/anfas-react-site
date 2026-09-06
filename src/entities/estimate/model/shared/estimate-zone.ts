@@ -20,6 +20,11 @@ export type EstimateZone = {
   finishArea: number
   slopesLength: number
   cornersLength: number
+  ceilingArea: number
+  demolitionCeilingArea: number
+  plasterCeilingArea: number
+  puttyCeilingArea: number
+  finishCeilingArea: number
   comment?: string
 }
 
@@ -42,6 +47,11 @@ export const EMPTY_ESTIMATE_ZONE_FIELDS: Omit<EstimateZone, 'id' | 'name'> = {
   finishArea: 0,
   slopesLength: 0,
   cornersLength: 0,
+  ceilingArea: 0,
+  demolitionCeilingArea: 0,
+  plasterCeilingArea: 0,
+  puttyCeilingArea: 0,
+  finishCeilingArea: 0,
   comment: undefined,
 }
 
@@ -85,6 +95,11 @@ export function createEstimateZone(params: {
     finishArea: normalizeNonNegative(fields.finishArea ?? 0),
     slopesLength: normalizeNonNegative(fields.slopesLength ?? 0),
     cornersLength: normalizeNonNegative(fields.cornersLength ?? 0),
+    ceilingArea: normalizeNonNegative(fields.ceilingArea ?? 0),
+    demolitionCeilingArea: normalizeNonNegative(fields.demolitionCeilingArea ?? 0),
+    plasterCeilingArea: normalizeNonNegative(fields.plasterCeilingArea ?? 0),
+    puttyCeilingArea: normalizeNonNegative(fields.puttyCeilingArea ?? 0),
+    finishCeilingArea: normalizeNonNegative(fields.finishCeilingArea ?? 0),
     comment: fields.comment?.trim() || undefined,
   }
 }
@@ -129,6 +144,26 @@ export function updateEstimateZone(
         patch.cornersLength === undefined
           ? zone.cornersLength
           : normalizeNonNegative(patch.cornersLength),
+      ceilingArea:
+        patch.ceilingArea === undefined
+          ? zone.ceilingArea
+          : normalizeNonNegative(patch.ceilingArea),
+      demolitionCeilingArea:
+        patch.demolitionCeilingArea === undefined
+          ? zone.demolitionCeilingArea
+          : normalizeNonNegative(patch.demolitionCeilingArea),
+      plasterCeilingArea:
+        patch.plasterCeilingArea === undefined
+          ? zone.plasterCeilingArea
+          : normalizeNonNegative(patch.plasterCeilingArea),
+      puttyCeilingArea:
+        patch.puttyCeilingArea === undefined
+          ? zone.puttyCeilingArea
+          : normalizeNonNegative(patch.puttyCeilingArea),
+      finishCeilingArea:
+        patch.finishCeilingArea === undefined
+          ? zone.finishCeilingArea
+          : normalizeNonNegative(patch.finishCeilingArea),
       comment:
         patch.comment === undefined ? zone.comment : patch.comment.trim() || undefined,
     }

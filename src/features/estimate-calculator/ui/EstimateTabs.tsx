@@ -1,6 +1,6 @@
 import styles from './EstimateTabs.module.scss'
 
-export type EstimateTabId = 'floors' | 'walls'
+export type EstimateTabId = 'floors' | 'walls' | 'ceilings'
 
 type EstimateTabsProps = {
   activeTab: EstimateTabId
