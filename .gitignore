@@ -18,3 +18,4 @@ outputs/
 !.vscode/settings.json
 !.vscode/extensions.json
 .tmp/
+.cursor/
