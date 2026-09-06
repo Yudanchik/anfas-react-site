@@ -1,7 +1,7 @@
 # Архитектура калькулятора сметы
 
 Техническое описание для разработчиков.
-Пользовательские инструкции: [README](./README.md), [Зоны](./zones.md), [Полы](./scenarios-floors.md), [Стены](./scenarios-walls.md), [Потолки](./scenarios-ceilings.md), [Плитка](./scenarios-tile.md), [Электрика](./scenarios-electrics.md).
+Пользовательские инструкции: [README](./README.md), [Зоны](./zones.md), [Полы](./scenarios-floors.md), [Стены](./scenarios-walls.md), [Потолки](./scenarios-ceilings.md), [Плитка](./scenarios-tile.md), [Электрика](./scenarios-electrics.md), [Сантехника](./scenarios-plumbing.md).
 
 Цены и формулы живут в domain; UI только редактирует состояние.
 
@@ -21,14 +21,16 @@ src/entities/estimate/model/
               # zone work catalog, tests
   electrics/  # ELECTRIC_PRICE_MAPPING, builders, scenarios (+ toZone), groups, conflicts,
               # zone work catalog, soft zoneType filter, tests
+  plumbing/   # PLUMBING_PRICE_MAPPING, builders, scenarios (+ toZone), groups, conflicts,
+              # zone work catalog, soft zoneType filter, tests
   index.ts    # публичный barrel — импорт только из @/entities/estimate
 ```
 
 | Слой | Назначение |
 |------|------------|
-| **mapping** | Whitelist работ и цен раздела (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*`). Не смешивать ключи между разделами. |
+| **mapping** | Whitelist работ и цен раздела (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*` / `PLUMBING_*`). Не смешивать ключи между разделами. |
 | **builders** | Собирают строки из mapping + inputs (по умолчанию выключены). |
-| **EstimateZone** | Сущность зоны объекта (`zone-N`) с площадями floors/walls/ceilings/tile и счётчиками electrics. |
+| **EstimateZone** | Сущность зоны объекта (`zone-N`) с площадями floors/walls/ceilings/tile и счётчиками electrics/plumbing. |
 | **zoneId / zoneName** | На `EstimateLine`: `zoneId` — ссылка на зону; `zoneName` — snapshot для UI. Без `zoneId` у canonical = общие работы. |
 | **presets / scenarios** | Object-level: canonical rows. Zone-level (`*ToZone`): upsert clones по `(zoneId, priceKey)`. |
 | **conflict groups** | Scope: `zoneId: null` (только canonical) или конкретный `zoneId` (только clones зоны). Manual не трогают. |
@@ -39,13 +41,13 @@ src/entities/estimate/model/
 
 Формула строки (domain): `Math.round(quantity × unitPrice × coefficient)`; выключенная / пустая / отрицательная qty → 0.
 
-Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-M` / `electrics:zone-M` и id сущности `zone-N` — **разные** счётчики.
+Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-M` / `electrics:zone-M` / `plumbing:zone-M` и id сущности `zone-N` — **разные** счётчики.
 
 ### Цены: PDF SoT и audit extract
 
-- PDF `anfas-price-list.pdf` — **source of truth** для всех mapping (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*`).
+- PDF `anfas-price-list.pdf` — **source of truth** для всех mapping (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*` / `PLUMBING_*`).
 - Frontend `prices.data.ts` — только сверка для `source: both` (цена + единица должны совпасть с PDF).
-- При извлечении текста из PDF использовать `pdftotext -table` (не `-layout`: колонки цены/единицы съезжают).
+- При извлечении текста из PDF использовать `pdftotext -enc UTF-8 -table` (не `-layout`: колонки цены/единицы съезжают; без `-enc UTF-8` кириллица ломается на pdftotext 4.00).
 - Пример артефакта `-layout`: «Демонтаж плитки стеновой» → ложные 1300; в `-table` / PDF = **900**.
 
 ### Плитка: пересечения и SoT
@@ -55,7 +57,7 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 - Демонтаж стеновой плитки: PDF/FE/Walls/Tile = **900** ₽/м² (`source: both`).
 - Гидроизоляция **не** в Tile mapping; канон — Floors.
 - Floors/Walls tile-related keys **не удаляем**; Tile имеет собственные `priceKey`.
-- Soft-filter сценариев по `EstimateZone.zoneType` (helper `partitionScenariosByZoneType`) — Tile и Electrics.
+- Soft-filter сценариев по `EstimateZone.zoneType` (helper `partitionScenariosByZoneType`) — Tile, Electrics и Plumbing.
 
 ### Электрика: mapping vs scenarios
 
@@ -64,6 +66,16 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 - Не включать материалы, TV+кронштейн, unclear Wi‑Fi/домофон, водяной ТП, заделку штроб, выезд 15k в default.
 - Zone fields: counters (sockets/switches/lights/data/boxes/…) + strobe/cable м.п. + panel modules + warm floor area + appliance connections.
 - Soft `zoneType` filter: kitchen / bathroom / room-rewire; остальные сценарии — `all`.
+- Водяной ТП — **не** в электрике; канон в Сантехнике. Электрический ТП остаётся здесь.
+
+### Сантехника: mapping vs scenarios
+
+- `PLUMBING_PRICE_MAPPING` — **широкий** labour-only whitelist PDF (редкие позиции через price-add).
+- Default-сценарии — **компактные**.
+- Out MVP: отопление (радиаторы/котлы/конвекторы), штробы дм³, заделка штроб, выезд 15k, материалы/изделия, электрический ПС / эл. ТП.
+- In: водяной ТП; монтаж коллектора/фильтра/счётчика/инсталляции как **работа**.
+- Zone fields: раздельные counters приборов (не один `fixtureCount`) + pipe lengths + warm floor area.
+- Soft `zoneType` filter: bathroom / kitchen scenarios; остальные — `all`.
 
 ## UI
 
@@ -76,6 +88,7 @@ src/features/estimate-calculator/
   ceilings/     # CeilingEstimatePanel, scenarios, helpers, CeilingZoneWorkAdd, editor
   tile/         # TileEstimatePanel, scenarios, helpers, TileZoneWorkAdd, editor
   electrics/    # ElectricEstimatePanel, scenarios, helpers, ElectricZoneWorkAdd, editor
+  plumbing/     # PlumbingEstimatePanel, scenarios, helpers, PlumbingZoneWorkAdd, editor
   model/        # persistence v2, zone name validation, search filter, manual validation
 src/features/floor-estimate/   # floor editor/presets/helpers (временно рядом; optional fold later)
 src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace; noindex
@@ -93,25 +106,25 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 ## Persistence
 
 Ключ localStorage: `anfas:estimate-calculator:v1` (имя ключа историческое).
-Схема снимка: **version 2** (`zones[]` + `zoneId` на строках + optional `ceilings` / `tile` / `electrics`).
+Схема снимка: **version 2** (`zones[]` + `zoneId` на строках + optional `ceilings` / `tile` / `electrics` / `plumbing`).
 
 - Parse принимает **v1** и мигрирует в v2 (`zones: []`; строки floors/walls сохраняются; orphan `zoneName` без `zoneId` остаются валидными).
-- Блоки `ceilings`, `tile` и `electrics` **опциональны** при чтении (нет → пустой input + пустые строки); при записи всегда сериализуются.
-- Поля потолка / плитки / электрики на зоне при отсутствии → `0` (старые v2-снимки не ломаются).
-- Сохраняется: вкладка, зоны, inputs floors/walls/ceilings/tile/electrics, патчи строк, manual/zoned extras, draft пресетов/сценариев.
+- Блоки `ceilings`, `tile`, `electrics` и `plumbing` **опциональны** при чтении (нет → пустой input + пустые строки); при записи всегда сериализуются.
+- Поля потолка / плитки / электрики / сантехники на зоне при отсутствии → `0` (старые v2-снимки не ломаются).
+- Сохраняется: вкладка, зоны, inputs floors/walls/ceilings/tile/electrics/plumbing, патчи строк, manual/zoned extras, draft пресетов/сценариев.
 - **Не** сохраняется: открытые группы аккордеона, search query, раскрытие итоговой сметы.
 
-| Действие | Зоны | Floors | Walls | Ceilings | Tile | Electrics |
-|----------|------|--------|-------|----------|------|-----------|
-| Сбросить всю смету | очистить | очистить | очистить | очистить | очистить | очистить |
-| Сбросить раздел | оставить | только floors | только walls | только ceilings | только tile | только electrics |
-| Удалить зону Z | удалить Z | удалить clones с `zoneId=Z` | то же | то же | то же | то же |
-| Rename зоны | обновить name | sync `zoneName` на clones | то же | то же | то же | то же |
+| Действие | Зоны | Floors | Walls | Ceilings | Tile | Electrics | Plumbing |
+|----------|------|--------|-------|----------|------|-----------|----------|
+| Сбросить всю смету | очистить | очистить | очистить | очистить | очистить | очистить | очистить |
+| Сбросить раздел | оставить | только floors | только walls | только ceilings | только tile | только electrics | только plumbing |
+| Удалить зону Z | удалить Z | удалить clones с `zoneId=Z` | то же | то же | то же | то же | то же |
+| Rename зоны | обновить name | sync `zoneName` на clones | то же | то же | то же | то же | то же |
 
 ## PDF / export (будущее)
 
 Отдельный слой: `model/export/` или `features/estimate-export/`.
-Не класть в floors/walls/ceilings/tile/electrics и не смешивать с mapping. Пока **нет**.
+Не класть в floors/walls/ceilings/tile/electrics/plumbing и не смешивать с mapping. Пока **нет**.
 
 ## Header «Смета»
 
@@ -127,7 +140,7 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 5. Zone-level: `*ToZone` + scoped conflicts.
 6. Persistence: tolerant optional block + zone fields с default `0`.
 
-Следующие кандидаты: сантехника → прочее → export → internal access.
+Следующие кандидаты: прочие работы → export → internal access.
 
 ## Не делать
 
