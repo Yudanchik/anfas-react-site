@@ -4,6 +4,8 @@ import type {
   EstimateZone,
   FloorEstimateInput,
   FloorPresetApplication,
+  TileEstimateInput,
+  TileScenarioApplication,
   WallEstimateInput,
   WallScenarioApplication,
 } from '@/entities/estimate'
@@ -23,6 +25,9 @@ const WALL_ZONE = 'В выбранной зоне нет нужных замер
 const CEILING_GENERAL =
   'Заполните замеры раздела перед применением сценария'
 const CEILING_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
+const TILE_GENERAL =
+  'Заполните замеры раздела перед применением сценария'
+const TILE_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
 
 export function getScenarioMeasuresDisabledHint(forZone: boolean): string {
   return forZone ? SCENARIO_MEASURES_HINT_ZONE : SCENARIO_MEASURES_HINT_GENERAL
@@ -140,6 +145,54 @@ export function validateCeilingScenarioMeasures(params: {
   }
 }
 
+/** Плитка: проверка замеров перед сценарием. */
+export function validateTileScenarioMeasures(params: {
+  application: TileScenarioApplication
+  input: TileEstimateInput
+  zone?: EstimateZone
+}): ScenarioMeasureCheck {
+  const { application, input, zone } = params
+  const forZone = Boolean(zone)
+  const fail = (): ScenarioMeasureCheck => ({
+    ok: false,
+    message: forZone ? TILE_ZONE : TILE_GENERAL,
+  })
+
+  const floor = zone ? zone.tileFloorArea : input.floorTileArea
+  const wall = zone ? zone.tileWallArea : input.wallTileArea
+  const backsplash = zone ? zone.tileBacksplashArea : input.backsplashArea
+  const cutting = zone ? zone.tileCuttingLength : input.cuttingLength
+  const corner = zone ? zone.tileCornerLength : input.cornerLength
+  const holes = zone ? zone.tileHolesCount : input.holesCount
+  const repair = zone ? zone.tileRepairCount : input.repairCount
+  const clad = [floor, wall, backsplash]
+
+  switch (application.state) {
+    case 'demolition-only': {
+      const surfaces = application.demolitionSurfaces ?? 'both'
+      if (surfaces === 'floor') return positive(floor) ? { ok: true } : fail()
+      if (surfaces === 'walls') return positive(wall) ? { ok: true } : fail()
+      return anyPositive([floor, wall]) ? { ok: true } : fail()
+    }
+    case 'kitchen-backsplash':
+      return positive(backsplash) ? { ok: true } : fail()
+    case 'floor-only':
+      return positive(floor) ? { ok: true } : fail()
+    case 'walls-only':
+      return positive(wall) ? { ok: true } : fail()
+    case 'grout-repair-only': {
+      const grout = application.grout ?? 'cement'
+      if (grout === 'none') return positive(repair) ? { ok: true } : fail()
+      return anyPositive([...clad, corner]) ? { ok: true } : fail()
+    }
+    case 'large-format':
+      return anyPositive([...clad, cutting, holes]) ? { ok: true } : fail()
+    case 'bathroom-from-scratch':
+    case 'bathroom-replacement':
+      return anyPositive([floor, wall]) ? { ok: true } : fail()
+  }
+}
+
 /** Lightweight wrappers for UI disabled-state (reuse validate*). */
 export function canApplyFloorPreset(params: {
   application: FloorPresetApplication
@@ -163,4 +216,12 @@ export function canApplyCeilingScenario(params: {
   zone?: EstimateZone
 }): boolean {
   return validateCeilingScenarioMeasures(params).ok
+}
+
+export function canApplyTileScenario(params: {
+  application: TileScenarioApplication
+  input: TileEstimateInput
+  zone?: EstimateZone
+}): boolean {
+  return validateTileScenarioMeasures(params).ok
 }

@@ -7,6 +7,7 @@ import {
   restoreCeilingEstimateState,
   restoreEstimateZones,
   restoreFloorEstimateState,
+  restoreTileEstimateState,
   restoreWallEstimateState,
   type EstimateCalculatorSnapshot,
 } from './estimate-calculator-persistence'
@@ -120,6 +121,13 @@ describe('estimate calculator persistence', () => {
           plasterCeilingArea: 0,
           puttyCeilingArea: 0,
           finishCeilingArea: 0,
+          tileFloorArea: 0,
+          tileWallArea: 0,
+          tileBacksplashArea: 0,
+          tileCuttingLength: 0,
+          tileCornerLength: 0,
+          tileHolesCount: 0,
+          tileRepairCount: 0,
         },
       ],
       floors: {
@@ -364,5 +372,135 @@ describe('estimate calculator persistence', () => {
     assert.equal(ceilingPaint.enabled, true)
     assert.equal(ceilingPaint.quantity, 40)
     assert.equal(ceilingPaint.comment, 'ok')
+  })
+
+  it('parses a v2 snapshot without tile and restores empty tile', () => {
+    const v2NoTile = {
+      version: 2,
+      activeTab: 'ceilings',
+      zones: [],
+      floors: {
+        input: {
+          totalFloorArea: 10,
+          demolitionArea: 0,
+          screedArea: 0,
+          wetZonesArea: 0,
+          avgDeltaMm: 0,
+          surveyorComment: '',
+        },
+        lines: [],
+      },
+      walls: {
+        input: {
+          totalWallArea: 20,
+          demolitionArea: 0,
+          plasterArea: 0,
+          puttyArea: 0,
+          finishArea: 0,
+          wallHeightM: 0,
+          slopesLengthM: 0,
+          cornersLengthM: 0,
+          surveyorComment: '',
+        },
+        lines: [],
+      },
+      ceilings: {
+        input: {
+          totalCeilingArea: 15,
+          demolitionArea: 0,
+          plasterArea: 0,
+          puttyArea: 0,
+          finishArea: 0,
+          surveyorComment: '',
+        },
+        lines: [],
+      },
+    }
+
+    const parsed = parseEstimateCalculatorSnapshot(v2NoTile)
+    assert.ok(parsed)
+    const tile = restoreTileEstimateState(parsed)
+    assert.equal(tile.input.floorTileArea, 0)
+    assert.equal(tile.input.wallTileArea, 0)
+    assert.ok(tile.lines.length > 0)
+    assert.ok(tile.lines.every((line) => line.enabled === false))
+    assert.ok(tile.lines.every((line) => line.sectionId === 'tile'))
+  })
+
+  it('round-trips tile fields and zone tile measures', () => {
+    const snapshot = buildEstimateCalculatorSnapshot({
+      activeTab: 'tile',
+      zones: [
+        {
+          id: 'zone-9',
+          name: 'Санузел',
+          floorArea: 0,
+          demolitionFloorArea: 0,
+          screedArea: 0,
+          wetArea: 0,
+          wallArea: 0,
+          demolitionWallArea: 0,
+          plasterArea: 0,
+          puttyArea: 0,
+          finishArea: 0,
+          slopesLength: 0,
+          cornersLength: 0,
+          ceilingArea: 0,
+          demolitionCeilingArea: 0,
+          plasterCeilingArea: 0,
+          puttyCeilingArea: 0,
+          finishCeilingArea: 0,
+          tileFloorArea: 7,
+          tileWallArea: 21,
+          tileBacksplashArea: 0,
+          tileCuttingLength: 2,
+          tileCornerLength: 8,
+          tileHolesCount: 3,
+          tileRepairCount: 0,
+        },
+      ],
+      floorsInput: restoreFloorEstimateState(null).input,
+      floorsLines: restoreFloorEstimateState(null).lines,
+      wallsInput: restoreWallEstimateState(null).input,
+      wallsLines: restoreWallEstimateState(null).lines,
+      tileInput: {
+        floorTileArea: 7,
+        wallTileArea: 21,
+        backsplashArea: 0,
+        cuttingLength: 2,
+        cornerLength: 8,
+        holesCount: 3,
+        repairCount: 0,
+        surveyorComment: 'tile note',
+      },
+      tileLines: restoreTileEstimateState(null).lines.map((line) =>
+        line.priceKey === 'clad-301-1300'
+          ? { ...line, enabled: true, quantity: 28, comment: 'ok' }
+          : line,
+      ),
+      tileScenarios: {
+        state: 'bathroom-from-scratch',
+        cladFormat: '301-1300',
+        grout: 'cement',
+        demolitionSurfaces: 'both',
+      },
+    })
+
+    const parsed = parseEstimateCalculatorSnapshot(JSON.parse(JSON.stringify(snapshot)))
+    assert.ok(parsed)
+    assert.equal(parsed.activeTab, 'tile')
+    assert.equal(parsed.zones[0]?.tileFloorArea, 7)
+    assert.equal(parsed.zones[0]?.tileWallArea, 21)
+    assert.equal(parsed.zones[0]?.tileHolesCount, 3)
+    assert.equal(parsed.tileScenarios?.cladFormat, '301-1300')
+
+    const tile = restoreTileEstimateState(parsed)
+    assert.equal(tile.input.floorTileArea, 7)
+    assert.equal(tile.input.surveyorComment, 'tile note')
+    const clad = tile.lines.find((line) => line.priceKey === 'clad-301-1300')
+    assert.ok(clad)
+    assert.equal(clad.enabled, true)
+    assert.equal(clad.quantity, 28)
+    assert.equal(clad.comment, 'ok')
   })
 })

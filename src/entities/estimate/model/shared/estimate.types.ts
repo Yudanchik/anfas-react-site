@@ -41,7 +41,18 @@ export type CeilingWorkKind =
   | 'finish-paint'
   | 'other'
 
-export type EstimateWorkKind = FloorWorkKind | WallWorkKind | CeilingWorkKind
+export type TileWorkKind =
+  | 'demolition'
+  | 'prep'
+  | 'cladding'
+  | 'cutting'
+  | 'grout'
+  | 'seal'
+  | 'repair'
+  | 'accessory'
+  | 'other'
+
+export type EstimateWorkKind = FloorWorkKind | WallWorkKind | CeilingWorkKind | TileWorkKind
 
 export type FloorQuantityField =
   | 'totalFloorArea'
@@ -66,6 +77,17 @@ export type CeilingQuantityField =
   | 'plasterArea'
   | 'puttyArea'
   | 'finishArea'
+  | 'manual'
+
+export type TileQuantityField =
+  | 'floorTileArea'
+  | 'wallTileArea'
+  | 'backsplashArea'
+  | 'cladArea'
+  | 'cuttingLength'
+  | 'cornerLength'
+  | 'holesCount'
+  | 'repairCount'
   | 'manual'
 
 export type EstimateLine = {
@@ -156,6 +178,24 @@ export type CeilingEstimateResult = {
   materialsExcluded: true
 }
 
+export type TileEstimateInput = {
+  floorTileArea: number
+  wallTileArea: number
+  backsplashArea: number
+  cuttingLength: number
+  cornerLength: number
+  holesCount: number
+  repairCount: number
+  surveyorComment?: string
+}
+
+export type TileEstimateResult = {
+  section: EstimateSection
+  selectedCount: number
+  totalRub: number
+  materialsExcluded: true
+}
+
 export type FloorPriceMappingItem = {
   /** Стабильный id → `EstimateLine.priceKey` / основа `id` строки */
   id: string
@@ -201,4 +241,19 @@ export type CeilingPriceMappingItem = {
   note?: string
   defaultEnabled: boolean
   defaultQuantityFrom: CeilingQuantityField
+}
+
+export type TilePriceMappingItem = {
+  id: string
+  title: string
+  unit: string
+  unitPrice: number
+  source: EstimatePriceSource
+  kind: TileWorkKind
+  frontendCategorySlug?: PriceCategorySlug
+  frontendName?: string
+  frontendUnitPrice?: number
+  note?: string
+  defaultEnabled: boolean
+  defaultQuantityFrom: TileQuantityField
 }

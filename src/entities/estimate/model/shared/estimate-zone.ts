@@ -25,6 +25,13 @@ export type EstimateZone = {
   plasterCeilingArea: number
   puttyCeilingArea: number
   finishCeilingArea: number
+  tileFloorArea: number
+  tileWallArea: number
+  tileBacksplashArea: number
+  tileCuttingLength: number
+  tileCornerLength: number
+  tileHolesCount: number
+  tileRepairCount: number
   comment?: string
 }
 
@@ -52,6 +59,13 @@ export const EMPTY_ESTIMATE_ZONE_FIELDS: Omit<EstimateZone, 'id' | 'name'> = {
   plasterCeilingArea: 0,
   puttyCeilingArea: 0,
   finishCeilingArea: 0,
+  tileFloorArea: 0,
+  tileWallArea: 0,
+  tileBacksplashArea: 0,
+  tileCuttingLength: 0,
+  tileCornerLength: 0,
+  tileHolesCount: 0,
+  tileRepairCount: 0,
   comment: undefined,
 }
 
@@ -100,6 +114,13 @@ export function createEstimateZone(params: {
     plasterCeilingArea: normalizeNonNegative(fields.plasterCeilingArea ?? 0),
     puttyCeilingArea: normalizeNonNegative(fields.puttyCeilingArea ?? 0),
     finishCeilingArea: normalizeNonNegative(fields.finishCeilingArea ?? 0),
+    tileFloorArea: normalizeNonNegative(fields.tileFloorArea ?? 0),
+    tileWallArea: normalizeNonNegative(fields.tileWallArea ?? 0),
+    tileBacksplashArea: normalizeNonNegative(fields.tileBacksplashArea ?? 0),
+    tileCuttingLength: normalizeNonNegative(fields.tileCuttingLength ?? 0),
+    tileCornerLength: normalizeNonNegative(fields.tileCornerLength ?? 0),
+    tileHolesCount: normalizeNonNegative(fields.tileHolesCount ?? 0),
+    tileRepairCount: normalizeNonNegative(fields.tileRepairCount ?? 0),
     comment: fields.comment?.trim() || undefined,
   }
 }
@@ -164,6 +185,34 @@ export function updateEstimateZone(
         patch.finishCeilingArea === undefined
           ? zone.finishCeilingArea
           : normalizeNonNegative(patch.finishCeilingArea),
+      tileFloorArea:
+        patch.tileFloorArea === undefined
+          ? zone.tileFloorArea
+          : normalizeNonNegative(patch.tileFloorArea),
+      tileWallArea:
+        patch.tileWallArea === undefined
+          ? zone.tileWallArea
+          : normalizeNonNegative(patch.tileWallArea),
+      tileBacksplashArea:
+        patch.tileBacksplashArea === undefined
+          ? zone.tileBacksplashArea
+          : normalizeNonNegative(patch.tileBacksplashArea),
+      tileCuttingLength:
+        patch.tileCuttingLength === undefined
+          ? zone.tileCuttingLength
+          : normalizeNonNegative(patch.tileCuttingLength),
+      tileCornerLength:
+        patch.tileCornerLength === undefined
+          ? zone.tileCornerLength
+          : normalizeNonNegative(patch.tileCornerLength),
+      tileHolesCount:
+        patch.tileHolesCount === undefined
+          ? zone.tileHolesCount
+          : normalizeNonNegative(patch.tileHolesCount),
+      tileRepairCount:
+        patch.tileRepairCount === undefined
+          ? zone.tileRepairCount
+          : normalizeNonNegative(patch.tileRepairCount),
       comment:
         patch.comment === undefined ? zone.comment : patch.comment.trim() || undefined,
     }

@@ -1,9 +1,11 @@
 import {
   buildCeilingEstimateLines,
   buildFloorEstimateLines,
+  buildTileEstimateLines,
   buildWallEstimateLines,
   findCeilingMappingItem,
   findFloorMappingItem,
+  findTileMappingItem,
   findWallMappingItem,
   isZonedEstimateLine,
   noteEstimateZoneIds,
@@ -19,6 +21,11 @@ import {
   type EstimateZone,
   type FloorEstimateInput,
   type ScreedTypeOption,
+  type TileCladFormatOption,
+  type TileDemolitionSurfacesOption,
+  type TileEstimateInput,
+  type TileGroutOption,
+  type TileStateOption,
   type WallDemolitionCoveringOption,
   type WallEstimateInput,
   type WallFinishTargetOption,
@@ -76,6 +83,13 @@ export type CeilingScenarioDraftState = {
   paintLayers: CeilingPaintLayersOption
 }
 
+export type TileScenarioDraftState = {
+  state: TileStateOption
+  cladFormat: TileCladFormatOption
+  grout: TileGroutOption
+  demolitionSurfaces: TileDemolitionSurfacesOption
+}
+
 export type EstimateCalculatorSnapshot = {
   version: typeof SNAPSHOT_VERSION
   activeTab: EstimateTabId
@@ -92,9 +106,14 @@ export type EstimateCalculatorSnapshot = {
     input: CeilingEstimateInput
     lines: PersistedEstimateLine[]
   }
+  tile?: {
+    input: TileEstimateInput
+    lines: PersistedEstimateLine[]
+  }
   floorPresets?: FloorPresetDraftState
   wallScenarios?: WallScenarioDraftState
   ceilingScenarios?: CeilingScenarioDraftState
+  tileScenarios?: TileScenarioDraftState
 }
 
 const EMPTY_FLOOR_INPUT: FloorEstimateInput = {
@@ -127,6 +146,17 @@ const EMPTY_CEILING_INPUT: CeilingEstimateInput = {
   surveyorComment: '',
 }
 
+const EMPTY_TILE_INPUT: TileEstimateInput = {
+  floorTileArea: 0,
+  wallTileArea: 0,
+  backsplashArea: 0,
+  cuttingLength: 0,
+  cornerLength: 0,
+  holesCount: 0,
+  repairCount: 0,
+  surveyorComment: '',
+}
+
 const DEFAULT_FLOOR_PRESETS: FloorPresetDraftState = {
   covering: 'laminate',
   screedType: 'semidry-up-to-80',
@@ -147,6 +177,13 @@ const DEFAULT_CEILING_SCENARIOS: CeilingScenarioDraftState = {
   finishTarget: 'none',
   demolitionCovering: 'paint',
   paintLayers: 'paint-ceiling-2',
+}
+
+const DEFAULT_TILE_SCENARIOS: TileScenarioDraftState = {
+  state: 'bathroom-from-scratch',
+  cladFormat: '301-1300',
+  grout: 'cement',
+  demolitionSurfaces: 'both',
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -209,6 +246,20 @@ function parseCeilingInput(raw: unknown): CeilingEstimateInput {
   }
 }
 
+function parseTileInput(raw: unknown): TileEstimateInput {
+  if (!isRecord(raw)) return { ...EMPTY_TILE_INPUT }
+  return {
+    floorTileArea: asNonNegative(raw.floorTileArea),
+    wallTileArea: asNonNegative(raw.wallTileArea),
+    backsplashArea: asNonNegative(raw.backsplashArea),
+    cuttingLength: asNonNegative(raw.cuttingLength),
+    cornerLength: asNonNegative(raw.cornerLength),
+    holesCount: asNonNegative(raw.holesCount),
+    repairCount: asNonNegative(raw.repairCount),
+    surveyorComment: asString(raw.surveyorComment, ''),
+  }
+}
+
 function parsePersistedZone(raw: unknown): EstimateZone | null {
   if (!isRecord(raw)) return null
   const id = asString(raw.id).trim()
@@ -235,6 +286,13 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
     plasterCeilingArea: asNonNegative(raw.plasterCeilingArea),
     puttyCeilingArea: asNonNegative(raw.puttyCeilingArea),
     finishCeilingArea: asNonNegative(raw.finishCeilingArea),
+    tileFloorArea: asNonNegative(raw.tileFloorArea),
+    tileWallArea: asNonNegative(raw.tileWallArea),
+    tileBacksplashArea: asNonNegative(raw.tileBacksplashArea),
+    tileCuttingLength: asNonNegative(raw.tileCuttingLength),
+    tileCornerLength: asNonNegative(raw.tileCornerLength),
+    tileHolesCount: asNonNegative(raw.tileHolesCount),
+    tileRepairCount: asNonNegative(raw.tileRepairCount),
     comment: asString(raw.comment).trim() || undefined,
   }
 }
@@ -293,7 +351,7 @@ function parsePersistedLines(raw: unknown): PersistedEstimateLine[] {
 }
 
 function isTabId(value: unknown): value is EstimateTabId {
-  return value === 'floors' || value === 'walls' || value === 'ceilings'
+  return value === 'floors' || value === 'walls' || value === 'ceilings' || value === 'tile'
 }
 
 function isSupportedSnapshotVersion(value: unknown): value is 1 | 2 {
@@ -327,6 +385,12 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
           lines: parsePersistedLines(raw.ceilings.lines),
         }
       : { input: { ...EMPTY_CEILING_INPUT }, lines: [] },
+    tile: isRecord(raw.tile)
+      ? {
+          input: parseTileInput(raw.tile.input),
+          lines: parsePersistedLines(raw.tile.lines),
+        }
+      : { input: { ...EMPTY_TILE_INPUT }, lines: [] },
   }
 
   if (isRecord(raw.floorPresets)) {
@@ -384,6 +448,21 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
     }
   }
 
+  if (isRecord(raw.tileScenarios)) {
+    snapshot.tileScenarios = {
+      state: asString(raw.tileScenarios.state, DEFAULT_TILE_SCENARIOS.state) as TileStateOption,
+      cladFormat: asString(
+        raw.tileScenarios.cladFormat,
+        DEFAULT_TILE_SCENARIOS.cladFormat,
+      ) as TileCladFormatOption,
+      grout: asString(raw.tileScenarios.grout, DEFAULT_TILE_SCENARIOS.grout) as TileGroutOption,
+      demolitionSurfaces: asString(
+        raw.tileScenarios.demolitionSurfaces,
+        DEFAULT_TILE_SCENARIOS.demolitionSurfaces,
+      ) as TileDemolitionSurfacesOption,
+    }
+  }
+
   return snapshot
 }
 
@@ -429,6 +508,13 @@ export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
     plasterCeilingArea: zone.plasterCeilingArea,
     puttyCeilingArea: zone.puttyCeilingArea,
     finishCeilingArea: zone.finishCeilingArea,
+    tileFloorArea: zone.tileFloorArea,
+    tileWallArea: zone.tileWallArea,
+    tileBacksplashArea: zone.tileBacksplashArea,
+    tileCuttingLength: zone.tileCuttingLength,
+    tileCornerLength: zone.tileCornerLength,
+    tileHolesCount: zone.tileHolesCount,
+    tileRepairCount: zone.tileRepairCount,
     comment: zone.comment,
   }
 }
@@ -442,9 +528,12 @@ export function buildEstimateCalculatorSnapshot(params: {
   wallsLines: readonly EstimateLine[]
   ceilingsInput?: CeilingEstimateInput
   ceilingsLines?: readonly EstimateLine[]
+  tileInput?: TileEstimateInput
+  tileLines?: readonly EstimateLine[]
   floorPresets?: FloorPresetDraftState
   wallScenarios?: WallScenarioDraftState
   ceilingScenarios?: CeilingScenarioDraftState
+  tileScenarios?: TileScenarioDraftState
 }): EstimateCalculatorSnapshot {
   return {
     version: SNAPSHOT_VERSION,
@@ -462,9 +551,14 @@ export function buildEstimateCalculatorSnapshot(params: {
       input: { ...(params.ceilingsInput ?? EMPTY_CEILING_INPUT) },
       lines: (params.ceilingsLines ?? []).map(serializeEstimateLine),
     },
+    tile: {
+      input: { ...(params.tileInput ?? EMPTY_TILE_INPUT) },
+      lines: (params.tileLines ?? []).map(serializeEstimateLine),
+    },
     floorPresets: params.floorPresets,
     wallScenarios: params.wallScenarios,
     ceilingScenarios: params.ceilingScenarios,
+    tileScenarios: params.tileScenarios,
   }
 }
 
@@ -475,7 +569,7 @@ export function buildEstimateCalculatorSnapshot(params: {
 function applyPersistedPatches(
   baseLines: readonly EstimateLine[],
   persisted: readonly PersistedEstimateLine[],
-  sectionFallback: 'floors' | 'walls' | 'ceilings',
+  sectionFallback: 'floors' | 'walls' | 'ceilings' | 'tile',
 ): EstimateLine[] {
   if (persisted.length === 0) return [...baseLines]
 
@@ -515,7 +609,9 @@ function applyPersistedPatches(
           ? findWallMappingItem(patch.priceKey)
           : sectionId === 'ceilings'
             ? findCeilingMappingItem(patch.priceKey)
-            : findFloorMappingItem(patch.priceKey)
+            : sectionId === 'tile'
+              ? findTileMappingItem(patch.priceKey)
+              : findFloorMappingItem(patch.priceKey)
       const title = asString(patch.title).trim() || mapping?.title || ''
       const unit = asString(patch.unit).trim() || mapping?.unit || 'м²'
       if (!title) continue
@@ -612,6 +708,22 @@ export function restoreCeilingEstimateState(
   }
 }
 
+/**
+ * То же для плитки, включая zoned clones.
+ * Толерантно к снимкам без секции `tile` — тогда пустой ввод и чистый build.
+ */
+export function restoreTileEstimateState(
+  snapshot: EstimateCalculatorSnapshot | null,
+): { input: TileEstimateInput; lines: EstimateLine[] } {
+  const tile = snapshot?.tile
+  const input = tile ? tile.input : { ...EMPTY_TILE_INPUT }
+  const base = buildTileEstimateLines(input)
+  return {
+    input,
+    lines: tile ? applyPersistedPatches(base, tile.lines, 'tile') : base,
+  }
+}
+
 export function restoreEstimateZones(snapshot: EstimateCalculatorSnapshot | null): EstimateZone[] {
   const zones = snapshot?.zones ? snapshot.zones.map(serializeEstimateZone) : []
   noteEstimateZoneIds(zones)
@@ -638,6 +750,12 @@ export function restoreCeilingScenarioDraft(
   return snapshot?.ceilingScenarios
     ? { ...snapshot.ceilingScenarios }
     : { ...DEFAULT_CEILING_SCENARIOS }
+}
+
+export function restoreTileScenarioDraft(
+  snapshot: EstimateCalculatorSnapshot | null,
+): TileScenarioDraftState {
+  return snapshot?.tileScenarios ? { ...snapshot.tileScenarios } : { ...DEFAULT_TILE_SCENARIOS }
 }
 
 export function readEstimateCalculatorSnapshot(): EstimateCalculatorSnapshot | null {
@@ -674,7 +792,9 @@ export {
   EMPTY_FLOOR_INPUT,
   EMPTY_WALL_INPUT,
   EMPTY_CEILING_INPUT,
+  EMPTY_TILE_INPUT,
   DEFAULT_FLOOR_PRESETS,
   DEFAULT_WALL_SCENARIOS,
   DEFAULT_CEILING_SCENARIOS,
+  DEFAULT_TILE_SCENARIOS,
 }

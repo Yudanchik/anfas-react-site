@@ -16,6 +16,11 @@ export type {
   FloorRecommendation,
   FloorRecommendationLevel,
   FloorWorkKind,
+  TileEstimateInput,
+  TileEstimateResult,
+  TilePriceMappingItem,
+  TileQuantityField,
+  TileWorkKind,
   WallEstimateInput,
   WallEstimateResult,
   WallPriceMappingItem,
@@ -300,3 +305,74 @@ export type {
   CeilingZoneWorkCategory,
   CeilingZoneWorkCategoryId,
 } from './ceilings/ceiling-zone-catalog'
+
+export {
+  TILE_PRICE_MAPPING,
+  TILE_SECTION_ID,
+  TILE_SECTION_TITLE,
+} from './tile/tile-price.mapping'
+export {
+  assertTileMappingMatchesFrontend,
+  findTileMappingConflicts,
+} from './tile/assert-tile-mapping'
+export type { TileMappingConflict } from './tile/assert-tile-mapping'
+export {
+  buildTileEstimateLines,
+  resolveTileCladArea,
+  resolveTileDefaultQuantity,
+  resolveTileFloorWallCladArea,
+} from './tile/build-tile-estimate-lines'
+export type { BuildTileEstimateLinesOptions } from './tile/build-tile-estimate-lines'
+export { buildTileEstimate } from './tile/build-tile-estimate'
+export {
+  applyTileCladArea,
+  applyTileCuttingLength,
+  applyTileFloorArea,
+  applyTileHolesCount,
+  applyTileRepairCount,
+  applyTileSealLength,
+  applyTileWallArea,
+  createManualTileEstimateLine,
+} from './tile/apply-tile-quantities'
+export {
+  getDefaultOpenTileGroupIds,
+  getTileEstimateGroupTitle,
+  groupTileEstimateLines,
+  resolveTileEstimateGroupId,
+} from './tile/tile-estimate-groups'
+export type { TileEstimateGroup, TileEstimateGroupId } from './tile/tile-estimate-groups'
+export {
+  disableTileConflictingAlternatives,
+  disableTileConflictingAlternativesInZone,
+  getTileConflictGroupId,
+  TILE_CONFLICT_GROUPS,
+} from './tile/tile-conflict-groups'
+export {
+  applyTileScenario,
+  applyTileScenarioToZone,
+  formatTileScenarioFeedback,
+  formatTileScenarioLabel,
+  formatTileScenarioZoneFeedback,
+  resolveTileScenarioKeys,
+} from './tile/apply-tile-scenario'
+export type {
+  ApplyTileScenarioResult,
+  TileCladFormatOption,
+  TileDemolitionSurfacesOption,
+  TileGroutOption,
+  TileScenarioApplication,
+  TileStateOption,
+} from './tile/apply-tile-scenario'
+export {
+  createZonedTileEstimateLine,
+  findTileMappingItem,
+} from './tile/create-zoned-tile-estimate-line'
+export type { CreateZonedTileEstimateLineParams } from './tile/create-zoned-tile-estimate-line'
+export {
+  getTileZoneMappingOptions,
+  TILE_ZONE_WORK_CATEGORIES,
+} from './tile/tile-zone-catalog'
+export type {
+  TileZoneWorkCategory,
+  TileZoneWorkCategoryId,
+} from './tile/tile-zone-catalog'

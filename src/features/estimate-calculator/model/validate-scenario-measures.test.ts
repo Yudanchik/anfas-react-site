@@ -4,12 +4,14 @@ import { describe, it } from 'node:test'
 import {
   canApplyCeilingScenario,
   canApplyFloorPreset,
+  canApplyTileScenario,
   canApplyWallScenario,
   getScenarioMeasuresDisabledHint,
   SCENARIO_MEASURES_HINT_GENERAL,
   SCENARIO_MEASURES_HINT_ZONE,
   validateCeilingScenarioMeasures,
   validateFloorPresetMeasures,
+  validateTileScenarioMeasures,
   validateWallScenarioMeasures,
 } from './validate-scenario-measures'
 
@@ -40,6 +42,17 @@ const emptyCeilingInput = {
   plasterArea: 0,
   puttyArea: 0,
   finishArea: 0,
+  surveyorComment: '',
+}
+
+const emptyTileInput = {
+  floorTileArea: 0,
+  wallTileArea: 0,
+  backsplashArea: 0,
+  cuttingLength: 0,
+  cornerLength: 0,
+  holesCount: 0,
+  repairCount: 0,
   surveyorComment: '',
 }
 
@@ -94,6 +107,13 @@ describe('validateFloorPresetMeasures', () => {
         plasterCeilingArea: 0,
         puttyCeilingArea: 0,
         finishCeilingArea: 0,
+        tileFloorArea: 0,
+        tileWallArea: 0,
+        tileBacksplashArea: 0,
+        tileCuttingLength: 0,
+        tileCornerLength: 0,
+        tileHolesCount: 0,
+        tileRepairCount: 0,
       },
     })
     assert.equal(result.ok, false)
@@ -196,6 +216,13 @@ describe('validateCeilingScenarioMeasures', () => {
         plasterCeilingArea: 0,
         puttyCeilingArea: 0,
         finishCeilingArea: 0,
+        tileFloorArea: 0,
+        tileWallArea: 0,
+        tileBacksplashArea: 0,
+        tileCuttingLength: 0,
+        tileCornerLength: 0,
+        tileHolesCount: 0,
+        tileRepairCount: 0,
       },
     })
     assert.equal(result.ok, false)
@@ -269,6 +296,13 @@ describe('canApply helpers and disabled hints', () => {
       plasterCeilingArea: 0,
       puttyCeilingArea: 0,
       finishCeilingArea: 0,
+      tileFloorArea: 0,
+      tileWallArea: 0,
+      tileBacksplashArea: 0,
+      tileCuttingLength: 0,
+      tileCornerLength: 0,
+      tileHolesCount: 0,
+      tileRepairCount: 0,
     }
     assert.equal(
       canApplyCeilingScenario({
@@ -291,6 +325,39 @@ describe('canApply helpers and disabled hints', () => {
         application: { state: 'finish-only', finishTarget: 'paint', paintLayers: 'paint-2' },
         input: emptyWallInput,
         zone: { ...emptyZone, finishArea: 18 },
+      }),
+      true,
+    )
+  })
+})
+
+describe('validateTileScenarioMeasures', () => {
+  it('rejects bathroom-from-scratch with zero tile areas', () => {
+    const result = validateTileScenarioMeasures({
+      application: { state: 'bathroom-from-scratch', cladFormat: '301-1300', grout: 'cement' },
+      input: emptyTileInput,
+    })
+    assert.equal(result.ok, false)
+  })
+
+  it('accepts floor-only when floor tile area is set', () => {
+    const result = validateTileScenarioMeasures({
+      application: { state: 'floor-only', cladFormat: '301-1300', grout: 'none' },
+      input: { ...emptyTileInput, floorTileArea: 12 },
+    })
+    assert.equal(result.ok, true)
+  })
+
+  it('requires backsplash for kitchen-backsplash', () => {
+    const result = validateTileScenarioMeasures({
+      application: { state: 'kitchen-backsplash', cladFormat: 'mosaic' },
+      input: { ...emptyTileInput, floorTileArea: 10 },
+    })
+    assert.equal(result.ok, false)
+    assert.equal(
+      canApplyTileScenario({
+        application: { state: 'kitchen-backsplash', cladFormat: 'mosaic' },
+        input: { ...emptyTileInput, backsplashArea: 3 },
       }),
       true,
     )
