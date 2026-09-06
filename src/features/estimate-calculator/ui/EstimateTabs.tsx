@@ -10,6 +10,7 @@ type EstimateTabsProps = {
 const TABS: ReadonlyArray<{ id: EstimateTabId; label: string }> = [
   { id: 'floors', label: 'Полы' },
   { id: 'walls', label: 'Стены' },
+  { id: 'ceilings', label: 'Потолки' },
 ]
 
 function focusTab(tabId: EstimateTabId) {

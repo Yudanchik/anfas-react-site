@@ -6,23 +6,29 @@ import styles from './EstimateIntro.module.scss'
 type EstimateIntroProps = {
   floorsSelectedCount: number
   wallsSelectedCount: number
+  ceilingsSelectedCount: number
   floorsTotalRub: number
   wallsTotalRub: number
+  ceilingsTotalRub: number
   grandTotalRub: number
   floorsMappingCount: number
   wallsMappingCount: number
+  ceilingsMappingCount: number
 }
 
 export function EstimateIntro({
   floorsSelectedCount,
   wallsSelectedCount,
+  ceilingsSelectedCount,
   floorsTotalRub,
   wallsTotalRub,
+  ceilingsTotalRub,
   grandTotalRub,
   floorsMappingCount,
   wallsMappingCount,
+  ceilingsMappingCount,
 }: EstimateIntroProps) {
-  const selectedCount = floorsSelectedCount + wallsSelectedCount
+  const selectedCount = floorsSelectedCount + wallsSelectedCount + ceilingsSelectedCount
 
   return (
     <section className={styles.intro} aria-labelledby="estimate-calculator-title">
@@ -30,7 +36,7 @@ export function EstimateIntro({
       <h1 className={styles.title} id="estimate-calculator-title">
         Калькулятор сметы
         <br />
-        <em>полы и стены</em>
+        <em>полы, стены и потолки</em>
       </h1>
       <p className={styles.lead}>
         Быстрый черновик для сметчика: сценарии подставляют типовой набор, все строки остаются
@@ -43,9 +49,9 @@ export function EstimateIntro({
 
       <dl className={styles.stats}>
         <div>
-          <dt>Позиций (полы / стены)</dt>
+          <dt>Позиций (полы / стены / потолки)</dt>
           <dd>
-            {floorsMappingCount} / {wallsMappingCount}
+            {floorsMappingCount} / {wallsMappingCount} / {ceilingsMappingCount}
           </dd>
         </div>
         <div>
@@ -79,6 +85,16 @@ export function EstimateIntro({
             <span className={styles.sectionMeta}>
               {formatEstimatePositionCount(wallsSelectedCount)} ·{' '}
               {formatPriceValue(wallsTotalRub)} ₽
+            </span>
+          </li>
+          <li
+            className={styles.sectionCard}
+            data-active={ceilingsSelectedCount > 0 ? 'true' : 'false'}
+          >
+            <span className={styles.sectionName}>Потолки</span>
+            <span className={styles.sectionMeta}>
+              {formatEstimatePositionCount(ceilingsSelectedCount)} ·{' '}
+              {formatPriceValue(ceilingsTotalRub)} ₽
             </span>
           </li>
         </ul>
