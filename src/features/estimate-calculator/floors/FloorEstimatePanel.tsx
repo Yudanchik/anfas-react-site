@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 import { groupFloorEstimateLines, type EstimateLine, type EstimateZone } from '@/entities/estimate'
 import type { FloorEstimateEditor } from '@/features/floor-estimate/model/use-floor-estimate-editor'
@@ -21,6 +21,7 @@ type FloorEstimatePanelProps = {
   presetDraft: FloorPresetDraftState
   onPresetDraftChange: (patch: Partial<FloorPresetDraftState>) => void
   onResetAll: () => void
+  globalFeedbackEpoch?: number
 }
 
 export function FloorEstimatePanel({
@@ -31,8 +32,16 @@ export function FloorEstimatePanel({
   presetDraft,
   onPresetDraftChange,
   onResetAll,
+  globalFeedbackEpoch,
 }: FloorEstimatePanelProps) {
   const groups = useMemo(() => groupFloorEstimateLines(editor.lines), [editor.lines])
+  const [sectionFeedbackEpoch, setSectionFeedbackEpoch] = useState(0)
+  const feedbackEpoch = sectionFeedbackEpoch + (globalFeedbackEpoch ?? 0)
+
+  function handleReset() {
+    setSectionFeedbackEpoch((n) => n + 1)
+    onResetAll()
+  }
 
   return (
     <div className={styles.workspace}>
@@ -56,6 +65,7 @@ export function FloorEstimatePanel({
           screedArea={editor.input.screedArea}
           totalFloorArea={editor.input.totalFloorArea}
           wetZonesArea={editor.input.wetZonesArea}
+          feedbackEpoch={feedbackEpoch}
           onApplyPreset={editor.applyPreset}
         />
       </div>
@@ -70,7 +80,7 @@ export function FloorEstimatePanel({
           onApplyDemolitionArea={editor.applyDemolitionArea}
           onApplyScreedArea={editor.applyScreedArea}
           onApplyWetArea={editor.applyWetArea}
-          onReset={onResetAll}
+          onReset={handleReset}
         />
       </div>
 
@@ -83,6 +93,7 @@ export function FloorEstimatePanel({
               zones={zones}
               onZonesChange={onZonesChange}
               embedded
+              feedbackEpoch={feedbackEpoch}
               onAdd={editor.addZonedLine}
             />
           }
@@ -90,6 +101,7 @@ export function FloorEstimatePanel({
             <EstimateManualLine
               titleId="floor-estimate-manual-title"
               embedded
+              feedbackEpoch={feedbackEpoch}
               onAdd={editor.addManualLine}
             />
           }

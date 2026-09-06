@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import {
   createEstimateZone,
@@ -10,6 +10,7 @@ import {
 } from '@/entities/estimate'
 
 import { validateEstimateZoneName } from '../model/estimate-zone-name'
+import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
 import { EstimateNumberInput } from '../ui/EstimateNumberInput'
 import { EstimateSelect } from '../ui/EstimateSelect'
 import styles from './FloorZoneWorkAdd.module.scss'
@@ -22,6 +23,7 @@ type FloorZoneWorkAddProps = {
   onZonesChange?: (zones: EstimateZone[]) => void
   /** Без своей рамки/заголовка — внутри панели «Строки сметы». */
   embedded?: boolean
+  feedbackEpoch?: number
   onAdd: (params: {
     priceKey: string
     quantity: number
@@ -31,19 +33,11 @@ type FloorZoneWorkAddProps = {
   }) => boolean
 }
 
-type StatusKind = 'success' | 'error' | 'info'
-
-type StatusState = {
-  kind: StatusKind
-  message: string
-}
-
-const SUCCESS_CLEAR_MS = 4500
-
 export function FloorZoneWorkAdd({
   zones = [],
   onZonesChange,
   embedded = false,
+  feedbackEpoch,
   onAdd,
 }: FloorZoneWorkAddProps) {
   const [categoryId, setCategoryId] = useState<FloorZoneWorkCategoryId>('demolition')
@@ -53,8 +47,9 @@ export function FloorZoneWorkAdd({
   const [customZoneName, setCustomZoneName] = useState('')
   const [quantity, setQuantity] = useState(0)
   const [comment, setComment] = useState('')
-  const [status, setStatus] = useState<StatusState | null>(null)
-  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const { status, setSuccess, setError } = useEstimateStatusMessage({
+    clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
+  })
 
   const selectedOptions = options
   const effectivePriceKey =
@@ -100,29 +95,6 @@ export function FloorZoneWorkAdd({
       }),
     [selectedOptions],
   )
-
-  useEffect(() => {
-    return () => {
-      if (successTimerRef.current) clearTimeout(successTimerRef.current)
-    }
-  }, [])
-
-  function setError(message: string) {
-    if (successTimerRef.current) {
-      clearTimeout(successTimerRef.current)
-      successTimerRef.current = null
-    }
-    setStatus({ kind: 'error', message })
-  }
-
-  function setSuccess(message: string) {
-    if (successTimerRef.current) clearTimeout(successTimerRef.current)
-    setStatus({ kind: 'success', message })
-    successTimerRef.current = setTimeout(() => {
-      setStatus((prev) => (prev?.kind === 'success' ? null : prev))
-      successTimerRef.current = null
-    }, SUCCESS_CLEAR_MS)
-  }
 
   function handleCategoryChange(next: FloorZoneWorkCategoryId) {
     setCategoryId(next)

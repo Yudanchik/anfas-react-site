@@ -86,6 +86,7 @@ export function EstimateCalculatorWorkspace() {
   const [ceilingScenarioDraft, setCeilingScenarioDraft] = useState<CeilingScenarioDraftState>(
     initial.ceilingScenarios,
   )
+  const [globalFeedbackEpoch, setGlobalFeedbackEpoch] = useState(0)
 
   const floors = useFloorEstimateEditor(initial.floors)
   const walls = useWallEstimateEditor(initial.walls)
@@ -149,6 +150,7 @@ export function EstimateCalculatorWorkspace() {
 
   function resetAllEstimate() {
     clearEstimateCalculatorSnapshot()
+    setGlobalFeedbackEpoch((n) => n + 1)
     setActiveTab('floors')
     setZones([])
     setFloorPresetDraft({ ...DEFAULT_FLOOR_PRESETS })
@@ -253,6 +255,7 @@ export function EstimateCalculatorWorkspace() {
             setFloorPresetDraft((prev) => ({ ...prev, ...patch }))
           }
           onResetAll={resetAllEstimate}
+          globalFeedbackEpoch={globalFeedbackEpoch}
         />
       </div>
 
@@ -272,6 +275,7 @@ export function EstimateCalculatorWorkspace() {
             setWallScenarioDraft((prev) => ({ ...prev, ...patch }))
           }
           onResetSection={resetWallsSection}
+          globalFeedbackEpoch={globalFeedbackEpoch}
         />
       </div>
 
@@ -291,6 +295,7 @@ export function EstimateCalculatorWorkspace() {
             setCeilingScenarioDraft((prev) => ({ ...prev, ...patch }))
           }
           onResetSection={resetCeilingsSection}
+          globalFeedbackEpoch={globalFeedbackEpoch}
         />
       </div>
 

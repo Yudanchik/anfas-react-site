@@ -6,11 +6,14 @@ import {
   formatFloorPresetZoneFeedback,
   type DemolitionCoveringOption,
   type EstimateZone,
+  type FloorEstimateInput,
   type FloorPresetApplication,
   type ScreedTypeOption,
   type WasteTripOption,
   type WaterproofingLayersOption,
 } from '@/entities/estimate'
+import { useEstimateStatusMessage } from '@/features/estimate-calculator/model/use-estimate-status-message'
+import { validateFloorPresetMeasures } from '@/features/estimate-calculator/model/validate-scenario-measures'
 import { EstimateSelect } from '@/features/estimate-calculator/ui/EstimateSelect'
 
 import styles from './FloorEstimatePresets.module.scss'
@@ -32,6 +35,7 @@ type FloorEstimatePresetsProps = {
   screedArea: number
   totalFloorArea: number
   wetZonesArea: number
+  feedbackEpoch?: number
   onApplyPreset: (
     application: FloorPresetApplication,
     target?: { zone?: EstimateZone },
@@ -80,13 +84,16 @@ export function FloorEstimatePresets({
   screedArea,
   totalFloorArea,
   wetZonesArea,
+  feedbackEpoch,
   onApplyPreset,
 }: FloorEstimatePresetsProps) {
   const [uncontrolledDraft, setUncontrolledDraft] = useState<FloorPresetDraft>(DEFAULT_DRAFT)
   const draft = controlledDraft ?? uncontrolledDraft
   const { covering, screedType, layers, wasteTrip } = draft
   const [targetId, setTargetId] = useState(GENERAL_TARGET)
-  const [status, setStatus] = useState<string | null>(null)
+  const { status, setSuccess, setError } = useEstimateStatusMessage({
+    clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
+  })
 
   function patchDraft(patch: Partial<FloorPresetDraft>) {
     if (onDraftChange) onDraftChange(patch)
@@ -116,11 +123,30 @@ export function FloorEstimatePresets({
   const effectiveWet = effectiveZone ? effectiveZone.wetArea : wetZonesArea
 
   function apply(application: FloorPresetApplication) {
+    const generalInput: FloorEstimateInput = {
+      totalFloorArea,
+      demolitionArea,
+      screedArea,
+      wetZonesArea,
+      avgDeltaMm: 0,
+      surveyorComment: '',
+    }
+
+    const check = validateFloorPresetMeasures({
+      application,
+      input: generalInput,
+      zone: effectiveZone,
+    })
+    if (!check.ok) {
+      setError(check.message)
+      return
+    }
+
     const result = onApplyPreset(
       application,
       effectiveZone ? { zone: effectiveZone } : undefined,
     )
-    setStatus(
+    setSuccess(
       result.zoneName
         ? formatFloorPresetZoneFeedback(result.label, result.zoneName, result.addedCount)
         : formatFloorPresetFeedback(result.label, result.addedCount),
@@ -263,8 +289,8 @@ export function FloorEstimatePresets({
       </div>
 
       {status ? (
-        <p className={styles.status} role="status" aria-live="polite">
-          {status}
+        <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
+          {status.message}
         </p>
       ) : null}
     </section>

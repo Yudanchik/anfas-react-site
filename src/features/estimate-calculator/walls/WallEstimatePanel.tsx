@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 import { groupWallEstimateLines, type EstimateLine, type EstimateZone } from '@/entities/estimate'
 
@@ -21,6 +21,7 @@ type WallEstimatePanelProps = {
   scenarioDraft: WallScenarioDraftState
   onScenarioDraftChange: (patch: Partial<WallScenarioDraftState>) => void
   onResetSection: () => void
+  globalFeedbackEpoch?: number
 }
 
 export function WallEstimatePanel({
@@ -31,8 +32,16 @@ export function WallEstimatePanel({
   scenarioDraft,
   onScenarioDraftChange,
   onResetSection,
+  globalFeedbackEpoch,
 }: WallEstimatePanelProps) {
   const groups = useMemo(() => groupWallEstimateLines(editor.lines), [editor.lines])
+  const [sectionFeedbackEpoch, setSectionFeedbackEpoch] = useState(0)
+  const feedbackEpoch = sectionFeedbackEpoch + (globalFeedbackEpoch ?? 0)
+
+  function handleReset() {
+    setSectionFeedbackEpoch((n) => n + 1)
+    onResetSection()
+  }
 
   return (
     <div className={styles.workspace}>
@@ -52,6 +61,8 @@ export function WallEstimatePanel({
           draft={scenarioDraft}
           onDraftChange={onScenarioDraftChange}
           zones={zones}
+          generalInput={editor.input}
+          feedbackEpoch={feedbackEpoch}
           onApplyScenario={editor.applyScenario}
         />
       </div>
@@ -71,7 +82,7 @@ export function WallEstimatePanel({
           onApplyPuttyArea={editor.applyPuttyArea}
           onApplyFinishArea={editor.applyFinishArea}
           onApplyLinearMeters={editor.applyLinearMeters}
-          onReset={onResetSection}
+          onReset={handleReset}
         />
       </div>
 
@@ -84,6 +95,7 @@ export function WallEstimatePanel({
               zones={zones}
               onZonesChange={onZonesChange}
               embedded
+              feedbackEpoch={feedbackEpoch}
               onAdd={editor.addZonedLine}
             />
           }
@@ -91,6 +103,7 @@ export function WallEstimatePanel({
             <EstimateManualLine
               titleId="wall-estimate-manual-title"
               embedded
+              feedbackEpoch={feedbackEpoch}
               onAdd={editor.addManualLine}
             />
           }

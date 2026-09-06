@@ -1,5 +1,4 @@
-import { useState } from 'react'
-
+import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
 import {
   formatWallQuickActionFeedback,
   type WallQuickActionKind,
@@ -39,10 +38,10 @@ export function WallEstimateHelpers({
   onApplyLinearMeters,
   onReset,
 }: WallEstimateHelpersProps) {
-  const [status, setStatus] = useState<string | null>(null)
+  const { status, setSuccess } = useEstimateStatusMessage()
 
   function runApply(kind: Exclude<WallQuickActionKind, 'reset'>, apply: () => number) {
-    setStatus(formatWallQuickActionFeedback(kind, apply()))
+    setSuccess(formatWallQuickActionFeedback(kind, apply()))
   }
 
   return (
@@ -111,15 +110,15 @@ export function WallEstimateHelpers({
             title="Полы и их автосохранение не затрагиваются"
             onClick={() => {
               onReset()
-              setStatus(formatWallQuickActionFeedback('reset'))
+              setSuccess(formatWallQuickActionFeedback('reset'))
             }}
           >
             Сбросить стены
           </button>
         </div>
         {status ? (
-          <p className={styles.status} role="status" aria-live="polite">
-            {status}
+          <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
+            {status.message}
           </p>
         ) : null}
       </details>

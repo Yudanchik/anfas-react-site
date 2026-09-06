@@ -58,6 +58,6 @@ export function formatCeilingQuickActionFeedback(
     case 'finish-area':
       return `Площадь финиша применена к ${affectedCount ?? 0} строкам`
     case 'reset':
-      return 'Смета по потолкам сброшена'
+      return 'Потолки сброшены'
   }
 }

@@ -6,6 +6,7 @@ import {
   formatWallScenarioZoneFeedback,
   type EstimateZone,
   type WallDemolitionCoveringOption,
+  type WallEstimateInput,
   type WallFinishTargetOption,
   type WallPaintLayersOption,
   type WallScenarioApplication,
@@ -14,6 +15,8 @@ import {
 } from '@/entities/estimate'
 
 import type { WallScenarioDraftState } from '../model/estimate-calculator-persistence'
+import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
+import { validateWallScenarioMeasures } from '../model/validate-scenario-measures'
 import { EstimateSelect } from '../ui/EstimateSelect'
 import styles from './WallEstimateScenarios.module.scss'
 
@@ -21,6 +24,8 @@ type WallEstimateScenariosProps = {
   draft: WallScenarioDraftState
   onDraftChange: (patch: Partial<WallScenarioDraftState>) => void
   zones?: readonly EstimateZone[]
+  generalInput: WallEstimateInput
+  feedbackEpoch?: number
   onApplyScenario: (
     application: WallScenarioApplication,
     target?: { zone?: EstimateZone },
@@ -74,11 +79,15 @@ export function WallEstimateScenarios({
   draft,
   onDraftChange,
   zones = [],
+  generalInput,
+  feedbackEpoch,
   onApplyScenario,
 }: WallEstimateScenariosProps) {
   const { state, finishTarget, demolitionCovering, wallpaperType, paintLayers } = draft
   const [targetId, setTargetId] = useState(GENERAL_TARGET)
-  const [status, setStatus] = useState<string | null>(null)
+  const { status, setSuccess, setError } = useEstimateStatusMessage({
+    clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
+  })
 
   const finishDisabled = state === 'demolition-only' || state === 'local-leveling'
   const needsFinishChoice = state === 'finish-only'
@@ -113,11 +122,21 @@ export function WallEstimateScenarios({
       paintLayers: resolvedFinish === 'paint' ? paintLayers : undefined,
     }
 
+    const check = validateWallScenarioMeasures({
+      application,
+      input: generalInput,
+      zone: selectedZone,
+    })
+    if (!check.ok) {
+      setError(check.message)
+      return
+    }
+
     const result = onApplyScenario(
       application,
       selectedZone ? { zone: selectedZone } : undefined,
     )
-    setStatus(
+    setSuccess(
       result.zoneName
         ? formatWallScenarioZoneFeedback(result.label, result.zoneName, result.addedCount)
         : formatWallScenarioFeedback(result.label, result.addedCount),
@@ -239,8 +258,8 @@ export function WallEstimateScenarios({
       </div>
 
       {status ? (
-        <p className={styles.status} role="status" aria-live="polite">
-          {status}
+        <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
+          {status.message}
         </p>
       ) : null}
     </section>

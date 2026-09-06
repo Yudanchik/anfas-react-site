@@ -73,6 +73,6 @@ export function formatWallQuickActionFeedback(
     case 'linear':
       return `Пог. м применены к ${affectedCount ?? 0} строкам`
     case 'reset':
-      return 'Смета по стенам сброшена'
+      return 'Стены сброшены'
   }
 }

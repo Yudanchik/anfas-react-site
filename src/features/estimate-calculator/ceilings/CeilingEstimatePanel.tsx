@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 import { groupCeilingEstimateLines, type EstimateLine, type EstimateZone } from '@/entities/estimate'
 
@@ -21,6 +21,7 @@ type CeilingEstimatePanelProps = {
   scenarioDraft: CeilingScenarioDraftState
   onScenarioDraftChange: (patch: Partial<CeilingScenarioDraftState>) => void
   onResetSection: () => void
+  globalFeedbackEpoch?: number
 }
 
 export function CeilingEstimatePanel({
@@ -31,8 +32,16 @@ export function CeilingEstimatePanel({
   scenarioDraft,
   onScenarioDraftChange,
   onResetSection,
+  globalFeedbackEpoch,
 }: CeilingEstimatePanelProps) {
   const groups = useMemo(() => groupCeilingEstimateLines(editor.lines), [editor.lines])
+  const [sectionFeedbackEpoch, setSectionFeedbackEpoch] = useState(0)
+  const feedbackEpoch = sectionFeedbackEpoch + (globalFeedbackEpoch ?? 0)
+
+  function handleReset() {
+    setSectionFeedbackEpoch((n) => n + 1)
+    onResetSection()
+  }
 
   return (
     <div className={styles.workspace}>
@@ -52,6 +61,8 @@ export function CeilingEstimatePanel({
           draft={scenarioDraft}
           onDraftChange={onScenarioDraftChange}
           zones={zones}
+          generalInput={editor.input}
+          feedbackEpoch={feedbackEpoch}
           onApplyScenario={editor.applyScenario}
         />
       </div>
@@ -68,7 +79,7 @@ export function CeilingEstimatePanel({
           onApplyPlasterArea={editor.applyPlasterArea}
           onApplyPuttyArea={editor.applyPuttyArea}
           onApplyFinishArea={editor.applyFinishArea}
-          onReset={onResetSection}
+          onReset={handleReset}
         />
       </div>
 
@@ -81,6 +92,7 @@ export function CeilingEstimatePanel({
               zones={zones}
               onZonesChange={onZonesChange}
               embedded
+              feedbackEpoch={feedbackEpoch}
               onAdd={editor.addZonedLine}
             />
           }
@@ -88,6 +100,7 @@ export function CeilingEstimatePanel({
             <EstimateManualLine
               titleId="ceiling-estimate-manual-title"
               embedded
+              feedbackEpoch={feedbackEpoch}
               onAdd={editor.addManualLine}
             />
           }

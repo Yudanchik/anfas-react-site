@@ -5,6 +5,7 @@ import {
   formatCeilingScenarioFeedback,
   formatCeilingScenarioZoneFeedback,
   type CeilingDemolitionCoveringOption,
+  type CeilingEstimateInput,
   type CeilingFinishTargetOption,
   type CeilingPaintLayersOption,
   type CeilingScenarioApplication,
@@ -13,6 +14,8 @@ import {
 } from '@/entities/estimate'
 
 import type { CeilingScenarioDraftState } from '../model/estimate-calculator-persistence'
+import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
+import { validateCeilingScenarioMeasures } from '../model/validate-scenario-measures'
 import { EstimateSelect } from '../ui/EstimateSelect'
 import styles from './CeilingEstimateScenarios.module.scss'
 
@@ -20,6 +23,8 @@ type CeilingEstimateScenariosProps = {
   draft: CeilingScenarioDraftState
   onDraftChange: (patch: Partial<CeilingScenarioDraftState>) => void
   zones?: readonly EstimateZone[]
+  generalInput: CeilingEstimateInput
+  feedbackEpoch?: number
   onApplyScenario: (
     application: CeilingScenarioApplication,
     target?: { zone?: EstimateZone },
@@ -70,11 +75,15 @@ export function CeilingEstimateScenarios({
   draft,
   onDraftChange,
   zones = [],
+  generalInput,
+  feedbackEpoch,
   onApplyScenario,
 }: CeilingEstimateScenariosProps) {
   const { state, finishTarget, demolitionCovering, paintLayers } = draft
   const [targetId, setTargetId] = useState(GENERAL_TARGET)
-  const [status, setStatus] = useState<string | null>(null)
+  const { status, setSuccess, setError } = useEstimateStatusMessage({
+    clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
+  })
 
   const finishDisabled = state === 'demolition-only' || state === 'local-leveling'
   const needsFinishChoice = state === 'finish-only'
@@ -107,11 +116,21 @@ export function CeilingEstimateScenarios({
       paintLayers: resolvedFinish === 'paint' ? paintLayers : undefined,
     }
 
+    const check = validateCeilingScenarioMeasures({
+      application,
+      input: generalInput,
+      zone: selectedZone,
+    })
+    if (!check.ok) {
+      setError(check.message)
+      return
+    }
+
     const result = onApplyScenario(
       application,
       selectedZone ? { zone: selectedZone } : undefined,
     )
-    setStatus(
+    setSuccess(
       result.zoneName
         ? formatCeilingScenarioZoneFeedback(result.label, result.zoneName, result.addedCount)
         : formatCeilingScenarioFeedback(result.label, result.addedCount),
@@ -219,8 +238,8 @@ export function CeilingEstimateScenarios({
       </div>
 
       {status ? (
-        <p className={styles.status} role="status" aria-live="polite">
-          {status}
+        <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
+          {status.message}
         </p>
       ) : null}
     </section>

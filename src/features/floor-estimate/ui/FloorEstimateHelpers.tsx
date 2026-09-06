@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEstimateStatusMessage } from '@/features/estimate-calculator/model/use-estimate-status-message'
 
 import {
   formatQuickActionFeedback,
@@ -29,10 +29,10 @@ export function FloorEstimateHelpers({
   onApplyWetArea,
   onReset,
 }: FloorEstimateHelpersProps) {
-  const [status, setStatus] = useState<string | null>(null)
+  const { status, setSuccess } = useEstimateStatusMessage()
 
   function runApply(kind: Exclude<QuickActionKind, 'reset'>, apply: () => number) {
-    setStatus(formatQuickActionFeedback(kind, apply()))
+    setSuccess(formatQuickActionFeedback(kind, apply()))
   }
 
   return (
@@ -85,15 +85,15 @@ export function FloorEstimateHelpers({
             title="Сбросит полы, стены и автосохранение на этом устройстве"
             onClick={() => {
               onReset()
-              setStatus(formatQuickActionFeedback('reset'))
+              setSuccess(formatQuickActionFeedback('reset'))
             }}
           >
             Сбросить всю смету
           </button>
         </div>
         {status ? (
-          <p className={styles.status} role="status" aria-live="polite">
-            {status}
+          <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
+            {status.message}
           </p>
         ) : null}
       </details>

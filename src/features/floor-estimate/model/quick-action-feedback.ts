@@ -47,6 +47,6 @@ export function formatQuickActionFeedback(kind: QuickActionKind, affectedCount?:
     case 'wet-area':
       return 'Мокрые зоны применены к гидроизоляции'
     case 'reset':
-      return 'Вся смета сброшена (полы, стены и автосохранение)'
+      return 'Вся смета сброшена'
   }
 }

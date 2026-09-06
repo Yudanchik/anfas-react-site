@@ -1,5 +1,4 @@
-import { useState } from 'react'
-
+import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
 import {
   formatCeilingQuickActionFeedback,
   type CeilingQuickActionKind,
@@ -33,10 +32,10 @@ export function CeilingEstimateHelpers({
   onApplyFinishArea,
   onReset,
 }: CeilingEstimateHelpersProps) {
-  const [status, setStatus] = useState<string | null>(null)
+  const { status, setSuccess } = useEstimateStatusMessage()
 
   function runApply(kind: Exclude<CeilingQuickActionKind, 'reset'>, apply: () => number) {
-    setStatus(formatCeilingQuickActionFeedback(kind, apply()))
+    setSuccess(formatCeilingQuickActionFeedback(kind, apply()))
   }
 
   return (
@@ -97,15 +96,15 @@ export function CeilingEstimateHelpers({
             title="Полы, стены и их автосохранение не затрагиваются"
             onClick={() => {
               onReset()
-              setStatus(formatCeilingQuickActionFeedback('reset'))
+              setSuccess(formatCeilingQuickActionFeedback('reset'))
             }}
           >
             Сбросить потолки
           </button>
         </div>
         {status ? (
-          <p className={styles.status} role="status" aria-live="polite">
-            {status}
+          <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
+            {status.message}
           </p>
         ) : null}
       </details>

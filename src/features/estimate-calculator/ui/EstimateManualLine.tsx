@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 
+import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
 import { validateManualEstimateLineInput } from '../model/validate-manual-estimate-line'
 import { EstimateNumberInput } from './EstimateNumberInput'
 import styles from './EstimateManualLine.module.scss'
@@ -8,52 +9,23 @@ type EstimateManualLineProps = {
   titleId?: string
   /** Без своей рамки/заголовка — внутри панели «Строки сметы». */
   embedded?: boolean
+  feedbackEpoch?: number
   onAdd: (params: { title: string; unit: string; unitPrice: number; quantity: number }) => void
 }
-
-type StatusKind = 'success' | 'error'
-
-type StatusState = {
-  kind: StatusKind
-  message: string
-}
-
-const SUCCESS_CLEAR_MS = 4500
 
 export function EstimateManualLine({
   titleId = 'estimate-manual-title',
   embedded = false,
+  feedbackEpoch,
   onAdd,
 }: EstimateManualLineProps) {
   const [title, setTitle] = useState('')
   const [unit, setUnit] = useState('м²')
   const [unitPrice, setUnitPrice] = useState(0)
   const [quantity, setQuantity] = useState(0)
-  const [status, setStatus] = useState<StatusState | null>(null)
-  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    return () => {
-      if (successTimerRef.current) clearTimeout(successTimerRef.current)
-    }
-  }, [])
-
-  function setError(message: string) {
-    if (successTimerRef.current) {
-      clearTimeout(successTimerRef.current)
-      successTimerRef.current = null
-    }
-    setStatus({ kind: 'error', message })
-  }
-
-  function setSuccess(message: string) {
-    if (successTimerRef.current) clearTimeout(successTimerRef.current)
-    setStatus({ kind: 'success', message })
-    successTimerRef.current = setTimeout(() => {
-      setStatus((prev) => (prev?.kind === 'success' ? null : prev))
-      successTimerRef.current = null
-    }, SUCCESS_CLEAR_MS)
-  }
+  const { status, setSuccess, setError } = useEstimateStatusMessage({
+    clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
+  })
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
