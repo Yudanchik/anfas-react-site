@@ -2,6 +2,7 @@
 
 Техническое описание для разработчиков.
 Пользовательские инструкции: [README](./README.md), [Зоны](./zones.md), [Полы](./scenarios-floors.md), [Стены](./scenarios-walls.md).
+Roadmap следующих разделов: [estimate-calculator-master-plan.md](../../.cursor/task/estimate-calculator-master-plan.md).
 
 Цены и формулы живут в domain; UI только редактирует состояние.
 
@@ -91,7 +92,7 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 4. Итоги через `calculateEstimateTotal` + `getSelectedEstimateSections`.
 5. Zone-level: `*ToZone` + scoped conflicts.
 
-Кандидаты: потолки / сантехника / электрика.
+Кандидаты и порядок: [master-plan](../../.cursor/task/estimate-calculator-master-plan.md) (потолки → плитка → электрика → сантехника → прочее → export → access).
 
 ## Не делать
 
