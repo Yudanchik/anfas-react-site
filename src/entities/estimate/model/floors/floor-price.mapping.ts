@@ -951,7 +951,7 @@ export const FLOOR_PRICE_MAPPING: readonly FloorPriceMappingItem[] = [
     id: 'finish-plinth-duropolymer-up-to-100',
     title: 'Монтаж напольного плинтуса из дюрополимера или полиуретана высотой до 100 мм',
     unit: 'м. пог.',
-    unitPrice: 350,
+    unitPrice: 700,
     source: 'pdf',
     kind: 'finish-plinth',
     defaultEnabled: false,

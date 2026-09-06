@@ -39,11 +39,18 @@ src/entities/estimate/model/
 
 Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-M` и id сущности `zone-N` — **разные** счётчики.
 
+### Цены: PDF SoT и audit extract
+
+- PDF `anfas-price-list.pdf` — **source of truth** для всех mapping (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*`).
+- Frontend `prices.data.ts` — только сверка для `source: both` (цена + единица должны совпасть с PDF).
+- При извлечении текста из PDF использовать `pdftotext -table` (не `-layout`: колонки цены/единицы съезжают).
+- Пример артефакта `-layout`: «Демонтаж плитки стеновой» → ложные 1300; в `-table` / PDF = **900**.
+
 ### Плитка: пересечения и SoT
 
-- PDF `anfas-price-list.pdf` — source of truth для `TILE_PRICE_MAPPING`.
+- PDF — source of truth для `TILE_PRICE_MAPPING` (см. выше).
 - `source: both` только при совпадении цены и единицы с frontend preview **и** PDF.
-- Демонтаж стеновой плитки: PDF/FE/Walls/Tile = **900** ₽/м² (`source: both`). Ранее ошибочно фиксировали 1300 из плохого extract PDF.
+- Демонтаж стеновой плитки: PDF/FE/Walls/Tile = **900** ₽/м² (`source: both`).
 - Гидроизоляция **не** в Tile mapping; канон — Floors.
 - Floors/Walls tile-related keys **не удаляем**; Tile имеет собственные `priceKey`.
 - Soft-filter сценариев по `EstimateZone.zoneType` (helper `partitionScenariosByZoneType`) — сначала Tile.

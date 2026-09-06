@@ -49,6 +49,17 @@ describe('tile estimate domain', () => {
     assert.doesNotThrow(() => assertTileMappingMatchesFrontend())
   })
 
+  it('keeps bath/door seal prices aligned with PDF', () => {
+    const bath = TILE_PRICE_MAPPING.find((entry) => entry.id === 'seal-bath')
+    const door = TILE_PRICE_MAPPING.find((entry) => entry.id === 'seal-door')
+    assert.ok(bath)
+    assert.ok(door)
+    assert.equal(bath.unitPrice, 1050)
+    assert.equal(bath.title, 'Герметизация примыкания ванны к стене')
+    assert.equal(door.unitPrice, 350)
+    assert.equal(door.title, 'Герметизация примыкания дверного блока')
+  })
+
   it('uses PDF/FE 900 for wall tile demolition (source=both)', () => {
     const wallDemo = TILE_PRICE_MAPPING.find((item) => item.id === 'demolition-wall-tile')
     assert.ok(wallDemo)

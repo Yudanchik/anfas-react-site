@@ -36,6 +36,15 @@ describe('floor estimate domain', () => {
     assert.doesNotThrow(() => assertFloorMappingMatchesFrontend())
   })
 
+  it('keeps duropolymer plinth price aligned with PDF (700, not plastic 350)', () => {
+    const item = FLOOR_PRICE_MAPPING.find((entry) => entry.id === 'finish-plinth-duropolymer-up-to-100')
+    assert.ok(item)
+    assert.equal(item.unit, 'м. пог.')
+    assert.equal(item.unitPrice, 700)
+    const plastic = FLOOR_PRICE_MAPPING.find((entry) => entry.id === 'finish-plinth-plastic')
+    assert.equal(plastic?.unitPrice, 350)
+  })
+
   it('treats disabled line as 0', () => {
     assert.equal(
       calculateLineTotal({
