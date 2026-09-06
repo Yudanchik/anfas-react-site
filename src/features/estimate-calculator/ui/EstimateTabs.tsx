@@ -11,6 +11,7 @@ const TABS: ReadonlyArray<{ id: EstimateTabId; label: string }> = [
   { id: 'floors', label: 'Полы' },
   { id: 'walls', label: 'Стены' },
   { id: 'ceilings', label: 'Потолки' },
+  { id: 'tile', label: 'Плитка' },
 ]
 
 function focusTab(tabId: EstimateTabId) {

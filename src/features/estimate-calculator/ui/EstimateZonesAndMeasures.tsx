@@ -7,6 +7,7 @@ import {
   type CeilingEstimateInput,
   type EstimateZone,
   type FloorEstimateInput,
+  type TileEstimateInput,
   type WallEstimateInput,
 } from '@/entities/estimate'
 
@@ -41,6 +42,14 @@ type EstimateZonesAndMeasuresProps =
       generalInput: CeilingEstimateInput
       onGeneralChange: (patch: Partial<CeilingEstimateInput>) => void
     }
+  | {
+      section: 'tile'
+      zones: readonly EstimateZone[]
+      onZonesChange: (zones: EstimateZone[]) => void
+      onDeleteZone: (zoneId: string) => void
+      generalInput: TileEstimateInput
+      onGeneralChange: (patch: Partial<TileEstimateInput>) => void
+    }
 
 function formatArea(value: number): string {
   return value > 0 ? String(value) : '—'
@@ -58,6 +67,10 @@ function ceilingGeneralSummary(input: CeilingEstimateInput): string {
   return `Площадь потолков ${formatArea(input.totalCeilingArea)} м²`
 }
 
+function tileGeneralSummary(input: TileEstimateInput): string {
+  return `Пол ${formatArea(input.floorTileArea)} м² · Стены ${formatArea(input.wallTileArea)} м²`
+}
+
 function floorZoneSummary(zone: EstimateZone): string {
   return `Площадь пола ${formatArea(zone.floorArea)} м² · Демонтаж пола ${formatArea(zone.demolitionFloorArea)} м²`
 }
@@ -68,6 +81,65 @@ function wallZoneSummary(zone: EstimateZone): string {
 
 function ceilingZoneSummary(zone: EstimateZone): string {
   return `Площадь потолков ${formatArea(zone.ceilingArea)} м² · Демонтаж потолков ${formatArea(zone.demolitionCeilingArea)} м²`
+}
+
+function tileZoneSummary(zone: EstimateZone): string {
+  return `Пол ${formatArea(zone.tileFloorArea)} м² · Стены ${formatArea(zone.tileWallArea)} м²`
+}
+
+function sectionTitleId(section: EstimateZonesAndMeasuresProps['section']): string {
+  switch (section) {
+    case 'floors':
+      return 'floor-zones-and-measures-title'
+    case 'walls':
+      return 'wall-zones-and-measures-title'
+    case 'ceilings':
+      return 'ceiling-zones-and-measures-title'
+    case 'tile':
+      return 'tile-zones-and-measures-title'
+  }
+}
+
+function sectionLead(section: EstimateZonesAndMeasuresProps['section']): string {
+  switch (section) {
+    case 'floors':
+      return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев полов.'
+    case 'walls':
+      return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев стен.'
+    case 'ceilings':
+      return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев потолков.'
+    case 'tile':
+      return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев плитки.'
+  }
+}
+
+function generalSummary(props: EstimateZonesAndMeasuresProps): string {
+  switch (props.section) {
+    case 'floors':
+      return floorGeneralSummary(props.generalInput)
+    case 'walls':
+      return wallGeneralSummary(props.generalInput)
+    case 'ceilings':
+      return ceilingGeneralSummary(props.generalInput)
+    case 'tile':
+      return tileGeneralSummary(props.generalInput)
+  }
+}
+
+function zoneSummary(
+  section: EstimateZonesAndMeasuresProps['section'],
+  zone: EstimateZone,
+): string {
+  switch (section) {
+    case 'floors':
+      return floorZoneSummary(zone)
+    case 'walls':
+      return wallZoneSummary(zone)
+    case 'ceilings':
+      return ceilingZoneSummary(zone)
+    case 'tile':
+      return tileZoneSummary(zone)
+  }
 }
 
 export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
@@ -101,12 +173,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
     setPendingDelete(null)
   }
 
-  const titleId =
-    section === 'floors'
-      ? 'floor-zones-and-measures-title'
-      : section === 'walls'
-        ? 'wall-zones-and-measures-title'
-        : 'ceiling-zones-and-measures-title'
+  const titleId = sectionTitleId(section)
 
   return (
     <section className={styles.wrap} aria-labelledby={titleId}>
@@ -114,13 +181,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
         <h2 className={styles.title} id={titleId}>
           Зоны и замеры
         </h2>
-        <p className={styles.lead}>
-          {section === 'floors'
-            ? 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев полов.'
-            : section === 'walls'
-              ? 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев стен.'
-              : 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев потолков.'}
-        </p>
+        <p className={styles.lead}>{sectionLead(section)}</p>
       </div>
 
       <ul className={styles.list}>
@@ -143,13 +204,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
               />
               <span className={styles.itemCopy}>
                 <span className={styles.itemName}>Общие работы</span>
-                <span className={styles.itemMeta}>
-                  {section === 'floors'
-                    ? floorGeneralSummary(props.generalInput)
-                    : section === 'walls'
-                      ? wallGeneralSummary(props.generalInput)
-                      : ceilingGeneralSummary(props.generalInput)}
-                </span>
+                <span className={styles.itemMeta}>{generalSummary(props)}</span>
               </span>
             </button>
           </div>
@@ -165,8 +220,13 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                   input={props.generalInput}
                   onChange={props.onGeneralChange}
                 />
-              ) : (
+              ) : section === 'ceilings' ? (
                 <CeilingGeneralFields
+                  input={props.generalInput}
+                  onChange={props.onGeneralChange}
+                />
+              ) : (
+                <TileGeneralFields
                   input={props.generalInput}
                   onChange={props.onGeneralChange}
                 />
@@ -194,13 +254,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                   />
                   <span className={styles.itemCopy}>
                     <span className={styles.itemName}>{zone.name}</span>
-                    <span className={styles.itemMeta}>
-                      {section === 'floors'
-                        ? floorZoneSummary(zone)
-                        : section === 'walls'
-                          ? wallZoneSummary(zone)
-                          : ceilingZoneSummary(zone)}
-                    </span>
+                    <span className={styles.itemMeta}>{zoneSummary(section, zone)}</span>
                   </span>
                 </button>
                 <button
@@ -223,8 +277,10 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                     <FloorZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
                   ) : section === 'walls' ? (
                     <WallZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
-                  ) : (
+                  ) : section === 'ceilings' ? (
                     <CeilingZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
+                  ) : (
+                    <TileZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
                   )}
                   <label className={styles.field}>
                     <span className={styles.label}>Комментарий</span>
@@ -653,6 +709,123 @@ function CeilingZoneFields(props: {
         unit="м²"
         value={zone.finishCeilingArea}
         onChange={(finishCeilingArea) => onPatch({ finishCeilingArea })}
+      />
+    </div>
+  )
+}
+
+function TileGeneralFields(props: {
+  input: TileEstimateInput
+  onChange: (patch: Partial<TileEstimateInput>) => void
+}) {
+  const { input, onChange } = props
+  return (
+    <>
+      <div className={styles.grid}>
+        <NumberField
+          label="Плитка пола"
+          unit="м²"
+          value={input.floorTileArea}
+          onChange={(floorTileArea) => onChange({ floorTileArea })}
+        />
+        <NumberField
+          label="Плитка стен"
+          unit="м²"
+          value={input.wallTileArea}
+          onChange={(wallTileArea) => onChange({ wallTileArea })}
+        />
+        <NumberField
+          label="Фартук"
+          unit="м²"
+          value={input.backsplashArea}
+          onChange={(backsplashArea) => onChange({ backsplashArea })}
+        />
+        <NumberField
+          label="Подрезка / кромка"
+          unit="м. пог."
+          value={input.cuttingLength}
+          onChange={(cuttingLength) => onChange({ cuttingLength })}
+        />
+        <NumberField
+          label="Углы / примыкания"
+          unit="м. пог."
+          value={input.cornerLength}
+          onChange={(cornerLength) => onChange({ cornerLength })}
+        />
+        <NumberField
+          label="Отверстия"
+          unit="шт."
+          value={input.holesCount}
+          onChange={(holesCount) => onChange({ holesCount })}
+        />
+        <NumberField
+          label="Замена плитки"
+          unit="шт."
+          value={input.repairCount}
+          onChange={(repairCount) => onChange({ repairCount })}
+        />
+      </div>
+      <details className={styles.details}>
+        <summary>Комментарий замерщика</summary>
+        <textarea
+          className={styles.comment}
+          rows={2}
+          value={input.surveyorComment ?? ''}
+          onChange={(event) => onChange({ surveyorComment: event.target.value })}
+        />
+      </details>
+    </>
+  )
+}
+
+function TileZoneFields(props: {
+  zone: EstimateZone
+  onPatch: (patch: Partial<Omit<EstimateZone, 'id'>>) => void
+}) {
+  const { zone, onPatch } = props
+  return (
+    <div className={styles.grid}>
+      <NumberField
+        label="Плитка пола"
+        unit="м²"
+        value={zone.tileFloorArea}
+        onChange={(tileFloorArea) => onPatch({ tileFloorArea })}
+      />
+      <NumberField
+        label="Плитка стен"
+        unit="м²"
+        value={zone.tileWallArea}
+        onChange={(tileWallArea) => onPatch({ tileWallArea })}
+      />
+      <NumberField
+        label="Фартук"
+        unit="м²"
+        value={zone.tileBacksplashArea}
+        onChange={(tileBacksplashArea) => onPatch({ tileBacksplashArea })}
+      />
+      <NumberField
+        label="Подрезка / кромка"
+        unit="м. пог."
+        value={zone.tileCuttingLength}
+        onChange={(tileCuttingLength) => onPatch({ tileCuttingLength })}
+      />
+      <NumberField
+        label="Углы / примыкания"
+        unit="м. пог."
+        value={zone.tileCornerLength}
+        onChange={(tileCornerLength) => onPatch({ tileCornerLength })}
+      />
+      <NumberField
+        label="Отверстия"
+        unit="шт."
+        value={zone.tileHolesCount}
+        onChange={(tileHolesCount) => onPatch({ tileHolesCount })}
+      />
+      <NumberField
+        label="Замена плитки"
+        unit="шт."
+        value={zone.tileRepairCount}
+        onChange={(tileRepairCount) => onPatch({ tileRepairCount })}
       />
     </div>
   )

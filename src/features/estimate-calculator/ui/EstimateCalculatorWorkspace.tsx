@@ -18,21 +18,18 @@ import {
   getSelectedEstimateSections,
   getTileEstimateGroupTitle,
   getWallEstimateGroupTitle,
-  removeEstimateLinesByZoneId,
   removeEstimateZone,
   resolveCeilingEstimateGroupId,
   resolveFloorEstimateGroupId,
   resolveTileEstimateGroupId,
   resolveWallEstimateGroupId,
-  syncEstimateLineZoneNames,
+  TILE_PRICE_MAPPING,
   TILE_SECTION_ID,
   TILE_SECTION_TITLE,
   WALL_PRICE_MAPPING,
   WALL_SECTION_ID,
   WALL_SECTION_TITLE,
-  type EstimateLine,
   type EstimateZone,
-  type TileEstimateInput,
 } from '@/entities/estimate'
 import { useFloorEstimateEditor } from '@/features/floor-estimate/model/use-floor-estimate-editor'
 
@@ -66,6 +63,8 @@ import {
 import { CeilingEstimatePanel } from '../ceilings/CeilingEstimatePanel'
 import { useCeilingEstimateEditor } from '../ceilings/use-ceiling-estimate-editor'
 import { FloorEstimatePanel } from '../floors/FloorEstimatePanel'
+import { TileEstimatePanel } from '../tile/TileEstimatePanel'
+import { useTileEstimateEditor } from '../tile/use-tile-estimate-editor'
 import { useWallEstimateEditor } from '../walls/use-wall-estimate-editor'
 import { WallEstimatePanel } from '../walls/WallEstimatePanel'
 import { EstimateCombinedSummary } from './EstimateCombinedSummary'
@@ -76,7 +75,6 @@ import styles from './EstimateCalculatorWorkspace.module.scss'
 export function EstimateCalculatorWorkspace() {
   const [initial] = useState(() => {
     const snapshot = readEstimateCalculatorSnapshot()
-    const restoredTab = (snapshot?.activeTab ?? 'floors') as EstimateTabId
     return {
       snapshot,
       floors: restoreFloorEstimateState(snapshot),
@@ -88,8 +86,7 @@ export function EstimateCalculatorWorkspace() {
       wallScenarios: restoreWallScenarioDraft(snapshot),
       ceilingScenarios: restoreCeilingScenarioDraft(snapshot),
       tileScenarios: restoreTileScenarioDraft(snapshot),
-      // Вкладка UI плитки — Stage 7.2; до неё не оставляем activeTab=tile без панели
-      activeTab: restoredTab === 'tile' ? ('floors' as EstimateTabId) : restoredTab,
+      activeTab: (snapshot?.activeTab ?? 'floors') as EstimateTabId,
     }
   })
 
@@ -107,13 +104,12 @@ export function EstimateCalculatorWorkspace() {
   const [tileScenarioDraft, setTileScenarioDraft] = useState<TileScenarioDraftState>(
     initial.tileScenarios,
   )
-  const [tileInput, setTileInput] = useState<TileEstimateInput>(initial.tile.input)
-  const [tileLines, setTileLines] = useState<EstimateLine[]>(initial.tile.lines)
   const [globalFeedbackEpoch, setGlobalFeedbackEpoch] = useState(0)
 
   const floors = useFloorEstimateEditor(initial.floors)
   const walls = useWallEstimateEditor(initial.walls)
   const ceilings = useCeilingEstimateEditor(initial.ceilings)
+  const tile = useTileEstimateEditor(initial.tile)
   const skipFirstPersist = useRef(true)
 
   useEffect(() => {
@@ -132,8 +128,8 @@ export function EstimateCalculatorWorkspace() {
         wallsLines: walls.lines,
         ceilingsInput: ceilings.input,
         ceilingsLines: ceilings.lines,
-        tileInput,
-        tileLines,
+        tileInput: tile.input,
+        tileLines: tile.lines,
         floorPresets: floorPresetDraft,
         wallScenarios: wallScenarioDraft,
         ceilingScenarios: ceilingScenarioDraft,
@@ -149,8 +145,8 @@ export function EstimateCalculatorWorkspace() {
     walls.lines,
     ceilings.input,
     ceilings.lines,
-    tileInput,
-    tileLines,
+    tile.input,
+    tile.lines,
     floorPresetDraft,
     wallScenarioDraft,
     ceilingScenarioDraft,
@@ -165,7 +161,7 @@ export function EstimateCalculatorWorkspace() {
         floors.syncZoneName(zone.id, zone.name)
         walls.syncZoneName(zone.id, zone.name)
         ceilings.syncZoneName(zone.id, zone.name)
-        setTileLines((prevLines) => syncEstimateLineZoneNames(prevLines, zone.id, zone.name))
+        tile.syncZoneName(zone.id, zone.name)
       }
     }
     setZones(nextZones)
@@ -175,7 +171,7 @@ export function EstimateCalculatorWorkspace() {
     floors.removeLinesByZoneId(zoneId)
     walls.removeLinesByZoneId(zoneId)
     ceilings.removeLinesByZoneId(zoneId)
-    setTileLines((prev) => removeEstimateLinesByZoneId(prev, zoneId))
+    tile.removeLinesByZoneId(zoneId)
     setZones((prev) => removeEstimateZone(prev, zoneId))
   }
 
@@ -188,8 +184,6 @@ export function EstimateCalculatorWorkspace() {
     setWallScenarioDraft({ ...DEFAULT_WALL_SCENARIOS })
     setCeilingScenarioDraft({ ...DEFAULT_CEILING_SCENARIOS })
     setTileScenarioDraft({ ...DEFAULT_TILE_SCENARIOS })
-    setTileInput({ ...EMPTY_TILE_INPUT })
-    setTileLines(buildTileEstimateLines(EMPTY_TILE_INPUT))
     floors.replaceEstimate({
       input: { ...EMPTY_FLOOR_INPUT },
       lines: buildFloorEstimateLines(EMPTY_FLOOR_INPUT),
@@ -202,6 +196,10 @@ export function EstimateCalculatorWorkspace() {
       input: { ...EMPTY_CEILING_INPUT },
       lines: buildCeilingEstimateLines(EMPTY_CEILING_INPUT),
     })
+    tile.replaceEstimate({
+      input: { ...EMPTY_TILE_INPUT },
+      lines: buildTileEstimateLines(EMPTY_TILE_INPUT),
+    })
   }
 
   function resetWallsSection() {
@@ -212,6 +210,11 @@ export function EstimateCalculatorWorkspace() {
   function resetCeilingsSection() {
     ceilings.resetEstimate()
     setCeilingScenarioDraft({ ...DEFAULT_CEILING_SCENARIOS })
+  }
+
+  function resetTileSection() {
+    tile.resetEstimate()
+    setTileScenarioDraft({ ...DEFAULT_TILE_SCENARIOS })
   }
 
   const zoneNameById = useMemo(
@@ -244,13 +247,13 @@ export function EstimateCalculatorWorkspace() {
       {
         sectionId: TILE_SECTION_ID,
         sectionTitle: 'Плитка',
-        lines: tileLines,
+        lines: tile.lines,
         resolveGroupTitle: (line) =>
           getTileEstimateGroupTitle(resolveTileEstimateGroupId(line)),
       },
     ])
     return attachZonesToSelectedSections(sections, zoneNameById)
-  }, [floors.lines, walls.lines, ceilings.lines, tileLines, zoneNameById])
+  }, [floors.lines, walls.lines, ceilings.lines, tile.lines, zoneNameById])
 
   const grandTotalRub = useMemo(
     () =>
@@ -258,9 +261,9 @@ export function EstimateCalculatorWorkspace() {
         { id: FLOOR_SECTION_ID, title: FLOOR_SECTION_TITLE, lines: floors.lines },
         { id: WALL_SECTION_ID, title: WALL_SECTION_TITLE, lines: walls.lines },
         { id: CEILING_SECTION_ID, title: CEILING_SECTION_TITLE, lines: ceilings.lines },
-        { id: TILE_SECTION_ID, title: TILE_SECTION_TITLE, lines: tileLines },
+        { id: TILE_SECTION_ID, title: TILE_SECTION_TITLE, lines: tile.lines },
       ]),
-    [floors.lines, walls.lines, ceilings.lines, tileLines],
+    [floors.lines, walls.lines, ceilings.lines, tile.lines],
   )
 
   return (
@@ -270,13 +273,16 @@ export function EstimateCalculatorWorkspace() {
           floorsSelectedCount={floors.selectedCount}
           wallsSelectedCount={walls.selectedCount}
           ceilingsSelectedCount={ceilings.selectedCount}
+          tileSelectedCount={tile.selectedCount}
           floorsTotalRub={floors.totalRub}
           wallsTotalRub={walls.totalRub}
           ceilingsTotalRub={ceilings.totalRub}
+          tileTotalRub={tile.totalRub}
           grandTotalRub={grandTotalRub}
           floorsMappingCount={FLOOR_PRICE_MAPPING.length}
           wallsMappingCount={WALL_PRICE_MAPPING.length}
           ceilingsMappingCount={CEILING_PRICE_MAPPING.length}
+          tileMappingCount={TILE_PRICE_MAPPING.length}
         />
         <EstimateTabs activeTab={activeTab} onChange={setActiveTab} />
       </div>
@@ -337,6 +343,26 @@ export function EstimateCalculatorWorkspace() {
             setCeilingScenarioDraft((prev) => ({ ...prev, ...patch }))
           }
           onResetSection={resetCeilingsSection}
+          globalFeedbackEpoch={globalFeedbackEpoch}
+        />
+      </div>
+
+      <div
+        id="estimate-panel-tile"
+        role="tabpanel"
+        aria-labelledby="estimate-tab-tile"
+        hidden={activeTab !== 'tile'}
+      >
+        <TileEstimatePanel
+          editor={tile}
+          zones={zones}
+          onZonesChange={handleZonesChange}
+          onDeleteZone={handleDeleteZone}
+          scenarioDraft={tileScenarioDraft}
+          onScenarioDraftChange={(patch) =>
+            setTileScenarioDraft((prev) => ({ ...prev, ...patch }))
+          }
+          onResetSection={resetTileSection}
           globalFeedbackEpoch={globalFeedbackEpoch}
         />
       </div>
