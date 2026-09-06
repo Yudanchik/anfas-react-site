@@ -375,7 +375,7 @@ describe('estimate calculator persistence', () => {
     assert.equal(ceilingPaint.comment, 'ok')
   })
 
-  it('defaults missing zoneType to other when restoring zones', () => {
+  it('defaults missing zoneType to other when restoring zones with unrecognized names', () => {
     const parsed = parseEstimateCalculatorSnapshot({
       version: 2,
       activeTab: 'floors',
@@ -391,6 +391,30 @@ describe('estimate calculator persistence', () => {
     })
     assert.ok(parsed)
     assert.equal(parsed.zones[0]?.zoneType, 'other')
+  })
+
+  it('infers bathroom from name when restoring other/missing zoneType', () => {
+    const parsed = parseEstimateCalculatorSnapshot({
+      version: 2,
+      activeTab: 'tile',
+      zones: [
+        { id: 'zone-3', name: 'Санузел', floorArea: 4 },
+        { id: 'zone-4', name: 'Санузел', zoneType: 'other', floorArea: 4 },
+        { id: 'zone-5', name: 'Санузел', zoneType: 'kitchen', floorArea: 4 },
+      ],
+      floors: {
+        input: restoreFloorEstimateState(null).input,
+        lines: [],
+      },
+      walls: {
+        input: restoreWallEstimateState(null).input,
+        lines: [],
+      },
+    })
+    assert.ok(parsed)
+    assert.equal(parsed.zones[0]?.zoneType, 'bathroom')
+    assert.equal(parsed.zones[1]?.zoneType, 'bathroom')
+    assert.equal(parsed.zones[2]?.zoneType, 'kitchen')
   })
 
   it('parses a v2 snapshot without tile and restores empty tile', () => {

@@ -94,8 +94,8 @@ export function formatTileScenarioZoneMismatchMessage(state: TileStateOption): s
 
 /**
  * Делит сценарии на подходящие и прочие.
- * `showAll` не переносит incompatible в primary — UI показывает `other` как справочные
- * (не выбираемые); apply-guard блокирует применение.
+ * Обычный Tile UI показывает только `primary`; `other` остаётся для API/edge cases.
+ * Apply-guard блокирует несовместимое применение.
  */
 export function resolveTileScenarioOptionsForZone(
   zoneType: EstimateZoneType | null,

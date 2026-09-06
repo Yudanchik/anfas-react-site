@@ -4,7 +4,6 @@ import {
   createEstimateZone,
   ESTIMATE_ZONE_TEMPLATES,
   ESTIMATE_ZONE_TYPE_OPTIONS,
-  inferEstimateZoneTypeFromName,
   updateEstimateZone,
   type CeilingEstimateInput,
   type EstimateZone,
@@ -159,11 +158,9 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
       setError(validated.message)
       return
     }
-    const inferred =
-      zoneType === 'other' ? inferEstimateZoneTypeFromName(validated.value) : undefined
     const zone = createEstimateZone({
       name: validated.value,
-      fields: { zoneType: inferred ?? zoneType },
+      fields: { zoneType },
     })
     onZonesChange([...zones, zone])
     setDraftName('')

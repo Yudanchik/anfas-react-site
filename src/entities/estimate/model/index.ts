@@ -70,6 +70,7 @@ export {
   syncEstimateLineZoneNames,
   updateEstimateZone,
   inferEstimateZoneTypeFromName,
+  resolveEstimateZoneType,
 } from './shared/estimate-zone'
 export type { EstimateZone, EstimateZoneId, EstimateZoneType } from './shared/estimate-zone'
 export {

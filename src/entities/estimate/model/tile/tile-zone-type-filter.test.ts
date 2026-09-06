@@ -8,8 +8,10 @@ import {
   inferEstimateZoneTypeFromName,
   isTileScenarioAllowedForZone,
   partitionScenariosByZoneType,
+  resolveEstimateZoneType,
   resolveTileScenarioOptionsForZone,
   TILE_SCENARIO_OPTIONS,
+  updateEstimateZone,
 } from '../index'
 
 describe('estimate zone templates and zoneType', () => {
@@ -24,13 +26,34 @@ describe('estimate zone templates and zoneType', () => {
 
     const kitchen = ESTIMATE_ZONE_TEMPLATES.find((entry) => entry.name === 'Кухня')
     const bath = ESTIMATE_ZONE_TEMPLATES.find((entry) => entry.name === 'Санузел')
+    const corridor = ESTIMATE_ZONE_TEMPLATES.find((entry) => entry.name === 'Коридор')
+    const room = ESTIMATE_ZONE_TEMPLATES.find((entry) => entry.name === 'Комната')
     assert.equal(kitchen?.zoneType, 'kitchen')
     assert.equal(bath?.zoneType, 'bathroom')
+    assert.equal(corridor?.zoneType, 'corridor')
+    assert.equal(room?.zoneType, 'room')
   })
 
-  it('defaults missing zoneType to other', () => {
+  it('defaults unrecognized names without type to other', () => {
     const zone = createEstimateZone({ name: 'Свободная' })
     assert.equal(zone.zoneType, 'other')
+  })
+
+  it('infers bathroom type when creating manual «Санузел»', () => {
+    const zone = createEstimateZone({ name: 'Санузел' })
+    assert.equal(zone.zoneType, 'bathroom')
+  })
+
+  it('does not overwrite an explicit non-other zoneType', () => {
+    const zone = createEstimateZone({
+      name: 'Санузел',
+      fields: { zoneType: 'kitchen' },
+    })
+    assert.equal(zone.zoneType, 'kitchen')
+    assert.equal(
+      resolveEstimateZoneType({ name: 'Санузел', zoneType: 'room' }),
+      'room',
+    )
   })
 
   it('infers bathroom/kitchen types from common names', () => {
@@ -41,10 +64,26 @@ describe('estimate zone templates and zoneType', () => {
     assert.equal(inferEstimateZoneTypeFromName('Спальня'), 'room')
     assert.equal(inferEstimateZoneTypeFromName('Кладовка'), undefined)
   })
+
+  it('renames other→inferred type by name, keeps explicit non-other', () => {
+    const otherBath = createEstimateZone({
+      name: 'Зона 1',
+      fields: { zoneType: 'other' },
+    })
+    const [renamed] = updateEstimateZone([otherBath], otherBath.id, { name: 'Санузел' })
+    assert.equal(renamed?.zoneType, 'bathroom')
+
+    const kitchen = createEstimateZone({
+      name: 'Кухня',
+      fields: { zoneType: 'kitchen' },
+    })
+    const [kept] = updateEstimateZone([kitchen], kitchen.id, { name: 'Санузел' })
+    assert.equal(kept?.zoneType, 'kitchen')
+  })
 })
 
 describe('tile scenario soft filter and apply guard by zoneType', () => {
-  it('does not allow kitchen-backsplash for bathroom', () => {
+  it('does not include kitchen-backsplash for bathroom in primary options', () => {
     assert.equal(isTileScenarioAllowedForZone('kitchen-backsplash', 'bathroom'), false)
     assert.equal(isTileScenarioAllowedForZone('kitchen-backsplash', 'room'), false)
     assert.equal(isTileScenarioAllowedForZone('kitchen-backsplash', 'corridor'), false)
@@ -98,6 +137,15 @@ describe('tile scenario soft filter and apply guard by zoneType', () => {
     assert.equal(general.primary.length, TILE_SCENARIO_OPTIONS.length)
     assert.equal(other.other.length, 0)
     assert.equal(general.other.length, 0)
+  })
+
+  it('room and corridor show only universal scenarios', () => {
+    const room = resolveTileScenarioOptionsForZone('room', false)
+    const corridor = resolveTileScenarioOptionsForZone('corridor', false)
+    assert.ok(!room.primary.some((option) => option.id === 'kitchen-backsplash'))
+    assert.ok(!room.primary.some((option) => option.id === 'bathroom-from-scratch'))
+    assert.ok(!corridor.primary.some((option) => option.id === 'kitchen-backsplash'))
+    assert.ok(room.primary.every((option) => isTileScenarioAllowedForZone(option.id, 'room')))
   })
 
   it('partition helper keeps shared API for future sections', () => {

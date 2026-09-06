@@ -8,10 +8,10 @@ import {
   findTileMappingItem,
   findWallMappingItem,
   isZonedEstimateLine,
-  normalizeEstimateZoneType,
   noteEstimateZoneIds,
   noteManualLineIds,
   noteZonedLineIds,
+  resolveEstimateZoneType,
   type CeilingDemolitionCoveringOption,
   type CeilingEstimateInput,
   type CeilingFinishTargetOption,
@@ -269,7 +269,7 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
   return {
     id,
     name,
-    zoneType: normalizeEstimateZoneType(raw.zoneType),
+    zoneType: resolveEstimateZoneType({ name, zoneType: raw.zoneType }),
     floorArea: asNonNegative(raw.floorArea),
     demolitionFloorArea: asNonNegative(
       raw.demolitionFloorArea ?? raw.demolitionArea,

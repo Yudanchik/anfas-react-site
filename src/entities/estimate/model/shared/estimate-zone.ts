@@ -126,8 +126,8 @@ export function normalizeEstimateZoneType(value: unknown): EstimateZoneType {
 }
 
 /**
- * Лёгкий inference типа по названию (только подсказки при создании).
- * Не перезаписывает явный выбор пользователя.
+ * Лёгкий inference типа по названию.
+ * Не перезаписывает явный тип, отличный от `other`.
  */
 export function inferEstimateZoneTypeFromName(name: string): EstimateZoneType | undefined {
   const normalized = name.trim().toLocaleLowerCase('ru-RU')
@@ -160,6 +160,19 @@ export function inferEstimateZoneTypeFromName(name: string): EstimateZoneType | 
   return undefined
 }
 
+/**
+ * Итоговый тип зоны: явный non-other сохраняется;
+ * для missing/`other` — безопасный inference по имени.
+ */
+export function resolveEstimateZoneType(params: {
+  name: string
+  zoneType?: unknown
+}): EstimateZoneType {
+  const explicit = normalizeEstimateZoneType(params.zoneType)
+  if (explicit !== 'other') return explicit
+  return inferEstimateZoneTypeFromName(params.name) ?? 'other'
+}
+
 /** Сдвигает счётчик после hydrate из localStorage. */
 export function noteEstimateZoneIds(zones: readonly EstimateZone[]): void {
   for (const zone of zones) {
@@ -178,10 +191,11 @@ export function createEstimateZone(params: {
 }): EstimateZone {
   zoneEntityCounter += 1
   const fields = params.fields ?? {}
+  const name = params.name.trim()
   return {
     id: `zone-${zoneEntityCounter}`,
-    name: params.name.trim(),
-    zoneType: normalizeEstimateZoneType(fields.zoneType),
+    name,
+    zoneType: resolveEstimateZoneType({ name, zoneType: fields.zoneType }),
     floorArea: normalizeNonNegative(fields.floorArea ?? 0),
     demolitionFloorArea: normalizeNonNegative(fields.demolitionFloorArea ?? 0),
     screedArea: normalizeNonNegative(fields.screedArea ?? 0),
@@ -216,13 +230,18 @@ export function updateEstimateZone(
 ): EstimateZone[] {
   return zones.map((zone) => {
     if (zone.id !== zoneId) return zone
+    const nextName = patch.name === undefined ? zone.name : patch.name.trim() || zone.name
+    const nextType =
+      patch.zoneType === undefined
+        ? // Rename с типом other → можно уточнить по новому имени
+          zone.zoneType === 'other'
+            ? resolveEstimateZoneType({ name: nextName, zoneType: 'other' })
+            : zone.zoneType
+        : normalizeEstimateZoneType(patch.zoneType)
     return {
       ...zone,
-      name: patch.name === undefined ? zone.name : patch.name.trim() || zone.name,
-      zoneType:
-        patch.zoneType === undefined
-          ? zone.zoneType
-          : normalizeEstimateZoneType(patch.zoneType),
+      name: nextName,
+      zoneType: nextType,
       floorArea:
         patch.floorArea === undefined ? zone.floorArea : normalizeNonNegative(patch.floorArea),
       demolitionFloorArea:

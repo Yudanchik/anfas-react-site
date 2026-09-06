@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 
 import {
   ESTIMATE_GENERAL_WORKS_TITLE,
-  ESTIMATE_ZONE_TYPE_LABELS,
   formatTileScenarioFeedback,
   formatTileScenarioLabel,
   formatTileScenarioZoneFeedback,
@@ -26,7 +25,10 @@ import {
   validateTileScenarioMeasures,
 } from '../model/validate-scenario-measures'
 import { EstimateSelect } from '../ui/EstimateSelect'
+import { formatTileScenarioTargetLabel } from './format-tile-scenario-target-label'
 import styles from './TileEstimateScenarios.module.scss'
+
+export { formatTileScenarioTargetLabel } from './format-tile-scenario-target-label'
 
 type TileEstimateScenariosProps = {
   draft: TileScenarioDraftState
@@ -95,14 +97,6 @@ function showsDemolitionSurfaces(state: TileStateOption): boolean {
   return state === 'demolition-only'
 }
 
-function incompatibleHint(optionId: TileStateOption): string {
-  if (optionId === 'kitchen-backsplash') return 'для кухни'
-  if (optionId === 'bathroom-from-scratch' || optionId === 'bathroom-replacement') {
-    return 'для санузла'
-  }
-  return 'другой тип зоны'
-}
-
 function resolveCompatibleState(
   state: TileStateOption,
   zoneType: EstimateZone['zoneType'] | null,
@@ -122,7 +116,6 @@ export function TileEstimateScenarios({
 }: TileEstimateScenariosProps) {
   const { state, cladFormat, grout, demolitionSurfaces } = draft
   const [targetId, setTargetId] = useState(GENERAL_TARGET)
-  const [showAllScenarios, setShowAllScenarios] = useState(false)
   const { status, setSuccess, setError } = useEstimateStatusMessage({
     clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
   })
@@ -132,7 +125,7 @@ export function TileEstimateScenarios({
       { value: GENERAL_TARGET, label: ESTIMATE_GENERAL_WORKS_TITLE },
       ...zones.map((zone) => ({
         value: zone.id,
-        label: `${zone.name} · ${ESTIMATE_ZONE_TYPE_LABELS[zone.zoneType]}`,
+        label: formatTileScenarioTargetLabel(zone),
       })),
     ],
     [zones],
@@ -142,7 +135,7 @@ export function TileEstimateScenarios({
     : GENERAL_TARGET
   const selectedZone = zones.find((zone) => zone.id === resolvedTargetId)
   const filterZoneType = selectedZone ? selectedZone.zoneType : null
-  const { primary, other } = resolveTileScenarioOptionsForZone(filterZoneType, false)
+  const { primary } = resolveTileScenarioOptionsForZone(filterZoneType, false)
   const stateOptions = primary.map((option) => ({ value: option.id, label: option.label }))
   const compatibleState = resolveCompatibleState(state, filterZoneType)
 
@@ -172,8 +165,6 @@ export function TileEstimateScenarios({
       : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
 
   const previewLabel = formatTileScenarioLabel(application)
-  const hasOtherScenarios = other.length > 0
-  const canCollapseExtra = showAllScenarios && hasOtherScenarios
 
   function syncStateForZoneType(zoneType: EstimateZone['zoneType'] | null) {
     if (isTileScenarioAllowedForZone(state, zoneType)) return
@@ -228,7 +219,6 @@ export function TileEstimateScenarios({
           ariaLabel="Применить сценарий плитки к"
           onChange={(next) => {
             setTargetId(next)
-            setShowAllScenarios(false)
             const zone = zones.find((entry) => entry.id === next)
             syncStateForZoneType(zone ? zone.zoneType : null)
           }}
@@ -262,37 +252,6 @@ export function TileEstimateScenarios({
               }}
             />
           </div>
-
-          {hasOtherScenarios && !showAllScenarios ? (
-            <button
-              type="button"
-              className={styles.showAllBtn}
-              onClick={() => setShowAllScenarios(true)}
-            >
-              Показать другие сценарии ({other.length})
-            </button>
-          ) : null}
-
-          {canCollapseExtra ? (
-            <button
-              type="button"
-              className={styles.showAllBtn}
-              onClick={() => setShowAllScenarios(false)}
-            >
-              Скрыть другие сценарии
-            </button>
-          ) : null}
-
-          {showAllScenarios && hasOtherScenarios ? (
-            <ul className={styles.otherList} aria-label="Другие сценарии (недоступны для типа зоны)">
-              {other.map((option) => (
-                <li key={option.id} className={styles.otherItem}>
-                  <span>{option.label}</span>
-                  <span className={styles.otherHint}>{incompatibleHint(option.id)}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
 
           {showClad ? (
             <div className={styles.field}>
