@@ -3,10 +3,11 @@ import { Link } from 'react-router'
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { services, getServiceHref } from '@/entities/service/model/services.data'
 import { innerHeroImages } from '@/shared/config/hero-media'
-import { createSeoMeta } from '@/shared/config/seo'
+import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { SplitTitle } from '@/shared/ui/split-title'
 
 import styles from './ServicesRoute.module.scss'
 
@@ -22,9 +23,51 @@ export const meta = () =>
 
 export default function ServicesRoute() {
   const hero = innerHeroImages.services
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': absoluteUrl('/services#webpage'),
+        name: 'Услуги по ремонту и дизайну квартир',
+        url: absoluteUrl('/services'),
+        isPartOf: { '@id': absoluteUrl('/#website') },
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: services.map((service, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: service.title,
+            url: absoluteUrl(getServiceHref(service.slug)),
+          })),
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Главная',
+            item: absoluteUrl('/'),
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Услуги',
+            item: absoluteUrl('/services'),
+          },
+        ],
+      },
+    ],
+  }
 
   return (
     <main className={styles.servicesPage}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <section className={styles.servicesPage__hero}>
         <img
           className={styles.servicesPage__heroMedia}
@@ -41,9 +84,7 @@ export default function ServicesRoute() {
           <div className={styles.servicesPage__heroContent}>
             <p className={styles.servicesPage__eyebrow}>Услуги Анфас</p>
             <h1 className={styles.servicesPage__title}>
-              Ремонт квартиры
-              <br />
-              <em>под ваш сценарий жизни</em>
+              <SplitTitle line="Ремонт квартиры" accent="под ваш сценарий жизни" />
             </h1>
             <p className={styles.servicesPage__lead}>
               Два формата — индивидуальный и пакетный. Оба ведут к готовому интерьеру, но
@@ -59,9 +100,8 @@ export default function ServicesRoute() {
             <div className={styles.servicesPage__sectionHeader}>
               <p className={styles.servicesPage__sectionLabel}>Форматы работы</p>
               <h2 className={styles.servicesPage__sectionTitle}>
-                Выберите услугу
-                <br />
-                и <em>узнайте подробности</em>
+                Выберите услугу{' '}
+                <br />и <em>узнайте подробности</em>
               </h2>
             </div>
 
@@ -88,12 +128,15 @@ export default function ServicesRoute() {
                   <div className={styles.servicesPage__cardBody}>
                     <div className={styles.servicesPage__cardTop}>
                       <h2 className={styles.servicesPage__cardTitle}>
-                        <Link to={getServiceHref(service.slug)}>{service.title}</Link>
+                        <Link to={getServiceHref(service.slug)}>
+                          {service.title}
+                          {' '}
+                        </Link>
                       </h2>
                       <ul className={styles.servicesPage__cardTags}>
                         {service.tags.map((tag) => (
                           <li className={styles.servicesPage__cardTag} key={tag}>
-                            {tag}
+                            {tag}{' '}
                           </li>
                         ))}
                       </ul>
@@ -135,11 +178,7 @@ export default function ServicesRoute() {
             className={styles.servicesPage__formSection}
             defaultService="individual"
             title={
-              <>
-                Оставьте заявку и мы поможем
-                <br />
-                <em>выбрать формат</em>
-              </>
+              <SplitTitle line="Оставьте заявку и мы поможем" accent="выбрать формат" />
             }
             lead="Если пока неясно, что лучше для вашей квартиры, оставьте имя и телефон. Свяжемся, уточним задачу и подскажем, с чего начать — с индивидуального проекта или пакетного ремонта."
             successMessage="Спасибо. Форма прошла клиентскую валидацию. Следующим шагом можно подключить отправку заявок в Telegram, почту или CRM."

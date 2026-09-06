@@ -22,22 +22,41 @@ const LazyBriefModal = lazy(() =>
   })),
 )
 
-const organizationSchema = {
+const organizationId = absoluteUrl('/#organization')
+const websiteId = absoluteUrl('/#website')
+
+const websiteSchema = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: company.legalOwner,
-  alternateName: company.name,
-  url: absoluteUrl('/'),
-  logo: absoluteUrl('/images/anfas-logo-official.svg'),
-  email: company.email,
-  telephone: company.phone,
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: company.address,
-    addressLocality: 'Санкт-Петербург',
-    addressCountry: 'RU',
-  },
-  sameAs: [company.vkHref, company.telegramHref, company.youtubeHref, company.instagramHref],
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': organizationId,
+      name: company.legalOwner,
+      alternateName: company.name,
+      url: absoluteUrl('/'),
+      logo: {
+        '@type': 'ImageObject',
+        url: absoluteUrl('/images/anfas-logo-official.svg'),
+      },
+      email: company.email,
+      telephone: company.phone,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: `${company.addressShort}, ${company.office}`,
+        addressLocality: 'Санкт-Петербург',
+        addressCountry: 'RU',
+      },
+      sameAs: [company.vkHref, company.telegramHref, company.youtubeHref, company.instagramHref],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': websiteId,
+      url: absoluteUrl('/'),
+      name: company.name,
+      inLanguage: 'ru-RU',
+      publisher: { '@id': organizationId },
+    },
+  ],
 }
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -48,7 +67,10 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#161713" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
         <script
           type="text/javascript"
           dangerouslySetInnerHTML={{ __html: yandexMetrikaInlineScript }}

@@ -42,7 +42,7 @@ export function BlogList({ articles, activeCategory = null }: BlogListProps) {
           <h2 className={styles.title}>
             {tieRussianShortWordsInNode(
               <>
-                Статьи, которые помогают
+                Статьи, которые помогают{' '}
                 <br />
                 принять <em>решения</em>
               </>,

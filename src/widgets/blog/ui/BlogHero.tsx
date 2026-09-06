@@ -30,7 +30,7 @@ export function BlogHero() {
           <h1 className={styles.title}>
             {tieRussianShortWordsInNode(
               <>
-                Понятный ремонт
+                Понятный ремонт{' '}
                 <br />
                 без <em>хаоса</em>
               </>,

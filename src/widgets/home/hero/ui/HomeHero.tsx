@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { sharedHeroSlides } from '@/shared/config/hero-media'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { SplitTitle } from '@/shared/ui/split-title'
 
 import styles from './HomeHero.module.scss'
 
@@ -67,9 +68,12 @@ export function HomeHero() {
               <span className={styles.hero__eyebrow}>{activeSlide.eyebrow}</span>
               <div className={styles.hero__textBlock}>
                 <h1 className={styles.hero__title}>
-                  {heroContent.title.main}
-                  <br />
-                  <span className={styles.hero__titleAccent}>{heroContent.title.accent}</span>
+                  <SplitTitle
+                    line={heroContent.title.main}
+                    accent={heroContent.title.accent}
+                    accentAs="span"
+                    accentClassName={styles.hero__titleAccent}
+                  />
                 </h1>
                 <p className={styles.hero__lead}>{heroContent.lead}</p>
 

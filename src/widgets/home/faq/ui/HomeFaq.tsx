@@ -22,7 +22,7 @@ export function HomeFaq({
           label="Частые вопросы"
           title={
             <>
-              Закрываем
+              Закрываем{' '}
               <br />
               <em>главные страхи.</em>
             </>

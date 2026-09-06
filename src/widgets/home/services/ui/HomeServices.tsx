@@ -16,7 +16,7 @@ export function HomeServices() {
           label="Что мы делаем"
           title={
             <>
-              Один подрядчик.
+              Один подрядчик.{' '}
               <br />
               <em>Весь путь.</em>
             </>

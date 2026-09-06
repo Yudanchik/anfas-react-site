@@ -25,7 +25,7 @@ export function HomePains() {
           label={pains.eyebrow}
           title={
             <>
-              Ремонт пугает.
+              Ремонт пугает.{' '}
               <br />
               Мы знаем — <em>почему.</em>
             </>

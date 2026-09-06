@@ -44,7 +44,7 @@ export default function AboutRoute() {
           <div className={styles.heroCopy}>
             <p className={styles.heroEyebrow}>О компании Анфас</p>
             <h1 className={styles.heroTitle}>
-              Дизайн и ремонт,
+              Дизайн и ремонт,{' '}
               <br />
               которые <em>не разваливаются на части</em>
             </h1>

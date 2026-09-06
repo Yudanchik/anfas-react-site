@@ -33,18 +33,21 @@ export function createSeoMeta({
     { name: 'robots', content: robots },
     { tagName: 'link', rel: 'canonical', href: canonical },
     { property: 'og:title', content: title },
+    { property: 'og:site_name', content: 'Анфас' },
     { property: 'og:type', content: type },
     { property: 'og:url', content: canonical },
     { property: 'og:image', content: imageUrl },
+    { property: 'og:image:alt', content: title },
     { property: 'og:locale', content: 'ru_RU' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: title },
     { name: 'twitter:image', content: imageUrl },
+    { name: 'twitter:image:alt', content: title },
   ]
 
   if (description) {
     meta.splice(1, 0, { name: 'description', content: description })
-    meta.splice(6, 0, { property: 'og:description', content: description })
+    meta.push({ property: 'og:description', content: description })
     meta.push({ name: 'twitter:description', content: description })
   }
 
