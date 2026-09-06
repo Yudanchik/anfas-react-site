@@ -10,6 +10,10 @@ import type {
 
 export type ScenarioMeasureCheck = { ok: true } | { ok: false; message: string }
 
+/** Короткая подсказка у disabled-кнопки «Применить» (без громкой ошибки). */
+export const SCENARIO_MEASURES_HINT_GENERAL = 'Заполните замеры раздела'
+export const SCENARIO_MEASURES_HINT_ZONE = 'В выбранной зоне нет нужных замеров'
+
 const FLOOR_GENERAL =
   'Заполните замеры раздела перед применением сценария'
 const FLOOR_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
@@ -19,6 +23,10 @@ const WALL_ZONE = 'В выбранной зоне нет нужных замер
 const CEILING_GENERAL =
   'Заполните замеры раздела перед применением сценария'
 const CEILING_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
+
+export function getScenarioMeasuresDisabledHint(forZone: boolean): string {
+  return forZone ? SCENARIO_MEASURES_HINT_ZONE : SCENARIO_MEASURES_HINT_GENERAL
+}
 
 function positive(value: number): boolean {
   return Number.isFinite(value) && value > 0
@@ -130,4 +138,29 @@ export function validateCeilingScenarioMeasures(params: {
     case 'prefinish':
       return anyPositive([total, plaster, putty]) ? { ok: true } : fail()
   }
+}
+
+/** Lightweight wrappers for UI disabled-state (reuse validate*). */
+export function canApplyFloorPreset(params: {
+  application: FloorPresetApplication
+  input: FloorEstimateInput
+  zone?: EstimateZone
+}): boolean {
+  return validateFloorPresetMeasures(params).ok
+}
+
+export function canApplyWallScenario(params: {
+  application: WallScenarioApplication
+  input: WallEstimateInput
+  zone?: EstimateZone
+}): boolean {
+  return validateWallScenarioMeasures(params).ok
+}
+
+export function canApplyCeilingScenario(params: {
+  application: CeilingScenarioApplication
+  input: CeilingEstimateInput
+  zone?: EstimateZone
+}): boolean {
+  return validateCeilingScenarioMeasures(params).ok
 }

@@ -2,6 +2,12 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
 import {
+  canApplyCeilingScenario,
+  canApplyFloorPreset,
+  canApplyWallScenario,
+  getScenarioMeasuresDisabledHint,
+  SCENARIO_MEASURES_HINT_GENERAL,
+  SCENARIO_MEASURES_HINT_ZONE,
   validateCeilingScenarioMeasures,
   validateFloorPresetMeasures,
   validateWallScenarioMeasures,
@@ -196,5 +202,97 @@ describe('validateCeilingScenarioMeasures', () => {
     if (!result.ok) {
       assert.match(result.message, /зоне нет нужных замеров/)
     }
+  })
+})
+
+describe('canApply helpers and disabled hints', () => {
+  it('exposes short disabled hints for general and zone targets', () => {
+    assert.equal(getScenarioMeasuresDisabledHint(false), SCENARIO_MEASURES_HINT_GENERAL)
+    assert.equal(getScenarioMeasuresDisabledHint(true), SCENARIO_MEASURES_HINT_ZONE)
+  })
+
+  it('disables wall and ceiling scenarios after reset / zero inputs', () => {
+    assert.equal(
+      canApplyWallScenario({
+        application: { state: 'from-scratch', finishTarget: 'paint' },
+        input: emptyWallInput,
+      }),
+      false,
+    )
+    assert.equal(
+      canApplyCeilingScenario({
+        application: {
+          state: 'from-scratch',
+          finishTarget: 'paint',
+          paintLayers: 'paint-ceiling-2',
+        },
+        input: emptyCeilingInput,
+      }),
+      false,
+    )
+  })
+
+  it('keeps floor waste enabled without area and disables demolition without area', () => {
+    assert.equal(
+      canApplyFloorPreset({
+        application: { presetId: 'waste', trip: 'gazelle-6' },
+        input: emptyFloorInput,
+      }),
+      true,
+    )
+    assert.equal(
+      canApplyFloorPreset({
+        application: { presetId: 'demolition-covering', covering: 'laminate' },
+        input: emptyFloorInput,
+      }),
+      false,
+    )
+  })
+
+  it('disables scenario for zero zone fields and enables when zone fields are filled', () => {
+    const emptyZone = {
+      id: 'zone-3',
+      name: 'Комната',
+      floorArea: 0,
+      demolitionFloorArea: 0,
+      screedArea: 0,
+      wetArea: 0,
+      wallArea: 0,
+      demolitionWallArea: 0,
+      plasterArea: 0,
+      puttyArea: 0,
+      finishArea: 0,
+      slopesLength: 0,
+      cornersLength: 0,
+      ceilingArea: 0,
+      demolitionCeilingArea: 0,
+      plasterCeilingArea: 0,
+      puttyCeilingArea: 0,
+      finishCeilingArea: 0,
+    }
+    assert.equal(
+      canApplyCeilingScenario({
+        application: { state: 'prefinish', finishTarget: 'paint' },
+        input: { ...emptyCeilingInput, totalCeilingArea: 40 },
+        zone: emptyZone,
+      }),
+      false,
+    )
+    assert.equal(
+      canApplyCeilingScenario({
+        application: { state: 'prefinish', finishTarget: 'paint' },
+        input: emptyCeilingInput,
+        zone: { ...emptyZone, ceilingArea: 12, puttyCeilingArea: 12 },
+      }),
+      true,
+    )
+    assert.equal(
+      canApplyWallScenario({
+        application: { state: 'finish-only', finishTarget: 'paint', paintLayers: 'paint-2' },
+        input: emptyWallInput,
+        zone: { ...emptyZone, finishArea: 18 },
+      }),
+      true,
+    )
   })
 })

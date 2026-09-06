@@ -133,6 +133,13 @@
   margin-top: auto;
 }
 
+.applyHint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--ink) 58%, transparent);
+}
+
 .status {
   @include eu.status-chip;
 }

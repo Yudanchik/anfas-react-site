@@ -15,7 +15,11 @@ import {
 
 import type { CeilingScenarioDraftState } from '../model/estimate-calculator-persistence'
 import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
-import { validateCeilingScenarioMeasures } from '../model/validate-scenario-measures'
+import {
+  canApplyCeilingScenario,
+  getScenarioMeasuresDisabledHint,
+  validateCeilingScenarioMeasures,
+} from '../model/validate-scenario-measures'
 import { EstimateSelect } from '../ui/EstimateSelect'
 import styles from './CeilingEstimateScenarios.module.scss'
 
@@ -102,20 +106,29 @@ export function CeilingEstimateScenarios({
     : GENERAL_TARGET
   const selectedZone = zones.find((zone) => zone.id === resolvedTargetId)
 
+  const resolvedFinish: CeilingFinishTargetOption = finishDisabled
+    ? 'none'
+    : needsFinishChoice && finishTarget === 'none'
+      ? 'paint'
+      : finishTarget
+
+  const application: CeilingScenarioApplication = {
+    state,
+    finishTarget: resolvedFinish,
+    demolitionCovering: showDemolitionCovering ? demolitionCovering : undefined,
+    paintLayers: resolvedFinish === 'paint' ? paintLayers : undefined,
+  }
+
+  const canApply = canApplyCeilingScenario({
+    application,
+    input: generalInput,
+    zone: selectedZone,
+  })
+  const applyDisabledHint = canApply
+    ? null
+    : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
+
   function handleApply() {
-    const resolvedFinish: CeilingFinishTargetOption = finishDisabled
-      ? 'none'
-      : needsFinishChoice && finishTarget === 'none'
-        ? 'paint'
-        : finishTarget
-
-    const application: CeilingScenarioApplication = {
-      state,
-      finishTarget: resolvedFinish,
-      demolitionCovering: showDemolitionCovering ? demolitionCovering : undefined,
-      paintLayers: resolvedFinish === 'paint' ? paintLayers : undefined,
-    }
-
     const check = validateCeilingScenarioMeasures({
       application,
       input: generalInput,
@@ -231,9 +244,17 @@ export function CeilingEstimateScenarios({
             </div>
           ) : null}
 
-          <button type="button" className={styles.action} onClick={handleApply}>
+          <button
+            type="button"
+            className={styles.action}
+            disabled={!canApply}
+            onClick={handleApply}
+          >
             Применить сценарий
           </button>
+          {applyDisabledHint ? (
+            <p className={styles.applyHint}>{applyDisabledHint}</p>
+          ) : null}
         </article>
       </div>
 

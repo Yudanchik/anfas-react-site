@@ -13,7 +13,11 @@ import {
   type WaterproofingLayersOption,
 } from '@/entities/estimate'
 import { useEstimateStatusMessage } from '@/features/estimate-calculator/model/use-estimate-status-message'
-import { validateFloorPresetMeasures } from '@/features/estimate-calculator/model/validate-scenario-measures'
+import {
+  canApplyFloorPreset,
+  getScenarioMeasuresDisabledHint,
+  validateFloorPresetMeasures,
+} from '@/features/estimate-calculator/model/validate-scenario-measures'
 import { EstimateSelect } from '@/features/estimate-calculator/ui/EstimateSelect'
 
 import styles from './FloorEstimatePresets.module.scss'
@@ -112,26 +116,46 @@ export function FloorEstimatePresets({
     ? targetId
     : GENERAL_TARGET
   const effectiveZone = zones.find((zone) => zone.id === resolvedTargetId)
-  const effectiveDemolition = effectiveZone ? effectiveZone.demolitionFloorArea : demolitionArea
-  const effectiveScreed = effectiveZone
-    ? effectiveZone.screedArea > 0
-      ? effectiveZone.screedArea
-      : effectiveZone.floorArea
-    : screedArea > 0
-      ? screedArea
-      : totalFloorArea
-  const effectiveWet = effectiveZone ? effectiveZone.wetArea : wetZonesArea
+
+  const generalInput: FloorEstimateInput = {
+    totalFloorArea,
+    demolitionArea,
+    screedArea,
+    wetZonesArea,
+    avgDeltaMm: 0,
+    surveyorComment: '',
+  }
+
+  const forZone = Boolean(effectiveZone)
+  const disabledHint = getScenarioMeasuresDisabledHint(forZone)
+
+  const canDemolition = canApplyFloorPreset({
+    application: { presetId: 'demolition-covering', covering },
+    input: generalInput,
+    zone: effectiveZone,
+  })
+  const canScreed = canApplyFloorPreset({
+    application: { presetId: 'screed-on-slab', screedType },
+    input: generalInput,
+    zone: effectiveZone,
+  })
+  const canSelfLeveling = canApplyFloorPreset({
+    application: { presetId: 'self-leveling' },
+    input: generalInput,
+    zone: effectiveZone,
+  })
+  const canWet = canApplyFloorPreset({
+    application: { presetId: 'wet-zones', layers },
+    input: generalInput,
+    zone: effectiveZone,
+  })
+  const canWaste = canApplyFloorPreset({
+    application: { presetId: 'waste', trip: wasteTrip },
+    input: generalInput,
+    zone: effectiveZone,
+  })
 
   function apply(application: FloorPresetApplication) {
-    const generalInput: FloorEstimateInput = {
-      totalFloorArea,
-      demolitionArea,
-      screedArea,
-      wetZonesArea,
-      avgDeltaMm: 0,
-      surveyorComment: '',
-    }
-
     const check = validateFloorPresetMeasures({
       application,
       input: generalInput,
@@ -193,11 +217,12 @@ export function FloorEstimatePresets({
           <button
             type="button"
             className={styles.action}
-            disabled={!(effectiveDemolition > 0)}
+            disabled={!canDemolition}
             onClick={() => apply({ presetId: 'demolition-covering', covering })}
           >
             Применить
           </button>
+          {!canDemolition ? <p className={styles.applyHint}>{disabledHint}</p> : null}
         </article>
 
         <article className={`${styles.card} ${styles.cardAccent}`}>
@@ -217,11 +242,12 @@ export function FloorEstimatePresets({
           <button
             type="button"
             className={styles.action}
-            disabled={!(effectiveScreed > 0)}
+            disabled={!canScreed}
             onClick={() => apply({ presetId: 'screed-on-slab', screedType })}
           >
             Применить
           </button>
+          {!canScreed ? <p className={styles.applyHint}>{disabledHint}</p> : null}
         </article>
 
         <article className={styles.card}>
@@ -233,11 +259,12 @@ export function FloorEstimatePresets({
           <button
             type="button"
             className={styles.action}
-            disabled={!(effectiveScreed > 0)}
+            disabled={!canSelfLeveling}
             onClick={() => apply({ presetId: 'self-leveling' })}
           >
             Применить
           </button>
+          {!canSelfLeveling ? <p className={styles.applyHint}>{disabledHint}</p> : null}
         </article>
 
         <article className={styles.card}>
@@ -257,11 +284,12 @@ export function FloorEstimatePresets({
           <button
             type="button"
             className={styles.action}
-            disabled={!(effectiveWet > 0)}
+            disabled={!canWet}
             onClick={() => apply({ presetId: 'wet-zones', layers })}
           >
             Применить
           </button>
+          {!canWet ? <p className={styles.applyHint}>{disabledHint}</p> : null}
         </article>
 
         <article className={styles.card}>
@@ -281,6 +309,7 @@ export function FloorEstimatePresets({
           <button
             type="button"
             className={styles.action}
+            disabled={!canWaste}
             onClick={() => apply({ presetId: 'waste', trip: wasteTrip })}
           >
             Применить

@@ -16,7 +16,11 @@ import {
 
 import type { WallScenarioDraftState } from '../model/estimate-calculator-persistence'
 import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
-import { validateWallScenarioMeasures } from '../model/validate-scenario-measures'
+import {
+  canApplyWallScenario,
+  getScenarioMeasuresDisabledHint,
+  validateWallScenarioMeasures,
+} from '../model/validate-scenario-measures'
 import { EstimateSelect } from '../ui/EstimateSelect'
 import styles from './WallEstimateScenarios.module.scss'
 
@@ -107,21 +111,30 @@ export function WallEstimateScenarios({
     : GENERAL_TARGET
   const selectedZone = zones.find((zone) => zone.id === resolvedTargetId)
 
+  const resolvedFinish: WallFinishTargetOption = finishDisabled
+    ? 'none'
+    : needsFinishChoice && finishTarget === 'none'
+      ? 'paint'
+      : finishTarget
+
+  const application: WallScenarioApplication = {
+    state,
+    finishTarget: resolvedFinish,
+    demolitionCovering: showDemolitionCovering ? demolitionCovering : undefined,
+    wallpaperType: resolvedFinish === 'wallpaper' ? wallpaperType : undefined,
+    paintLayers: resolvedFinish === 'paint' ? paintLayers : undefined,
+  }
+
+  const canApply = canApplyWallScenario({
+    application,
+    input: generalInput,
+    zone: selectedZone,
+  })
+  const applyDisabledHint = canApply
+    ? null
+    : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
+
   function handleApply() {
-    const resolvedFinish: WallFinishTargetOption = finishDisabled
-      ? 'none'
-      : needsFinishChoice && finishTarget === 'none'
-        ? 'paint'
-        : finishTarget
-
-    const application: WallScenarioApplication = {
-      state,
-      finishTarget: resolvedFinish,
-      demolitionCovering: showDemolitionCovering ? demolitionCovering : undefined,
-      wallpaperType: resolvedFinish === 'wallpaper' ? wallpaperType : undefined,
-      paintLayers: resolvedFinish === 'paint' ? paintLayers : undefined,
-    }
-
     const check = validateWallScenarioMeasures({
       application,
       input: generalInput,
@@ -251,9 +264,17 @@ export function WallEstimateScenarios({
             </div>
           ) : null}
 
-          <button type="button" className={styles.action} onClick={handleApply}>
+          <button
+            type="button"
+            className={styles.action}
+            disabled={!canApply}
+            onClick={handleApply}
+          >
             Применить сценарий
           </button>
+          {applyDisabledHint ? (
+            <p className={styles.applyHint}>{applyDisabledHint}</p>
+          ) : null}
         </article>
       </div>
 
