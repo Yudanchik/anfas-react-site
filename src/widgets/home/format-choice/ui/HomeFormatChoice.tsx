@@ -17,7 +17,7 @@ export function HomeFormatChoice({
           label={formatChoice.eyebrow}
           title={
             <>
-              {formatChoice.title}
+              {formatChoice.title}{' '}
               <br />
               <em>без лишнего шума</em>
             </>

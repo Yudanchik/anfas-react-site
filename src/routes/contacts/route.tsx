@@ -3,6 +3,7 @@ import { innerHeroImages } from '@/shared/config/hero-media'
 import { company } from '@/shared/config/company'
 import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { SplitTitle } from '@/shared/ui/split-title'
 import { YandexOfficeMap } from '@/shared/ui/yandex-office-map'
 
 import styles from './ContactsRoute.module.scss'
@@ -63,12 +64,16 @@ export default function ContactsRoute() {
   const hero = innerHeroImages.contacts
   const localBusinessJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    '@type': ['LocalBusiness', 'HomeAndConstructionBusiness'],
+    '@id': absoluteUrl('/contacts#localbusiness'),
     name: company.name,
     legalName: company.legalOwner,
     url: absoluteUrl('/contacts'),
+    image: absoluteUrl('/images/og/anfas-remont-og.webp'),
+    logo: absoluteUrl('/images/anfas-logo-official.svg'),
     telephone: company.phone,
     email: company.email,
+    priceRange: 'от 49 000 ₽/м²',
     address: {
       '@type': 'PostalAddress',
       streetAddress: `${company.addressShort}, ${company.office}`,
@@ -80,7 +85,13 @@ export default function ContactsRoute() {
       latitude: company.mapCenter.lat,
       longitude: company.mapCenter.lon,
     },
-    openingHours: 'Mo-Fr 10:00-19:00',
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '10:00',
+      closes: '19:00',
+    },
+    parentOrganization: { '@id': absoluteUrl('/#organization') },
     sameAs: [company.vkHref, company.telegramHref, company.youtubeHref, company.instagramHref],
   }
 
@@ -104,9 +115,7 @@ export default function ContactsRoute() {
           <div className={styles.heroCopy}>
             <p className={styles.heroEyebrow}>Контакты</p>
             <h1 className={styles.heroTitle}>
-              Давайте обсудим
-              <br />
-              <em>ваш ремонт</em>
+              <SplitTitle line="Давайте обсудим" accent="ваш ремонт" />
             </h1>
             <p className={styles.heroLead}>
               Свяжитесь с Анфас, если планируете ремонт квартиры в Санкт-Петербурге. Обсудим задачу,
@@ -130,7 +139,7 @@ export default function ContactsRoute() {
             <div className={styles.heroStats}>
               {heroMeta.map((item) => (
                 <div key={item.label}>
-                  <span>{item.label}</span>
+                  <span>{item.label}{' '}</span>
                   <strong>{item.value}</strong>
                 </div>
               ))}
@@ -153,12 +162,12 @@ export default function ContactsRoute() {
           <section className={styles.contactPanel} aria-labelledby="contacts-main-title">
             <div className={styles.contactPanel__content}>
               <div className={styles.contactPanel__details}>
-                <span>Связаться с Анфас</span>
+                <span>Связаться с Анфас{' '}</span>
                 <h2 id="contacts-main-title">Контакты</h2>
                 <dl>
                   {contactDetails.map((item) => (
                     <div key={item.label}>
-                      <dt>{item.label}</dt>
+                      <dt>{item.label}{' '}</dt>
                       <dd>
                         {'href' in item ? (
                           <a href={item.href}>{item.value}</a>
@@ -173,7 +182,7 @@ export default function ContactsRoute() {
                 <nav className={styles.contactPanel__socials} aria-label="Социальные сети Анфас">
                   {socialLinks.map((link) => (
                     <a href={link.href} key={link.label} target="_blank" rel="noreferrer">
-                      {link.label}
+                      {link.label}{' '}
                     </a>
                   ))}
                 </nav>
@@ -194,7 +203,7 @@ export default function ContactsRoute() {
               <dl>
                 {legalRows.map(([label, value]) => (
                   <div key={label}>
-                    <dt>{label}</dt>
+                    <dt>{label}{' '}</dt>
                     <dd>{value}</dd>
                   </div>
                 ))}

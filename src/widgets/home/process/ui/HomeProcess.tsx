@@ -24,7 +24,7 @@ export function HomeProcess() {
           label="Как идёт ремонт"
           title={
             <>
-              Пять этапов
+              Пять этапов{' '}
               <br />
               от замера <em>до сдачи</em>
             </>

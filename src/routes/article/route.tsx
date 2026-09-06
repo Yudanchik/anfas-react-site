@@ -4,11 +4,12 @@ import { articleRepository } from '@/entities/article/api'
 import { getSuggestedArticles } from '@/entities/article/lib/article-helpers'
 import { getArticleHref } from '@/entities/article/model/article.types'
 import { getServiceHref } from '@/entities/service/model/services.data'
-import { createSeoMeta } from '@/shared/config/seo'
-import { tieRussianShortWords, tieRussianShortWordsInNode } from '@/shared/lib/tie-russian-short-words'
+import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
+import { tieRussianShortWords } from '@/shared/lib/tie-russian-short-words'
 import { NotFoundState } from '@/shared/ui/not-found-state'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { SplitTitle } from '@/shared/ui/split-title'
 import {
   ArticleAside,
   ArticleBreadcrumbs,
@@ -65,6 +66,48 @@ export default function ArticleRoute() {
   const serviceHref = getServiceHref(article.relatedService)
   const serviceLabel =
     article.relatedService === 'package' ? 'Пакетный ремонт' : 'Ремонт по дизайн-проекту'
+  const articleUrl = absoluteUrl(getArticleHref(article.slug))
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BlogPosting',
+        '@id': `${articleUrl}#article`,
+        headline: article.title,
+        description: article.seo.description,
+        image: absoluteUrl(`/${article.cover}`),
+        datePublished: article.publishedAt,
+        inLanguage: 'ru-RU',
+        mainEntityOfPage: articleUrl,
+        author: { '@id': absoluteUrl('/#organization') },
+        publisher: { '@id': absoluteUrl('/#organization') },
+        articleSection: article.category,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Главная',
+            item: absoluteUrl('/'),
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Журнал',
+            item: absoluteUrl('/blog'),
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: article.title,
+            item: articleUrl,
+          },
+        ],
+      },
+    ],
+  }
 
   const serviceInsertIndex = Math.min(1, Math.max(0, article.sections.length - 1))
   const projectsInsertIndex = Math.min(
@@ -74,6 +117,10 @@ export default function ArticleRoute() {
 
   return (
     <main className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <ArticleHero article={article} />
 
       <section className={styles.body}>
@@ -119,13 +166,7 @@ export default function ArticleRoute() {
           <OpenLeadForm
             className={styles.form}
             defaultService={article.relatedService}
-            title={tieRussianShortWordsInNode(
-              <>
-                Нужна помощь
-                <br />
-                <em>на вашем объекте?</em>
-              </>,
-            )}
+            title={<SplitTitle line="Нужна помощь" accent="на вашем объекте?" />}
             lead={tieRussianShortWords(
               'Оставьте имя и телефон — обсудим задачу, подскажем формат работ и следующие шаги без лишней воды.',
             )}

@@ -36,7 +36,7 @@ export default function PrivacyRoute() {
           <div>
             <p className={styles.eyebrow}>Документы</p>
             <h1 className={styles.title}>
-              Политика
+              Политика{' '}
               <br />
               <em>обработки персональных данных.</em>
             </h1>

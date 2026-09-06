@@ -15,7 +15,7 @@ type NotFoundStateProps = {
 export function NotFoundState({
   title = (
     <>
-      Такой страницы
+      Такой страницы{' '}
       <br />
       <em>не существует.</em>
     </>

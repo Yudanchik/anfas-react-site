@@ -126,7 +126,7 @@ export default function PricesRoute() {
             label="Категории работ"
             title={
               <>
-                Выберите вид работ
+                Выберите вид работ{' '}
                 <br />и <em>узнайте цену</em>
               </>
             }

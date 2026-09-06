@@ -64,7 +64,7 @@ export function SiteHeader() {
             href={company.phoneHref}
             aria-label={`Позвонить по номеру ${company.phone}`}
           >
-            <span>Обсудить проект</span>
+            <span>Обсудить проект{' '}</span>
             <b>{company.phone}</b>
           </a>
 

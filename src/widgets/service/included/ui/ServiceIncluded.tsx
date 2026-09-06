@@ -1,5 +1,6 @@
 import type { ServiceIncluded as ServiceIncludedData } from '@/entities/service/model/services.data'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { SplitTitle } from '@/shared/ui/split-title'
 import { SectionHeader } from '@/widgets/home/ui/SectionHeader'
 
 import styles from './ServiceIncluded.module.scss'
@@ -16,13 +17,7 @@ export function ServiceIncluded({ included }: ServiceIncludedProps) {
           <p className={styles.label}>{included.label}</p>
           <SectionHeader
             className={styles.header}
-            title={
-              <>
-                {included.titleMain}
-                <br />
-                <em>{included.titleAccent}</em>
-              </>
-            }
+            title={<SplitTitle line={included.titleMain} accent={included.titleAccent} />}
             lead={included.lead}
           />
         </div>

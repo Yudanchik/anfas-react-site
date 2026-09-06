@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import type { CalculatorLeadContext } from '@/features/brief/model/calculator-lead-context'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { SplitTitle } from '@/shared/ui/split-title'
 
 import { SectionHeader } from '../../ui'
 import { buildCalculatorLeadContext } from '../model/calculator-lead-context'
@@ -142,13 +143,7 @@ export function HomePackageCalculator() {
         <SectionHeader
           number="06"
           label={packageCalculator.eyebrow}
-          title={
-            <>
-              {packageCalculator.title}
-              <br />
-              <em>и честной вилкой</em>
-            </>
-          }
+          title={<SplitTitle line={packageCalculator.title} accent="и честной вилкой" />}
           lead={packageCalculator.lead}
         />
 
