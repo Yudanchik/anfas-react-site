@@ -36,7 +36,7 @@ export default function CookiesRoute() {
           <div>
             <p className={styles.eyebrow}>Документы</p>
             <h1 className={styles.title}>
-              Политика
+              Политика{' '}
               <br />
               <em>использования cookie.</em>
             </h1>

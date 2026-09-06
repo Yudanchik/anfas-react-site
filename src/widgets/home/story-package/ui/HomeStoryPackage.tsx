@@ -13,7 +13,12 @@ function renderMultiline(text: string) {
     // biome-ignore lint/suspicious/noArrayIndexKey: Static presentation text
     <span key={index}>
       {line}
-      {index === lines.length - 1 ? null : <br />}
+      {index === lines.length - 1 ? null : (
+        <>
+          {' '}
+          <br />
+        </>
+      )}
     </span>
   ))
 }

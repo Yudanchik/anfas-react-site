@@ -12,6 +12,7 @@ import { HomeSocials } from '@/widgets/home/socials'
 import { HomeTicker } from '@/widgets/home/ticker'
 import { HomePains } from '@/widgets/home/pains'
 import { HomeProjectControl } from '@/widgets/home/project-control'
+import { faqItems } from '@/features/faq/model/faq.data'
 import { createSeoMeta } from '@/shared/config/seo'
 
 export const meta = () =>
@@ -26,9 +27,25 @@ export const meta = () =>
 
 export default function HomeRoute() {
   const [openFaq, setOpenFaq] = useState(0)
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  }
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <HomeHero />
       <HomeTicker />
 

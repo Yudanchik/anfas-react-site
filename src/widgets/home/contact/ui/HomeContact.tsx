@@ -32,7 +32,7 @@ export function HomeContact() {
         data-reveal
         style={{ '--reveal-delay': '80ms' } as CSSProperties}
       >
-        Давайте посмотрим,
+        Давайте посмотрим,{' '}
         <br />
         <em className={styles.contact__titleAccent}>что из неё получится.</em>
       </h2>

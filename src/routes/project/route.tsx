@@ -3,7 +3,7 @@ import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
 import { ProjectReview } from '@/entities/project/ui/project-review'
-import { createSeoMeta } from '@/shared/config/seo'
+import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { tieRussianShortWords, tieRussianShortWordsInNode } from '@/shared/lib/tie-russian-short-words'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
@@ -63,6 +63,48 @@ export function ErrorBoundary() {
 
 export default function ProjectRoute() {
   const { project } = useLoaderData<typeof loader>()
+  const projectUrl = absoluteUrl(`/projects/${project.slug}`)
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CreativeWork',
+        '@id': `${projectUrl}#project`,
+        name: `${project.title} — ${project.type}`,
+        description: project.description,
+        image: absoluteUrl(`/${project.image}`),
+        url: projectUrl,
+        creator: { '@id': absoluteUrl('/#organization') },
+        locationCreated: {
+          '@type': 'Place',
+          name: project.location,
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Главная',
+            item: absoluteUrl('/'),
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Проекты',
+            item: absoluteUrl('/projects'),
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: project.title,
+            item: projectUrl,
+          },
+        ],
+      },
+    ],
+  }
   const lastGalleryTriggerRef = useRef<HTMLButtonElement | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement | null>(null)
   const swipeStartRef = useRef<{ x: number; y: number; pointerId: number } | null>(null)
@@ -192,6 +234,10 @@ export default function ProjectRoute() {
 
   return (
     <main className={styles.projectDetail}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <section className={styles.projectDetailHero}>
         <img className={styles.projectDetailImage} src={assetUrl(project.image)} alt={project.type} />
         <PageWrapper className={styles.projectDetailWrapper}>
@@ -336,7 +382,7 @@ export default function ProjectRoute() {
             defaultService="individual"
             title={
               <>
-                Хотите похожий результат
+                Хотите похожий результат{' '}
                 <br />
                 <em>в своей квартире?</em>
               </>

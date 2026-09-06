@@ -1,0 +1,1 @@
+export { SplitTitle } from './SplitTitle'

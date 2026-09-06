@@ -3,10 +3,11 @@ import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { serviceRepository } from '@/entities/service/api'
 import { getServiceHref } from '@/entities/service/model/services.data'
-import { createSeoMeta } from '@/shared/config/seo'
+import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { NotFoundState } from '@/shared/ui/not-found-state'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { SplitTitle } from '@/shared/ui/split-title'
 import { ServiceIncluded } from '@/widgets/service/included'
 import { HomeStoryIndividual } from '@/widgets/home/story-individual/ui/HomeStoryIndividual'
 import { HomeStoryPackage } from '@/widgets/home/story-package/ui/HomeStoryPackage'
@@ -47,9 +48,69 @@ export function ErrorBoundary() {
 
 export default function ServiceRoute() {
   const { service } = useLoaderData<typeof loader>()
+  const serviceUrl = absoluteUrl(getServiceHref(service.slug))
+  const priceFrom = service.id === 'package' ? 49000 : 55000
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Service',
+        '@id': `${serviceUrl}#service`,
+        name: service.title,
+        description: service.seo.description,
+        url: serviceUrl,
+        image: absoluteUrl(service.image),
+        areaServed: {
+          '@type': 'City',
+          name: 'Санкт-Петербург',
+        },
+        provider: { '@id': absoluteUrl('/#organization') },
+        offers: {
+          '@type': 'Offer',
+          priceCurrency: 'RUB',
+          priceSpecification: {
+            '@type': 'UnitPriceSpecification',
+            price: priceFrom,
+            priceCurrency: 'RUB',
+            unitCode: 'MTK',
+            unitText: 'м²',
+          },
+          description: `${service.price}; срок ${service.duration}`,
+          url: serviceUrl,
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Главная',
+            item: absoluteUrl('/'),
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Услуги',
+            item: absoluteUrl('/services'),
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: service.title,
+            item: serviceUrl,
+          },
+        ],
+      },
+    ],
+  }
 
   return (
     <main className={styles.servicePage}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <section className={styles.servicePage__hero}>
         <img
           className={styles.servicePage__heroMedia}
@@ -65,9 +126,7 @@ export default function ServiceRoute() {
           <div className={styles.servicePage__heroCopy}>
             <p className={styles.servicePage__heroEyebrow}>{service.hero.eyebrow}</p>
             <h1 className={styles.servicePage__heroTitle}>
-              {service.hero.titleLine}
-              <br />
-              <em>{service.hero.titleAccent}</em>
+              <SplitTitle line={service.hero.titleLine} accent={service.hero.titleAccent} />
             </h1>
             <p className={styles.servicePage__heroLead}>{service.hero.lead}</p>
 
@@ -85,7 +144,7 @@ export default function ServiceRoute() {
             <div className={styles.servicePage__heroStats}>
               {service.hero.stats.map((item) => (
                 <div key={item.label}>
-                  <span>{item.label}</span>
+                  <span>{item.label}{' '}</span>
                   <strong>{item.value}</strong>
                 </div>
               ))}
@@ -118,17 +177,12 @@ export default function ServiceRoute() {
             defaultService={service.id}
             title={
               service.id === 'individual' ? (
-                <>
-                  Обсудим индивидуальный
-                  <br />
-                  <em>проект вашей квартиры</em>
-                </>
+                <SplitTitle
+                  line="Обсудим индивидуальный"
+                  accent="проект вашей квартиры"
+                />
               ) : (
-                <>
-                  Рассчитаем пакетный
-                  <br />
-                  <em>ремонт под вашу площадь</em>
-                </>
+                <SplitTitle line="Рассчитаем пакетный" accent="ремонт под вашу площадь" />
               )
             }
             lead={

@@ -36,7 +36,7 @@ function FooterSocials({ className }: { className?: string }) {
     <div className={className}>
       {footerSocials.map((social) => (
         <a href={social.href} key={social.label} target="_blank" rel="noreferrer">
-          {social.label}
+          {social.label}{' '}
         </a>
       ))}
     </div>
@@ -56,7 +56,7 @@ function FooterAccordion({ title, children }: { title: string; children: ReactNo
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
       >
-        <span>{title}</span>
+        <span>{title}{' '}</span>
         <i
           className={
             styles.siteFooter__accordionIcon +
@@ -76,19 +76,19 @@ function FooterContactCards() {
   return (
     <div className={styles.siteFooter__contactCards}>
       <div className={styles.siteFooter__contactCard}>
-        <span className={styles.siteFooter__contactLabel}>Телефон</span>
+        <span className={styles.siteFooter__contactLabel}>Телефон{' '}</span>
         <a className={styles.siteFooter__contactValue} href={company.phoneHref}>
           {company.phone}
         </a>
       </div>
       <div className={styles.siteFooter__contactCard}>
-        <span className={styles.siteFooter__contactLabel}>Почта</span>
+        <span className={styles.siteFooter__contactLabel}>Почта{' '}</span>
         <a className={styles.siteFooter__contactValue} href={company.emailHref}>
           {company.email}
         </a>
       </div>
       <div className={`${styles.siteFooter__contactCard} ${styles.siteFooter__contactCard_wide}`}>
-        <span className={styles.siteFooter__contactLabel}>Адрес</span>
+        <span className={styles.siteFooter__contactLabel}>Адрес{' '}</span>
         <p className={styles.siteFooter__contactValue}>{company.address}</p>
       </div>
     </div>
@@ -126,22 +126,22 @@ export function SiteFooter() {
 
           <div className={styles.siteFooter__columnsDesktop}>
             <div className={styles.siteFooter__column}>
-              <span className={styles.siteFooter__title}>Навигация</span>
+              <span className={styles.siteFooter__title}>Навигация{' '}</span>
               <nav className={styles.siteFooter__nav} aria-label="Навигация по сайту">
                 {footerPages.map((page) => (
                   <Link key={page.to} to={page.to}>
-                    {page.label}
+                    {page.label}{' '}
                   </Link>
                 ))}
               </nav>
             </div>
 
             <div className={styles.siteFooter__column}>
-              <span className={styles.siteFooter__title}>Услуги</span>
+              <span className={styles.siteFooter__title}>Услуги{' '}</span>
               <nav className={styles.siteFooter__nav} aria-label="Навигация по услугам">
                 {services.slice(0, 5).map((service) => (
                   <Link key={service.id} to={getServiceHref(service.slug)}>
-                    {service.title}
+                    {service.title}{' '}
                   </Link>
                 ))}
               </nav>
@@ -157,7 +157,7 @@ export function SiteFooter() {
               <nav className={styles.siteFooter__nav} aria-label="Навигация по сайту">
                 {footerPages.map((page) => (
                   <Link key={page.to} to={page.to}>
-                    {page.label}
+                    {page.label}{' '}
                   </Link>
                 ))}
               </nav>
@@ -167,7 +167,7 @@ export function SiteFooter() {
               <nav className={styles.siteFooter__nav} aria-label="Навигация по услугам">
                 {services.slice(0, 5).map((service) => (
                   <Link key={service.id} to={getServiceHref(service.slug)}>
-                    {service.title}
+                    {service.title}{' '}
                   </Link>
                 ))}
               </nav>
@@ -204,7 +204,7 @@ export function SiteFooter() {
           <nav className={styles.siteFooter__legalNav} aria-label="Юридические документы">
             {footerLegalLinks.map((link) => (
               <Link className={styles.siteFooter__privacy} key={link.to} to={link.to}>
-                {link.label}
+                {link.label}{' '}
               </Link>
             ))}
           </nav>
