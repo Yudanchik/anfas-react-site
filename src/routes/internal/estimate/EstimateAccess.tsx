@@ -7,13 +7,18 @@ const Workspace = lazy(() =>
   })),
 )
 const endpoint = `${import.meta.env.BASE_URL}api/estimate-auth.php`
+/**
+ * Только Vite (`npm run dev` / `pnpm dev`): PHP не выполняется, вход пропускаем для разработки.
+ * В production/dev-стенде `import.meta.env.DEV === false` — обхода нет, нужен PHP-логин.
+ */
+const localViteDev = import.meta.env.DEV
 
 type Session = { authenticated: boolean; csrf: string }
 
 function accessErrorMessage(cause: unknown): string {
   const text = cause instanceof Error ? cause.message : ''
   if (text.includes('JSON') || text.includes('Unexpected token')) {
-    return 'Сервер входа недоступен. Для локальной проверки соберите сайт и запустите pnpm preview:estimate (нужен PHP).'
+    return 'Сервер входа недоступен. На стенде нужен estimate.config.local.php; локально для проверки PHP используйте pnpm preview:estimate.'
   }
   return text || 'Не удалось проверить доступ.'
 }
@@ -27,6 +32,13 @@ export function EstimateAccess() {
   const lastActivity = useRef(0)
 
   const check = useCallback(async () => {
+    if (localViteDev) {
+      setSession({ authenticated: true, csrf: 'vite-dev' })
+      setLocked(false)
+      setLoaded(true)
+      setError('')
+      return
+    }
     try {
       const response = await fetch(endpoint, { credentials: 'same-origin', cache: 'no-store' })
       const data = (await response.json()) as Session & { error?: string }
@@ -49,7 +61,7 @@ export function EstimateAccess() {
   }, [check])
 
   useEffect(() => {
-    if (!session?.authenticated) return
+    if (!session?.authenticated || localViteDev) return
     const activity = () => {
       lastActivity.current = Date.now()
     }
@@ -76,6 +88,14 @@ export function EstimateAccess() {
 
   async function login(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (localViteDev) {
+      setSession({ authenticated: true, csrf: 'vite-dev' })
+      lastActivity.current = Date.now()
+      setLoaded(true)
+      setLocked(false)
+      setError('')
+      return
+    }
     if (!session?.csrf || busy) return
     const form = new FormData(event.currentTarget)
     setBusy(true)
@@ -106,6 +126,10 @@ export function EstimateAccess() {
 
   async function logout() {
     if (!session || busy) return
+    if (localViteDev) {
+      window.location.reload()
+      return
+    }
     setBusy(true)
     try {
       const response = await fetch(endpoint, {
@@ -161,7 +185,7 @@ export function EstimateAccess() {
       )}
       {granted && (
         <div className={styles.session}>
-          <span>Смета · Администратор</span>
+          <span>{localViteDev ? 'Смета · Локальная разработка' : 'Смета · Администратор'}</span>
           <button type="button" disabled={busy} onClick={() => void logout()}>
             Выйти
           </button>
