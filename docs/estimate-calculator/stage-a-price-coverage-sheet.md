@@ -1,15 +1,15 @@
 # Backlog актуализации mapping — **P1 implemented**
 
-**Статус:** P1 реализован в mapping (2026-09-10). P2 / ask_owner / XLSX profiles — не в этом проходе.  
-**SoT:** `resources/source-documents/anfas-price-2026.pdf`  
-**План этапов:** [`roadmap-price-coverage-and-profiles.md`](./roadmap-price-coverage-and-profiles.md)  
+**Статус:** P1 реализован в mapping (2026-09-10). P2 / ask_owner / XLSX profiles — не в этом проходе.
+**SoT:** `resources/source-documents/anfas-price-2026.pdf`
+**План этапов:** [`roadmap-price-coverage-and-profiles.md`](./roadmap-price-coverage-and-profiles.md)
 **Решения владельца по объёму:** без массового ГКЛ/Грильято; фанера только labour-only; люки только подгонка/облицовка; без экранов/фартука 35k/подоконника; поддон не комплекс; лотки — одна укрупнённая; без Neptun/TV/Wi‑Fi; водяной ПС — add; ТЕСЕ — не сейчас; шаблон XLSX — после Stage 3.
 
 ### P1 implementation checklist (итог)
 
 | Раздел | add_now | alias | inputs | scenarios |
 |--------|---------|-------|--------|-----------|
-| tile | +8 | titles/prices seal/cut/grout/corner | нет новых | без изменений (price-add) |
+| tile | +8 | titles/prices cut/grout/corner/seal-prep; **seal-bath 1050 / seal-door 350** (не 800/600) | нет новых | без изменений (price-add) |
 | floors | +17 | sanding note/source | нет новых | без изменений (price-add) |
 | walls | +4 | — | нет новых | без изменений (price-add) |
 | plumbing | +3 | towel title | нет новых | без изменений (price-add) |
@@ -58,8 +58,10 @@
 | Плиточные работы | 7.6 | Заполнение/затирка межплиточных швов мозаики двухкомпонентными эпоксидными составами | м² | 2500 | tile | `grout-epoxy-mosaic` | grout | alias_update_only | Unmatched title; цена 2500 ок | no_ui_change |
 | Плиточные работы | 8.1 | Подготовка примыкания плитки перед герметизацией | м. пог. | 200 | tile | `seal-prep` | sealing | alias_update_only | Unmatched title vs «Подготовка примыканий…» | no_ui_change |
 | Плиточные работы | 8.2 | Формирование внутреннего примыкания силиконовым герметиком | м. пог. | 600 | tile | `seal-silicone` | sealing | alias_update_only | Цена совпадает; выровнять title | no_ui_change |
-| Плиточные работы | 8.5 | Герметизация примыкания плитки к ванной/поддону/столешнице | м. пог. | 800 | tile | `seal-bath` | sealing | alias_update_only | Id есть (сейчас 1050 / другое title) — **выровнять к PDF 800**; канон шва плитка↔ванна = Tile | no_ui_change |
-| Плиточные работы | 8.6 | Герметизация примыкания плитки к дверной коробке/профилю | м. пог. | 600 | tile | `seal-door` | sealing | alias_update_only | Id есть (350) — **цена/title → PDF 600** | no_ui_change |
+| Плиточные работы | 8.5 | Герметизация примыкания плитки к ванной/поддону/столешнице | м. пог. | 800 | tile | — | sealing | out_of_scope_now / future | **Не** `seal-bath`: у id канон PDF «Монтаж финишной сантехники» **4.9 = 1050**. Плиточная 8.5 — отдельная позиция (пока не добавляли) | no_ui_change |
+| Плиточные работы | 8.6 | Герметизация примыкания плитки к дверной коробке/профилю | м. пог. | 600 | tile | — | sealing | out_of_scope_now / future | **Не** `seal-door`: у id канон PDF «Монтаж дверей» **7.6 = 350** | no_ui_change |
+| Монтаж финишной сантехники | 4.9 | Герметизация примыкания ванны к стене | м. пог. | 1050 | tile | `seal-bath` | sealing | alias_update_only | **Исправлено после P1-регресса:** title + **1050** (не 800) | no_ui_change |
+| Монтаж дверей | 7.6 | Герметизация примыкания дверного блока | м. пог. | 350 | tile | `seal-door` | sealing | alias_update_only | **Исправлено после P1-регресса:** title + **350** (не 600) | no_ui_change |
 | Плиточные работы | 9.3 | Подгонка плитки в зоне скрытого люка | шт. | 2500 | tile | `hatch-tile-fit` | hatches | add_now | **P1** labour-only (owner) | price_add_only |
 | Плиточные работы | 9.6 | Облицовка скрытого люка плиткой | шт. | 5000 | tile | `hatch-tile-clad` | hatches | add_now | **P1** labour-only | price_add_only |
 | Плиточные работы | 9.4 | Монтаж люка на магнитах, включая облицовку плиткой | шт. | 6000 | tile | — | hatches | out_of_scope_now | Combined работа+изделие (owner) | no_ui_change |
@@ -257,22 +259,22 @@
 
 ### 1. Финальный список `add_now`
 
-**Tile (8):**  
+**Tile (8):**
 `cut-45-mosaic-small`, `cut-edge-abrasive`, `cut-inner-stress-relief`, `cut-figure-template`, `profile-corner-metal`, `profile-joint-metal`, `hatch-tile-fit`, `hatch-tile-clad`
 
-**Floors P1 (17):**  
+**Floors P1 (17):**
 `finish-quartz-lock-diagonal`, `finish-quartz-lock-herringbone`, `finish-quartz-steps`, `finish-laminate-quartz-clean-cut`, `finish-laminate-quartz-trim-wall`, `finish-laminate-quartz-pipe-hole`, `finish-quartz-primer`, `finish-quartz-glue-spread`, `finish-quartz-roller`, `finish-parquet-primer`, `finish-parquet-glue-spread`, `finish-parquet-roller`, `finish-plywood-cut`, `finish-plywood-sand`, `finish-plywood-glue`, `finish-parquet-trim-wall`, `finish-parquet-pipe-hole`
 
-**Floors P2 (6):**  
+**Floors P2 (6):**
 `finish-cover-door-jamb-cut`, `finish-cover-complex-contour`, `finish-base-local-sand-qv`, `finish-base-local-level-qv`, `finish-base-rule-check`, `finish-parquet-complex-fit`
 
-**Walls P1 (4):**  
+**Walls P1 (4):**
 `putty-boxes-niches`, `paint-boxes-niches-2`, `paint-slopes-roller-2`, `paint-color-junction-line`
 
-**Walls P2 (3):**  
+**Walls P2 (3):**
 `paint-narrow-300-2`, `paint-slopes-spray-2`, `demolition-gkl-wall-frame`
 
-**Plumbing P1 (3):**  
+**Plumbing P1 (3):**
 `towel-outlets-mount`, `towel-bypass-mount`, `towel-node-pressure-test`
 
 **Electrics / Ceilings:** нет `add_now`.
@@ -291,26 +293,26 @@
 
 ### 2. `alias_update_only`
 
-- **Tile (~10):** `cut-45-*` (3), `corner-cement/epoxy`, `grout-epoxy-mosaic`, `seal-prep`, `seal-silicone`, `seal-bath` (цена→800), `seal-door` (цена→600)  
-- **Floors (1):** `finish-base-sanding-leveling`  
-- **Plumbing (1):** `finish-towel-water` title  
-- **Electrics (~45 + tray notes):** полный список §5.1  
+- **Tile (~10):** `cut-45-*` (3), `corner-cement/epoxy`, `grout-epoxy-mosaic`, `seal-prep`, `seal-silicone`; `seal-bath`/**1050** (финиш-сантех 4.9), `seal-door`/**350** (двери 7.6). *Не* путать с плиточными 8.5/8.6 (800/600).
+- **Floors (1):** `finish-base-sanding-leveling`
+- **Plumbing (1):** `finish-towel-water` title
+- **Electrics (~45 + tray notes):** полный список §5.1
 
 ### 3. `future_section`
 
-- ГКЛ / каркасы (глава гипсокартон + массовый монтаж)  
-- Подвесные потолки (Грильято / Armstrong)  
-- Отопление  
-- Конструкции ТЕСЕ (1.1–1.4)  
-- Кладка, двери, кондиционирование, звукоизоляция, Stage 10 «Прочее»  
-- Фанера/доска на потолок (паркет 3.x)  
+- ГКЛ / каркасы (глава гипсокартон + массовый монтаж)
+- Подвесные потолки (Грильято / Armstrong)
+- Отопление
+- Конструкции ТЕСЕ (1.1–1.4)
+- Кладка, двери, кондиционирование, звукоизоляция, Stage 10 «Прочее»
+- Фанера/доска на потолок (паркет 3.x)
 
 ### 4. Осталось `ask_owner`
 
-1. `seal-tape` (Tile 250) — оставить как есть / удалить / перенести смысл в Полы?  
-2. Кварцвинил на стену (Ламинат 1.9) — стены / плитка / out?  
-3. Герметизация стеклянной душевой перегородки (финиш сантех 6.2) — в Stage A P2 или нет?  
-4. Нужен ли P2 floors/walls в том же PR, что P1?  
+1. `seal-tape` (Tile 250) — оставить как есть / удалить / перенести смысл в Полы?
+2. Кварцвинил на стену (Ламинат 1.9) — стены / плитка / out?
+3. Герметизация стеклянной душевой перегородки (финиш сантех 6.2) — в Stage A P2 или нет?
+4. Нужен ли P2 floors/walls в том же PR, что P1?
 
 ### 5. Оценка роста mapping
 
@@ -347,9 +349,9 @@ Alias-pass **не** требует правок сценариев.
 
 ## Чеклист перед реализацией (Stage 3)
 
-- [x] Утвердить объём: **только P1 (~32)**  
-- [x] ask_owner: seal-tape / КВ на стену / стекло душ — **не делать**  
-- [x] P1 mapping + docs  
-- [ ] Stage 4–5 XLSX template/import — следующий эпик  
+- [x] Утвердить объём: **только P1 (~32)**
+- [x] ask_owner: seal-tape / КВ на стену / стекло душ — **не делать**
+- [x] P1 mapping + docs
+- [ ] Stage 4–5 XLSX template/import — следующий эпик
 
 **Не делать вне P1:** импорт прайса; массовый ГКЛ/Грильято; Neptun/TV/Wi‑Fi; экраны/фартук 35k/подоконник; ТЕСЕ; семейство лотков.

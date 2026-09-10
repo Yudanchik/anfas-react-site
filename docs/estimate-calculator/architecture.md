@@ -59,7 +59,7 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 - `source: both` только при совпадении цены и единицы с frontend preview **и** PDF.
 - Демонтаж стеновой плитки: PDF/FE/Walls/Tile = **900** ₽/м² (`source: both`).
 - Гидроизоляция **не** в Tile mapping; канон — Floors.
-- Герметизация плитка↔ванна — канон **Плитка** (`seal-bath`); `plumbing.finish-bath-seal` не усиливать в сценариях.
+- Герметизация плитка↔ванна — канон **Плитка** (`seal-bath` = PDF финиш-сантех 4.9, **1050** ₽); `plumbing.finish-bath-seal` не усиливать в сценариях. Плиточная позиция 8.5 (800) — отдельная строка PDF, в mapping пока нет.
 - Labour монтажа металлопрофиля и labour подгонки/облицовки люка — в Tile (price-add); экраны/комплексные люки с изделием — вне scope.
 - Floors/Walls tile-related keys **не удаляем**; Tile имеет собственные `priceKey`.
 - Soft-filter сценариев по `EstimateZone.zoneType` (helper `partitionScenariosByZoneType`) — Tile, Electrics и Plumbing.
