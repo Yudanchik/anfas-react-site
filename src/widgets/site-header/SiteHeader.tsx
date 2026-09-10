@@ -6,13 +6,10 @@ import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './SiteHeader.module.scss'
 
-/** Branch convenience link for internal estimate tool; revisit before merge to dev. */
-const INTERNAL_NAV = { label: 'Смета', to: '/internal/estimate' } as const
-
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { pathname } = useLocation()
-  const navItems = [...navigation, INTERNAL_NAV]
+  const navItems = navigation
   const isHeroPage =
     pathname === '/' ||
     pathname === '/services' ||
@@ -64,7 +61,7 @@ export function SiteHeader() {
             href={company.phoneHref}
             aria-label={`Позвонить по номеру ${company.phone}`}
           >
-            <span>Обсудить проект{' '}</span>
+            <span>Обсудить проект </span>
             <b>{company.phone}</b>
           </a>
 

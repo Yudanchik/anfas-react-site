@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import type { EstimateLine } from '@/entities/estimate'
 
@@ -40,22 +40,36 @@ export function EstimateGroupedTable({
 }: EstimateGroupedTableProps) {
   const [openIds, setOpenIds] = useState(() => new Set<string>())
   const [query, setQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
+  const [onlyEnabled, setOnlyEnabled] = useState(false)
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQuery(query), 200)
+    return () => window.clearTimeout(timer)
+  }, [query])
   const titleId = `${idPrefix}-table-title`
   const searchId = `${idPrefix}-lines-search`
 
   const filteredGroups = useMemo(
-    () => filterEstimateGroupsByQuery(groups, query),
-    [groups, query],
+    () =>
+      filterEstimateGroupsByQuery(
+        onlyEnabled
+          ? groups
+              .map((group) => ({ ...group, lines: group.lines.filter((line) => line.enabled) }))
+              .filter((group) => group.lines.length > 0)
+          : groups,
+        debouncedQuery,
+      ),
+    [groups, debouncedQuery, onlyEnabled],
   )
   const isSearching = query.trim().length > 0
 
   function isGroupOpen(groupId: string): boolean {
-    if (isSearching) return true
+    if (debouncedQuery.trim() || onlyEnabled) return true
     return openIds.has(groupId)
   }
 
   function toggleGroup(groupId: string) {
-    if (isSearching) return
+    if (debouncedQuery.trim() || onlyEnabled) return
     setOpenIds((prev) => {
       const next = new Set(prev)
       if (next.has(groupId)) next.delete(groupId)
@@ -98,15 +112,26 @@ export function EstimateGroupedTable({
               className={styles.searchClear}
               aria-label="Очистить поиск"
               onMouseDown={(event) => event.preventDefault()}
-              onClick={() => setQuery('')}
+              onClick={() => {
+                setQuery('')
+                setDebouncedQuery('')
+              }}
             >
               <span aria-hidden="true" />
             </button>
           ) : null}
         </div>
+        <label className={styles.searchLabel}>
+          <input
+            type="checkbox"
+            checked={onlyEnabled}
+            onChange={(event) => setOnlyEnabled(event.target.checked)}
+          />{' '}
+          Только выбранные
+        </label>
       </div>
 
-      {isSearching && filteredGroups.length === 0 ? (
+      {(isSearching || onlyEnabled) && filteredGroups.length === 0 ? (
         <p className={styles.searchEmpty} role="status">
           Работы не найдены. Попробуйте изменить запрос.
         </p>
@@ -130,34 +155,36 @@ export function EstimateGroupedTable({
                   aria-label={group.title}
                   hidden={!open}
                 >
-                  <table className={styles.table}>
-                    <thead>
-                      <tr>
-                        <th scope="col">Вкл.</th>
-                        <th scope="col">Работа</th>
-                        <th scope="col">Ед.</th>
-                        <th scope="col">Объём</th>
-                        <th scope="col">Цена</th>
-                        <th scope="col">Коэф.</th>
-                        <th scope="col">Сумма</th>
-                        <th scope="col">Комментарий</th>
-                        <th scope="col">
-                          <span className={styles.srOnly}>Действия</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {group.lines.map((line) => (
-                        <EstimateLineRow
-                          key={line.id}
-                          line={line}
-                          onToggle={onToggle}
-                          onPatchLine={onPatchLine}
-                          onRemoveManualLine={onRemoveManualLine}
-                        />
-                      ))}
-                    </tbody>
-                  </table>
+                  {open && (
+                    <table className={styles.table}>
+                      <thead>
+                        <tr>
+                          <th scope="col">Вкл.</th>
+                          <th scope="col">Работа</th>
+                          <th scope="col">Ед.</th>
+                          <th scope="col">Объём</th>
+                          <th scope="col">Цена</th>
+                          <th scope="col">Коэф.</th>
+                          <th scope="col">Сумма</th>
+                          <th scope="col">Комментарий</th>
+                          <th scope="col">
+                            <span className={styles.srOnly}>Действия</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {group.lines.map((line) => (
+                          <EstimateLineRow
+                            key={line.id}
+                            line={line}
+                            onToggle={onToggle}
+                            onPatchLine={onPatchLine}
+                            onRemoveManualLine={onRemoveManualLine}
+                          />
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </div>
             )

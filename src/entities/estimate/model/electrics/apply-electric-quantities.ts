@@ -1,4 +1,7 @@
-import { applyQuantityToMatchingLines, createManualEstimateLine } from '../shared/estimate-line-helpers'
+import {
+  applyQuantityToMatchingLines,
+  createManualEstimateLine,
+} from '../shared/estimate-line-helpers'
 import type { ElectricWorkKind, EstimateLine } from '../shared/estimate.types'
 import { ELECTRIC_SECTION_ID } from './electric-price.mapping'
 
@@ -9,19 +12,26 @@ import { ELECTRIC_SECTION_ID } from './electric-price.mapping'
 export function applyElectricSocketsCount(
   lines: readonly EstimateLine[],
   quantity: number,
+  switchesCount = 0,
 ): EstimateLine[] {
-  return applyQuantityToMatchingLines(
+  const next = applyQuantityToMatchingLines(
     lines,
     (line) => line.kind === 'finish-outlet' && line.unit === 'шт.',
     quantity,
+  )
+  return applyQuantityToMatchingLines(
+    next,
+    (line) => line.priceKey === 'finish-outlet-switch',
+    Math.max(0, quantity) + Math.max(0, switchesCount),
   )
 }
 
 export function applyElectricSwitchesCount(
   lines: readonly EstimateLine[],
   quantity: number,
+  socketsCount = 0,
 ): EstimateLine[] {
-  return applyQuantityToMatchingLines(
+  const next = applyQuantityToMatchingLines(
     lines,
     (line) =>
       (line.priceKey === 'finish-switch-key' ||
@@ -29,6 +39,11 @@ export function applyElectricSwitchesCount(
         line.priceKey === 'finish-dimmer') &&
       line.unit === 'шт.',
     quantity,
+  )
+  return applyQuantityToMatchingLines(
+    next,
+    (line) => line.priceKey === 'finish-outlet-switch',
+    Math.max(0, quantity) + Math.max(0, socketsCount),
   )
 }
 

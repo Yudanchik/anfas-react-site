@@ -63,8 +63,6 @@ const STATE_KEYS: Record<ElectricStateOption, readonly string[]> = {
     'junction-wago',
     'panel-enclosure-outdoor-12',
     'panel-assembly-12',
-    'breaker-1p',
-    'rcd-1pn',
     'finish-outlet-switch',
     'finish-spot',
     'check-group-after-mount',
@@ -80,15 +78,11 @@ const STATE_KEYS: Record<ElectricStateOption, readonly string[]> = {
   ],
   kitchen: [
     'chase-concrete-to-35',
-    'cable-cooktop',
     'cable-chase-1-5-2-5',
     'hole-podrozetnik-concrete',
     'podrozetnik-fix',
     'finish-outlet-switch',
-    'finish-power-outlet-cook',
-    'appliance-cooktop',
-    'appliance-oven',
-    'appliance-hood',
+    'appliance-generic',
   ],
   bathroom: [
     'chase-brick-to-35',
@@ -100,18 +94,11 @@ const STATE_KEYS: Record<ElectricStateOption, readonly string[]> = {
     'earthing-bath',
     'appliance-towel-ready',
   ],
-  'lighting-only': ['finish-spot', 'finish-pendant'],
+  'lighting-only': ['finish-spot'],
   'outlets-switches': ['finish-outlet-switch'],
   'low-current': ['cable-utp', 'finish-rj45', 'low-current-test-internet'],
-  'panel-only': [
-    'panel-enclosure-outdoor-12',
-    'panel-assembly-12',
-    'breaker-1p',
-    'rcd-1pn',
-    'meter-1ph',
-    'check-panel-after-assembly',
-  ],
-  'demolition-only': ['demolition-old-electrics', 'demolition-outlets', 'demolition-cable'],
+  'panel-only': ['panel-enclosure-outdoor-12', 'panel-assembly-12', 'check-panel-after-assembly'],
+  'demolition-only': ['demolition-outlets', 'demolition-cable'],
 }
 
 const MAPPING_BY_ID = new Map(ELECTRIC_PRICE_MAPPING.map((item) => [item.id, item]))
@@ -126,7 +113,7 @@ export function applyElectricScenario(
   input: ElectricEstimateInput,
   application: ElectricScenarioApplication,
 ): ApplyElectricScenarioResult {
-  const keys = resolveElectricScenarioKeys(application)
+  const keys = resolveMeasuredElectricScenarioKeys(application, input)
   const next = enableElectricScenarioKeys(lines, keys, input)
 
   return {
@@ -147,13 +134,13 @@ export function applyElectricScenarioToZone(
   application: ElectricScenarioApplication,
 ): ApplyElectricScenarioResult {
   const input = electricInputFromZone(zone)
-  const keys = resolveElectricScenarioKeys(application)
+  const keys = resolveMeasuredElectricScenarioKeys(application, input)
   let next = disableElectricConflictingAlternativesInZone(lines, keys, zone.id)
 
   for (const priceKey of keys) {
     const mappingItem = MAPPING_BY_ID.get(priceKey)
     const field = mappingItem?.defaultQuantityFrom ?? 'manual'
-    const qty = resolveElectricDefaultQuantity(field, input)
+    const qty = resolveElectricScenarioQuantity(priceKey, field, input)
 
     const existingIndex = next.findIndex(
       (line) =>
@@ -207,7 +194,45 @@ export function formatElectricScenarioLabel(application: ElectricScenarioApplica
 }
 
 export function formatElectricScenarioFeedback(label: string, addedCount: number): string {
-  return `Выбран сценарий «${label}», добавлено ${addedCount} строк`
+  return `Сценарий «${label}» применён, строк с объёмом: ${addedCount}`
+}
+
+export function resolveElectricScenarioQuantity(
+  key: string,
+  field: ElectricQuantityField,
+  input: ElectricEstimateInput,
+): number {
+  if (['finish-outlet-switch', 'demolition-outlets', 'layout-supply-points'].includes(key)) {
+    return Math.max(0, input.electricSocketsCount) + Math.max(0, input.electricSwitchesCount)
+  }
+  if (/^panel-(assembly|enclosure-outdoor)-(12|18|24)$/.test(key)) {
+    return input.electricPanelModulesCount > 0 && input.electricPanelModulesCount <= 24 ? 1 : 0
+  }
+  return resolveElectricDefaultQuantity(field, input)
+}
+
+export function resolveMeasuredElectricScenarioKeys(
+  application: ElectricScenarioApplication,
+  input: ElectricEstimateInput,
+): readonly string[] {
+  const size =
+    input.electricPanelModulesCount <= 12 ? 12 : input.electricPanelModulesCount <= 18 ? 18 : 24
+  return resolveElectricScenarioKeys(application)
+    .map((key) =>
+      key === 'panel-assembly-12'
+        ? `panel-assembly-${size}`
+        : key === 'panel-enclosure-outdoor-12'
+          ? `panel-enclosure-outdoor-${size}`
+          : key,
+    )
+    .filter(
+      (key) =>
+        resolveElectricScenarioQuantity(
+          key,
+          MAPPING_BY_ID.get(key)?.defaultQuantityFrom ?? 'manual',
+          input,
+        ) > 0,
+    )
 }
 
 export function formatElectricScenarioZoneFeedback(
@@ -250,7 +275,7 @@ function enableElectricScenarioKeys(
 
     const mappingItem = MAPPING_BY_ID.get(line.priceKey)
     const field: ElectricQuantityField = mappingItem?.defaultQuantityFrom ?? 'manual'
-    const qty = resolveElectricDefaultQuantity(field, input)
+    const qty = resolveElectricScenarioQuantity(line.priceKey, field, input)
 
     return {
       ...line,

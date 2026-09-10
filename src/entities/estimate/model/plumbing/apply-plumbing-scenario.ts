@@ -58,7 +58,6 @@ const STATE_KEYS: Record<PlumbingStateOption, readonly string[]> = {
   'bathroom-from-scratch': [
     'drainage-layout',
     'drainage-pipe-d32-50',
-    'drainage-pipe-d110',
     'drainage-outlet-fix',
     'water-layout',
     'water-pipe-d16-20',
@@ -71,7 +70,6 @@ const STATE_KEYS: Record<PlumbingStateOption, readonly string[]> = {
     'finish-sink-ordinary',
     'finish-sink-mixer',
     'finish-bath-acrylic',
-    'finish-bath-mixer',
     'check-water-start',
   ],
   'bathroom-replacement': [
@@ -83,7 +81,6 @@ const STATE_KEYS: Record<PlumbingStateOption, readonly string[]> = {
     'finish-sink-ordinary',
     'finish-sink-mixer',
     'finish-bath-acrylic',
-    'finish-bath-mixer',
     'check-finish',
   ],
   kitchen: [
@@ -101,7 +98,6 @@ const STATE_KEYS: Record<PlumbingStateOption, readonly string[]> = {
     'finish-bath-mixer',
     'finish-siphon-bath',
     'finish-shower-tray',
-    'finish-shower-mixer-open',
   ],
   'toilet-zone': [
     'install-frame',
@@ -124,7 +120,6 @@ const STATE_KEYS: Record<PlumbingStateOption, readonly string[]> = {
   'drainage-only': [
     'drainage-layout',
     'drainage-pipe-d32-50',
-    'drainage-pipe-d110',
     'drainage-outlet-fix',
     'drainage-slope',
     'drainage-test-flush',
@@ -164,7 +159,7 @@ export function applyPlumbingScenario(
   input: PlumbingEstimateInput,
   application: PlumbingScenarioApplication,
 ): ApplyPlumbingScenarioResult {
-  const keys = resolvePlumbingScenarioKeys(application)
+  const keys = resolveMeasuredPlumbingScenarioKeys(application, input)
   const next = enablePlumbingScenarioKeys(lines, keys, input)
 
   return {
@@ -185,7 +180,7 @@ export function applyPlumbingScenarioToZone(
   application: PlumbingScenarioApplication,
 ): ApplyPlumbingScenarioResult {
   const input = plumbingInputFromZone(zone)
-  const keys = resolvePlumbingScenarioKeys(application)
+  const keys = resolveMeasuredPlumbingScenarioKeys(application, input)
   let next = disablePlumbingConflictingAlternativesInZone(lines, keys, zone.id)
 
   for (const priceKey of keys) {
@@ -244,8 +239,18 @@ export function formatPlumbingScenarioLabel(application: PlumbingScenarioApplica
   return STATE_LABELS[application.state] ?? application.state
 }
 
+export function resolveMeasuredPlumbingScenarioKeys(
+  application: PlumbingScenarioApplication,
+  input: PlumbingEstimateInput,
+): readonly string[] {
+  return resolvePlumbingScenarioKeys(application).filter((key) => {
+    const field = MAPPING_BY_ID.get(key)?.defaultQuantityFrom ?? 'manual'
+    return resolvePlumbingDefaultQuantity(field, input) > 0
+  })
+}
+
 export function formatPlumbingScenarioFeedback(label: string, addedCount: number): string {
-  return `Выбран сценарий «${label}», добавлено ${addedCount} строк`
+  return `Сценарий «${label}» применён, строк с объёмом: ${addedCount}`
 }
 
 export function formatPlumbingScenarioZoneFeedback(

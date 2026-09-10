@@ -83,13 +83,17 @@ export function useElectricEstimateEditor(initial: ElectricEstimateEditorInitial
 
   function applySocketsCount(): number {
     const affected = countElectricSocketTargets(lines)
-    setLines((prev) => applyElectricSocketsCount(prev, input.electricSocketsCount))
+    setLines((prev) =>
+      applyElectricSocketsCount(prev, input.electricSocketsCount, input.electricSwitchesCount),
+    )
     return affected
   }
 
   function applySwitchesCount(): number {
     const affected = countElectricSwitchTargets(lines)
-    setLines((prev) => applyElectricSwitchesCount(prev, input.electricSwitchesCount))
+    setLines((prev) =>
+      applyElectricSwitchesCount(prev, input.electricSwitchesCount, input.electricSocketsCount),
+    )
     return affected
   }
 

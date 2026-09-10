@@ -20,6 +20,10 @@ import {
   isElectricScenarioAllowedForZone,
   isPlumbingScenarioAllowedForZone,
   isTileScenarioAllowedForZone,
+  resolveMeasuredElectricScenarioKeys,
+  resolveMeasuredPlumbingScenarioKeys,
+  electricInputFromZone,
+  plumbingInputFromZone,
 } from '@/entities/estimate'
 
 export type ScenarioMeasureCheck = { ok: true } | { ok: false; message: string }
@@ -242,39 +246,11 @@ export function validateElectricScenarioMeasures(params: {
     message: forZone ? ELECTRIC_ZONE : ELECTRIC_GENERAL,
   })
 
-  const sockets = zone ? zone.electricSocketsCount : input.electricSocketsCount
-  const switches = zone ? zone.electricSwitchesCount : input.electricSwitchesCount
-  const lights = zone ? zone.electricLightPointsCount : input.electricLightPointsCount
-  const data = zone ? zone.electricDataPointsCount : input.electricDataPointsCount
-  const strobe = zone ? zone.electricStrobeLength : input.electricStrobeLength
-  const cable = zone ? zone.electricCableLength : input.electricCableLength
-  const boxes = zone ? zone.electricSocketBoxesCount : input.electricSocketBoxesCount
-  const junctions = zone ? zone.electricJunctionBoxesCount : input.electricJunctionBoxesCount
-  const warmFloor = zone ? zone.electricWarmFloorArea : input.electricWarmFloorArea
-  const appliances = zone
-    ? zone.electricApplianceConnectionsCount
-    : input.electricApplianceConnectionsCount
-
-  const pointsAndRoutes = [sockets, switches, lights, data, strobe, cable, boxes, junctions]
-
-  switch (application.state) {
-    case 'demolition-only':
-    case 'panel-only':
-      return { ok: true }
-    case 'lighting-only':
-      return positive(lights) ? { ok: true } : fail()
-    case 'outlets-switches':
-      return anyPositive([sockets, switches]) ? { ok: true } : fail()
-    case 'low-current':
-      return anyPositive([data, cable]) ? { ok: true } : fail()
-    case 'kitchen':
-      return anyPositive([...pointsAndRoutes, appliances]) ? { ok: true } : fail()
-    case 'bathroom':
-      return anyPositive([...pointsAndRoutes, appliances, warmFloor]) ? { ok: true } : fail()
-    case 'room-rewire':
-    case 'apartment-from-scratch':
-      return anyPositive(pointsAndRoutes) ? { ok: true } : fail()
-  }
+  const measured = resolveMeasuredElectricScenarioKeys(
+    application,
+    zone ? electricInputFromZone(zone) : input,
+  )
+  return measured.length > 0 ? { ok: true } : fail()
 }
 
 /** Сантехника: проверка счётчиков и совместимости сценария с типом зоны. */
@@ -299,67 +275,11 @@ export function validatePlumbingScenarioMeasures(params: {
     message: forZone ? PLUMBING_ZONE : PLUMBING_GENERAL,
   })
 
-  const waterPoints = zone ? zone.plumbingWaterPointsCount : input.plumbingWaterPointsCount
-  const sewerPoints = zone ? zone.plumbingSewerPointsCount : input.plumbingSewerPointsCount
-  const waterPipe = zone ? zone.plumbingWaterPipeLength : input.plumbingWaterPipeLength
-  const sewerPipe = zone ? zone.plumbingSewerPipeLength : input.plumbingSewerPipeLength
-  const collectors = zone ? zone.plumbingCollectorsCount : input.plumbingCollectorsCount
-  const toilets = zone ? zone.plumbingToiletsCount : input.plumbingToiletsCount
-  const sinks = zone ? zone.plumbingSinksCount : input.plumbingSinksCount
-  const bathtubs = zone ? zone.plumbingBathtubsCount : input.plumbingBathtubsCount
-  const showers = zone ? zone.plumbingShowersCount : input.plumbingShowersCount
-  const mixers = zone ? zone.plumbingMixersCount : input.plumbingMixersCount
-  const installations = zone ? zone.plumbingInstallationsCount : input.plumbingInstallationsCount
-  const drains = zone ? zone.plumbingDrainsCount : input.plumbingDrainsCount
-  const washer = zone
-    ? zone.plumbingWasherConnectionsCount
-    : input.plumbingWasherConnectionsCount
-  const dishwasher = zone
-    ? zone.plumbingDishwasherConnectionsCount
-    : input.plumbingDishwasherConnectionsCount
-  const heaters = zone ? zone.plumbingWaterHeatersCount : input.plumbingWaterHeatersCount
-  const towelWarmers = zone ? zone.plumbingTowelWarmersCount : input.plumbingTowelWarmersCount
-  const warmFloor = zone ? zone.plumbingWarmFloorArea : input.plumbingWarmFloorArea
-
-  const points = [waterPoints, sewerPoints]
-  const pipes = [waterPipe, sewerPipe]
-  const fixtures = [
-    toilets,
-    sinks,
-    bathtubs,
-    showers,
-    mixers,
-    installations,
-    drains,
-    washer,
-    dishwasher,
-    heaters,
-    towelWarmers,
-  ]
-
-  switch (application.state) {
-    case 'demolition-only':
-    case 'manifold':
-      return { ok: true }
-    case 'drainage-only':
-      return anyPositive([sewerPipe, sewerPoints, drains]) ? { ok: true } : fail()
-    case 'water-supply-only':
-      return anyPositive([waterPipe, waterPoints, collectors]) ? { ok: true } : fail()
-    case 'fixtures-only':
-      return anyPositive(fixtures) ? { ok: true } : fail()
-    case 'bath-zone':
-      return anyPositive([bathtubs, showers, mixers, drains]) ? { ok: true } : fail()
-    case 'toilet-zone':
-      return anyPositive([toilets, installations, waterPoints, sewerPoints]) ? { ok: true } : fail()
-    case 'kitchen':
-      return anyPositive([sinks, dishwasher, washer, waterPoints, sewerPoints, ...pipes])
-        ? { ok: true }
-        : fail()
-    case 'bathroom-replacement':
-      return anyPositive([toilets, sinks, bathtubs, showers, mixers]) ? { ok: true } : fail()
-    case 'bathroom-from-scratch':
-      return anyPositive([...points, ...pipes, ...fixtures, warmFloor]) ? { ok: true } : fail()
-  }
+  const measured = resolveMeasuredPlumbingScenarioKeys(
+    application,
+    zone ? plumbingInputFromZone(zone) : input,
+  )
+  return measured.length > 0 ? { ok: true } : fail()
 }
 
 /** Lightweight wrappers for UI disabled-state (reuse validate*). */

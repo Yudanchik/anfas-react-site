@@ -38,12 +38,13 @@ total = sum(lineTotal for enabled lines)
 
 ## Checks
 
+Автоматические тесты калькулятора удалены по решению владельца.
+
 ```bash
-pnpm test:floor-estimate
-pnpm test:wall-estimate
-pnpm test:estimate
 pnpm check
 pnpm build
+# локальный вход с PHP (после build):
+pnpm preview:estimate
 ```
 
 ## Extending

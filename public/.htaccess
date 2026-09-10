@@ -1,8 +1,22 @@
 Options -MultiViews
 
+<FilesMatch "(\.local\.php$|\.inc\.php$|\.example\.php$)">
+  Require all denied
+</FilesMatch>
+
+<IfModule !mod_rewrite.c>
+  <FilesMatch "^calculator-.*\.(js|css)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  RewriteRule ^assets/estimate-private/([a-zA-Z0-9_-]+\.(js|css))$ api/estimate-asset.php?file=$1 [END]
+  RewriteRule ^assets/estimate-private/ - [F,END]
+  RewriteRule ^internal/estimate/?$ __spa-fallback.html [END]
 
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d

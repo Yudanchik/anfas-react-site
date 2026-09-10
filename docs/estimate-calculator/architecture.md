@@ -12,19 +12,21 @@ src/entities/estimate/model/
   shared/     # типы, EstimateZone, calculateLineTotal / section / estimate,
               # zoned clones, conflict scope, line helpers, selected-lines (+ group by zone)
   floors/     # FLOOR_PRICE_MAPPING, builders, presets (+ toZone), groups, conflicts,
-              # zone work catalog, tests
+              # zone work catalog
   walls/      # WALL_PRICE_MAPPING, builders, scenarios (+ toZone), groups, conflicts,
-              # zone work catalog, tests
+              # zone work catalog
   ceilings/   # CEILING_PRICE_MAPPING, builders, scenarios (+ toZone), groups, conflicts,
-              # zone work catalog, tests
+              # zone work catalog
   tile/       # TILE_PRICE_MAPPING, builders, scenarios (+ toZone), groups, conflicts,
-              # zone work catalog, tests
+              # zone work catalog
   electrics/  # ELECTRIC_PRICE_MAPPING, builders, scenarios (+ toZone), groups, conflicts,
-              # zone work catalog, soft zoneType filter, tests
+              # zone work catalog, soft zoneType filter
   plumbing/   # PLUMBING_PRICE_MAPPING, builders, scenarios (+ toZone), groups, conflicts,
-              # zone work catalog, soft zoneType filter, tests
+              # zone work catalog, soft zoneType filter
   index.ts    # публичный barrel — импорт только из @/entities/estimate
 ```
+
+Автоматические тесты калькулятора удалены по решению владельца. CI: `pnpm check` + `pnpm build`. Локальная проверка входа: `pnpm build` → `pnpm preview:estimate` (нужен PHP). См. [internal-access.md](./internal-access.md).
 
 | Слой | Назначение |
 |------|------------|
@@ -121,26 +123,30 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 | Удалить зону Z | удалить Z | удалить clones с `zoneId=Z` | то же | то же | то же | то же | то же |
 | Rename зоны | обновить name | sync `zoneName` на clones | то же | то же | то же | то же | то же |
 
-## PDF / export (будущее)
+## PDF / export
 
-Отдельный слой: `model/export/` или `features/estimate-export/`.
-Не класть в floors/walls/ceilings/tile/electrics/plumbing и не смешивать с mapping. Пока **нет**.
+`features/estimate-calculator/model/estimate-document.ts` готовит клиентские данные, CSV и проверки перед выдачей. `estimate-pdf.ts` создаёт PDF через jsPDF/AutoTable с Montserrat, таблицами A4 и пагинацией. Итоги поступают из domain selected sections; формулы повторно не реализуются. Поиск и accordion state на экспорт не влияют.
 
-## Header «Смета»
+Данные документа сохраняются отдельно (`anfas:estimate-document:v1`), существующая схема snapshot v2 не менялась. Резервная копия JSON объединяет details и snapshot, при импорте проходит существующий tolerant parser. CSV защищает текстовые ячейки от выполнения формул в Excel.
 
-`SiteHeader` → `INTERNAL_NAV` — **branch convenience**, не в `company.navigation`.
-Перед merge в `dev`: оставить / DEV-only / убрать.
+Пользовательская инструкция: [работа с заказчиком](./customer-workflow.md). Ограничения: нет серверного архива, электронной подписи и XLSX; CSV доступен для Excel.
+
+## Доступ администратора
+
+Ссылка «Смета» удалена из публичной шапки. `EstimateAccess` загружает workspace после проверки PHP-сессии. `.htaccess` направляет защищённые JS/CSS chunks через `estimate-asset.php`; простой скрытой ссылки недостаточно. Вариант с чистым nginx закрывает private assets и PHP, не имитирует авторизацию.
+
+REG.RU требует отдельного серверного конфига администратора, HTTPS и проверки rewrite после выкладки. Пароли и конфиг не входят в Git/артефакт сборки. Подробнее: [internal-access.md](./internal-access.md).
 
 ## Как добавить следующий раздел
 
-1. Domain: `model/<section>/` — mapping, builders, groups, conflicts, scenarios, zone catalog, tests.
+1. Domain: `model/<section>/` — mapping, builders, groups, conflicts, scenarios, zone catalog.
 2. Экспорт из `model/index.ts`.
 3. UI: `estimate-calculator/<section>/` + tab в `EstimateTabs`.
 4. Итоги через `calculateEstimateTotal` + `getSelectedEstimateSections`.
 5. Zone-level: `*ToZone` + scoped conflicts.
 6. Persistence: tolerant optional block + zone fields с default `0`.
 
-Следующие кандидаты: прочие работы → export → internal access.
+Stage 10 «Прочие работы» отложен. Stage 11 (PDF, CSV, резервные копии) и Stage 12 (PHP-доступ) реализованы локально; live acceptance на хостинге выполняется отдельно.
 
 ## Не делать
 

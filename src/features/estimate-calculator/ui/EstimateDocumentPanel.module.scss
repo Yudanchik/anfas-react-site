@@ -1,0 +1,86 @@
+@use './estimate-ui' as eu;
+
+.panel {
+  @include eu.panel;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  h2 {
+    @include eu.section-title;
+  }
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+
+  label {
+    display: grid;
+    gap: 5px;
+    font-size: 12px;
+    min-width: 0;
+  }
+
+  input,
+  textarea {
+    @include eu.control;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.note {
+  grid-column: 1 / -1;
+}
+
+.primary {
+  @include eu.button-primary;
+}
+
+.secondary {
+  @include eu.button-secondary;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.file {
+  display: none;
+}
+
+.error {
+  color: #a82a24;
+  font-size: 13px;
+}
+
+.issues {
+  border-left: 3px solid var(--amber);
+  padding: 12px;
+  margin-top: 16px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+@media (width <= 680px) {
+  .fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}

@@ -13,6 +13,10 @@ export function YandexMetrikaHit() {
   const { pathname, search, hash } = useLocation()
 
   useEffect(() => {
+    if (pathname.includes('/internal/')) {
+      window.ym?.(YANDEX_METRIKA_ID, 'destruct')
+      return
+    }
     window.ym?.(YANDEX_METRIKA_ID, 'hit', window.location.href)
   }, [pathname, search, hash])
 
@@ -20,6 +24,7 @@ export function YandexMetrikaHit() {
 }
 
 export const yandexMetrikaInlineScript = `
+if (!window.location.pathname.includes('/internal/')) {
 (function(m,e,t,r,i,k,a){
   m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
   m[i].l=1*new Date();
@@ -35,4 +40,5 @@ ym(${YANDEX_METRIKA_ID}, 'init', {
   accurateTrackBounce:true,
   trackLinks:true
 });
+}
 `.trim()

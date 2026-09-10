@@ -95,6 +95,7 @@ import { useWallEstimateEditor } from '../walls/use-wall-estimate-editor'
 import { WallEstimatePanel } from '../walls/WallEstimatePanel'
 import { EstimateCombinedSummary } from './EstimateCombinedSummary'
 import { EstimateIntro } from './EstimateIntro'
+import { EstimateDocumentPanel } from './EstimateDocumentPanel'
 import { EstimateTabs, type EstimateTabId } from './EstimateTabs'
 import styles from './EstimateCalculatorWorkspace.module.scss'
 
@@ -149,14 +150,10 @@ export function EstimateCalculatorWorkspace() {
   const electrics = useElectricEstimateEditor(initial.electrics)
   const plumbing = usePlumbingEstimateEditor(initial.plumbing)
   const skipFirstPersist = useRef(true)
+  const [storageFailed, setStorageFailed] = useState(false)
 
-  useEffect(() => {
-    if (skipFirstPersist.current) {
-      skipFirstPersist.current = false
-      return
-    }
-
-    writeEstimateCalculatorSnapshot(
+  const snapshot = useMemo(
+    () =>
       buildEstimateCalculatorSnapshot({
         activeTab,
         zones,
@@ -179,29 +176,37 @@ export function EstimateCalculatorWorkspace() {
         electricScenarios: electricScenarioDraft,
         plumbingScenarios: plumbingScenarioDraft,
       }),
-    )
-  }, [
-    activeTab,
-    zones,
-    floors.input,
-    floors.lines,
-    walls.input,
-    walls.lines,
-    ceilings.input,
-    ceilings.lines,
-    tile.input,
-    tile.lines,
-    electrics.input,
-    electrics.lines,
-    plumbing.input,
-    plumbing.lines,
-    floorPresetDraft,
-    wallScenarioDraft,
-    ceilingScenarioDraft,
-    tileScenarioDraft,
-    electricScenarioDraft,
-    plumbingScenarioDraft,
-  ])
+    [
+      activeTab,
+      zones,
+      floors.input,
+      floors.lines,
+      walls.input,
+      walls.lines,
+      ceilings.input,
+      ceilings.lines,
+      tile.input,
+      tile.lines,
+      electrics.input,
+      electrics.lines,
+      plumbing.input,
+      plumbing.lines,
+      floorPresetDraft,
+      wallScenarioDraft,
+      ceilingScenarioDraft,
+      tileScenarioDraft,
+      electricScenarioDraft,
+      plumbingScenarioDraft,
+    ],
+  )
+
+  useEffect(() => {
+    if (skipFirstPersist.current) {
+      skipFirstPersist.current = false
+      return
+    }
+    setStorageFailed(!writeEstimateCalculatorSnapshot(snapshot))
+  }, [snapshot])
 
   function handleZonesChange(nextZones: EstimateZone[]) {
     const prevById = new Map(zones.map((zone) => [zone.id, zone]))
@@ -291,10 +296,7 @@ export function EstimateCalculatorWorkspace() {
     setPlumbingScenarioDraft({ ...DEFAULT_PLUMBING_SCENARIOS })
   }
 
-  const zoneNameById = useMemo(
-    () => new Map(zones.map((zone) => [zone.id, zone.name])),
-    [zones],
-  )
+  const zoneNameById = useMemo(() => new Map(zones.map((zone) => [zone.id, zone.name])), [zones])
 
   const selectedSections = useMemo(() => {
     const sections = getSelectedEstimateSections([
@@ -365,7 +367,12 @@ export function EstimateCalculatorWorkspace() {
   )
 
   return (
-    <div className={styles.workspace}>
+    <div className={`${styles.workspace} ym-hide-content`}>
+      {storageFailed && (
+        <p role="alert">
+          Автосохранение недоступно. Скачайте копию сметы перед закрытием страницы.
+        </p>
+      )}
       <div className={styles.zone}>
         <EstimateIntro
           floorsSelectedCount={floors.selectedCount}
@@ -513,6 +520,19 @@ export function EstimateCalculatorWorkspace() {
 
       <div className={styles.zone}>
         <EstimateCombinedSummary sections={selectedSections} grandTotalRub={grandTotalRub} />
+        <EstimateDocumentPanel
+          sections={selectedSections}
+          lines={[
+            ...floors.lines,
+            ...walls.lines,
+            ...ceilings.lines,
+            ...tile.lines,
+            ...electrics.lines,
+            ...plumbing.lines,
+          ]}
+          snapshot={snapshot}
+          onNew={resetAllEstimate}
+        />
       </div>
     </div>
   )

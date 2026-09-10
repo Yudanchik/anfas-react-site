@@ -1,13 +1,22 @@
-import type { ElectricWorkKind, EstimateLine, EstimateWorkKind } from '@/entities/estimate'
+import {
+  isZonedEstimateLine,
+  type ElectricWorkKind,
+  type EstimateLine,
+  type EstimateWorkKind,
+} from '@/entities/estimate'
 
 export function countElectricSocketTargets(lines: readonly EstimateLine[]): number {
-  return lines.filter((line) => line.kind === 'finish-outlet' && line.unit === 'шт.').length
+  return lines.filter(
+    (line) => !isZonedEstimateLine(line) && line.kind === 'finish-outlet' && line.unit === 'шт.',
+  ).length
 }
 
 export function countElectricSwitchTargets(lines: readonly EstimateLine[]): number {
   return lines.filter(
     (line) =>
-      (line.priceKey === 'finish-switch-key' ||
+      !isZonedEstimateLine(line) &&
+      (line.priceKey === 'finish-outlet-switch' ||
+        line.priceKey === 'finish-switch-key' ||
         line.priceKey === 'finish-pass-through' ||
         line.priceKey === 'finish-dimmer') &&
       line.unit === 'шт.',
@@ -39,13 +48,7 @@ export function countElectricWarmFloorTargets(lines: readonly EstimateLine[]): n
 }
 
 export type ElectricQuickActionKind =
-  | 'sockets'
-  | 'switches'
-  | 'lights'
-  | 'strobe'
-  | 'cable'
-  | 'warm-floor'
-  | 'reset'
+  'sockets' | 'switches' | 'lights' | 'strobe' | 'cable' | 'warm-floor' | 'reset'
 
 export function formatElectricQuickActionFeedback(
   kind: ElectricQuickActionKind,

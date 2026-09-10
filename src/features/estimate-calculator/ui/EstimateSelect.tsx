@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from 'react'
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 
 import styles from './EstimateSelect.module.scss'
 
@@ -79,9 +73,7 @@ export function EstimateSelect({
 
   useEffect(() => {
     if (!open || highlightIndex < 0) return
-    const optionEl = listRef.current?.querySelector<HTMLElement>(
-      `[data-index="${highlightIndex}"]`,
-    )
+    const optionEl = listRef.current?.querySelector<HTMLElement>(`[data-index="${highlightIndex}"]`)
     optionEl?.scrollIntoView({ block: 'nearest' })
   }, [highlightIndex, open])
 
@@ -155,6 +147,16 @@ export function EstimateSelect({
           close()
         }
         break
+      case 'Tab':
+        close()
+        break
+      case 'Home':
+      case 'End':
+        if (open) {
+          event.preventDefault()
+          setHighlightIndex(event.key === 'Home' ? 0 : options.length - 1)
+        }
+        break
       default:
         break
     }
@@ -169,6 +171,13 @@ export function EstimateSelect({
         id={id}
         className={styles.trigger}
         disabled={disabled}
+        role="combobox"
+        aria-autocomplete="none"
+        aria-activedescendant={
+          open && highlightIndex >= 0 && options[highlightIndex]
+            ? `${listboxId}-option-${highlightIndex}`
+            : undefined
+        }
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listboxId}
@@ -190,9 +199,8 @@ export function EstimateSelect({
           id={listboxId}
           className={styles.list}
           role="listbox"
-          aria-activedescendant={
-            highlightIndex >= 0 ? `${listboxId}-option-${highlightIndex}` : undefined
-          }
+          aria-label={ariaLabel ?? 'Варианты'}
+          aria-labelledby={ariaLabelledBy}
           tabIndex={-1}
         >
           {options.length === 0 ? (

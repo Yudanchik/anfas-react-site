@@ -151,10 +151,7 @@ export {
   findFloorMappingItem,
   getFloorZoneMappingOptions,
 } from './floors/floor-zone-catalog'
-export type {
-  FloorZoneWorkCategory,
-  FloorZoneWorkCategoryId,
-} from './floors/floor-zone-catalog'
+export type { FloorZoneWorkCategory, FloorZoneWorkCategoryId } from './floors/floor-zone-catalog'
 export { createZonedFloorEstimateLine } from './floors/create-zoned-floor-estimate-line'
 export type { CreateZonedFloorEstimateLineParams } from './floors/create-zoned-floor-estimate-line'
 export {
@@ -180,11 +177,7 @@ export type {
   WaterproofingLayersOption,
 } from './floors/apply-floor-preset'
 
-export {
-  WALL_PRICE_MAPPING,
-  WALL_SECTION_ID,
-  WALL_SECTION_TITLE,
-} from './walls/wall-price.mapping'
+export { WALL_PRICE_MAPPING, WALL_SECTION_ID, WALL_SECTION_TITLE } from './walls/wall-price.mapping'
 export {
   assertWallMappingMatchesFrontend,
   findWallMappingConflicts,
@@ -248,14 +241,8 @@ export {
   findWallMappingItem,
 } from './walls/create-zoned-wall-estimate-line'
 export type { CreateZonedWallEstimateLineParams } from './walls/create-zoned-wall-estimate-line'
-export {
-  getWallZoneMappingOptions,
-  WALL_ZONE_WORK_CATEGORIES,
-} from './walls/wall-zone-catalog'
-export type {
-  WallZoneWorkCategory,
-  WallZoneWorkCategoryId,
-} from './walls/wall-zone-catalog'
+export { getWallZoneMappingOptions, WALL_ZONE_WORK_CATEGORIES } from './walls/wall-zone-catalog'
+export type { WallZoneWorkCategory, WallZoneWorkCategoryId } from './walls/wall-zone-catalog'
 
 export {
   CEILING_PRICE_MAPPING,
@@ -332,11 +319,7 @@ export type {
   CeilingZoneWorkCategoryId,
 } from './ceilings/ceiling-zone-catalog'
 
-export {
-  TILE_PRICE_MAPPING,
-  TILE_SECTION_ID,
-  TILE_SECTION_TITLE,
-} from './tile/tile-price.mapping'
+export { TILE_PRICE_MAPPING, TILE_SECTION_ID, TILE_SECTION_TITLE } from './tile/tile-price.mapping'
 export {
   assertTileMappingMatchesFrontend,
   findTileMappingConflicts,
@@ -394,14 +377,8 @@ export {
   findTileMappingItem,
 } from './tile/create-zoned-tile-estimate-line'
 export type { CreateZonedTileEstimateLineParams } from './tile/create-zoned-tile-estimate-line'
-export {
-  getTileZoneMappingOptions,
-  TILE_ZONE_WORK_CATEGORIES,
-} from './tile/tile-zone-catalog'
-export type {
-  TileZoneWorkCategory,
-  TileZoneWorkCategoryId,
-} from './tile/tile-zone-catalog'
+export { getTileZoneMappingOptions, TILE_ZONE_WORK_CATEGORIES } from './tile/tile-zone-catalog'
+export type { TileZoneWorkCategory, TileZoneWorkCategoryId } from './tile/tile-zone-catalog'
 export {
   formatTileScenarioZoneMismatchMessage,
   getTileScenarioOptionLabel,
@@ -461,6 +438,8 @@ export {
   formatElectricScenarioLabel,
   formatElectricScenarioZoneFeedback,
   resolveElectricScenarioKeys,
+  resolveMeasuredElectricScenarioKeys,
+  resolveElectricScenarioQuantity,
 } from './electrics/apply-electric-scenario'
 export type {
   ApplyElectricScenarioResult,
@@ -538,6 +517,7 @@ export {
   formatPlumbingScenarioZoneFeedback,
   plumbingInputFromZone,
   resolvePlumbingScenarioKeys,
+  resolveMeasuredPlumbingScenarioKeys,
 } from './plumbing/apply-plumbing-scenario'
 export type {
   ApplyPlumbingScenarioResult,

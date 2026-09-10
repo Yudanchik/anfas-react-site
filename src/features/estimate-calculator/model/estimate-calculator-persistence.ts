@@ -383,9 +383,7 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
     name,
     zoneType: resolveEstimateZoneType({ name, zoneType: raw.zoneType }),
     floorArea: asNonNegative(raw.floorArea),
-    demolitionFloorArea: asNonNegative(
-      raw.demolitionFloorArea ?? raw.demolitionArea,
-    ),
+    demolitionFloorArea: asNonNegative(raw.demolitionFloorArea ?? raw.demolitionArea),
     screedArea: asNonNegative(raw.screedArea),
     wetArea: asNonNegative(raw.wetArea),
     wallArea: asNonNegative(raw.wallArea),
@@ -556,13 +554,22 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
 
   if (isRecord(raw.floorPresets)) {
     snapshot.floorPresets = {
-      covering: asString(raw.floorPresets.covering, DEFAULT_FLOOR_PRESETS.covering) as DemolitionCoveringOption,
+      covering: asString(
+        raw.floorPresets.covering,
+        DEFAULT_FLOOR_PRESETS.covering,
+      ) as DemolitionCoveringOption,
       screedType: asString(
         raw.floorPresets.screedType,
         DEFAULT_FLOOR_PRESETS.screedType,
       ) as ScreedTypeOption,
-      layers: asString(raw.floorPresets.layers, DEFAULT_FLOOR_PRESETS.layers) as WaterproofingLayersOption,
-      wasteTrip: asString(raw.floorPresets.wasteTrip, DEFAULT_FLOOR_PRESETS.wasteTrip) as WasteTripOption,
+      layers: asString(
+        raw.floorPresets.layers,
+        DEFAULT_FLOOR_PRESETS.layers,
+      ) as WaterproofingLayersOption,
+      wasteTrip: asString(
+        raw.floorPresets.wasteTrip,
+        DEFAULT_FLOOR_PRESETS.wasteTrip,
+      ) as WasteTripOption,
     }
   }
 
@@ -897,9 +904,10 @@ function applyPersistedPatches(
  * Восстанавливает полы: параметры замера + строки из mapping с патчами и zoned clones из снимка.
  * Без снимка — чистый build из пустого ввода.
  */
-export function restoreFloorEstimateState(
-  snapshot: EstimateCalculatorSnapshot | null,
-): { input: FloorEstimateInput; lines: EstimateLine[] } {
+export function restoreFloorEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+  input: FloorEstimateInput
+  lines: EstimateLine[]
+} {
   const input = snapshot ? snapshot.floors.input : { ...EMPTY_FLOOR_INPUT }
   const base = buildFloorEstimateLines(input)
   return {
@@ -909,9 +917,10 @@ export function restoreFloorEstimateState(
 }
 
 /** То же для стен, включая zoned clones. */
-export function restoreWallEstimateState(
-  snapshot: EstimateCalculatorSnapshot | null,
-): { input: WallEstimateInput; lines: EstimateLine[] } {
+export function restoreWallEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+  input: WallEstimateInput
+  lines: EstimateLine[]
+} {
   const input = snapshot ? snapshot.walls.input : { ...EMPTY_WALL_INPUT }
   const base = buildWallEstimateLines(input)
   return {
@@ -924,9 +933,10 @@ export function restoreWallEstimateState(
  * То же для потолков, включая zoned clones.
  * Толерантно к снимкам без секции `ceilings` — тогда пустой ввод и чистый build.
  */
-export function restoreCeilingEstimateState(
-  snapshot: EstimateCalculatorSnapshot | null,
-): { input: CeilingEstimateInput; lines: EstimateLine[] } {
+export function restoreCeilingEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+  input: CeilingEstimateInput
+  lines: EstimateLine[]
+} {
   const ceilings = snapshot?.ceilings
   const input = ceilings ? ceilings.input : { ...EMPTY_CEILING_INPUT }
   const base = buildCeilingEstimateLines(input)
@@ -940,9 +950,10 @@ export function restoreCeilingEstimateState(
  * То же для плитки, включая zoned clones.
  * Толерантно к снимкам без секции `tile` — тогда пустой ввод и чистый build.
  */
-export function restoreTileEstimateState(
-  snapshot: EstimateCalculatorSnapshot | null,
-): { input: TileEstimateInput; lines: EstimateLine[] } {
+export function restoreTileEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+  input: TileEstimateInput
+  lines: EstimateLine[]
+} {
   const tile = snapshot?.tile
   const input = tile ? tile.input : { ...EMPTY_TILE_INPUT }
   const base = buildTileEstimateLines(input)
@@ -956,9 +967,10 @@ export function restoreTileEstimateState(
  * То же для электрики, включая zoned clones.
  * Толерантно к снимкам без секции `electrics` — тогда пустой ввод и чистый build.
  */
-export function restoreElectricEstimateState(
-  snapshot: EstimateCalculatorSnapshot | null,
-): { input: ElectricEstimateInput; lines: EstimateLine[] } {
+export function restoreElectricEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+  input: ElectricEstimateInput
+  lines: EstimateLine[]
+} {
   const electrics = snapshot?.electrics
   const input = electrics ? electrics.input : { ...EMPTY_ELECTRIC_INPUT }
   const base = buildElectricEstimateLines(input)
@@ -972,9 +984,10 @@ export function restoreElectricEstimateState(
  * То же для сантехники, включая zoned clones.
  * Толерантно к снимкам без секции `plumbing` — тогда пустой ввод и чистый build.
  */
-export function restorePlumbingEstimateState(
-  snapshot: EstimateCalculatorSnapshot | null,
-): { input: PlumbingEstimateInput; lines: EstimateLine[] } {
+export function restorePlumbingEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+  input: PlumbingEstimateInput
+  lines: EstimateLine[]
+} {
   const plumbing = snapshot?.plumbing
   const input = plumbing ? plumbing.input : { ...EMPTY_PLUMBING_INPUT }
   const base = buildPlumbingEstimateLines(input)
@@ -1045,13 +1058,14 @@ export function readEstimateCalculatorSnapshot(): EstimateCalculatorSnapshot | n
   }
 }
 
-/** Пишет снимок в localStorage; ошибки квоты / private mode молча игнорирует. */
-export function writeEstimateCalculatorSnapshot(snapshot: EstimateCalculatorSnapshot): void {
-  if (typeof window === 'undefined') return
+/** Возвращает false при ошибке хранилища, чтобы UI предложил сохранить копию. */
+export function writeEstimateCalculatorSnapshot(snapshot: EstimateCalculatorSnapshot): boolean {
+  if (typeof window === 'undefined') return false
   try {
     window.localStorage.setItem(ESTIMATE_CALCULATOR_STORAGE_KEY, JSON.stringify(snapshot))
+    return true
   } catch {
-    // Квота / private mode — игнорируем.
+    return false
   }
 }
 
