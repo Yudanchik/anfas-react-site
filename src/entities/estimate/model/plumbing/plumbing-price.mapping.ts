@@ -11,7 +11,8 @@ export const PLUMBING_SECTION_TITLE = 'Сантехника (labour)'
  * Whitelist labour-работ по сантехнике для внутреннего калькулятора.
  * Primary: PDF `anfas-price-list.pdf`. Frontend — сверка при `source=both`.
  * Вне scope: материалы (трубы, приборы как товар), отопление (радиаторы/котлы/конвекторы),
- * штробы дм³, заполнение штроб, выезд 15k, звукоизоляция стояка, электро-полотенцесушитель.
+ * штробы дм³, заполнение штроб, выезд 15k, звукоизоляция стояка, электро-полотенцесушитель,
+ * конструкции ТЕСЕ (отложено), мебель санузла.
  */
 
 type Kind = PlumbingWorkKind
@@ -304,7 +305,10 @@ export const PLUMBING_PRICE_MAPPING: readonly PlumbingPriceMappingItem[] = [
     'plumbingWasherConnectionsCount',
     'santehmontazh',
   ),
-  pdf('finish-towel-water', 'Установка водяного полотенцесушителя', 'шт.', 7500, 'finish', 'plumbingTowelWarmersCount'),
+  pdf('finish-towel-water', 'Монтаж водяного полотенцесушителя', 'шт.', 7500, 'finish', 'plumbingTowelWarmersCount'),
+  pdf('towel-outlets-mount', 'Монтаж выводов под водяной полотенцесушитель', 'комплекс', 5500, 'connections', 'manual'),
+  pdf('towel-bypass-mount', 'Монтаж байпаса полотенцесушителя', 'шт.', 4500, 'connections', 'manual'),
+  pdf('towel-node-pressure-test', 'Опрессовка узла полотенцесушителя', 'комплекс', 2500, 'check', 'manual'),
   pdf('finish-dishwasher', 'Подключение посудомоечной машины к готовым выводам', 'шт.', 4500, 'finish', 'plumbingDishwasherConnectionsCount'),
   pdf('finish-towel-reflectors', 'Установка декоративных отражателей на выводы полотенцесушителя', 'комплекс', 1200, 'finish', 'manual'),
   pdf('finish-heater-flow', 'Установка проточного водонагревателя к готовым выводам', 'шт.', 4500, 'finish', 'plumbingWaterHeatersCount'),

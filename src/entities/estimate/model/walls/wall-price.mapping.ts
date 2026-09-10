@@ -509,6 +509,16 @@ export const WALL_PRICE_MAPPING: readonly WallPriceMappingItem[] = [
     defaultEnabled: false,
     defaultQuantityFrom: 'slopesLength',
   },
+  {
+    id: 'putty-boxes-niches',
+    title: 'Шпаклевание коробов и ниш под покраску',
+    unit: 'м. пог.',
+    unitPrice: 700,
+    source: 'pdf',
+    kind: 'putty',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'manual',
+  },
 
   // —— Армирование / холст ——
   {
@@ -660,6 +670,38 @@ export const WALL_PRICE_MAPPING: readonly WallPriceMappingItem[] = [
     kind: 'finish-paint',
     defaultEnabled: false,
     defaultQuantityFrom: 'puttyArea',
+  },
+  {
+    id: 'paint-boxes-niches-2',
+    title: 'Покраска коробов и ниш в 2 слоя',
+    unit: 'м. пог.',
+    unitPrice: 420,
+    source: 'pdf',
+    kind: 'finish-paint',
+    note: 'Labour only; краска как материал не считаем',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'manual',
+  },
+  {
+    id: 'paint-slopes-roller-2',
+    title: 'Покраска откосов валиком в 2 слоя',
+    unit: 'м. пог.',
+    unitPrice: 550,
+    source: 'pdf',
+    kind: 'finish-paint',
+    note: 'Labour only; краска как материал не считаем',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'slopesLength',
+  },
+  {
+    id: 'paint-color-junction-line',
+    title: 'Формирование линии примыкания разных цветов краски',
+    unit: 'м. пог.',
+    unitPrice: 700,
+    source: 'pdf',
+    kind: 'finish-paint',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'manual',
   },
 
   // —— Finish labour: обои ——

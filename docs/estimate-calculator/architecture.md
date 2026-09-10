@@ -47,10 +47,11 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 
 ### Цены: PDF SoT и audit extract
 
-- PDF `anfas-price-list.pdf` — **source of truth** для всех mapping (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*` / `PLUMBING_*`).
+- PDF `resources/source-documents/anfas-price-2026.pdf` — **source of truth** для mapping (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*` / `PLUMBING_*`).
 - Frontend `prices.data.ts` — только сверка для `source: both` (цена + единица должны совпасть с PDF).
 - При извлечении текста из PDF использовать `pdftotext -enc UTF-8 -table` (не `-layout`: колонки цены/единицы съезжают; без `-enc UTF-8` кириллица ломается на pdftotext 4.00).
 - Пример артефакта `-layout`: «Демонтаж плитки стеновой» → ложные 1300; в `-table` / PDF = **900**.
+- Stage P1 (2026-09): расширены labour whitelist Плитка/Полы/Стены/Сантехника; редкое — через price-add; сценарии default не раздувались. План: [roadmap-price-coverage-and-profiles.md](./roadmap-price-coverage-and-profiles.md).
 
 ### Плитка: пересечения и SoT
 
@@ -58,6 +59,8 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 - `source: both` только при совпадении цены и единицы с frontend preview **и** PDF.
 - Демонтаж стеновой плитки: PDF/FE/Walls/Tile = **900** ₽/м² (`source: both`).
 - Гидроизоляция **не** в Tile mapping; канон — Floors.
+- Герметизация плитка↔ванна — канон **Плитка** (`seal-bath`); `plumbing.finish-bath-seal` не усиливать в сценариях.
+- Labour монтажа металлопрофиля и labour подгонки/облицовки люка — в Tile (price-add); экраны/комплексные люки с изделием — вне scope.
 - Floors/Walls tile-related keys **не удаляем**; Tile имеет собственные `priceKey`.
 - Soft-filter сценариев по `EstimateZone.zoneType` (helper `partitionScenariosByZoneType`) — Tile, Electrics и Plumbing.
 
@@ -65,7 +68,8 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 
 - `ELECTRIC_PRICE_MAPPING` — **широкий** labour-only whitelist PDF (редкие позиции доступны через price-add).
 - Default-сценарии — **компактные** (типовой набор; не весь mapping).
-- Не включать материалы, TV+кронштейн, unclear Wi‑Fi/домофон, водяной ТП, заделку штроб, выезд 15k в default.
+- Не включать материалы, TV+кронштейн, unclear Wi‑Fi/домофон, водяной ТП, заделку штроб, выезд 15k, Neptun в default.
+- Лотки: одна укрупнённая строка (`conduit-tray-mount`), без семейства по ширинам.
 - Zone fields: counters (sockets/switches/lights/data/boxes/…) + strobe/cable м.п. + panel modules + warm floor area + appliance connections.
 - Soft `zoneType` filter: kitchen / bathroom / room-rewire; остальные сценарии — `all`.
 - Водяной ТП — **не** в электрике; канон в Сантехнике. Электрический ТП остаётся здесь.
@@ -74,8 +78,8 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 
 - `PLUMBING_PRICE_MAPPING` — **широкий** labour-only whitelist PDF (редкие позиции через price-add).
 - Default-сценарии — **компактные**.
-- Out MVP: отопление (радиаторы/котлы/конвекторы), штробы дм³, заделка штроб, выезд 15k, материалы/изделия, электрический ПС / эл. ТП.
-- In: водяной ТП; монтаж коллектора/фильтра/счётчика/инсталляции как **работа**.
+- Out MVP: отопление (радиаторы/котлы/конвекторы), штробы дм³, заделка штроб, выезд 15k, материалы/изделия, электрический ПС / эл. ТП, ТЕСЕ-конструкции.
+- In: водяной ТП; монтаж коллектора/фильтра/счётчика/инсталляции как **работа**; водяной полотенцесушитель + выводы/байпас/опрессовка (price-add / счётчик ПС).
 - Zone fields: раздельные counters приборов (не один `fixtureCount`) + pipe lengths + warm floor area.
 - Soft `zoneType` filter: bathroom / kitchen scenarios; остальные — `all`.
 
