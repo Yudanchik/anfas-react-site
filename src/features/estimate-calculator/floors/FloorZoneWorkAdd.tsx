@@ -6,6 +6,7 @@ import {
   FLOOR_ZONE_WORK_CATEGORIES,
   getFloorZoneMappingOptions,
   type EstimateZone,
+  type FloorPriceMappingItem,
   type FloorZoneWorkCategoryId,
 } from '@/entities/estimate'
 
@@ -24,6 +25,7 @@ type FloorZoneWorkAddProps = {
   /** Без своей рамки/заголовка — внутри панели «Строки сметы». */
   embedded?: boolean
   feedbackEpoch?: number
+  mapping?: readonly FloorPriceMappingItem[]
   onAdd: (params: {
     priceKey: string
     quantity: number
@@ -38,10 +40,14 @@ export function FloorZoneWorkAdd({
   onZonesChange,
   embedded = false,
   feedbackEpoch,
+  mapping,
   onAdd,
 }: FloorZoneWorkAddProps) {
   const [categoryId, setCategoryId] = useState<FloorZoneWorkCategoryId>('demolition')
-  const options = useMemo(() => getFloorZoneMappingOptions(categoryId), [categoryId])
+  const options = useMemo(
+    () => getFloorZoneMappingOptions(categoryId, mapping),
+    [categoryId, mapping],
+  )
   const [priceKey, setPriceKey] = useState(() => options[0]?.id ?? '')
   const [zoneSelect, setZoneSelect] = useState(GENERAL_ZONE)
   const [customZoneName, setCustomZoneName] = useState('')
@@ -98,7 +104,7 @@ export function FloorZoneWorkAdd({
 
   function handleCategoryChange(next: FloorZoneWorkCategoryId) {
     setCategoryId(next)
-    const nextOptions = getFloorZoneMappingOptions(next)
+    const nextOptions = getFloorZoneMappingOptions(next, mapping)
     setPriceKey(nextOptions[0]?.id ?? '')
   }
 
@@ -260,12 +266,7 @@ export function FloorZoneWorkAdd({
       </div>
 
       {status ? (
-        <p
-          className={styles.status}
-          data-kind={status.kind}
-          role="status"
-          aria-live="polite"
-        >
+        <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
           {status.message}
         </p>
       ) : null}

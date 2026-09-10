@@ -5,6 +5,7 @@ import {
   ESTIMATE_GENERAL_WORKS_TITLE,
   getCeilingZoneMappingOptions,
   CEILING_ZONE_WORK_CATEGORIES,
+  type CeilingPriceMappingItem,
   type CeilingZoneWorkCategoryId,
   type EstimateZone,
 } from '@/entities/estimate'
@@ -24,6 +25,7 @@ type CeilingZoneWorkAddProps = {
   /** Без своей рамки/заголовка — внутри панели «Строки сметы». */
   embedded?: boolean
   feedbackEpoch?: number
+  mapping?: readonly CeilingPriceMappingItem[]
   onAdd: (params: {
     priceKey: string
     quantity: number
@@ -38,10 +40,14 @@ export function CeilingZoneWorkAdd({
   onZonesChange,
   embedded = false,
   feedbackEpoch,
+  mapping,
   onAdd,
 }: CeilingZoneWorkAddProps) {
   const [categoryId, setCategoryId] = useState<CeilingZoneWorkCategoryId>('demolition')
-  const options = useMemo(() => getCeilingZoneMappingOptions(categoryId), [categoryId])
+  const options = useMemo(
+    () => getCeilingZoneMappingOptions(categoryId, mapping),
+    [categoryId, mapping],
+  )
   const [priceKey, setPriceKey] = useState(() => options[0]?.id ?? '')
   const [zoneSelect, setZoneSelect] = useState(GENERAL_ZONE)
   const [customZoneName, setCustomZoneName] = useState('')
@@ -98,7 +104,7 @@ export function CeilingZoneWorkAdd({
 
   function handleCategoryChange(next: CeilingZoneWorkCategoryId) {
     setCategoryId(next)
-    const nextOptions = getCeilingZoneMappingOptions(next)
+    const nextOptions = getCeilingZoneMappingOptions(next, mapping)
     setPriceKey(nextOptions[0]?.id ?? '')
   }
 

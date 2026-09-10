@@ -28,18 +28,18 @@ src/entities/estimate/model/
 
 Автоматические тесты калькулятора удалены по решению владельца. CI: `pnpm check` + `pnpm build`. Локальная проверка входа: `pnpm build` → `pnpm preview:estimate` (нужен PHP). См. [internal-access.md](./internal-access.md).
 
-| Слой | Назначение |
-|------|------------|
-| **mapping** | Whitelist работ и цен раздела (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*` / `PLUMBING_*`). Не смешивать ключи между разделами. |
-| **builders** | Собирают строки из mapping + inputs (по умолчанию выключены). |
-| **EstimateZone** | Сущность зоны объекта (`zone-N`) с площадями floors/walls/ceilings/tile и счётчиками electrics/plumbing. |
-| **zoneId / zoneName** | На `EstimateLine`: `zoneId` — ссылка на зону; `zoneName` — snapshot для UI. Без `zoneId` у canonical = общие работы. |
-| **presets / scenarios** | Object-level: canonical rows. Zone-level (`*ToZone`): upsert clones по `(zoneId, priceKey)`. |
-| **conflict groups** | Scope: `zoneId: null` (только canonical) или конкретный `zoneId` (только clones зоны). Manual не трогают. |
-| **price-work add** | «Общие работы» → `enableCanonicalEstimateLine`. Зона → `createZoned*`. Свободная зона → создаёт `EstimateZone`, затем clone. |
-| **removable lines** | `removeRemovableEstimateLine`: manual + zoned clones; canonical не удаляет. |
-| **groups** | Аккордеон «Строки сметы»; по умолчанию свёрнуты. |
-| **selected / summary** | `getSelectedEstimateSections` + `attachZonesToSelectedSections` → section → zone → lines. |
+| Слой                    | Назначение                                                                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **mapping**             | Whitelist работ и цен раздела (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*` / `PLUMBING_*`). Не смешивать ключи между разделами. |
+| **builders**            | Собирают строки из mapping + inputs (по умолчанию выключены).                                                                                    |
+| **EstimateZone**        | Сущность зоны объекта (`zone-N`) с площадями floors/walls/ceilings/tile и счётчиками electrics/plumbing.                                         |
+| **zoneId / zoneName**   | На `EstimateLine`: `zoneId` — ссылка на зону; `zoneName` — snapshot для UI. Без `zoneId` у canonical = общие работы.                             |
+| **presets / scenarios** | Object-level: canonical rows. Zone-level (`*ToZone`): upsert clones по `(zoneId, priceKey)`.                                                     |
+| **conflict groups**     | Scope: `zoneId: null` (только canonical) или конкретный `zoneId` (только clones зоны). Manual не трогают.                                        |
+| **price-work add**      | «Общие работы» → `enableCanonicalEstimateLine`. Зона → `createZoned*`. Свободная зона → создаёт `EstimateZone`, затем clone.                     |
+| **removable lines**     | `removeRemovableEstimateLine`: manual + zoned clones; canonical не удаляет.                                                                      |
+| **groups**              | Аккордеон «Строки сметы»; по умолчанию свёрнуты.                                                                                                 |
+| **selected / summary**  | `getSelectedEstimateSections` + `attachZonesToSelectedSections` → section → zone → lines.                                                        |
 
 Формула строки (domain): `Math.round(quantity × unitPrice × coefficient)`; выключенная / пустая / отрицательная qty → 0.
 
@@ -102,12 +102,12 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 
 Поток экрана: **Intro + Разделы** → **Tabs** → **Зоны и замеры** → **Сценарии** → **Быстрые действия** → **Строки сметы** (add по клику) → **Итоговая смета**.
 
-| UI-деталь | Где |
-|-----------|-----|
-| **EstimateSelect** | Кастомный select (сценарии, прайс-работы); keyboard arrows + Escape |
-| **search/filter** | `filterEstimateGroupsByQuery` — только visibility; totals/enabled не меняет |
-| **Confirm dialog** | Удаление зоны |
-| **Summary tree** | Section accordion → nested zone/common accordion (indent + border) |
+| UI-деталь          | Где                                                                         |
+| ------------------ | --------------------------------------------------------------------------- |
+| **EstimateSelect** | Кастомный select (сценарии, прайс-работы); keyboard arrows + Escape         |
+| **search/filter**  | `filterEstimateGroupsByQuery` — только visibility; totals/enabled не меняет |
+| **Confirm dialog** | Удаление зоны                                                               |
+| **Summary tree**   | Section accordion → nested zone/common accordion (indent + border)          |
 
 ## Persistence
 
@@ -120,12 +120,12 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 - Сохраняется: вкладка, зоны, inputs floors/walls/ceilings/tile/electrics/plumbing, патчи строк, manual/zoned extras, draft пресетов/сценариев.
 - **Не** сохраняется: открытые группы аккордеона, search query, раскрытие итоговой сметы.
 
-| Действие | Зоны | Floors | Walls | Ceilings | Tile | Electrics | Plumbing |
-|----------|------|--------|-------|----------|------|-----------|----------|
-| Сбросить всю смету | очистить | очистить | очистить | очистить | очистить | очистить | очистить |
-| Сбросить раздел | оставить | только floors | только walls | только ceilings | только tile | только electrics | только plumbing |
-| Удалить зону Z | удалить Z | удалить clones с `zoneId=Z` | то же | то же | то же | то же | то же |
-| Rename зоны | обновить name | sync `zoneName` на clones | то же | то же | то же | то же | то же |
+| Действие           | Зоны          | Floors                      | Walls        | Ceilings        | Tile        | Electrics        | Plumbing        |
+| ------------------ | ------------- | --------------------------- | ------------ | --------------- | ----------- | ---------------- | --------------- |
+| Сбросить всю смету | очистить      | очистить                    | очистить     | очистить        | очистить    | очистить         | очистить        |
+| Сбросить раздел    | оставить      | только floors               | только walls | только ceilings | только tile | только electrics | только plumbing |
+| Удалить зону Z     | удалить Z     | удалить clones с `zoneId=Z` | то же        | то же           | то же       | то же            | то же           |
+| Rename зоны        | обновить name | sync `zoneName` на clones   | то же        | то же           | то же       | то же            | то же           |
 
 ## PDF / export
 
@@ -133,7 +133,20 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 
 Данные документа сохраняются отдельно (`anfas:estimate-document:v1`), существующая схема snapshot v2 не менялась. Резервная копия JSON объединяет details и snapshot, при импорте проходит существующий tolerant parser. CSV защищает текстовые ячейки от выполнения формул в Excel.
 
-Пользовательская инструкция: [работа с заказчиком](./customer-workflow.md). Ограничения: нет серверного архива, электронной подписи и XLSX; CSV доступен для Excel.
+Пользовательская инструкция: [работа с заказчиком](./customer-workflow.md). Ограничения: нет серверного архива, электронной подписи и синхронизации между устройствами; CSV доступен для Excel как выгрузка сметы.
+
+### Пользовательский прайс XLSX
+
+`features/estimate-calculator/model/estimate-price-profile-xlsx.ts` создаёт XLSX-шаблон и читает пользовательский XLSX client-side. PDF/CSV как импорт прайса не поддерживаются. Активный профиль хранится отдельно от snapshot сметы в `anfas:estimate-price-profile:v1`; на сервер файл не отправляется. Snapshot хранит `priceProfileRef` (id/name/source/contentHash) для диагностики расхождений, но суммы документа — в строках сметы.
+
+Контракт:
+
+- новые строки / price-add / новые clones сценария берут title/price из `buildActiveEstimateMappings`;
+- restore/JSON не перезаписывают сохранённые title/unitPrice; ручные правки помечаются `priceEdited`;
+- смена профиля по умолчанию — `new-only`; явный `recalculate` через `recalculateSectionLinesFromMapping` (с опцией overwriteCustom);
+- выключенная в прайсе работа (`profileActive: false`) недоступна в каталоге и блокирует сценарий до изменения выбора.
+
+Сценарии и price-add продолжают работать по стабильным `sectionId + priceKey`. Русское название не используется как ключ. Ручные строки (`source: manual`) профилем не синхронизируются.
 
 ## Доступ администратора
 

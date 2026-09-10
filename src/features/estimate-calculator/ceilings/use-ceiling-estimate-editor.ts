@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import {
+  applyActivePriceToCanonicalLine,
   applyCeilingDemolitionArea,
   applyCeilingFinishArea,
   applyCeilingPlasterArea,
@@ -10,12 +11,19 @@ import {
   applyCeilingTotalAreaToSquareMeterWorks,
   buildCeilingEstimateLines,
   calculateSectionTotal,
+  CEILING_PRICE_MAPPING,
+  CEILING_SECTION_ID,
   countEnabledLines,
   createManualCeilingEstimateLine,
-  createZonedCeilingEstimateLine,
+  createZonedLineFromMapping,
   enableCanonicalEstimateLine,
+  formatUnavailableScenarioMessage,
+  getUnavailableMappingKeys,
   removeRemovableEstimateLine,
+  resolveCeilingScenarioKeys,
+  syncNewLinesFromMapping,
   updateEstimateLine,
+  type CeilingPriceMappingItem,
   type CeilingEstimateInput,
   type CeilingScenarioApplication,
   type EstimateLine,
@@ -42,13 +50,15 @@ const EMPTY_INPUT: CeilingEstimateInput = {
 export type CeilingEstimateEditorInitial = {
   input?: CeilingEstimateInput
   lines?: EstimateLine[]
+  mapping?: readonly CeilingPriceMappingItem[]
 }
 
 export function useCeilingEstimateEditor(initial: CeilingEstimateEditorInitial = {}) {
   const initialInput = initial.input ?? EMPTY_INPUT
+  const mapping = initial.mapping ?? CEILING_PRICE_MAPPING
   const [input, setInput] = useState<CeilingEstimateInput>(initialInput)
   const [lines, setLines] = useState<EstimateLine[]>(
-    () => initial.lines ?? buildCeilingEstimateLines(initialInput),
+    () => initial.lines ?? buildCeilingEstimateLines(initialInput, { mapping }),
   )
 
   const selectedCount = useMemo(() => countEnabledLines(lines), [lines])
@@ -61,7 +71,10 @@ export function useCeilingEstimateEditor(initial: CeilingEstimateEditorInitial =
   function patchLine(
     lineId: string,
     patch: Partial<
-      Pick<EstimateLine, 'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'>
+      Pick<
+        EstimateLine,
+        'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'
+      >
     >,
   ) {
     setLines((prev) => updateEstimateLine(prev, lineId, patch))
@@ -106,8 +119,18 @@ export function useCeilingEstimateEditor(initial: CeilingEstimateEditorInitial =
   function applyScenario(
     application: CeilingScenarioApplication,
     target?: { zone?: EstimateZone },
-  ): { label: string; addedCount: number; zoneName?: string } {
+  ): { label: string; addedCount: number; zoneName?: string; error?: string } {
     const zone = target?.zone
+    const keys = resolveCeilingScenarioKeys(application)
+    const unavailable = getUnavailableMappingKeys(keys, mapping)
+    if (unavailable.length > 0) {
+      return {
+        label: '',
+        addedCount: 0,
+        error: formatUnavailableScenarioMessage(unavailable),
+      }
+    }
+
     let result = zone
       ? applyCeilingScenarioToZone(lines, zone, application)
       : applyCeilingScenario(lines, input, application)
@@ -115,7 +138,7 @@ export function useCeilingEstimateEditor(initial: CeilingEstimateEditorInitial =
       result = zone
         ? applyCeilingScenarioToZone(prev, zone, application)
         : applyCeilingScenario(prev, input, application)
-      return result.lines
+      return syncNewLinesFromMapping(prev, result.lines, CEILING_SECTION_ID, mapping)
     })
     return {
       label: result.scenarioLabel,
@@ -149,11 +172,16 @@ export function useCeilingEstimateEditor(initial: CeilingEstimateEditorInitial =
       setLines((prev) => {
         const result = enableCanonicalEstimateLine(prev, params)
         ok = result.ok
-        return result.lines
+        if (!ok) return prev
+        return result.lines.map((line) =>
+          line.priceKey === params.priceKey && !line.zoneId
+            ? applyActivePriceToCanonicalLine(line, mapping)
+            : line,
+        )
       })
       return ok
     }
-    const line = createZonedCeilingEstimateLine(params)
+    const line = createZonedLineFromMapping(CEILING_SECTION_ID, mapping, params)
     if (!line) return false
     setLines((prev) => [...prev, line])
     return true
@@ -173,7 +201,7 @@ export function useCeilingEstimateEditor(initial: CeilingEstimateEditorInitial =
 
   function resetEstimate() {
     setInput(EMPTY_INPUT)
-    setLines(buildCeilingEstimateLines(EMPTY_INPUT))
+    setLines(buildCeilingEstimateLines(EMPTY_INPUT, { mapping }))
   }
 
   function replaceEstimate(next: { input: CeilingEstimateInput; lines: EstimateLine[] }) {

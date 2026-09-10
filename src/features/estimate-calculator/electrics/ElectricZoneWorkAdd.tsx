@@ -5,6 +5,7 @@ import {
   ELECTRIC_ZONE_WORK_CATEGORIES,
   ESTIMATE_GENERAL_WORKS_TITLE,
   getElectricZoneMappingOptions,
+  type ElectricPriceMappingItem,
   type ElectricZoneWorkCategoryId,
   type EstimateZone,
 } from '@/entities/estimate'
@@ -23,6 +24,7 @@ type ElectricZoneWorkAddProps = {
   onZonesChange?: (zones: EstimateZone[]) => void
   embedded?: boolean
   feedbackEpoch?: number
+  mapping?: readonly ElectricPriceMappingItem[]
   onAdd: (params: {
     priceKey: string
     quantity: number
@@ -37,10 +39,14 @@ export function ElectricZoneWorkAdd({
   onZonesChange,
   embedded = false,
   feedbackEpoch,
+  mapping,
   onAdd,
 }: ElectricZoneWorkAddProps) {
   const [categoryId, setCategoryId] = useState<ElectricZoneWorkCategoryId>('finish-outlet')
-  const options = useMemo(() => getElectricZoneMappingOptions(categoryId), [categoryId])
+  const options = useMemo(
+    () => getElectricZoneMappingOptions(categoryId, mapping),
+    [categoryId, mapping],
+  )
   const [priceKey, setPriceKey] = useState(() => options[0]?.id ?? '')
   const [zoneSelect, setZoneSelect] = useState(GENERAL_ZONE)
   const [customZoneName, setCustomZoneName] = useState('')
@@ -97,7 +103,7 @@ export function ElectricZoneWorkAdd({
 
   function handleCategoryChange(next: ElectricZoneWorkCategoryId) {
     setCategoryId(next)
-    const nextOptions = getElectricZoneMappingOptions(next)
+    const nextOptions = getElectricZoneMappingOptions(next, mapping)
     setPriceKey(nextOptions[0]?.id ?? '')
   }
 

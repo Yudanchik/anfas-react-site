@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import {
+  applyActivePriceToCanonicalLine,
   applyPlumbingScenario,
   applyPlumbingScenarioToZone,
   applyPlumbingSewerPipeLength,
@@ -12,13 +13,21 @@ import {
   calculateSectionTotal,
   countEnabledLines,
   createManualPlumbingEstimateLine,
-  createZonedPlumbingEstimateLine,
+  createZonedLineFromMapping,
   enableCanonicalEstimateLine,
+  formatUnavailableScenarioMessage,
+  getUnavailableMappingKeys,
+  plumbingInputFromZone,
+  PLUMBING_PRICE_MAPPING,
+  PLUMBING_SECTION_ID,
   removeRemovableEstimateLine,
+  resolveMeasuredPlumbingScenarioKeys,
+  syncNewLinesFromMapping,
   updateEstimateLine,
   type EstimateLine,
   type EstimateZone,
   type PlumbingEstimateInput,
+  type PlumbingPriceMappingItem,
   type PlumbingScenarioApplication,
 } from '@/entities/estimate'
 
@@ -54,13 +63,15 @@ const EMPTY_INPUT: PlumbingEstimateInput = {
 export type PlumbingEstimateEditorInitial = {
   input?: PlumbingEstimateInput
   lines?: EstimateLine[]
+  mapping?: readonly PlumbingPriceMappingItem[]
 }
 
 export function usePlumbingEstimateEditor(initial: PlumbingEstimateEditorInitial = {}) {
   const initialInput = initial.input ?? EMPTY_INPUT
+  const mapping = initial.mapping ?? PLUMBING_PRICE_MAPPING
   const [input, setInput] = useState<PlumbingEstimateInput>(initialInput)
   const [lines, setLines] = useState<EstimateLine[]>(
-    () => initial.lines ?? buildPlumbingEstimateLines(initialInput),
+    () => initial.lines ?? buildPlumbingEstimateLines(initialInput, { mapping }),
   )
 
   const selectedCount = useMemo(() => countEnabledLines(lines), [lines])
@@ -73,7 +84,10 @@ export function usePlumbingEstimateEditor(initial: PlumbingEstimateEditorInitial
   function patchLine(
     lineId: string,
     patch: Partial<
-      Pick<EstimateLine, 'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'>
+      Pick<
+        EstimateLine,
+        'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'
+      >
     >,
   ) {
     setLines((prev) => updateEstimateLine(prev, lineId, patch))
@@ -118,8 +132,19 @@ export function usePlumbingEstimateEditor(initial: PlumbingEstimateEditorInitial
   function applyScenario(
     application: PlumbingScenarioApplication,
     target?: { zone?: EstimateZone },
-  ): { label: string; addedCount: number; zoneName?: string } {
+  ): { label: string; addedCount: number; zoneName?: string; error?: string } {
     const zone = target?.zone
+    const scenarioInput = zone ? plumbingInputFromZone(zone) : input
+    const keys = resolveMeasuredPlumbingScenarioKeys(application, scenarioInput)
+    const unavailable = getUnavailableMappingKeys(keys, mapping)
+    if (unavailable.length > 0) {
+      return {
+        label: '',
+        addedCount: 0,
+        error: formatUnavailableScenarioMessage(unavailable),
+      }
+    }
+
     let result = zone
       ? applyPlumbingScenarioToZone(lines, zone, application)
       : applyPlumbingScenario(lines, input, application)
@@ -127,7 +152,7 @@ export function usePlumbingEstimateEditor(initial: PlumbingEstimateEditorInitial
       result = zone
         ? applyPlumbingScenarioToZone(prev, zone, application)
         : applyPlumbingScenario(prev, input, application)
-      return result.lines
+      return syncNewLinesFromMapping(prev, result.lines, PLUMBING_SECTION_ID, mapping)
     })
     return {
       label: result.scenarioLabel,
@@ -161,11 +186,16 @@ export function usePlumbingEstimateEditor(initial: PlumbingEstimateEditorInitial
       setLines((prev) => {
         const result = enableCanonicalEstimateLine(prev, params)
         ok = result.ok
-        return result.lines
+        if (!ok) return prev
+        return result.lines.map((line) =>
+          line.priceKey === params.priceKey && !line.zoneId
+            ? applyActivePriceToCanonicalLine(line, mapping)
+            : line,
+        )
       })
       return ok
     }
-    const line = createZonedPlumbingEstimateLine(params)
+    const line = createZonedLineFromMapping(PLUMBING_SECTION_ID, mapping, params)
     if (!line) return false
     setLines((prev) => [...prev, line])
     return true
@@ -185,7 +215,7 @@ export function usePlumbingEstimateEditor(initial: PlumbingEstimateEditorInitial
 
   function resetEstimate() {
     setInput(EMPTY_INPUT)
-    setLines(buildPlumbingEstimateLines(EMPTY_INPUT))
+    setLines(buildPlumbingEstimateLines(EMPTY_INPUT, { mapping }))
   }
 
   function replaceEstimate(next: { input: PlumbingEstimateInput; lines: EstimateLine[] }) {

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import {
+  applyActivePriceToCanonicalLine,
   applyTileCladArea,
   applyTileCuttingLength,
   applyTileFloorArea,
@@ -12,14 +13,21 @@ import {
   calculateSectionTotal,
   countEnabledLines,
   createManualTileEstimateLine,
-  createZonedTileEstimateLine,
+  createZonedLineFromMapping,
   enableCanonicalEstimateLine,
+  formatUnavailableScenarioMessage,
+  getUnavailableMappingKeys,
   removeRemovableEstimateLine,
   resolveTileCladArea,
+  resolveTileScenarioKeys,
+  syncNewLinesFromMapping,
+  TILE_PRICE_MAPPING,
+  TILE_SECTION_ID,
   updateEstimateLine,
   type EstimateLine,
   type EstimateZone,
   type TileEstimateInput,
+  type TilePriceMappingItem,
   type TileScenarioApplication,
 } from '@/entities/estimate'
 
@@ -45,13 +53,15 @@ const EMPTY_INPUT: TileEstimateInput = {
 export type TileEstimateEditorInitial = {
   input?: TileEstimateInput
   lines?: EstimateLine[]
+  mapping?: readonly TilePriceMappingItem[]
 }
 
 export function useTileEstimateEditor(initial: TileEstimateEditorInitial = {}) {
   const initialInput = initial.input ?? EMPTY_INPUT
+  const mapping = initial.mapping ?? TILE_PRICE_MAPPING
   const [input, setInput] = useState<TileEstimateInput>(initialInput)
   const [lines, setLines] = useState<EstimateLine[]>(
-    () => initial.lines ?? buildTileEstimateLines(initialInput),
+    () => initial.lines ?? buildTileEstimateLines(initialInput, { mapping }),
   )
 
   const selectedCount = useMemo(() => countEnabledLines(lines), [lines])
@@ -64,7 +74,10 @@ export function useTileEstimateEditor(initial: TileEstimateEditorInitial = {}) {
   function patchLine(
     lineId: string,
     patch: Partial<
-      Pick<EstimateLine, 'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'>
+      Pick<
+        EstimateLine,
+        'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'
+      >
     >,
   ) {
     setLines((prev) => updateEstimateLine(prev, lineId, patch))
@@ -110,8 +123,18 @@ export function useTileEstimateEditor(initial: TileEstimateEditorInitial = {}) {
   function applyScenario(
     application: TileScenarioApplication,
     target?: { zone?: EstimateZone },
-  ): { label: string; addedCount: number; zoneName?: string } {
+  ): { label: string; addedCount: number; zoneName?: string; error?: string } {
     const zone = target?.zone
+    const keys = resolveTileScenarioKeys(application)
+    const unavailable = getUnavailableMappingKeys(keys, mapping)
+    if (unavailable.length > 0) {
+      return {
+        label: '',
+        addedCount: 0,
+        error: formatUnavailableScenarioMessage(unavailable),
+      }
+    }
+
     let result = zone
       ? applyTileScenarioToZone(lines, zone, application)
       : applyTileScenario(lines, input, application)
@@ -119,7 +142,7 @@ export function useTileEstimateEditor(initial: TileEstimateEditorInitial = {}) {
       result = zone
         ? applyTileScenarioToZone(prev, zone, application)
         : applyTileScenario(prev, input, application)
-      return result.lines
+      return syncNewLinesFromMapping(prev, result.lines, TILE_SECTION_ID, mapping)
     })
     return {
       label: result.scenarioLabel,
@@ -153,11 +176,16 @@ export function useTileEstimateEditor(initial: TileEstimateEditorInitial = {}) {
       setLines((prev) => {
         const result = enableCanonicalEstimateLine(prev, params)
         ok = result.ok
-        return result.lines
+        if (!ok) return prev
+        return result.lines.map((line) =>
+          line.priceKey === params.priceKey && !line.zoneId
+            ? applyActivePriceToCanonicalLine(line, mapping)
+            : line,
+        )
       })
       return ok
     }
-    const line = createZonedTileEstimateLine(params)
+    const line = createZonedLineFromMapping(TILE_SECTION_ID, mapping, params)
     if (!line) return false
     setLines((prev) => [...prev, line])
     return true
@@ -177,7 +205,7 @@ export function useTileEstimateEditor(initial: TileEstimateEditorInitial = {}) {
 
   function resetEstimate() {
     setInput(EMPTY_INPUT)
-    setLines(buildTileEstimateLines(EMPTY_INPUT))
+    setLines(buildTileEstimateLines(EMPTY_INPUT, { mapping }))
   }
 
   function replaceEstimate(next: { input: TileEstimateInput; lines: EstimateLine[] }) {

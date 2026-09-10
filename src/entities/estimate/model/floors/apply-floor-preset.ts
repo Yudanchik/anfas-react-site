@@ -190,6 +190,18 @@ function floorInputFromZone(zone: EstimateZone): FloorEstimateInput {
   }
 }
 
+export function resolveFloorPresetKeys(
+  application: FloorPresetApplication,
+): readonly string[] {
+  return resolvePresetPlan(application, {
+    totalFloorArea: 0,
+    demolitionArea: 0,
+    screedArea: 0,
+    wetZonesArea: 0,
+    avgDeltaMm: 0,
+  }).keys
+}
+
 function resolvePresetPlan(
   application: FloorPresetApplication,
   input: FloorEstimateInput,

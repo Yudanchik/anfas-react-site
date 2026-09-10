@@ -40,6 +40,7 @@ type ElectricEstimateScenariosProps = {
     label: string
     addedCount: number
     zoneName?: string
+    error?: string
   }
 }
 
@@ -129,6 +130,10 @@ export function ElectricEstimateScenarios({
       application,
       selectedZone ? { zone: selectedZone } : undefined,
     )
+    if (result.error) {
+      setError(result.error)
+      return
+    }
     setSuccess(
       result.zoneName
         ? formatElectricScenarioZoneFeedback(result.label, result.zoneName, result.addedCount)

@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react'
 
-import { groupTileEstimateLines, type EstimateLine, type EstimateZone } from '@/entities/estimate'
+import {
+  groupTileEstimateLines,
+  type EstimateLine,
+  type EstimateZone,
+  type TilePriceMappingItem,
+} from '@/entities/estimate'
 
 import type { TileScenarioDraftState } from '../model/estimate-calculator-persistence'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
@@ -22,6 +27,7 @@ type TileEstimatePanelProps = {
   onScenarioDraftChange: (patch: Partial<TileScenarioDraftState>) => void
   onResetSection: () => void
   globalFeedbackEpoch?: number
+  mapping?: readonly TilePriceMappingItem[]
 }
 
 export function TileEstimatePanel({
@@ -33,6 +39,7 @@ export function TileEstimatePanel({
   onScenarioDraftChange,
   onResetSection,
   globalFeedbackEpoch,
+  mapping,
 }: TileEstimatePanelProps) {
   const groups = useMemo(() => groupTileEstimateLines(editor.lines), [editor.lines])
   const [sectionFeedbackEpoch, setSectionFeedbackEpoch] = useState(0)
@@ -93,6 +100,7 @@ export function TileEstimatePanel({
               onZonesChange={onZonesChange}
               embedded
               feedbackEpoch={feedbackEpoch}
+              mapping={mapping}
               onAdd={editor.addZonedLine}
             />
           }

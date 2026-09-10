@@ -73,7 +73,7 @@ export function EstimateIntro({
 
       <dl className={styles.stats}>
         <div>
-          <dt>Позиций (полы / стены / потолки / плитка / электрика / сантехника)</dt>
+          <dt>Доступно в активном прайсе (полы / стены / потолки / плитка / электрика / сантехника)</dt>
           <dd>
             {floorsMappingCount} / {wallsMappingCount} / {ceilingsMappingCount} /{' '}
             {tileMappingCount} / {electricsMappingCount} / {plumbingMappingCount}

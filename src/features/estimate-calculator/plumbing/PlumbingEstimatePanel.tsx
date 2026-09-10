@@ -4,6 +4,7 @@ import {
   groupPlumbingEstimateLines,
   type EstimateLine,
   type EstimateZone,
+  type PlumbingPriceMappingItem,
 } from '@/entities/estimate'
 
 import type { PlumbingScenarioDraftState } from '../model/estimate-calculator-persistence'
@@ -26,6 +27,7 @@ type PlumbingEstimatePanelProps = {
   onScenarioDraftChange: (patch: Partial<PlumbingScenarioDraftState>) => void
   onResetSection: () => void
   globalFeedbackEpoch?: number
+  mapping?: readonly PlumbingPriceMappingItem[]
 }
 
 export function PlumbingEstimatePanel({
@@ -37,6 +39,7 @@ export function PlumbingEstimatePanel({
   onScenarioDraftChange,
   onResetSection,
   globalFeedbackEpoch,
+  mapping,
 }: PlumbingEstimatePanelProps) {
   const groups = useMemo(() => groupPlumbingEstimateLines(editor.lines), [editor.lines])
   const [sectionFeedbackEpoch, setSectionFeedbackEpoch] = useState(0)
@@ -97,6 +100,7 @@ export function PlumbingEstimatePanel({
               onZonesChange={onZonesChange}
               embedded
               feedbackEpoch={feedbackEpoch}
+              mapping={mapping}
               onAdd={editor.addZonedLine}
             />
           }

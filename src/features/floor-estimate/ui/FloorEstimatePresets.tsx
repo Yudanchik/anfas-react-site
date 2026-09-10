@@ -43,7 +43,7 @@ type FloorEstimatePresetsProps = {
   onApplyPreset: (
     application: FloorPresetApplication,
     target?: { zone?: EstimateZone },
-  ) => { label: string; addedCount: number; zoneName?: string }
+  ) => { label: string; addedCount: number; zoneName?: string; error?: string }
 }
 
 const DEFAULT_DRAFT: FloorPresetDraft = {
@@ -170,6 +170,10 @@ export function FloorEstimatePresets({
       application,
       effectiveZone ? { zone: effectiveZone } : undefined,
     )
+    if (result.error) {
+      setError(result.error)
+      return
+    }
     setSuccess(
       result.zoneName
         ? formatFloorPresetZoneFeedback(result.label, result.zoneName, result.addedCount)

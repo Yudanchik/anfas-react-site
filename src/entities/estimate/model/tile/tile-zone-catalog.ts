@@ -1,4 +1,5 @@
 import type { TilePriceMappingItem } from '../shared/estimate.types'
+import { isMappingItemAvailable } from '../shared/estimate-price-profile'
 import { TILE_PRICE_MAPPING } from './tile-price.mapping'
 
 /**
@@ -7,14 +8,7 @@ import { TILE_PRICE_MAPPING } from './tile-price.mapping'
  */
 
 export type TileZoneWorkCategoryId =
-  | 'demolition'
-  | 'prep'
-  | 'cladding'
-  | 'cutting'
-  | 'grout'
-  | 'seal'
-  | 'repair'
-  | 'accessory'
+  'demolition' | 'prep' | 'cladding' | 'cutting' | 'grout' | 'seal' | 'repair' | 'accessory'
 
 export type TileZoneWorkCategory = {
   id: TileZoneWorkCategoryId
@@ -37,6 +31,7 @@ export function getTileZoneMappingOptions(
   mapping: readonly TilePriceMappingItem[] = TILE_PRICE_MAPPING,
 ): readonly TilePriceMappingItem[] {
   return mapping.filter((item) => {
+    if (!isMappingItemAvailable(item)) return false
     switch (categoryId) {
       case 'demolition':
         return item.kind === 'demolition'

@@ -1,4 +1,5 @@
 import type { CeilingPriceMappingItem, CeilingWorkKind } from '../shared/estimate.types'
+import { isMappingItemAvailable } from '../shared/estimate-price-profile'
 import { CEILING_PRICE_MAPPING } from './ceiling-price.mapping'
 
 /**
@@ -6,12 +7,7 @@ import { CEILING_PRICE_MAPPING } from './ceiling-price.mapping'
  * Опции берутся из `CEILING_PRICE_MAPPING`, отдельного прайса нет.
  */
 
-export type CeilingZoneWorkCategoryId =
-  | 'demolition'
-  | 'prep'
-  | 'plaster'
-  | 'putty'
-  | 'finish-paint'
+export type CeilingZoneWorkCategoryId = 'demolition' | 'prep' | 'plaster' | 'putty' | 'finish-paint'
 
 export type CeilingZoneWorkCategory = {
   id: CeilingZoneWorkCategoryId
@@ -34,6 +30,7 @@ export function getCeilingZoneMappingOptions(
   mapping: readonly CeilingPriceMappingItem[] = CEILING_PRICE_MAPPING,
 ): readonly CeilingPriceMappingItem[] {
   return mapping.filter((item) => {
+    if (!isMappingItemAvailable(item)) return false
     switch (categoryId) {
       case 'demolition':
         return item.kind === 'demolition'

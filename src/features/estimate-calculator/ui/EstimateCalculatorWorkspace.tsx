@@ -3,29 +3,28 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   attachZonesToSelectedSections,
   buildCeilingEstimateLines,
+  buildActiveEstimateMappings,
   buildElectricEstimateLines,
   buildFloorEstimateLines,
   buildPlumbingEstimateLines,
   buildTileEstimateLines,
   buildWallEstimateLines,
   calculateEstimateTotal,
-  CEILING_PRICE_MAPPING,
   CEILING_SECTION_ID,
   CEILING_SECTION_TITLE,
-  ELECTRIC_PRICE_MAPPING,
+  countAvailableMappingItems,
   ELECTRIC_SECTION_ID,
   ELECTRIC_SECTION_TITLE,
-  FLOOR_PRICE_MAPPING,
   FLOOR_SECTION_ID,
   FLOOR_SECTION_TITLE,
   getCeilingEstimateGroupTitle,
   getElectricEstimateGroupTitle,
   getFloorEstimateGroupTitle,
   getPlumbingEstimateGroupTitle,
+  getPriceProfileRef,
   getSelectedEstimateSections,
   getTileEstimateGroupTitle,
   getWallEstimateGroupTitle,
-  PLUMBING_PRICE_MAPPING,
   PLUMBING_SECTION_ID,
   PLUMBING_SECTION_TITLE,
   removeEstimateZone,
@@ -33,15 +32,15 @@ import {
   resolveElectricEstimateGroupId,
   resolveFloorEstimateGroupId,
   resolvePlumbingEstimateGroupId,
+  recalculateSectionLinesFromMapping,
   resolveTileEstimateGroupId,
   resolveWallEstimateGroupId,
-  TILE_PRICE_MAPPING,
   TILE_SECTION_ID,
   TILE_SECTION_TITLE,
-  WALL_PRICE_MAPPING,
   WALL_SECTION_ID,
   WALL_SECTION_TITLE,
   type EstimateZone,
+  type EstimatePriceProfile,
 } from '@/entities/estimate'
 import { useFloorEstimateEditor } from '@/features/floor-estimate/model/use-floor-estimate-editor'
 
@@ -96,20 +95,28 @@ import { WallEstimatePanel } from '../walls/WallEstimatePanel'
 import { EstimateCombinedSummary } from './EstimateCombinedSummary'
 import { EstimateIntro } from './EstimateIntro'
 import { EstimateDocumentPanel } from './EstimateDocumentPanel'
+import { EstimatePriceProfilePanel, type PriceProfileApplyOptions } from './EstimatePriceProfilePanel'
 import { EstimateTabs, type EstimateTabId } from './EstimateTabs'
+import {
+  readEstimatePriceProfile,
+  writeEstimatePriceProfile,
+} from '../model/estimate-price-profile-xlsx'
 import styles from './EstimateCalculatorWorkspace.module.scss'
 
 export function EstimateCalculatorWorkspace() {
   const [initial] = useState(() => {
     const snapshot = readEstimateCalculatorSnapshot()
+    const storedProfile = readEstimatePriceProfile()
+    const mappings = buildActiveEstimateMappings(storedProfile)
     return {
       snapshot,
-      floors: restoreFloorEstimateState(snapshot),
-      walls: restoreWallEstimateState(snapshot),
-      ceilings: restoreCeilingEstimateState(snapshot),
-      tile: restoreTileEstimateState(snapshot),
-      electrics: restoreElectricEstimateState(snapshot),
-      plumbing: restorePlumbingEstimateState(snapshot),
+      priceProfile: storedProfile,
+      floors: restoreFloorEstimateState(snapshot, mappings.floors),
+      walls: restoreWallEstimateState(snapshot, mappings.walls),
+      ceilings: restoreCeilingEstimateState(snapshot, mappings.ceilings),
+      tile: restoreTileEstimateState(snapshot, mappings.tile),
+      electrics: restoreElectricEstimateState(snapshot, mappings.electrics),
+      plumbing: restorePlumbingEstimateState(snapshot, mappings.plumbing),
       zones: restoreEstimateZones(snapshot),
       floorPresets: restoreFloorPresetDraft(snapshot),
       wallScenarios: restoreWallScenarioDraft(snapshot),
@@ -142,21 +149,72 @@ export function EstimateCalculatorWorkspace() {
     initial.plumbingScenarios,
   )
   const [globalFeedbackEpoch, setGlobalFeedbackEpoch] = useState(0)
+  const [priceProfile, setPriceProfile] = useState<EstimatePriceProfile | null>(initial.priceProfile)
+  /** Профиль, с которым ассоциирована текущая смета (из снимка); обновляется при явном apply. */
+  const [estimateProfileRef, setEstimateProfileRef] = useState(
+    () => initial.snapshot?.priceProfileRef,
+  )
+  const activeMappings = useMemo(() => buildActiveEstimateMappings(priceProfile), [priceProfile])
+  const activeProfileRef = useMemo(() => getPriceProfileRef(priceProfile), [priceProfile])
+  const availableWorkCount = useMemo(
+    () =>
+      countAvailableMappingItems(activeMappings.floors) +
+      countAvailableMappingItems(activeMappings.walls) +
+      countAvailableMappingItems(activeMappings.ceilings) +
+      countAvailableMappingItems(activeMappings.tile) +
+      countAvailableMappingItems(activeMappings.electrics) +
+      countAvailableMappingItems(activeMappings.plumbing),
+    [activeMappings],
+  )
+  const profileMismatchMessage = useMemo(() => {
+    if (!estimateProfileRef) return null
+    if (estimateProfileRef.contentHash === activeProfileRef.contentHash) return null
+    return `Смета сохранена с прайсом «${estimateProfileRef.name}». Суммы строк не менялись. Для новых работ сейчас используется «${activeProfileRef.name}».`
+  }, [estimateProfileRef, activeProfileRef])
 
-  const floors = useFloorEstimateEditor(initial.floors)
-  const walls = useWallEstimateEditor(initial.walls)
-  const ceilings = useCeilingEstimateEditor(initial.ceilings)
-  const tile = useTileEstimateEditor(initial.tile)
-  const electrics = useElectricEstimateEditor(initial.electrics)
-  const plumbing = usePlumbingEstimateEditor(initial.plumbing)
+  const floors = useFloorEstimateEditor({ ...initial.floors, mapping: activeMappings.floors })
+  const walls = useWallEstimateEditor({ ...initial.walls, mapping: activeMappings.walls })
+  const ceilings = useCeilingEstimateEditor({
+    ...initial.ceilings,
+    mapping: activeMappings.ceilings,
+  })
+  const tile = useTileEstimateEditor({ ...initial.tile, mapping: activeMappings.tile })
+  const electrics = useElectricEstimateEditor({
+    ...initial.electrics,
+    mapping: activeMappings.electrics,
+  })
+  const plumbing = usePlumbingEstimateEditor({
+    ...initial.plumbing,
+    mapping: activeMappings.plumbing,
+  })
   const skipFirstPersist = useRef(true)
   const [storageFailed, setStorageFailed] = useState(false)
+
+  const allLines = useMemo(
+    () => [
+      ...floors.lines,
+      ...walls.lines,
+      ...ceilings.lines,
+      ...tile.lines,
+      ...electrics.lines,
+      ...plumbing.lines,
+    ],
+    [
+      floors.lines,
+      walls.lines,
+      ceilings.lines,
+      tile.lines,
+      electrics.lines,
+      plumbing.lines,
+    ],
+  )
 
   const snapshot = useMemo(
     () =>
       buildEstimateCalculatorSnapshot({
         activeTab,
         zones,
+        priceProfileRef: activeProfileRef,
         floorsInput: floors.input,
         floorsLines: floors.lines,
         wallsInput: walls.input,
@@ -179,6 +237,7 @@ export function EstimateCalculatorWorkspace() {
     [
       activeTab,
       zones,
+      activeProfileRef,
       floors.input,
       floors.lines,
       walls.input,
@@ -247,28 +306,101 @@ export function EstimateCalculatorWorkspace() {
     setPlumbingScenarioDraft({ ...DEFAULT_PLUMBING_SCENARIOS })
     floors.replaceEstimate({
       input: { ...EMPTY_FLOOR_INPUT },
-      lines: buildFloorEstimateLines(EMPTY_FLOOR_INPUT),
+      lines: buildFloorEstimateLines(EMPTY_FLOOR_INPUT, { mapping: activeMappings.floors }),
     })
     walls.replaceEstimate({
       input: { ...EMPTY_WALL_INPUT },
-      lines: buildWallEstimateLines(EMPTY_WALL_INPUT),
+      lines: buildWallEstimateLines(EMPTY_WALL_INPUT, { mapping: activeMappings.walls }),
     })
     ceilings.replaceEstimate({
       input: { ...EMPTY_CEILING_INPUT },
-      lines: buildCeilingEstimateLines(EMPTY_CEILING_INPUT),
+      lines: buildCeilingEstimateLines(EMPTY_CEILING_INPUT, { mapping: activeMappings.ceilings }),
     })
     tile.replaceEstimate({
       input: { ...EMPTY_TILE_INPUT },
-      lines: buildTileEstimateLines(EMPTY_TILE_INPUT),
+      lines: buildTileEstimateLines(EMPTY_TILE_INPUT, { mapping: activeMappings.tile }),
     })
     electrics.replaceEstimate({
       input: { ...EMPTY_ELECTRIC_INPUT },
-      lines: buildElectricEstimateLines(EMPTY_ELECTRIC_INPUT),
+      lines: buildElectricEstimateLines(EMPTY_ELECTRIC_INPUT, {
+        mapping: activeMappings.electrics,
+      }),
     })
     plumbing.replaceEstimate({
       input: { ...EMPTY_PLUMBING_INPUT },
-      lines: buildPlumbingEstimateLines(EMPTY_PLUMBING_INPUT),
+      lines: buildPlumbingEstimateLines(EMPTY_PLUMBING_INPUT, { mapping: activeMappings.plumbing }),
     })
+  }
+
+  function handlePriceProfileApply(
+    nextProfile: EstimatePriceProfile | null,
+    options: PriceProfileApplyOptions,
+  ): boolean {
+    if (!writeEstimatePriceProfile(nextProfile)) return false
+
+    const nextMappings = buildActiveEstimateMappings(nextProfile)
+    const nextRef = getPriceProfileRef(nextProfile)
+    setPriceProfile(nextProfile)
+    setEstimateProfileRef(nextRef)
+
+    if (options.mode === 'new-only') return true
+
+    const recalc = { overwriteCustom: options.overwriteCustom }
+    floors.replaceEstimate({
+      input: floors.input,
+      lines: recalculateSectionLinesFromMapping(
+        floors.lines,
+        FLOOR_SECTION_ID,
+        nextMappings.floors,
+        recalc,
+      ),
+    })
+    walls.replaceEstimate({
+      input: walls.input,
+      lines: recalculateSectionLinesFromMapping(
+        walls.lines,
+        WALL_SECTION_ID,
+        nextMappings.walls,
+        recalc,
+      ),
+    })
+    ceilings.replaceEstimate({
+      input: ceilings.input,
+      lines: recalculateSectionLinesFromMapping(
+        ceilings.lines,
+        CEILING_SECTION_ID,
+        nextMappings.ceilings,
+        recalc,
+      ),
+    })
+    tile.replaceEstimate({
+      input: tile.input,
+      lines: recalculateSectionLinesFromMapping(
+        tile.lines,
+        TILE_SECTION_ID,
+        nextMappings.tile,
+        recalc,
+      ),
+    })
+    electrics.replaceEstimate({
+      input: electrics.input,
+      lines: recalculateSectionLinesFromMapping(
+        electrics.lines,
+        ELECTRIC_SECTION_ID,
+        nextMappings.electrics,
+        recalc,
+      ),
+    })
+    plumbing.replaceEstimate({
+      input: plumbing.input,
+      lines: recalculateSectionLinesFromMapping(
+        plumbing.lines,
+        PLUMBING_SECTION_ID,
+        nextMappings.plumbing,
+        recalc,
+      ),
+    })
+    return true
   }
 
   function resetWallsSection() {
@@ -304,8 +436,7 @@ export function EstimateCalculatorWorkspace() {
         sectionId: FLOOR_SECTION_ID,
         sectionTitle: 'Полы',
         lines: floors.lines,
-        resolveGroupTitle: (line) =>
-          getFloorEstimateGroupTitle(resolveFloorEstimateGroupId(line)),
+        resolveGroupTitle: (line) => getFloorEstimateGroupTitle(resolveFloorEstimateGroupId(line)),
       },
       {
         sectionId: WALL_SECTION_ID,
@@ -324,8 +455,7 @@ export function EstimateCalculatorWorkspace() {
         sectionId: TILE_SECTION_ID,
         sectionTitle: 'Плитка',
         lines: tile.lines,
-        resolveGroupTitle: (line) =>
-          getTileEstimateGroupTitle(resolveTileEstimateGroupId(line)),
+        resolveGroupTitle: (line) => getTileEstimateGroupTitle(resolveTileEstimateGroupId(line)),
       },
       {
         sectionId: ELECTRIC_SECTION_ID,
@@ -388,12 +518,20 @@ export function EstimateCalculatorWorkspace() {
           electricsTotalRub={electrics.totalRub}
           plumbingTotalRub={plumbing.totalRub}
           grandTotalRub={grandTotalRub}
-          floorsMappingCount={FLOOR_PRICE_MAPPING.length}
-          wallsMappingCount={WALL_PRICE_MAPPING.length}
-          ceilingsMappingCount={CEILING_PRICE_MAPPING.length}
-          tileMappingCount={TILE_PRICE_MAPPING.length}
-          electricsMappingCount={ELECTRIC_PRICE_MAPPING.length}
-          plumbingMappingCount={PLUMBING_PRICE_MAPPING.length}
+          floorsMappingCount={countAvailableMappingItems(activeMappings.floors)}
+          wallsMappingCount={countAvailableMappingItems(activeMappings.walls)}
+          ceilingsMappingCount={countAvailableMappingItems(activeMappings.ceilings)}
+          tileMappingCount={countAvailableMappingItems(activeMappings.tile)}
+          electricsMappingCount={countAvailableMappingItems(activeMappings.electrics)}
+          plumbingMappingCount={countAvailableMappingItems(activeMappings.plumbing)}
+        />
+        <EstimatePriceProfilePanel
+          profile={priceProfile}
+          lines={allLines}
+          estimateProfileLabel={estimateProfileRef?.name ?? null}
+          profileMismatchMessage={profileMismatchMessage}
+          availableWorkCount={availableWorkCount}
+          onApply={handlePriceProfileApply}
         />
         <EstimateTabs activeTab={activeTab} onChange={setActiveTab} />
       </div>
@@ -410,11 +548,10 @@ export function EstimateCalculatorWorkspace() {
           onZonesChange={handleZonesChange}
           onDeleteZone={handleDeleteZone}
           presetDraft={floorPresetDraft}
-          onPresetDraftChange={(patch) =>
-            setFloorPresetDraft((prev) => ({ ...prev, ...patch }))
-          }
+          onPresetDraftChange={(patch) => setFloorPresetDraft((prev) => ({ ...prev, ...patch }))}
           onResetAll={resetAllEstimate}
           globalFeedbackEpoch={globalFeedbackEpoch}
+          mapping={activeMappings.floors}
         />
       </div>
 
@@ -430,11 +567,10 @@ export function EstimateCalculatorWorkspace() {
           onZonesChange={handleZonesChange}
           onDeleteZone={handleDeleteZone}
           scenarioDraft={wallScenarioDraft}
-          onScenarioDraftChange={(patch) =>
-            setWallScenarioDraft((prev) => ({ ...prev, ...patch }))
-          }
+          onScenarioDraftChange={(patch) => setWallScenarioDraft((prev) => ({ ...prev, ...patch }))}
           onResetSection={resetWallsSection}
           globalFeedbackEpoch={globalFeedbackEpoch}
+          mapping={activeMappings.walls}
         />
       </div>
 
@@ -455,6 +591,7 @@ export function EstimateCalculatorWorkspace() {
           }
           onResetSection={resetCeilingsSection}
           globalFeedbackEpoch={globalFeedbackEpoch}
+          mapping={activeMappings.ceilings}
         />
       </div>
 
@@ -470,11 +607,10 @@ export function EstimateCalculatorWorkspace() {
           onZonesChange={handleZonesChange}
           onDeleteZone={handleDeleteZone}
           scenarioDraft={tileScenarioDraft}
-          onScenarioDraftChange={(patch) =>
-            setTileScenarioDraft((prev) => ({ ...prev, ...patch }))
-          }
+          onScenarioDraftChange={(patch) => setTileScenarioDraft((prev) => ({ ...prev, ...patch }))}
           onResetSection={resetTileSection}
           globalFeedbackEpoch={globalFeedbackEpoch}
+          mapping={activeMappings.tile}
         />
       </div>
 
@@ -495,6 +631,7 @@ export function EstimateCalculatorWorkspace() {
           }
           onResetSection={resetElectricsSection}
           globalFeedbackEpoch={globalFeedbackEpoch}
+          mapping={activeMappings.electrics}
         />
       </div>
 
@@ -515,6 +652,7 @@ export function EstimateCalculatorWorkspace() {
           }
           onResetSection={resetPlumbingSection}
           globalFeedbackEpoch={globalFeedbackEpoch}
+          mapping={activeMappings.plumbing}
         />
       </div>
 

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import {
+  applyActivePriceToCanonicalLine,
   applyElectricCableLength,
   applyElectricLightPointsCount,
   applyElectricScenario,
@@ -13,11 +14,19 @@ import {
   calculateSectionTotal,
   countEnabledLines,
   createManualElectricEstimateLine,
-  createZonedElectricEstimateLine,
+  createZonedLineFromMapping,
+  electricInputFromZone,
+  ELECTRIC_PRICE_MAPPING,
+  ELECTRIC_SECTION_ID,
   enableCanonicalEstimateLine,
+  formatUnavailableScenarioMessage,
+  getUnavailableMappingKeys,
   removeRemovableEstimateLine,
+  resolveMeasuredElectricScenarioKeys,
+  syncNewLinesFromMapping,
   updateEstimateLine,
   type ElectricEstimateInput,
+  type ElectricPriceMappingItem,
   type ElectricScenarioApplication,
   type EstimateLine,
   type EstimateZone,
@@ -50,13 +59,15 @@ const EMPTY_INPUT: ElectricEstimateInput = {
 export type ElectricEstimateEditorInitial = {
   input?: ElectricEstimateInput
   lines?: EstimateLine[]
+  mapping?: readonly ElectricPriceMappingItem[]
 }
 
 export function useElectricEstimateEditor(initial: ElectricEstimateEditorInitial = {}) {
   const initialInput = initial.input ?? EMPTY_INPUT
+  const mapping = initial.mapping ?? ELECTRIC_PRICE_MAPPING
   const [input, setInput] = useState<ElectricEstimateInput>(initialInput)
   const [lines, setLines] = useState<EstimateLine[]>(
-    () => initial.lines ?? buildElectricEstimateLines(initialInput),
+    () => initial.lines ?? buildElectricEstimateLines(initialInput, { mapping }),
   )
 
   const selectedCount = useMemo(() => countEnabledLines(lines), [lines])
@@ -69,7 +80,10 @@ export function useElectricEstimateEditor(initial: ElectricEstimateEditorInitial
   function patchLine(
     lineId: string,
     patch: Partial<
-      Pick<EstimateLine, 'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'>
+      Pick<
+        EstimateLine,
+        'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'
+      >
     >,
   ) {
     setLines((prev) => updateEstimateLine(prev, lineId, patch))
@@ -124,8 +138,19 @@ export function useElectricEstimateEditor(initial: ElectricEstimateEditorInitial
   function applyScenario(
     application: ElectricScenarioApplication,
     target?: { zone?: EstimateZone },
-  ): { label: string; addedCount: number; zoneName?: string } {
+  ): { label: string; addedCount: number; zoneName?: string; error?: string } {
     const zone = target?.zone
+    const scenarioInput = zone ? electricInputFromZone(zone) : input
+    const keys = resolveMeasuredElectricScenarioKeys(application, scenarioInput)
+    const unavailable = getUnavailableMappingKeys(keys, mapping)
+    if (unavailable.length > 0) {
+      return {
+        label: '',
+        addedCount: 0,
+        error: formatUnavailableScenarioMessage(unavailable),
+      }
+    }
+
     let result = zone
       ? applyElectricScenarioToZone(lines, zone, application)
       : applyElectricScenario(lines, input, application)
@@ -133,7 +158,7 @@ export function useElectricEstimateEditor(initial: ElectricEstimateEditorInitial
       result = zone
         ? applyElectricScenarioToZone(prev, zone, application)
         : applyElectricScenario(prev, input, application)
-      return result.lines
+      return syncNewLinesFromMapping(prev, result.lines, ELECTRIC_SECTION_ID, mapping)
     })
     return {
       label: result.scenarioLabel,
@@ -167,11 +192,16 @@ export function useElectricEstimateEditor(initial: ElectricEstimateEditorInitial
       setLines((prev) => {
         const result = enableCanonicalEstimateLine(prev, params)
         ok = result.ok
-        return result.lines
+        if (!ok) return prev
+        return result.lines.map((line) =>
+          line.priceKey === params.priceKey && !line.zoneId
+            ? applyActivePriceToCanonicalLine(line, mapping)
+            : line,
+        )
       })
       return ok
     }
-    const line = createZonedElectricEstimateLine(params)
+    const line = createZonedLineFromMapping(ELECTRIC_SECTION_ID, mapping, params)
     if (!line) return false
     setLines((prev) => [...prev, line])
     return true
@@ -191,7 +221,7 @@ export function useElectricEstimateEditor(initial: ElectricEstimateEditorInitial
 
   function resetEstimate() {
     setInput(EMPTY_INPUT)
-    setLines(buildElectricEstimateLines(EMPTY_INPUT))
+    setLines(buildElectricEstimateLines(EMPTY_INPUT, { mapping }))
   }
 
   function replaceEstimate(next: { input: ElectricEstimateInput; lines: EstimateLine[] }) {

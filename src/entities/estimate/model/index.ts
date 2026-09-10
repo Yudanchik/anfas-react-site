@@ -112,6 +112,32 @@ export type {
   SelectedEstimateZoneGroup,
 } from './shared/get-selected-estimate-lines'
 export { formatEstimatePositionCount } from './shared/format-estimate-position-count'
+export {
+  applyActivePriceToCanonicalLine,
+  buildActiveEstimateMappings,
+  countAvailableMappingItems,
+  countPriceEditedLines,
+  createZonedLineFromMapping,
+  findActiveMappingItem,
+  formatUnavailableScenarioMessage,
+  getPriceProfileRef,
+  getUnavailableMappingKeys,
+  isMappingItemAvailable,
+  recalculateSectionLinesFromMapping,
+  syncNewLinesFromMapping,
+  BUILTIN_PRICE_PROFILE_REF,
+} from './shared/estimate-price-profile'
+export type {
+  ActiveEstimateMappings,
+  EstimatePriceProfile,
+  EstimatePriceProfileImportResult,
+  EstimatePriceProfileItem,
+  EstimatePriceProfileMappingItem,
+  EstimatePriceProfileRef,
+  EstimatePriceProfileSectionId,
+  RecalculatePriceLinesOptions,
+  UnavailableMappingKey,
+} from './shared/estimate-price-profile'
 
 export { getFloorRecommendation } from './floors/get-floor-recommendation'
 export {
@@ -166,6 +192,7 @@ export {
   formatFloorPresetFeedback,
   formatFloorPresetZoneFeedback,
   getFloorPresetLabel,
+  resolveFloorPresetKeys,
 } from './floors/apply-floor-preset'
 export type {
   ApplyFloorPresetResult,

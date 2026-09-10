@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import {
+  applyActivePriceToCanonicalLine,
   applyDemolitionAreaToDemolitionWorks,
   applyFloorPreset,
   applyFloorPresetToZone,
@@ -11,14 +12,21 @@ import {
   calculateSectionTotal,
   countEnabledLines,
   createManualEstimateLine,
-  createZonedFloorEstimateLine,
+  createZonedLineFromMapping,
   enableCanonicalEstimateLine,
+  FLOOR_PRICE_MAPPING,
+  FLOOR_SECTION_ID,
+  formatUnavailableScenarioMessage,
   getFloorRecommendation,
+  getUnavailableMappingKeys,
   removeRemovableEstimateLine,
+  resolveFloorPresetKeys,
+  syncNewLinesFromMapping,
   updateEstimateLine,
   type EstimateLine,
   type EstimateZone,
   type FloorEstimateInput,
+  type FloorPriceMappingItem,
   type FloorPresetApplication,
 } from '@/entities/estimate'
 
@@ -41,19 +49,25 @@ const EMPTY_INPUT: FloorEstimateInput = {
 export type FloorEstimateEditorInitial = {
   input?: FloorEstimateInput
   lines?: EstimateLine[]
+  mapping?: readonly FloorPriceMappingItem[]
+}
+
+export type FloorScenarioApplyResult = {
+  label: string
+  addedCount: number
+  zoneName?: string
+  error?: string
 }
 
 export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {}) {
   const initialInput = initial.input ?? EMPTY_INPUT
+  const mapping = initial.mapping ?? FLOOR_PRICE_MAPPING
   const [input, setInput] = useState<FloorEstimateInput>(initialInput)
   const [lines, setLines] = useState<EstimateLine[]>(
-    () => initial.lines ?? buildFloorEstimateLines(initialInput),
+    () => initial.lines ?? buildFloorEstimateLines(initialInput, { mapping }),
   )
 
-  const recommendation = useMemo(
-    () => getFloorRecommendation(input.avgDeltaMm),
-    [input.avgDeltaMm],
-  )
+  const recommendation = useMemo(() => getFloorRecommendation(input.avgDeltaMm), [input.avgDeltaMm])
   const selectedCount = useMemo(() => countEnabledLines(lines), [lines])
   const totalRub = useMemo(() => calculateSectionTotal({ lines }), [lines])
 
@@ -64,7 +78,10 @@ export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {})
   function patchLine(
     lineId: string,
     patch: Partial<
-      Pick<EstimateLine, 'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'>
+      Pick<
+        EstimateLine,
+        'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'
+      >
     >,
   ) {
     setLines((prev) => updateEstimateLine(prev, lineId, patch))
@@ -103,8 +120,18 @@ export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {})
   function applyPreset(
     application: FloorPresetApplication,
     target?: { zone?: EstimateZone },
-  ): { label: string; addedCount: number; zoneName?: string } {
+  ): FloorScenarioApplyResult {
     const zone = target?.zone
+    const keys = resolveFloorPresetKeys(application)
+    const unavailable = getUnavailableMappingKeys(keys, mapping)
+    if (unavailable.length > 0) {
+      return {
+        label: '',
+        addedCount: 0,
+        error: formatUnavailableScenarioMessage(unavailable),
+      }
+    }
+
     let result = zone
       ? applyFloorPresetToZone(lines, zone, application)
       : applyFloorPreset(lines, input, application)
@@ -112,7 +139,7 @@ export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {})
       result = zone
         ? applyFloorPresetToZone(prev, zone, application)
         : applyFloorPreset(prev, input, application)
-      return result.lines
+      return syncNewLinesFromMapping(prev, result.lines, FLOOR_SECTION_ID, mapping)
     })
     return {
       label: result.presetLabel,
@@ -146,11 +173,16 @@ export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {})
       setLines((prev) => {
         const result = enableCanonicalEstimateLine(prev, params)
         ok = result.ok
-        return result.lines
+        if (!ok) return prev
+        return result.lines.map((line) =>
+          line.priceKey === params.priceKey && !line.zoneId
+            ? applyActivePriceToCanonicalLine(line, mapping)
+            : line,
+        )
       })
       return ok
     }
-    const line = createZonedFloorEstimateLine(params)
+    const line = createZonedLineFromMapping(FLOOR_SECTION_ID, mapping, params)
     if (!line) return false
     setLines((prev) => [...prev, line])
     return true
@@ -170,7 +202,7 @@ export function useFloorEstimateEditor(initial: FloorEstimateEditorInitial = {})
 
   function resetEstimate() {
     setInput(EMPTY_INPUT)
-    setLines(buildFloorEstimateLines(EMPTY_INPUT))
+    setLines(buildFloorEstimateLines(EMPTY_INPUT, { mapping }))
   }
 
   function replaceEstimate(next: { input: FloorEstimateInput; lines: EstimateLine[] }) {

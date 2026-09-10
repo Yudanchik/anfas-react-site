@@ -40,6 +40,7 @@ type PlumbingEstimateScenariosProps = {
     label: string
     addedCount: number
     zoneName?: string
+    error?: string
   }
 }
 
@@ -129,6 +130,10 @@ export function PlumbingEstimateScenarios({
       application,
       selectedZone ? { zone: selectedZone } : undefined,
     )
+    if (result.error) {
+      setError(result.error)
+      return
+    }
     setSuccess(
       result.zoneName
         ? formatPlumbingScenarioZoneFeedback(result.label, result.zoneName, result.addedCount)

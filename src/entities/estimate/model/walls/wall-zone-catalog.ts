@@ -1,4 +1,5 @@
 import type { WallPriceMappingItem, WallWorkKind } from '../shared/estimate.types'
+import { isMappingItemAvailable } from '../shared/estimate-price-profile'
 import { WALL_PRICE_MAPPING } from './wall-price.mapping'
 
 /**
@@ -7,13 +8,7 @@ import { WALL_PRICE_MAPPING } from './wall-price.mapping'
  */
 
 export type WallZoneWorkCategoryId =
-  | 'demolition'
-  | 'prep'
-  | 'plaster'
-  | 'putty'
-  | 'slopes'
-  | 'finish-paint'
-  | 'finish-wallpaper'
+  'demolition' | 'prep' | 'plaster' | 'putty' | 'slopes' | 'finish-paint' | 'finish-wallpaper'
 
 export type WallZoneWorkCategory = {
   id: WallZoneWorkCategoryId
@@ -39,6 +34,7 @@ export function getWallZoneMappingOptions(
   mapping: readonly WallPriceMappingItem[] = WALL_PRICE_MAPPING,
 ): readonly WallPriceMappingItem[] {
   return mapping.filter((item) => {
+    if (!isMappingItemAvailable(item)) return false
     switch (categoryId) {
       case 'demolition':
         return item.kind === 'demolition'

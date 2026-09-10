@@ -6,6 +6,7 @@ import {
   getTileZoneMappingOptions,
   TILE_ZONE_WORK_CATEGORIES,
   type EstimateZone,
+  type TilePriceMappingItem,
   type TileZoneWorkCategoryId,
 } from '@/entities/estimate'
 
@@ -24,6 +25,7 @@ type TileZoneWorkAddProps = {
   /** Без своей рамки/заголовка — внутри панели «Строки сметы». */
   embedded?: boolean
   feedbackEpoch?: number
+  mapping?: readonly TilePriceMappingItem[]
   onAdd: (params: {
     priceKey: string
     quantity: number
@@ -38,10 +40,14 @@ export function TileZoneWorkAdd({
   onZonesChange,
   embedded = false,
   feedbackEpoch,
+  mapping,
   onAdd,
 }: TileZoneWorkAddProps) {
   const [categoryId, setCategoryId] = useState<TileZoneWorkCategoryId>('demolition')
-  const options = useMemo(() => getTileZoneMappingOptions(categoryId), [categoryId])
+  const options = useMemo(
+    () => getTileZoneMappingOptions(categoryId, mapping),
+    [categoryId, mapping],
+  )
   const [priceKey, setPriceKey] = useState(() => options[0]?.id ?? '')
   const [zoneSelect, setZoneSelect] = useState(GENERAL_ZONE)
   const [customZoneName, setCustomZoneName] = useState('')
@@ -98,7 +104,7 @@ export function TileZoneWorkAdd({
 
   function handleCategoryChange(next: TileZoneWorkCategoryId) {
     setCategoryId(next)
-    const nextOptions = getTileZoneMappingOptions(next)
+    const nextOptions = getTileZoneMappingOptions(next, mapping)
     setPriceKey(nextOptions[0]?.id ?? '')
   }
 

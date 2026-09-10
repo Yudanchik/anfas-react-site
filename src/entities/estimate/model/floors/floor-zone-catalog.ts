@@ -1,4 +1,5 @@
 import type { FloorPriceMappingItem, FloorWorkKind } from '../shared/estimate.types'
+import { isMappingItemAvailable } from '../shared/estimate-price-profile'
 import { FLOOR_PRICE_MAPPING } from './floor-price.mapping'
 
 /**
@@ -6,11 +7,7 @@ import { FLOOR_PRICE_MAPPING } from './floor-price.mapping'
  * Опции берутся из `FLOOR_PRICE_MAPPING`, отдельного прайса нет.
  */
 
-export type FloorZoneWorkCategoryId =
-  | 'demolition'
-  | 'finish-floor'
-  | 'waterproofing'
-  | 'plinth'
+export type FloorZoneWorkCategoryId = 'demolition' | 'finish-floor' | 'waterproofing' | 'plinth'
 
 export type FloorZoneWorkCategory = {
   id: FloorZoneWorkCategoryId
@@ -37,11 +34,10 @@ export function getFloorZoneMappingOptions(
   mapping: readonly FloorPriceMappingItem[] = FLOOR_PRICE_MAPPING,
 ): readonly FloorPriceMappingItem[] {
   return mapping.filter((item) => {
+    if (!isMappingItemAvailable(item)) return false
     switch (categoryId) {
       case 'demolition':
-        return (
-          DEMOLITION_ZONE_KINDS.includes(item.kind) && !PLINTH_EXTRA_IDS.has(item.id)
-        )
+        return DEMOLITION_ZONE_KINDS.includes(item.kind) && !PLINTH_EXTRA_IDS.has(item.id)
       case 'finish-floor':
         return FINISH_ZONE_KINDS.includes(item.kind)
       case 'waterproofing':

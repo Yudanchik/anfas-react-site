@@ -20,25 +20,31 @@ import {
   type CeilingEstimateInput,
   type CeilingFinishTargetOption,
   type CeilingPaintLayersOption,
+  type CeilingPriceMappingItem,
   type CeilingStateOption,
   type DemolitionCoveringOption,
   type ElectricEstimateInput,
+  type ElectricPriceMappingItem,
   type ElectricStateOption,
   type EstimateLine,
   type EstimateZone,
   type FloorEstimateInput,
+  type FloorPriceMappingItem,
   type PlumbingEstimateInput,
+  type PlumbingPriceMappingItem,
   type PlumbingStateOption,
   type ScreedTypeOption,
   type TileCladFormatOption,
   type TileDemolitionSurfacesOption,
   type TileEstimateInput,
   type TileGroutOption,
+  type TilePriceMappingItem,
   type TileStateOption,
   type WallDemolitionCoveringOption,
   type WallEstimateInput,
   type WallFinishTargetOption,
   type WallPaintLayersOption,
+  type WallPriceMappingItem,
   type WallStateOption,
   type WallWallpaperTypeOption,
   type WasteTripOption,
@@ -68,6 +74,15 @@ export type PersistedEstimateLine = {
   unit?: string
   kind?: EstimateLine['kind']
   sectionId?: string
+  /** Явная ручная правка цены/названия прайс-строки. У старых снимков может отсутствовать. */
+  priceEdited?: boolean
+}
+
+export type PersistedPriceProfileRef = {
+  id: string
+  name: string
+  source: 'builtin-anfas' | 'user-xlsx'
+  contentHash: string
 }
 
 export type FloorPresetDraftState = {
@@ -111,6 +126,8 @@ export type EstimateCalculatorSnapshot = {
   version: typeof SNAPSHOT_VERSION
   activeTab: EstimateTabId
   zones: EstimateZone[]
+  /** Какой прайс был активен при сохранении сметы (суммы строк от него не зависят). */
+  priceProfileRef?: PersistedPriceProfileRef
   floors: {
     input: FloorEstimateInput
     lines: PersistedEstimateLine[]
@@ -476,6 +493,7 @@ function parsePersistedLine(raw: unknown): PersistedEstimateLine | null {
   if (typeof raw.unit === 'string') line.unit = raw.unit
   if (typeof raw.kind === 'string') line.kind = raw.kind as EstimateLine['kind']
   if (typeof raw.sectionId === 'string') line.sectionId = raw.sectionId
+  if (raw.priceEdited === true) line.priceEdited = true
 
   return line
 }
@@ -503,6 +521,17 @@ function isTabId(value: unknown): value is EstimateTabId {
 
 function isSupportedSnapshotVersion(value: unknown): value is 1 | 2 {
   return value === SNAPSHOT_VERSION || value === LEGACY_SNAPSHOT_VERSION
+}
+
+function parsePersistedPriceProfileRef(raw: unknown): PersistedPriceProfileRef | undefined {
+  if (!isRecord(raw)) return undefined
+  const id = asString(raw.id)
+  const name = asString(raw.name)
+  const contentHash = asString(raw.contentHash)
+  const source = raw.source
+  if (!id || !name || !contentHash) return undefined
+  if (source !== 'builtin-anfas' && source !== 'user-xlsx') return undefined
+  return { id, name, source, contentHash }
 }
 
 /** Разбор снимка калькулятора; `null`, если payload отсутствует или повреждён. v1 → v2. */
@@ -551,6 +580,9 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         }
       : { input: { ...EMPTY_PLUMBING_INPUT }, lines: [] },
   }
+
+  const priceProfileRef = parsePersistedPriceProfileRef(raw.priceProfileRef)
+  if (priceProfileRef) snapshot.priceProfileRef = priceProfileRef
 
   if (isRecord(raw.floorPresets)) {
     snapshot.floorPresets = {
@@ -661,16 +693,15 @@ export function serializeEstimateLine(line: EstimateLine): PersistedEstimateLine
     unitPrice: line.unitPrice,
     coefficient: line.coefficient,
     source: line.source,
+    title: line.title,
+    unit: line.unit,
+    kind: line.kind,
+    sectionId: line.sectionId,
   }
   if (line.comment) persisted.comment = line.comment
   if (line.zoneId) persisted.zoneId = line.zoneId
   if (line.zoneName) persisted.zoneName = line.zoneName
-  if (line.source === 'manual' || isZonedEstimateLine(line)) {
-    persisted.title = line.title
-    persisted.unit = line.unit
-    persisted.kind = line.kind
-    persisted.sectionId = line.sectionId
-  }
+  if (line.priceEdited) persisted.priceEdited = true
   return persisted
 }
 
@@ -737,6 +768,7 @@ export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
 export function buildEstimateCalculatorSnapshot(params: {
   activeTab: EstimateTabId
   zones?: readonly EstimateZone[]
+  priceProfileRef?: PersistedPriceProfileRef
   floorsInput: FloorEstimateInput
   floorsLines: readonly EstimateLine[]
   wallsInput: WallEstimateInput
@@ -760,6 +792,7 @@ export function buildEstimateCalculatorSnapshot(params: {
     version: SNAPSHOT_VERSION,
     activeTab: params.activeTab,
     zones: (params.zones ?? []).map(serializeEstimateZone),
+    priceProfileRef: params.priceProfileRef,
     floors: {
       input: { ...params.floorsInput },
       lines: params.floorsLines.map(serializeEstimateLine),
@@ -817,15 +850,24 @@ function applyPersistedPatches(
     const patch = byId.get(line.id) ?? byPriceKey.get(line.priceKey)
     if (!patch || patch.source === 'manual' || isZonedEstimateLine(patch)) return line
     usedPersistedIds.add(patch.id)
+    const title = asString(patch.title).trim() || line.title
+    const unit = asString(patch.unit).trim() || line.unit
+    const unitPrice = asNonNegative(patch.unitPrice)
+    // Старые снимки без priceEdited: если цена/название отличаются от базы mapping — считаем ручной правкой.
+    const unknownOriginEdit =
+      patch.priceEdited !== true && (title !== line.title || unitPrice !== line.unitPrice)
     return {
       ...line,
       enabled: patch.enabled,
       quantity: asNonNegative(patch.quantity),
-      unitPrice: asNonNegative(patch.unitPrice),
+      unitPrice,
       coefficient: asNonNegative(patch.coefficient, 1) || 1,
       comment: patch.comment?.trim() || undefined,
       zoneId: patch.zoneId?.trim() || undefined,
       zoneName: patch.zoneName?.trim() || undefined,
+      title,
+      unit,
+      priceEdited: patch.priceEdited === true || unknownOriginEdit ? true : undefined,
     }
   })
 
@@ -849,7 +891,12 @@ function applyPersistedPatches(
                   : findFloorMappingItem(patch.priceKey)
       const title = asString(patch.title).trim() || mapping?.title || ''
       const unit = asString(patch.unit).trim() || mapping?.unit || 'м²'
+      const unitPrice = asNonNegative(patch.unitPrice, mapping?.unitPrice ?? 0)
       if (!title) continue
+      const unknownOriginEdit =
+        patch.priceEdited !== true &&
+        mapping != null &&
+        (title !== mapping.title || unitPrice !== mapping.unitPrice)
       extras.push({
         id: patch.id,
         priceKey: patch.priceKey,
@@ -859,7 +906,7 @@ function applyPersistedPatches(
           (sectionFallback === 'floors' ? 'other-rough' : 'other')) as EstimateLine['kind'],
         title,
         unit,
-        unitPrice: asNonNegative(patch.unitPrice, mapping?.unitPrice ?? 0),
+        unitPrice,
         quantity: asNonNegative(patch.quantity),
         coefficient: asNonNegative(patch.coefficient, 1) || 1,
         enabled: asBoolean(patch.enabled, true),
@@ -869,6 +916,7 @@ function applyPersistedPatches(
         source: (patch.source as EstimateLine['source']) ?? mapping?.source ?? 'pdf',
         frontendCategorySlug: mapping?.frontendCategorySlug,
         note: mapping?.note,
+        priceEdited: patch.priceEdited === true || unknownOriginEdit ? true : undefined,
       })
       continue
     }
@@ -903,13 +951,17 @@ function applyPersistedPatches(
 /**
  * Восстанавливает полы: параметры замера + строки из mapping с патчами и zoned clones из снимка.
  * Без снимка — чистый build из пустого ввода.
+ * Патчи снимка сохраняют цены/названия документа; `mapping` задаёт базу для ещё не сохранённых строк каталога.
  */
-export function restoreFloorEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+export function restoreFloorEstimateState(
+  snapshot: EstimateCalculatorSnapshot | null,
+  mapping?: readonly FloorPriceMappingItem[],
+): {
   input: FloorEstimateInput
   lines: EstimateLine[]
 } {
   const input = snapshot ? snapshot.floors.input : { ...EMPTY_FLOOR_INPUT }
-  const base = buildFloorEstimateLines(input)
+  const base = buildFloorEstimateLines(input, mapping ? { mapping } : undefined)
   return {
     input,
     lines: snapshot ? applyPersistedPatches(base, snapshot.floors.lines, 'floors') : base,
@@ -917,12 +969,15 @@ export function restoreFloorEstimateState(snapshot: EstimateCalculatorSnapshot |
 }
 
 /** То же для стен, включая zoned clones. */
-export function restoreWallEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+export function restoreWallEstimateState(
+  snapshot: EstimateCalculatorSnapshot | null,
+  mapping?: readonly WallPriceMappingItem[],
+): {
   input: WallEstimateInput
   lines: EstimateLine[]
 } {
   const input = snapshot ? snapshot.walls.input : { ...EMPTY_WALL_INPUT }
-  const base = buildWallEstimateLines(input)
+  const base = buildWallEstimateLines(input, mapping ? { mapping } : undefined)
   return {
     input,
     lines: snapshot ? applyPersistedPatches(base, snapshot.walls.lines, 'walls') : base,
@@ -933,13 +988,16 @@ export function restoreWallEstimateState(snapshot: EstimateCalculatorSnapshot | 
  * То же для потолков, включая zoned clones.
  * Толерантно к снимкам без секции `ceilings` — тогда пустой ввод и чистый build.
  */
-export function restoreCeilingEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+export function restoreCeilingEstimateState(
+  snapshot: EstimateCalculatorSnapshot | null,
+  mapping?: readonly CeilingPriceMappingItem[],
+): {
   input: CeilingEstimateInput
   lines: EstimateLine[]
 } {
   const ceilings = snapshot?.ceilings
   const input = ceilings ? ceilings.input : { ...EMPTY_CEILING_INPUT }
-  const base = buildCeilingEstimateLines(input)
+  const base = buildCeilingEstimateLines(input, mapping ? { mapping } : undefined)
   return {
     input,
     lines: ceilings ? applyPersistedPatches(base, ceilings.lines, 'ceilings') : base,
@@ -950,13 +1008,16 @@ export function restoreCeilingEstimateState(snapshot: EstimateCalculatorSnapshot
  * То же для плитки, включая zoned clones.
  * Толерантно к снимкам без секции `tile` — тогда пустой ввод и чистый build.
  */
-export function restoreTileEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+export function restoreTileEstimateState(
+  snapshot: EstimateCalculatorSnapshot | null,
+  mapping?: readonly TilePriceMappingItem[],
+): {
   input: TileEstimateInput
   lines: EstimateLine[]
 } {
   const tile = snapshot?.tile
   const input = tile ? tile.input : { ...EMPTY_TILE_INPUT }
-  const base = buildTileEstimateLines(input)
+  const base = buildTileEstimateLines(input, mapping ? { mapping } : undefined)
   return {
     input,
     lines: tile ? applyPersistedPatches(base, tile.lines, 'tile') : base,
@@ -967,13 +1028,16 @@ export function restoreTileEstimateState(snapshot: EstimateCalculatorSnapshot | 
  * То же для электрики, включая zoned clones.
  * Толерантно к снимкам без секции `electrics` — тогда пустой ввод и чистый build.
  */
-export function restoreElectricEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+export function restoreElectricEstimateState(
+  snapshot: EstimateCalculatorSnapshot | null,
+  mapping?: readonly ElectricPriceMappingItem[],
+): {
   input: ElectricEstimateInput
   lines: EstimateLine[]
 } {
   const electrics = snapshot?.electrics
   const input = electrics ? electrics.input : { ...EMPTY_ELECTRIC_INPUT }
-  const base = buildElectricEstimateLines(input)
+  const base = buildElectricEstimateLines(input, mapping ? { mapping } : undefined)
   return {
     input,
     lines: electrics ? applyPersistedPatches(base, electrics.lines, 'electrics') : base,
@@ -984,13 +1048,16 @@ export function restoreElectricEstimateState(snapshot: EstimateCalculatorSnapsho
  * То же для сантехники, включая zoned clones.
  * Толерантно к снимкам без секции `plumbing` — тогда пустой ввод и чистый build.
  */
-export function restorePlumbingEstimateState(snapshot: EstimateCalculatorSnapshot | null): {
+export function restorePlumbingEstimateState(
+  snapshot: EstimateCalculatorSnapshot | null,
+  mapping?: readonly PlumbingPriceMappingItem[],
+): {
   input: PlumbingEstimateInput
   lines: EstimateLine[]
 } {
   const plumbing = snapshot?.plumbing
   const input = plumbing ? plumbing.input : { ...EMPTY_PLUMBING_INPUT }
-  const base = buildPlumbingEstimateLines(input)
+  const base = buildPlumbingEstimateLines(input, mapping ? { mapping } : undefined)
   return {
     input,
     lines: plumbing ? applyPersistedPatches(base, plumbing.lines, 'plumbing') : base,

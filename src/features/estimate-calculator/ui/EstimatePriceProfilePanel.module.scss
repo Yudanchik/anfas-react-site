@@ -1,0 +1,123 @@
+@use './estimate-ui' as eu;
+
+.panel {
+  @include eu.panel;
+
+  margin-top: 14px;
+}
+
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  h2 {
+    @include eu.section-title;
+  }
+
+  strong {
+    font-size: 13px;
+    font-weight: var(--weight-semibold);
+    text-align: right;
+  }
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.text {
+  max-width: 76ch;
+  margin: 10px 0 0;
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.primary {
+  @include eu.button-primary;
+}
+
+.secondary {
+  @include eu.button-secondary;
+}
+
+.file {
+  display: none;
+}
+
+.message,
+.error {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.message {
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+
+.error {
+  color: #a82a24;
+}
+
+.meta {
+  margin: 8px 0 0;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.warning {
+  margin: 8px 0 0;
+  color: #8a5a12;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.choice {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 92%, var(--ink));
+}
+
+.choiceTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  line-height: 1.4;
+}
+
+.warningList {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: #8a5a12;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+@media (width <= 680px) {
+  .heading {
+    display: grid;
+  }
+
+  .heading strong {
+    text-align: left;
+  }
+}
