@@ -137,7 +137,9 @@ export function OpenLeadForm({
                   />
                   <span className={styles.openLeadForm__serviceOptionContent}>
                     <Icon className={styles.openLeadForm__serviceOptionIcon} size={22} />
-                    <span className={styles.openLeadForm__serviceOptionText}>{option.label}</span>
+                    <span className={styles.openLeadForm__serviceOptionText}>
+                      {option.label}{' '}
+                    </span>
                   </span>
                 </label>
               )
@@ -148,7 +150,7 @@ export function OpenLeadForm({
         <div className={styles.openLeadForm__fields}>
           <div className={styles.openLeadForm__field}>
             <label className={styles.openLeadForm__fieldLabel} htmlFor={nameInputId}>
-              Имя
+              Имя{' '}
             </label>
             <div className={styles.openLeadForm__fieldControlWrap}>
               <UserIcon className={styles.openLeadForm__fieldIcon} size={27} />
@@ -177,7 +179,7 @@ export function OpenLeadForm({
 
           <div className={styles.openLeadForm__field}>
             <label className={styles.openLeadForm__fieldLabel} htmlFor={phoneInputId}>
-              Телефон
+              Телефон{' '}
             </label>
             <div className={styles.openLeadForm__fieldControlWrap}>
               <PhoneIcon className={styles.openLeadForm__fieldIcon} size={27} />

@@ -59,7 +59,7 @@ export function HomeProjectControl() {
             titleId="project-control-title"
             title={
               <>
-                Весь ремонт — у вас
+                Весь ремонт — у вас{' '}
                 <br />
                 <em>перед глазами.</em>
               </>

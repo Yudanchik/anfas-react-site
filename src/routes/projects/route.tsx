@@ -59,7 +59,7 @@ export default function ProjectsRoute() {
           <div className={styles.projectsHeroCopy}>
             <p className={styles.projectsHeroEyebrow}>Реализованные проекты</p>
             <h1 className={styles.projectsHeroTitle}>
-              Пространства,
+              Пространства,{' '}
               <br />
               которые уже <em>живут</em>
             </h1>
@@ -99,7 +99,7 @@ export default function ProjectsRoute() {
             <div className={styles.projectsIntroCopy}>
               <p className={styles.projectsEyebrow}>Живое портфолио</p>
               <h2 className={styles.projectsTitle}>
-                Проекты, которые можно
+                Проекты, которые можно{' '}
                 <br />
                 разобрать <em>по решениям</em>.
               </h2>

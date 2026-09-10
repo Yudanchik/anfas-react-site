@@ -17,7 +17,7 @@ export function HomeFormatCompare({
           label={formatCompare.eyebrow}
           title={
             <>
-              Два формата.
+              Два формата.{' '}
               <br />
               Один <em>выбор</em>
             </>
