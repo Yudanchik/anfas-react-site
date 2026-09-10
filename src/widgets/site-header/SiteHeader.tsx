@@ -9,6 +9,7 @@ import styles from './SiteHeader.module.scss'
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { pathname } = useLocation()
+  const navItems = navigation
   const isHeroPage =
     pathname === '/' ||
     pathname === '/services' ||
@@ -48,7 +49,7 @@ export function SiteHeader() {
           </Link>
 
           <nav className={styles.siteHeader__nav} aria-label="Основная навигация">
-            {navigation.map((item) => (
+            {navItems.map((item) => (
               <NavLink key={item.to} to={item.to}>
                 {item.label}
               </NavLink>
@@ -60,7 +61,7 @@ export function SiteHeader() {
             href={company.phoneHref}
             aria-label={`Позвонить по номеру ${company.phone}`}
           >
-            <span>Обсудить проект{' '}</span>
+            <span>Обсудить проект </span>
             <b>{company.phone}</b>
           </a>
 
@@ -82,9 +83,8 @@ export function SiteHeader() {
         aria-hidden={!menuOpen}
       >
         <nav className={styles.siteHeader__mobileNav}>
-          {navigation.map((item) => (
+          {navItems.map((item) => (
             <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)}>
-              {/* <span>0{index + 1}</span> */}
               {item.label}
             </Link>
           ))}

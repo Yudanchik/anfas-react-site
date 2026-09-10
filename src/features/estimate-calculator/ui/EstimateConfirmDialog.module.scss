@@ -1,0 +1,68 @@
+@use 'media' as mq;
+@use './estimate-ui' as eu;
+
+.root {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: color-mix(in srgb, var(--ink) 42%, transparent);
+  cursor: pointer;
+}
+
+.panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 26rem);
+  padding: 18px 18px 16px;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  box-shadow: 0 18px 40px rgb(22 23 19 / 14%);
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-card);
+}
+
+.description {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.cancel {
+  @include eu.button-secondary;
+
+  min-height: 36px;
+  padding: 0 14px;
+}
+
+.confirm {
+  @include eu.button-danger;
+
+  min-height: 36px;
+  padding: 0 14px;
+}

@@ -1,0 +1,49 @@
+@use 'media' as mq;
+@use './estimate-ui' as eu;
+
+.wrap {
+  @include eu.panel;
+}
+
+.title {
+  @include eu.section-title;
+
+  margin-bottom: 12px;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 2fr 0.7fr 0.7fr 0.7fr auto;
+  gap: 8px;
+  align-items: end;
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: color-mix(in srgb, var(--ink) 66%, transparent);
+  }
+
+  input {
+    @include eu.control;
+  }
+
+  button {
+    @include eu.button-primary;
+
+    @include mq.media(phone, tablet) {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.error {
+  margin: 8px 0 0;
+  color: #8a1f1f;
+  font-size: 12px;
+}

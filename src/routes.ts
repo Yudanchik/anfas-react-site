@@ -15,5 +15,6 @@ export default [
   route('projects/:slug', './routes/project/route.tsx'),
   route('services', './routes/services/route.tsx'),
   route('services/:slug', './routes/service/route.tsx'),
+  route('internal/estimate', './routes/internal/estimate/route.tsx'),
   route('*', './routes/not-found/route.tsx'),
 ] satisfies RouteConfig

@@ -1,0 +1,73 @@
+@use './estimate-ui' as eu;
+
+.wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.input {
+  @include eu.control;
+
+  width: 100%;
+}
+
+.wrap[data-has-clear='true'] .input {
+  padding-right: 34px;
+}
+
+.clear {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+    color: var(--ink);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 1px;
+  }
+
+  span {
+    position: relative;
+    width: 10px;
+    height: 10px;
+
+    &::before,
+    &::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 10px;
+      height: 1.5px;
+      border-radius: 1px;
+      background: currentcolor;
+      content: '';
+    }
+
+    &::before {
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    &::after {
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+  }
+}

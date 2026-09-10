@@ -1,0 +1,70 @@
+@use 'media' as mq;
+@use './estimate-ui' as eu;
+
+.wrap {
+  @include eu.panel-muted;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.details {
+  margin: 0;
+}
+
+.summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::before {
+    display: inline-block;
+    width: 0.55rem;
+    margin-right: 8px;
+    color: color-mix(in srgb, var(--ink) 55%, transparent);
+    content: '▸';
+  }
+}
+
+.details[open] > .summary::before {
+  content: '▾';
+}
+
+.text {
+  margin: 8px 0 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--ink) 66%, transparent);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.action {
+  @include eu.button-secondary;
+
+  width: auto;
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.danger {
+  @include eu.button-danger;
+
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.status {
+  @include eu.status-chip;
+}

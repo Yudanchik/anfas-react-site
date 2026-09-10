@@ -1,0 +1,127 @@
+import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
+import {
+  formatWallQuickActionFeedback,
+  type WallQuickActionKind,
+} from './wall-quick-action-feedback'
+import styles from './WallEstimateHelpers.module.scss'
+
+type WallEstimateHelpersProps = {
+  totalWallArea: number
+  demolitionArea: number
+  plasterArea: number
+  puttyArea: number
+  finishArea: number
+  slopesLengthM: number
+  cornersLengthM: number
+  onApplyTotalArea: () => number
+  onApplyDemolitionArea: () => number
+  onApplyPlasterArea: () => number
+  onApplyPuttyArea: () => number
+  onApplyFinishArea: () => number
+  onApplyLinearMeters: () => number
+  onReset: () => void
+}
+
+export function WallEstimateHelpers({
+  totalWallArea,
+  demolitionArea,
+  plasterArea,
+  puttyArea,
+  finishArea,
+  slopesLengthM,
+  cornersLengthM,
+  onApplyTotalArea,
+  onApplyDemolitionArea,
+  onApplyPlasterArea,
+  onApplyPuttyArea,
+  onApplyFinishArea,
+  onApplyLinearMeters,
+  onReset,
+}: WallEstimateHelpersProps) {
+  const { status, setSuccess } = useEstimateStatusMessage()
+
+  function runApply(kind: Exclude<WallQuickActionKind, 'reset'>, apply: () => number) {
+    setSuccess(formatWallQuickActionFeedback(kind, apply()))
+  }
+
+  return (
+    <section className={styles.wrap} aria-labelledby="wall-estimate-helpers-title">
+      <details className={styles.details}>
+        <summary className={styles.summary} id="wall-estimate-helpers-title">
+          Быстрые действия
+        </summary>
+        <p className={styles.text}>
+          Подставляют площади в строки раздела, но не включают работы. После сценариев по зонам
+          обычно нужны реже.
+        </p>
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={styles.action}
+            disabled={!(totalWallArea > 0)}
+            onClick={() => runApply('total-area', onApplyTotalArea)}
+          >
+            Площадь стен → м²
+          </button>
+          <button
+            type="button"
+            className={styles.action}
+            disabled={!(demolitionArea > 0)}
+            onClick={() => runApply('demolition-area', onApplyDemolitionArea)}
+          >
+            Демонтаж
+          </button>
+          <button
+            type="button"
+            className={styles.action}
+            disabled={!(plasterArea > 0)}
+            onClick={() => runApply('plaster-area', onApplyPlasterArea)}
+          >
+            Штукатурка
+          </button>
+          <button
+            type="button"
+            className={styles.action}
+            disabled={!(puttyArea > 0)}
+            onClick={() => runApply('putty-area', onApplyPuttyArea)}
+          >
+            Шпаклёвка
+          </button>
+          <button
+            type="button"
+            className={styles.action}
+            disabled={!(finishArea > 0)}
+            onClick={() => runApply('finish-area', onApplyFinishArea)}
+          >
+            Финиш
+          </button>
+          <button
+            type="button"
+            className={styles.action}
+            disabled={!(slopesLengthM > 0 || cornersLengthM > 0)}
+            onClick={() => runApply('linear', onApplyLinearMeters)}
+          >
+            Откосы / углы
+          </button>
+          <button
+            type="button"
+            className={styles.danger}
+            aria-label="Сбросить только раздел стены"
+            title="Полы и их автосохранение не затрагиваются"
+            onClick={() => {
+              onReset()
+              setSuccess(formatWallQuickActionFeedback('reset'))
+            }}
+          >
+            Сбросить стены
+          </button>
+        </div>
+        {status ? (
+          <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
+            {status.message}
+          </p>
+        ) : null}
+      </details>
+    </section>
+  )
+}

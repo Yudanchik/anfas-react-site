@@ -8,6 +8,7 @@ dist/
 .env.*
 !.env.example
 public/api/config.local.php
+public/api/estimate.config.local.php
 .DS_Store
 Thumbs.db
 work/
@@ -18,3 +19,4 @@ outputs/
 !.vscode/settings.json
 !.vscode/extensions.json
 .tmp/
+.cursor/

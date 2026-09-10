@@ -1,0 +1,175 @@
+// Shared presentation tokens for the internal floor estimate tool.
+// Import via `@use './estimate-ui' as eu;` from sibling SCSS modules.
+
+@mixin panel {
+  --fe-panel-bg: var(--paper);
+  --fe-panel-border: color-mix(in srgb, var(--ink) 16%, transparent);
+  --fe-control-h: 36px;
+  --fe-control-radius: var(--radius-sm);
+  --fe-control-border: color-mix(in srgb, var(--ink) 22%, transparent);
+  --fe-control-border-hover: color-mix(in srgb, var(--ink) 38%, transparent);
+
+  margin-top: 18px;
+  padding: 18px 18px 16px;
+  border: 1px solid var(--fe-panel-border);
+  border-radius: var(--radius-md);
+  background: var(--fe-panel-bg);
+  box-shadow: 0 1px 0 rgb(22 23 19 / 3%);
+}
+
+@mixin panel-muted {
+  @include panel;
+
+  --fe-panel-bg: color-mix(in srgb, var(--paper-deep) 55%, var(--paper));
+}
+
+@mixin panel-result {
+  @include panel;
+
+  --fe-panel-bg: color-mix(in srgb, var(--ink) 3.5%, var(--paper));
+  --fe-panel-border: color-mix(in srgb, var(--ink) 20%, transparent);
+
+  border-top: 3px solid var(--amber);
+}
+
+@mixin section-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-card);
+  color: var(--ink);
+}
+
+@mixin section-lead {
+  margin: 6px 0 0;
+  max-width: 68ch;
+  font-size: 12px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}
+
+@mixin control {
+  width: 100%;
+  min-height: var(--fe-control-h, 36px);
+  padding: 7px 10px;
+  border: 1px solid var(--fe-control-border, color-mix(in srgb, var(--ink) 22%, transparent));
+  border-radius: var(--fe-control-radius, var(--radius-sm));
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  line-height: var(--leading-control);
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--fe-control-border-hover, color-mix(in srgb, var(--ink) 38%, transparent));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 1px;
+    border-color: color-mix(in srgb, var(--amber) 55%, var(--ink));
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+    background: color-mix(in srgb, var(--ink) 3%, var(--paper));
+  }
+}
+
+@mixin select-control {
+  @include control;
+
+  padding-right: 30px;
+  appearance: none;
+  cursor: pointer;
+  background-image:
+    linear-gradient(45deg, transparent 50%, color-mix(in srgb, var(--ink) 72%, transparent) 50%),
+    linear-gradient(135deg, color-mix(in srgb, var(--ink) 72%, transparent) 50%, transparent 50%);
+  background-position:
+    calc(100% - 15px) calc(50% - 2px),
+    calc(100% - 10px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+@mixin button-secondary {
+  @include control;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--ink) 4%, var(--paper));
+  }
+
+  &:active:not(:disabled) {
+    background: color-mix(in srgb, var(--ink) 7%, var(--paper));
+  }
+}
+
+@mixin button-primary {
+  @include button-secondary;
+
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+
+  &:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--ink) 88%, var(--amber));
+    background: color-mix(in srgb, var(--ink) 90%, var(--amber));
+  }
+
+  &:focus-visible {
+    outline-color: var(--amber);
+  }
+
+  &:disabled {
+    border-color: color-mix(in srgb, var(--ink) 18%, transparent);
+    background: color-mix(in srgb, var(--ink) 18%, var(--paper));
+    color: color-mix(in srgb, var(--ink) 45%, var(--paper));
+    opacity: 1;
+  }
+}
+
+@mixin button-danger {
+  @include button-secondary;
+
+  border-color: color-mix(in srgb, #9b2c2c 42%, transparent);
+  background: color-mix(in srgb, #9b2c2c 8%, var(--paper));
+  color: #7a1f1f;
+
+  &:hover:not(:disabled) {
+    border-color: color-mix(in srgb, #9b2c2c 60%, transparent);
+    background: color-mix(in srgb, #9b2c2c 14%, var(--paper));
+  }
+
+  &:focus-visible {
+    outline-color: #9b2c2c;
+  }
+}
+
+@mixin status-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--amber) 14%, var(--paper));
+  font-size: 12px;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+}

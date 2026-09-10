@@ -8,7 +8,10 @@ import { company } from '@/shared/config/company'
 import { absoluteUrl } from '@/shared/config/seo'
 import { useRouteScrollRestoration } from '@/shared/hooks/useRouteScrollRestoration'
 import { useScrollEffects } from '@/shared/hooks/useScrollEffects'
-import { YandexMetrikaHit, yandexMetrikaInlineScript } from '@/shared/lib/yandex-metrika/YandexMetrika'
+import {
+  YandexMetrikaHit,
+  yandexMetrikaInlineScript,
+} from '@/shared/lib/yandex-metrika/YandexMetrika'
 import { ScrollToTop } from '@/shared/ui/scroll-to-top/ScrollToTop'
 import { CookieBanner } from '@/widgets/cookie-banner'
 import { SiteFooter } from '@/widgets/site-footer/SiteFooter'
@@ -60,6 +63,8 @@ const websiteSchema = {
 }
 
 export function Layout({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation()
+  const internal = pathname.includes('/internal/')
   return (
     <html lang="ru">
       <head>
@@ -80,15 +85,17 @@ export function Layout({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
-        <noscript>
-          <div>
-            <img
-              src={`https://mc.yandex.ru/watch/${YANDEX_METRIKA_ID}`}
-              style={{ position: 'absolute', left: '-9999px' }}
-              alt=""
-            />
-          </div>
-        </noscript>
+        {!internal && (
+          <noscript>
+            <div>
+              <img
+                src={`https://mc.yandex.ru/watch/${YANDEX_METRIKA_ID}`}
+                style={{ position: 'absolute', left: '-9999px' }}
+                alt=""
+              />
+            </div>
+          </noscript>
+        )}
         <Scripts />
       </body>
     </html>
@@ -120,10 +127,10 @@ export default function Root() {
           <div className="scroll-progress" aria-hidden="true" />
           <SiteHeader />
           <Outlet />
-          <SiteFooter />
+          {!pathname.includes('/internal/') && <SiteFooter />}
           <LazyLeadModalMount />
           <ScrollToTop />
-          <CookieBanner />
+          {!pathname.includes('/internal/') && <CookieBanner />}
           <YandexMetrikaHit />
         </div>
       </LeadModalProvider>

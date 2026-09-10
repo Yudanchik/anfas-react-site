@@ -16,9 +16,31 @@ const base = publicPath.endsWith('/') ? publicPath : `${publicPath}/`
 export default defineConfig({
   base,
   plugins: [reactRouter(), tsconfigPaths()],
+  build: {
+    rollupOptions: {
+      output: {
+        onlyExplicitManualChunks: true,
+        manualChunks(id) {
+          const normalized = id.replaceAll('\\', '/')
+          if (
+            /\/src\/(entities\/estimate|features\/(estimate-calculator|floor-estimate))\//.test(
+              normalized,
+            )
+          ) {
+            return 'estimate-private/calculator'
+          }
+        },
+      },
+    },
+  },
   server: {
     host: true,
     allowedHosts: ['.ngrok-free.dev', '.ngrok-free.app', '.ngrok.io'],
+    proxy: process.env.ESTIMATE_PHP_ORIGIN
+      ? {
+          '/api/estimate-': { target: process.env.ESTIMATE_PHP_ORIGIN, changeOrigin: true },
+        }
+      : undefined,
   },
   css: {
     preprocessorOptions: {

@@ -1,0 +1,12 @@
+@use 'media' as mq;
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.zone,
+.zoneAlt {
+  min-width: 0;
+}
