@@ -5,7 +5,10 @@ import { projectRepository } from '@/entities/project/api'
 import { ProjectReview } from '@/entities/project/ui/project-review'
 import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
-import { tieRussianShortWords, tieRussianShortWordsInNode } from '@/shared/lib/tie-russian-short-words'
+import {
+  tieRussianShortWords,
+  tieRussianShortWordsInNode,
+} from '@/shared/lib/tie-russian-short-words'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { NotFoundState } from '@/shared/ui/not-found-state'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
@@ -52,7 +55,7 @@ export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
     description: `${data.project.description} Площадь ${data.project.area}, срок ${data.project.term}, бюджет ${data.project.price}. Реализованный проект в Санкт-Петербурге.`,
     keywords: `${data.project.title}, ремонт квартир спб, ${data.project.type}, портфолио ремонта, дизайн интерьера спб, ремонт квартиры ${data.project.area}`,
     path: `/projects/${data.project.slug}`,
-    image: `/${data.project.image}`,
+    image: assetUrl(data.project.image),
     type: 'article',
   })
 }
@@ -72,7 +75,7 @@ export default function ProjectRoute() {
         '@id': `${projectUrl}#project`,
         name: `${project.title} — ${project.type}`,
         description: project.description,
-        image: absoluteUrl(`/${project.image}`),
+        image: absoluteUrl(assetUrl(project.image)),
         url: projectUrl,
         creator: { '@id': absoluteUrl('/#organization') },
         locationCreated: {
@@ -187,7 +190,10 @@ export default function ProjectRoute() {
     }
   }, [activeImageIndex, closeLightbox, project.gallery.length, showNextImage, showPreviousImage])
 
-  const visibleGallery = useMemo(() => project.gallery.slice(0, galleryCount), [galleryCount, project.gallery])
+  const visibleGallery = useMemo(
+    () => project.gallery.slice(0, galleryCount),
+    [galleryCount, project.gallery],
+  )
   const activeImage = activeImageIndex === null ? null : project.gallery[activeImageIndex]
   const canLoadMore = project.gallery.length > galleryCount
   const loadMoreGallery = () => {
@@ -239,7 +245,11 @@ export default function ProjectRoute() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <section className={styles.projectDetailHero}>
-        <img className={styles.projectDetailImage} src={assetUrl(project.image)} alt={project.type} />
+        <img
+          className={styles.projectDetailImage}
+          src={assetUrl(project.image)}
+          alt={project.type}
+        />
         <PageWrapper className={styles.projectDetailWrapper}>
           <div className={styles.projectDetailHeroContent}>
             <p className={styles.projectDetailEyebrow}>{tieRussianShortWords(project.location)}</p>
@@ -271,8 +281,8 @@ export default function ProjectRoute() {
             <div className={styles.projectDetailIntroCopy}>
               <h2>{project.title}</h2>
               <p className={styles.projectDetailIntroLead}>
-                Показываем, как задача превращалась в готовый интерьер: планировка, материалы, сроки и бюджет — с
-                понятной логикой на каждом этапе.
+                Показываем, как задача превращалась в готовый интерьер: планировка, материалы, сроки
+                и бюджет — с понятной логикой на каждом этапе.
               </p>
               <div className={styles.projectDetailTags}>
                 <span>Планировка</span>
@@ -287,8 +297,8 @@ export default function ProjectRoute() {
                 Реализация с фиксированным бюджетом и согласованным графиком.
               </strong>
               <p className={styles.projectDetailIntroAsideText}>
-                Планировку, отделку и организацию работ вели в одной связке — чтобы проект оставался управляемым, а
-                результат выглядел цельно.
+                Планировку, отделку и организацию работ вели в одной связке — чтобы проект оставался
+                управляемым, а результат выглядел цельно.
               </p>
               <dl className={styles.projectDetailIntroMeta}>
                 <div>
@@ -308,7 +318,10 @@ export default function ProjectRoute() {
           </div>
 
           {visibleGallery.length > 0 ? (
-            <div className={styles.projectDetailGallery} aria-label={`Галерея проекта ${project.title}`}>
+            <div
+              className={styles.projectDetailGallery}
+              aria-label={`Галерея проекта ${project.title}`}
+            >
               {visibleGallery.map((image, index) => (
                 <button
                   className={styles.projectDetailGalleryButton}
@@ -331,7 +344,11 @@ export default function ProjectRoute() {
 
           {canLoadMore ? (
             <div className={styles.projectDetailMoreRow}>
-              <button className={styles.projectDetailMoreButton} type="button" onClick={loadMoreGallery}>
+              <button
+                className={styles.projectDetailMoreButton}
+                type="button"
+                onClick={loadMoreGallery}
+              >
                 Показать ещё фото
                 <ArrowIcon size={16} />
               </button>
@@ -339,8 +356,18 @@ export default function ProjectRoute() {
           ) : null}
 
           {activeImage ? (
-            <div className={styles.projectDetailOverlay} role="dialog" aria-modal="true" aria-label="Просмотр фотографии">
-              <button className={styles.projectDetailOverlayBackdrop} type="button" onClick={closeLightbox} aria-label="Закрыть просмотр" />
+            <div
+              className={styles.projectDetailOverlay}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Просмотр фотографии"
+            >
+              <button
+                className={styles.projectDetailOverlayBackdrop}
+                type="button"
+                onClick={closeLightbox}
+                aria-label="Закрыть просмотр"
+              />
               <div
                 className={styles.projectDetailOverlayPanel}
                 onPointerDown={handleOverlayPointerDown}
@@ -349,7 +376,13 @@ export default function ProjectRoute() {
                   swipeStartRef.current = null
                 }}
               >
-                <button ref={closeButtonRef} className={styles.projectDetailOverlayClose} type="button" onClick={closeLightbox} aria-label="Закрыть">
+                <button
+                  ref={closeButtonRef}
+                  className={styles.projectDetailOverlayClose}
+                  type="button"
+                  onClick={closeLightbox}
+                  aria-label="Закрыть"
+                >
                   ×
                 </button>
                 <button
@@ -382,8 +415,7 @@ export default function ProjectRoute() {
             defaultService="individual"
             title={
               <>
-                Хотите похожий результат{' '}
-                <br />
+                Хотите похожий результат <br />
                 <em>в своей квартире?</em>
               </>
             }

@@ -1,7 +1,8 @@
-import { Link } from 'react-router'
+import { Link, useLoaderData } from 'react-router'
+import { serviceRepository } from '@/entities/service/api'
 
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
-import { services, getServiceHref } from '@/entities/service/model/services.data'
+import { getServiceHref } from '@/entities/service/model/services.data'
 import { innerHeroImages } from '@/shared/config/hero-media'
 import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
@@ -21,7 +22,12 @@ export const meta = () =>
     path: '/services',
   })
 
+export async function loader() {
+  return { services: await serviceRepository.getAll() }
+}
+
 export default function ServicesRoute() {
+  const { services } = useLoaderData<typeof loader>()
   const hero = innerHeroImages.services
   const structuredData = {
     '@context': 'https://schema.org',
@@ -87,8 +93,8 @@ export default function ServicesRoute() {
               <SplitTitle line="Ремонт квартиры" accent="под ваш сценарий жизни" />
             </h1>
             <p className={styles.servicesPage__lead}>
-              Два формата — индивидуальный и пакетный. Оба ведут к готовому интерьеру, но
-              отличаются глубиной проектирования и темпом запуска.
+              Два формата — индивидуальный и пакетный. Оба ведут к готовому интерьеру, но отличаются
+              глубиной проектирования и темпом запуска.
             </p>
           </div>
         </PageWrapper>
@@ -100,8 +106,7 @@ export default function ServicesRoute() {
             <div className={styles.servicesPage__sectionHeader}>
               <p className={styles.servicesPage__sectionLabel}>Форматы работы</p>
               <h2 className={styles.servicesPage__sectionTitle}>
-                Выберите услугу{' '}
-                <br />и <em>узнайте подробности</em>
+                Выберите услугу <br />и <em>узнайте подробности</em>
               </h2>
             </div>
 
@@ -128,10 +133,7 @@ export default function ServicesRoute() {
                   <div className={styles.servicesPage__cardBody}>
                     <div className={styles.servicesPage__cardTop}>
                       <h2 className={styles.servicesPage__cardTitle}>
-                        <Link to={getServiceHref(service.slug)}>
-                          {service.title}
-                          {' '}
-                        </Link>
+                        <Link to={getServiceHref(service.slug)}>{service.title} </Link>
                       </h2>
                       <ul className={styles.servicesPage__cardTags}>
                         {service.tags.map((tag) => (
@@ -147,11 +149,16 @@ export default function ServicesRoute() {
                     <div className={styles.servicesPage__cardFoot}>
                       <div className={styles.servicesPage__cardMeta}>
                         <strong className={styles.servicesPage__cardPrice}>{service.price}</strong>
-                        <span className={styles.servicesPage__cardDuration}>{service.duration}</span>
+                        <span className={styles.servicesPage__cardDuration}>
+                          {service.duration}
+                        </span>
                       </div>
 
                       <div className={styles.servicesPage__cardActions}>
-                        <Link className={styles.servicesPage__cardLink} to={getServiceHref(service.slug)}>
+                        <Link
+                          className={styles.servicesPage__cardLink}
+                          to={getServiceHref(service.slug)}
+                        >
                           Подробнее
                           <ArrowIcon size={16} />
                         </Link>
@@ -177,9 +184,7 @@ export default function ServicesRoute() {
           <OpenLeadForm
             className={styles.servicesPage__formSection}
             defaultService="individual"
-            title={
-              <SplitTitle line="Оставьте заявку и мы поможем" accent="выбрать формат" />
-            }
+            title={<SplitTitle line="Оставьте заявку и мы поможем" accent="выбрать формат" />}
             lead="Если пока неясно, что лучше для вашей квартиры, оставьте имя и телефон. Свяжемся, уточним задачу и подскажем, с чего начать — с индивидуального проекта или пакетного ремонта."
             successMessage="Спасибо. Форма прошла клиентскую валидацию. Следующим шагом можно подключить отправку заявок в Telegram, почту или CRM."
           />
