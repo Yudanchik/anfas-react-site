@@ -384,7 +384,7 @@ function parseTemplateRows(
   return { items, changedCount, inactiveCount }
 }
 
-function parseStoredPriceProfile(data: unknown): EstimatePriceProfile | null {
+export function parseStoredPriceProfile(data: unknown): EstimatePriceProfile | null {
   if (!data || typeof data !== 'object') return null
   const profile = data as Partial<EstimatePriceProfile>
   if (profile.source !== 'user-xlsx' || !Array.isArray(profile.items)) return null
