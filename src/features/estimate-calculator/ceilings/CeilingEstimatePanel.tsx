@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react'
 
-import { groupCeilingEstimateLines, type EstimateLine, type EstimateZone } from '@/entities/estimate'
+import {
+  groupCeilingEstimateLines,
+  type CeilingPriceMappingItem,
+  type EstimateLine,
+  type EstimateZone,
+} from '@/entities/estimate'
 
 import type { CeilingScenarioDraftState } from '../model/estimate-calculator-persistence'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
@@ -22,6 +27,7 @@ type CeilingEstimatePanelProps = {
   onScenarioDraftChange: (patch: Partial<CeilingScenarioDraftState>) => void
   onResetSection: () => void
   globalFeedbackEpoch?: number
+  mapping?: readonly CeilingPriceMappingItem[]
 }
 
 export function CeilingEstimatePanel({
@@ -33,6 +39,7 @@ export function CeilingEstimatePanel({
   onScenarioDraftChange,
   onResetSection,
   globalFeedbackEpoch,
+  mapping,
 }: CeilingEstimatePanelProps) {
   const groups = useMemo(() => groupCeilingEstimateLines(editor.lines), [editor.lines])
   const [sectionFeedbackEpoch, setSectionFeedbackEpoch] = useState(0)
@@ -93,6 +100,7 @@ export function CeilingEstimatePanel({
               onZonesChange={onZonesChange}
               embedded
               feedbackEpoch={feedbackEpoch}
+              mapping={mapping}
               onAdd={editor.addZonedLine}
             />
           }

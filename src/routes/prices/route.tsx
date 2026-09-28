@@ -1,8 +1,8 @@
 import { Link, useLoaderData } from 'react-router'
 
+import { faqRepository } from '@/entities/faq/api'
 import { priceRepository } from '@/entities/price/api'
 import { getPriceCategoryHref, getPriceHubHref } from '@/entities/price/lib/price-helpers'
-import type { PriceFaqItem } from '@/entities/price/model/price.types'
 import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { ArrowIcon } from '@/shared/ui/icons/ArrowIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
@@ -20,6 +20,7 @@ import styles from './PricesRoute.module.scss'
 export async function loader() {
   return {
     categories: await priceRepository.getAll(),
+    hubFaq: (await faqRepository.getByKey('prices-hub'))?.items ?? [],
   }
 }
 
@@ -32,29 +33,6 @@ export const meta = () =>
       'прайс-лист ремонт квартир, цены на ремонт квартиры спб, стоимость ремонта квартиры, расценки на ремонт, сколько стоит ремонт квартиры',
     path: '/prices',
   })
-
-const hubFaq: readonly PriceFaqItem[] = [
-  {
-    question: 'Цены на сайте — это окончательная стоимость?',
-    answer:
-      'Нет, это ориентир «от». Точную смету мы формируем после бесплатного замера и уточнения объёма работ на вашем объекте.',
-  },
-  {
-    question: 'Как получить полный прайс-лист со всеми позициями?',
-    answer:
-      'Нажмите «Получить полный прайс», оставьте имя, телефон и email. На почту придёт ссылка на скачивание файла со всеми категориями и позициями.',
-  },
-  {
-    question: 'Сколько действует ссылка на скачивание файла?',
-    answer:
-      'Ссылка активна ограниченное время после отправки заявки. Если она истекла или письмо потерялось — запросите прайс ещё раз через ту же форму.',
-  },
-  {
-    question: 'Можно сразу обсудить смету, а не просто посмотреть цены?',
-    answer:
-      'Да. Оставьте заявку на консультацию — обсудим вашу квартиру, задачи и предложим подходящий формат ремонта и ориентир по бюджету.',
-  },
-] as const
 
 const secondaryLinks = [
   {
@@ -75,7 +53,7 @@ const secondaryLinks = [
 ] as const
 
 export default function PricesRoute() {
-  const { categories } = useLoaderData<typeof loader>()
+  const { categories, hubFaq } = useLoaderData<typeof loader>()
 
   const offerCatalogJsonLd = {
     '@context': 'https://schema.org',
@@ -126,8 +104,7 @@ export default function PricesRoute() {
             label="Категории работ"
             title={
               <>
-                Выберите вид работ{' '}
-                <br />и <em>узнайте цену</em>
+                Выберите вид работ <br />и <em>узнайте цену</em>
               </>
             }
             lead="У каждой категории — собственная страница с превью популярных позиций, пояснениями и ценами «от»."

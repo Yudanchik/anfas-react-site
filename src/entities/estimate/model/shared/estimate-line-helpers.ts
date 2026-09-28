@@ -81,13 +81,20 @@ export function updateEstimateLine(
   return lines.map((line) => {
     if (line.id !== lineId) return line
 
+    const nextTitle = patch.title === undefined ? line.title : patch.title.trim() || line.title
+    const nextUnitPrice =
+      patch.unitPrice === undefined ? line.unitPrice : normalizeNonNegative(patch.unitPrice)
+    const priceOrTitleChanged =
+      line.source !== 'manual' &&
+      ((patch.unitPrice !== undefined && nextUnitPrice !== line.unitPrice) ||
+        (patch.title !== undefined && nextTitle !== line.title))
+
     return {
       ...line,
       ...patch,
       quantity:
         patch.quantity === undefined ? line.quantity : normalizeNonNegative(patch.quantity),
-      unitPrice:
-        patch.unitPrice === undefined ? line.unitPrice : normalizeNonNegative(patch.unitPrice),
+      unitPrice: nextUnitPrice,
       coefficient:
         patch.coefficient === undefined
           ? line.coefficient
@@ -95,8 +102,9 @@ export function updateEstimateLine(
       comment: patch.comment === undefined ? line.comment : patch.comment.trim() || undefined,
       zoneName:
         patch.zoneName === undefined ? line.zoneName : patch.zoneName.trim() || undefined,
-      title: patch.title === undefined ? line.title : patch.title.trim() || line.title,
+      title: nextTitle,
       unit: patch.unit === undefined ? line.unit : patch.unit.trim() || line.unit,
+      priceEdited: priceOrTitleChanged ? true : line.priceEdited,
     }
   })
 }

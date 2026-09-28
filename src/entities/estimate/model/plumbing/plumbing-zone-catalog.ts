@@ -1,4 +1,5 @@
 import type { PlumbingPriceMappingItem, PlumbingWorkKind } from '../shared/estimate.types'
+import { isMappingItemAvailable } from '../shared/estimate-price-profile'
 import { PLUMBING_PRICE_MAPPING } from './plumbing-price.mapping'
 
 /**
@@ -30,5 +31,8 @@ export function getPlumbingZoneMappingOptions(
   categoryId: PlumbingZoneWorkCategoryId,
   mapping: readonly PlumbingPriceMappingItem[] = PLUMBING_PRICE_MAPPING,
 ): readonly PlumbingPriceMappingItem[] {
-  return mapping.filter((item) => item.kind === categoryId)
+  return mapping.filter(
+    (item) =>
+      item.kind === categoryId && isMappingItemAvailable(item),
+  )
 }

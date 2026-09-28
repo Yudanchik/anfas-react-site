@@ -9,10 +9,11 @@ export const ELECTRIC_SECTION_TITLE = 'Электрика (labour)'
 
 /**
  * Whitelist labour-работ по электрике для внутреннего калькулятора.
- * Primary: PDF `anfas-price-list.pdf`. Frontend — сверка при `source=both`.
+ * Primary: PDF `anfas-price-2026.pdf`. Frontend — сверка при `source=both`.
  * Вне scope: материалы (кабель, автоматы, светильники), ТВ-кронштейн,
  * Wi-Fi/домофон/видеозвонок, полный монтаж кондиционера, водяной тёплый пол,
- * заполнение штробы (общестрой), вызов электрика 15000.
+ * заполнение штробы (общестрой), вызов электрика 15000, Neptun.
+ * Лотки: одна укрупнённая строка `conduit-tray-mount` (не семейство по ширинам).
  */
 
 type Kind = ElectricWorkKind
@@ -161,6 +162,7 @@ export const ELECTRIC_PRICE_MAPPING: readonly ElectricPriceMappingItem[] = [
   pdf('conduit-pvc-rigid', 'Монтаж жёсткой ПВХ-трубы', 'м. пог.', 180, 'conduit', 'electricCableLength'),
   pdf('conduit-metal-hose', 'Монтаж металлорукава', 'м. пог.', 200, 'conduit', 'electricCableLength'),
   pdf('conduit-cable-channel', 'Монтаж кабель-канала', 'м. пог.', 200, 'conduit', 'electricCableLength'),
+  // Укрупнённо (owner): без семейства лотков по ширинам PDF 4.12–4.17.
   pdf('conduit-tray-mount', 'Монтаж кабельного лотка', 'м. пог.', 350, 'conduit', 'electricCableLength'),
 
   // —— Подрозетники / коробки ——

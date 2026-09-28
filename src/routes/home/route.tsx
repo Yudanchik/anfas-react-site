@@ -1,4 +1,6 @@
-﻿import { useState } from 'react'
+﻿import { useLoaderData } from 'react-router'
+import { faqRepository } from '@/entities/faq/api'
+import { useState } from 'react'
 
 import { HomeContact } from '@/widgets/home/contact'
 import { HomeFaq } from '@/widgets/home/faq'
@@ -12,7 +14,6 @@ import { HomeSocials } from '@/widgets/home/socials'
 import { HomeTicker } from '@/widgets/home/ticker'
 import { HomePains } from '@/widgets/home/pains'
 import { HomeProjectControl } from '@/widgets/home/project-control'
-import { faqItems } from '@/features/faq/model/faq.data'
 import { createSeoMeta } from '@/shared/config/seo'
 
 export const meta = () =>
@@ -25,7 +26,13 @@ export const meta = () =>
     path: '/',
   })
 
+export async function loader() {
+  const group = await faqRepository.getByKey('home')
+  return { faqItems: group?.items ?? [] }
+}
+
 export default function HomeRoute() {
+  const { faqItems } = useLoaderData<typeof loader>()
   const [openFaq, setOpenFaq] = useState(0)
   const faqSchema = {
     '@context': 'https://schema.org',
@@ -68,7 +75,7 @@ export default function HomeRoute() {
       <HomePartners />
       <HomeSocials />
       <HomeProcess />
-      <HomeFaq openFaq={openFaq} setOpenFaq={setOpenFaq} />
+      <HomeFaq items={faqItems} openFaq={openFaq} setOpenFaq={setOpenFaq} />
       <HomeContact />
     </main>
   )

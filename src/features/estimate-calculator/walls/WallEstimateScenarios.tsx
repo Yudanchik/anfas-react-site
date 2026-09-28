@@ -37,6 +37,7 @@ type WallEstimateScenariosProps = {
     label: string
     addedCount: number
     zoneName?: string
+    error?: string
   }
 }
 
@@ -149,6 +150,10 @@ export function WallEstimateScenarios({
       application,
       selectedZone ? { zone: selectedZone } : undefined,
     )
+    if (result.error) {
+      setError(result.error)
+      return
+    }
     setSuccess(
       result.zoneName
         ? formatWallScenarioZoneFeedback(result.label, result.zoneName, result.addedCount)

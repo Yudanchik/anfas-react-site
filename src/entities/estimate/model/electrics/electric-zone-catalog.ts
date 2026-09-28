@@ -1,4 +1,5 @@
 import type { ElectricPriceMappingItem, ElectricWorkKind } from '../shared/estimate.types'
+import { isMappingItemAvailable } from '../shared/estimate-price-profile'
 import { ELECTRIC_PRICE_MAPPING } from './electric-price.mapping'
 
 /**
@@ -36,5 +37,8 @@ export function getElectricZoneMappingOptions(
   categoryId: ElectricZoneWorkCategoryId,
   mapping: readonly ElectricPriceMappingItem[] = ELECTRIC_PRICE_MAPPING,
 ): readonly ElectricPriceMappingItem[] {
-  return mapping.filter((item) => item.kind === categoryId)
+  return mapping.filter(
+    (item) =>
+      item.kind === categoryId && isMappingItemAvailable(item),
+  )
 }

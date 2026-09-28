@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 
+import { backendAuthEnabled, useAuth } from '@/features/auth/AuthProvider'
 import { company, navigation } from '@/shared/config/company'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 
@@ -9,7 +10,11 @@ import styles from './SiteHeader.module.scss'
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { pathname } = useLocation()
-  const navItems = navigation
+  const auth = useAuth()
+  const navItems =
+    backendAuthEnabled && auth.user
+      ? [...navigation, { label: 'Смета', to: '/internal/estimate' }]
+      : navigation
   const isHeroPage =
     pathname === '/' ||
     pathname === '/services' ||
@@ -31,7 +36,9 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className={`${styles.siteHeader} ${isHeroPage ? styles.siteHeader_glass : styles.siteHeader_innerPage}`}>
+      <header
+        className={`${styles.siteHeader} ${isHeroPage ? styles.siteHeader_glass : styles.siteHeader_innerPage}`}
+      >
         <PageWrapper className={styles.siteHeader__inner}>
           <Link
             className="brand"
@@ -64,6 +71,28 @@ export function SiteHeader() {
             <span>Обсудить проект </span>
             <b>{company.phone}</b>
           </a>
+
+          {backendAuthEnabled && (
+            <Link
+              className={styles.siteHeader__account}
+              to="/auth"
+              aria-label={auth.user ? 'Мой аккаунт' : 'Вход и регистрация'}
+              onClick={() => setMenuOpen(false)}
+            >
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 22v-2a8 8 0 0 1 16 0v2" />
+              </svg>
+            </Link>
+          )}
 
           <button
             className={`${styles.siteHeader__menuButton} ${menuOpen ? styles.siteHeader__menuButton_open : ''}`}

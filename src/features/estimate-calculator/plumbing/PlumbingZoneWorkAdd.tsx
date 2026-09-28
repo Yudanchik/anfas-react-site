@@ -6,6 +6,7 @@ import {
   getPlumbingZoneMappingOptions,
   PLUMBING_ZONE_WORK_CATEGORIES,
   type EstimateZone,
+  type PlumbingPriceMappingItem,
   type PlumbingZoneWorkCategoryId,
 } from '@/entities/estimate'
 
@@ -23,6 +24,7 @@ type PlumbingZoneWorkAddProps = {
   onZonesChange?: (zones: EstimateZone[]) => void
   embedded?: boolean
   feedbackEpoch?: number
+  mapping?: readonly PlumbingPriceMappingItem[]
   onAdd: (params: {
     priceKey: string
     quantity: number
@@ -37,10 +39,14 @@ export function PlumbingZoneWorkAdd({
   onZonesChange,
   embedded = false,
   feedbackEpoch,
+  mapping,
   onAdd,
 }: PlumbingZoneWorkAddProps) {
   const [categoryId, setCategoryId] = useState<PlumbingZoneWorkCategoryId>('drainage')
-  const options = useMemo(() => getPlumbingZoneMappingOptions(categoryId), [categoryId])
+  const options = useMemo(
+    () => getPlumbingZoneMappingOptions(categoryId, mapping),
+    [categoryId, mapping],
+  )
   const [priceKey, setPriceKey] = useState(() => options[0]?.id ?? '')
   const [zoneSelect, setZoneSelect] = useState(GENERAL_ZONE)
   const [customZoneName, setCustomZoneName] = useState('')
@@ -97,7 +103,7 @@ export function PlumbingZoneWorkAdd({
 
   function handleCategoryChange(next: PlumbingZoneWorkCategoryId) {
     setCategoryId(next)
-    const nextOptions = getPlumbingZoneMappingOptions(next)
+    const nextOptions = getPlumbingZoneMappingOptions(next, mapping)
     setPriceKey(nextOptions[0]?.id ?? '')
   }
 

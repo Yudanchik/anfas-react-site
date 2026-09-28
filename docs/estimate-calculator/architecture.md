@@ -28,18 +28,18 @@ src/entities/estimate/model/
 
 Автоматические тесты калькулятора удалены по решению владельца. CI: `pnpm check` + `pnpm build`. Локальная проверка входа: `pnpm build` → `pnpm preview:estimate` (нужен PHP). См. [internal-access.md](./internal-access.md).
 
-| Слой | Назначение |
-|------|------------|
-| **mapping** | Whitelist работ и цен раздела (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*` / `PLUMBING_*`). Не смешивать ключи между разделами. |
-| **builders** | Собирают строки из mapping + inputs (по умолчанию выключены). |
-| **EstimateZone** | Сущность зоны объекта (`zone-N`) с площадями floors/walls/ceilings/tile и счётчиками electrics/plumbing. |
-| **zoneId / zoneName** | На `EstimateLine`: `zoneId` — ссылка на зону; `zoneName` — snapshot для UI. Без `zoneId` у canonical = общие работы. |
-| **presets / scenarios** | Object-level: canonical rows. Zone-level (`*ToZone`): upsert clones по `(zoneId, priceKey)`. |
-| **conflict groups** | Scope: `zoneId: null` (только canonical) или конкретный `zoneId` (только clones зоны). Manual не трогают. |
-| **price-work add** | «Общие работы» → `enableCanonicalEstimateLine`. Зона → `createZoned*`. Свободная зона → создаёт `EstimateZone`, затем clone. |
-| **removable lines** | `removeRemovableEstimateLine`: manual + zoned clones; canonical не удаляет. |
-| **groups** | Аккордеон «Строки сметы»; по умолчанию свёрнуты. |
-| **selected / summary** | `getSelectedEstimateSections` + `attachZonesToSelectedSections` → section → zone → lines. |
+| Слой                    | Назначение                                                                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **mapping**             | Whitelist работ и цен раздела (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*` / `PLUMBING_*`). Не смешивать ключи между разделами. |
+| **builders**            | Собирают строки из mapping + inputs (по умолчанию выключены).                                                                                    |
+| **EstimateZone**        | Сущность зоны объекта (`zone-N`) с площадями floors/walls/ceilings/tile и счётчиками electrics/plumbing.                                         |
+| **zoneId / zoneName**   | На `EstimateLine`: `zoneId` — ссылка на зону; `zoneName` — snapshot для UI. Без `zoneId` у canonical = общие работы.                             |
+| **presets / scenarios** | Object-level: canonical rows. Zone-level (`*ToZone`): upsert clones по `(zoneId, priceKey)`.                                                     |
+| **conflict groups**     | Scope: `zoneId: null` (только canonical) или конкретный `zoneId` (только clones зоны). Manual не трогают.                                        |
+| **price-work add**      | «Общие работы» → `enableCanonicalEstimateLine`. Зона → `createZoned*`. Свободная зона → создаёт `EstimateZone`, затем clone.                     |
+| **removable lines**     | `removeRemovableEstimateLine`: manual + zoned clones; canonical не удаляет.                                                                      |
+| **groups**              | Аккордеон «Строки сметы»; по умолчанию свёрнуты.                                                                                                 |
+| **selected / summary**  | `getSelectedEstimateSections` + `attachZonesToSelectedSections` → section → zone → lines.                                                        |
 
 Формула строки (domain): `Math.round(quantity × unitPrice × coefficient)`; выключенная / пустая / отрицательная qty → 0.
 
@@ -47,10 +47,11 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 
 ### Цены: PDF SoT и audit extract
 
-- PDF `anfas-price-list.pdf` — **source of truth** для всех mapping (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*` / `PLUMBING_*`).
+- PDF `resources/source-documents/anfas-price-2026.pdf` — **source of truth** для mapping (`FLOOR_*` / `WALL_*` / `CEILING_*` / `TILE_*` / `ELECTRIC_*` / `PLUMBING_*`).
 - Frontend `prices.data.ts` — только сверка для `source: both` (цена + единица должны совпасть с PDF).
 - При извлечении текста из PDF использовать `pdftotext -enc UTF-8 -table` (не `-layout`: колонки цены/единицы съезжают; без `-enc UTF-8` кириллица ломается на pdftotext 4.00).
 - Пример артефакта `-layout`: «Демонтаж плитки стеновой» → ложные 1300; в `-table` / PDF = **900**.
+- Stage P1 (2026-09): расширены labour whitelist Плитка/Полы/Стены/Сантехника; редкое — через price-add; сценарии default не раздувались. План: [roadmap-price-coverage-and-profiles.md](./roadmap-price-coverage-and-profiles.md).
 
 ### Плитка: пересечения и SoT
 
@@ -58,6 +59,8 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 - `source: both` только при совпадении цены и единицы с frontend preview **и** PDF.
 - Демонтаж стеновой плитки: PDF/FE/Walls/Tile = **900** ₽/м² (`source: both`).
 - Гидроизоляция **не** в Tile mapping; канон — Floors.
+- Герметизация плитка↔ванна — канон **Плитка** (`seal-bath` = PDF финиш-сантех 4.9, **1050** ₽); `plumbing.finish-bath-seal` не усиливать в сценариях. Плиточная позиция 8.5 (800) — отдельная строка PDF, в mapping пока нет.
+- Labour монтажа металлопрофиля и labour подгонки/облицовки люка — в Tile (price-add); экраны/комплексные люки с изделием — вне scope.
 - Floors/Walls tile-related keys **не удаляем**; Tile имеет собственные `priceKey`.
 - Soft-filter сценариев по `EstimateZone.zoneType` (helper `partitionScenariosByZoneType`) — Tile, Electrics и Plumbing.
 
@@ -65,7 +68,8 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 
 - `ELECTRIC_PRICE_MAPPING` — **широкий** labour-only whitelist PDF (редкие позиции доступны через price-add).
 - Default-сценарии — **компактные** (типовой набор; не весь mapping).
-- Не включать материалы, TV+кронштейн, unclear Wi‑Fi/домофон, водяной ТП, заделку штроб, выезд 15k в default.
+- Не включать материалы, TV+кронштейн, unclear Wi‑Fi/домофон, водяной ТП, заделку штроб, выезд 15k, Neptun в default.
+- Лотки: одна укрупнённая строка (`conduit-tray-mount`), без семейства по ширинам.
 - Zone fields: counters (sockets/switches/lights/data/boxes/…) + strobe/cable м.п. + panel modules + warm floor area + appliance connections.
 - Soft `zoneType` filter: kitchen / bathroom / room-rewire; остальные сценарии — `all`.
 - Водяной ТП — **не** в электрике; канон в Сантехнике. Электрический ТП остаётся здесь.
@@ -74,8 +78,8 @@ Id линии `floors:zone-M` / `walls:zone-M` / `ceilings:zone-M` / `tile:zone-
 
 - `PLUMBING_PRICE_MAPPING` — **широкий** labour-only whitelist PDF (редкие позиции через price-add).
 - Default-сценарии — **компактные**.
-- Out MVP: отопление (радиаторы/котлы/конвекторы), штробы дм³, заделка штроб, выезд 15k, материалы/изделия, электрический ПС / эл. ТП.
-- In: водяной ТП; монтаж коллектора/фильтра/счётчика/инсталляции как **работа**.
+- Out MVP: отопление (радиаторы/котлы/конвекторы), штробы дм³, заделка штроб, выезд 15k, материалы/изделия, электрический ПС / эл. ТП, ТЕСЕ-конструкции.
+- In: водяной ТП; монтаж коллектора/фильтра/счётчика/инсталляции как **работа**; водяной полотенцесушитель + выводы/байпас/опрессовка (price-add / счётчик ПС).
 - Zone fields: раздельные counters приборов (не один `fixtureCount`) + pipe lengths + warm floor area.
 - Soft `zoneType` filter: bathroom / kitchen scenarios; остальные — `all`.
 
@@ -98,12 +102,12 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 
 Поток экрана: **Intro + Разделы** → **Tabs** → **Зоны и замеры** → **Сценарии** → **Быстрые действия** → **Строки сметы** (add по клику) → **Итоговая смета**.
 
-| UI-деталь | Где |
-|-----------|-----|
-| **EstimateSelect** | Кастомный select (сценарии, прайс-работы); keyboard arrows + Escape |
-| **search/filter** | `filterEstimateGroupsByQuery` — только visibility; totals/enabled не меняет |
-| **Confirm dialog** | Удаление зоны |
-| **Summary tree** | Section accordion → nested zone/common accordion (indent + border) |
+| UI-деталь          | Где                                                                         |
+| ------------------ | --------------------------------------------------------------------------- |
+| **EstimateSelect** | Кастомный select (сценарии, прайс-работы); keyboard arrows + Escape         |
+| **search/filter**  | `filterEstimateGroupsByQuery` — только visibility; totals/enabled не меняет |
+| **Confirm dialog** | Удаление зоны                                                               |
+| **Summary tree**   | Section accordion → nested zone/common accordion (indent + border)          |
 
 ## Persistence
 
@@ -116,12 +120,12 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 - Сохраняется: вкладка, зоны, inputs floors/walls/ceilings/tile/electrics/plumbing, патчи строк, manual/zoned extras, draft пресетов/сценариев.
 - **Не** сохраняется: открытые группы аккордеона, search query, раскрытие итоговой сметы.
 
-| Действие | Зоны | Floors | Walls | Ceilings | Tile | Electrics | Plumbing |
-|----------|------|--------|-------|----------|------|-----------|----------|
-| Сбросить всю смету | очистить | очистить | очистить | очистить | очистить | очистить | очистить |
-| Сбросить раздел | оставить | только floors | только walls | только ceilings | только tile | только electrics | только plumbing |
-| Удалить зону Z | удалить Z | удалить clones с `zoneId=Z` | то же | то же | то же | то же | то же |
-| Rename зоны | обновить name | sync `zoneName` на clones | то же | то же | то же | то же | то же |
+| Действие           | Зоны          | Floors                      | Walls        | Ceilings        | Tile        | Electrics        | Plumbing        |
+| ------------------ | ------------- | --------------------------- | ------------ | --------------- | ----------- | ---------------- | --------------- |
+| Сбросить всю смету | очистить      | очистить                    | очистить     | очистить        | очистить    | очистить         | очистить        |
+| Сбросить раздел    | оставить      | только floors               | только walls | только ceilings | только tile | только electrics | только plumbing |
+| Удалить зону Z     | удалить Z     | удалить clones с `zoneId=Z` | то же        | то же           | то же       | то же            | то же           |
+| Rename зоны        | обновить name | sync `zoneName` на clones   | то же        | то же           | то же       | то же            | то же           |
 
 ## PDF / export
 
@@ -129,7 +133,20 @@ src/routes/internal/estimate/  # монтирует EstimateCalculatorWorkspace;
 
 Данные документа сохраняются отдельно (`anfas:estimate-document:v1`), существующая схема snapshot v2 не менялась. Резервная копия JSON объединяет details и snapshot, при импорте проходит существующий tolerant parser. CSV защищает текстовые ячейки от выполнения формул в Excel.
 
-Пользовательская инструкция: [работа с заказчиком](./customer-workflow.md). Ограничения: нет серверного архива, электронной подписи и XLSX; CSV доступен для Excel.
+Пользовательская инструкция: [работа с заказчиком](./customer-workflow.md). Ограничения: нет серверного архива, электронной подписи и синхронизации между устройствами; CSV доступен для Excel как выгрузка сметы.
+
+### Пользовательский прайс XLSX
+
+`features/estimate-calculator/model/estimate-price-profile-xlsx.ts` создаёт XLSX-шаблон и читает пользовательский XLSX client-side. PDF/CSV как импорт прайса не поддерживаются. Активный профиль хранится отдельно от snapshot сметы в `anfas:estimate-price-profile:v1`; на сервер файл не отправляется. Snapshot хранит `priceProfileRef` (id/name/source/contentHash) для диагностики расхождений, но суммы документа — в строках сметы.
+
+Контракт:
+
+- новые строки / price-add / новые clones сценария берут title/price из `buildActiveEstimateMappings`;
+- restore/JSON не перезаписывают сохранённые title/unitPrice; ручные правки помечаются `priceEdited`;
+- смена профиля по умолчанию — `new-only`; явный `recalculate` через `recalculateSectionLinesFromMapping` (с опцией overwriteCustom);
+- выключенная в прайсе работа (`profileActive: false`) недоступна в каталоге и блокирует сценарий до изменения выбора.
+
+Сценарии и price-add продолжают работать по стабильным `sectionId + priceKey`. Русское название не используется как ключ. Ручные строки (`source: manual`) профилем не синхронизируются.
 
 ## Доступ администратора
 

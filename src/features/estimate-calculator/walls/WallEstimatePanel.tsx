@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react'
 
-import { groupWallEstimateLines, type EstimateLine, type EstimateZone } from '@/entities/estimate'
+import {
+  groupWallEstimateLines,
+  type EstimateLine,
+  type EstimateZone,
+  type WallPriceMappingItem,
+} from '@/entities/estimate'
 
 import type { WallScenarioDraftState } from '../model/estimate-calculator-persistence'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
@@ -22,6 +27,7 @@ type WallEstimatePanelProps = {
   onScenarioDraftChange: (patch: Partial<WallScenarioDraftState>) => void
   onResetSection: () => void
   globalFeedbackEpoch?: number
+  mapping?: readonly WallPriceMappingItem[]
 }
 
 export function WallEstimatePanel({
@@ -33,6 +39,7 @@ export function WallEstimatePanel({
   onScenarioDraftChange,
   onResetSection,
   globalFeedbackEpoch,
+  mapping,
 }: WallEstimatePanelProps) {
   const groups = useMemo(() => groupWallEstimateLines(editor.lines), [editor.lines])
   const [sectionFeedbackEpoch, setSectionFeedbackEpoch] = useState(0)
@@ -96,6 +103,7 @@ export function WallEstimatePanel({
               onZonesChange={onZonesChange}
               embedded
               feedbackEpoch={feedbackEpoch}
+              mapping={mapping}
               onAdd={editor.addZonedLine}
             />
           }

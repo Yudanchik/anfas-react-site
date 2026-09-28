@@ -5,8 +5,10 @@ export const TILE_SECTION_TITLE = 'Плитка (labour)'
 
 /**
  * Whitelist labour-работ по плитке для внутреннего калькулятора.
- * Primary: PDF `anfas-price-list.pdf`. Frontend — сверка при `source=both`.
- * Вне scope: гидро, СВП, мембраны, металлопрофили, люки, экраны, фартук-комплекс, материалы.
+ * Primary: PDF `anfas-price-2026.pdf`. Frontend — сверка при `source=both`.
+ * Вне scope: гидро (канон — Полы), СВП, мембраны, экраны ванной, фартук-комплекс 35k,
+ * люки «включая изделие», подоконник КГ, выезды, материалы.
+ * Labour монтажа профиля и labour подгонки/облицовки люка — в mapping (price-add).
  */
 export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
   // —— Демонтаж ——
@@ -316,7 +318,7 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
   },
   {
     id: 'cut-45-ceramic',
-    title: 'Заусовка 45° керамической плитки',
+    title: 'Рез/заусовка керамической плитки под углом 45°',
     unit: 'м. пог.',
     unitPrice: 2500,
     source: 'pdf',
@@ -326,7 +328,7 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
   },
   {
     id: 'cut-45-porcelain',
-    title: 'Заусовка 45° керамогранита',
+    title: 'Рез/заусовка керамогранитной плитки под углом 45°',
     unit: 'м. пог.',
     unitPrice: 2600,
     source: 'pdf',
@@ -336,13 +338,53 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
   },
   {
     id: 'cut-45-large',
-    title: 'Заусовка 45° крупноформатной плитки',
+    title: 'Рез/заусовка крупноформатной плитки под углом 45°',
     unit: 'м. пог.',
     unitPrice: 3000,
     source: 'pdf',
     kind: 'cutting',
     defaultEnabled: false,
     defaultQuantityFrom: 'cuttingLength',
+  },
+  {
+    id: 'cut-45-mosaic-small',
+    title: 'Рез/заусовка мелкоштучной плитки типа кабанчик/гексагон/ёлка под углом 45°',
+    unit: 'шт.',
+    unitPrice: 1500,
+    source: 'pdf',
+    kind: 'cutting',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'manual',
+  },
+  {
+    id: 'cut-edge-abrasive',
+    title: 'Доработка края плитки абразивом после резки',
+    unit: 'м. пог.',
+    unitPrice: 500,
+    source: 'pdf',
+    kind: 'cutting',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'cuttingLength',
+  },
+  {
+    id: 'cut-inner-stress-relief',
+    title: 'Снятие напряжения во внутренних углах плитки',
+    unit: 'шт.',
+    unitPrice: 1000,
+    source: 'pdf',
+    kind: 'cutting',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'manual',
+  },
+  {
+    id: 'cut-figure-template',
+    title: 'Сложный фигурный рез плитки по шаблону',
+    unit: 'шт.',
+    unitPrice: 2500,
+    source: 'pdf',
+    kind: 'cutting',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'manual',
   },
   {
     id: 'hole-up-to-100',
@@ -388,7 +430,7 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
   },
   {
     id: 'corner-cement',
-    title: 'Формирование внешнего угла цементной затиркой',
+    title: 'Формирование внешнего угла цементным составом',
     unit: 'м. пог.',
     unitPrice: 700,
     source: 'pdf',
@@ -398,13 +440,57 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
   },
   {
     id: 'corner-epoxy',
-    title: 'Формирование внешнего угла эпоксидной затиркой',
+    title: 'Формирование внешнего угла эпоксидным составом',
     unit: 'м. пог.',
     unitPrice: 1200,
     source: 'pdf',
     kind: 'cutting',
     defaultEnabled: false,
     defaultQuantityFrom: 'cornerLength',
+  },
+  {
+    id: 'profile-corner-metal',
+    title: 'Монтаж углового металлического профиля для плитки',
+    unit: 'м. пог.',
+    unitPrice: 800,
+    source: 'pdf',
+    kind: 'accessory',
+    note: 'Labour монтажа; профиль как материал не считаем',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'cornerLength',
+  },
+  {
+    id: 'profile-joint-metal',
+    title: 'Монтаж стыковочного декоративного металлического профиля для плитки',
+    unit: 'м. пог.',
+    unitPrice: 1000,
+    source: 'pdf',
+    kind: 'accessory',
+    note: 'Labour монтажа; профиль как материал не считаем',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'cornerLength',
+  },
+  {
+    id: 'hatch-tile-fit',
+    title: 'Подгонка плитки в зоне скрытого люка',
+    unit: 'шт.',
+    unitPrice: 2500,
+    source: 'pdf',
+    kind: 'accessory',
+    note: 'Labour-only; люк как изделие не считаем',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'manual',
+  },
+  {
+    id: 'hatch-tile-clad',
+    title: 'Облицовка скрытого люка плиткой',
+    unit: 'шт.',
+    unitPrice: 5000,
+    source: 'pdf',
+    kind: 'accessory',
+    note: 'Labour-only; люк как изделие не считаем',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'manual',
   },
 
   // —— Плинтус / бордюр ——
@@ -506,7 +592,7 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
   },
   {
     id: 'grout-epoxy-mosaic',
-    title: 'Затирка эпоксидная по мозаике',
+    title: 'Заполнение/затирка межплиточных швов мозаики двухкомпонентными эпоксидными составами',
     unit: 'м²',
     unitPrice: 2500,
     source: 'pdf',
@@ -549,7 +635,7 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
   // —— Герметизация ——
   {
     id: 'seal-prep',
-    title: 'Подготовка примыканий под герметизацию',
+    title: 'Подготовка примыкания плитки перед герметизацией',
     unit: 'м. пог.',
     unitPrice: 200,
     source: 'pdf',
@@ -559,7 +645,7 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
   },
   {
     id: 'seal-silicone',
-    title: 'Герметизация примыканий силиконовым герметиком',
+    title: 'Формирование внутреннего примыкания силиконовым герметиком',
     unit: 'м. пог.',
     unitPrice: 600,
     source: 'pdf',
@@ -584,6 +670,7 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
     unitPrice: 250,
     source: 'pdf',
     kind: 'seal',
+    note: 'Оставлено без изменений (owner: не трогать в P1; не путать с гидро-лентой Полов)',
     defaultEnabled: false,
     defaultQuantityFrom: 'cornerLength',
   },
@@ -594,6 +681,7 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
     unitPrice: 1050,
     source: 'pdf',
     kind: 'seal',
+    note: 'PDF: Монтаж финишной сантехники 4.9 (1050). Не путать с плиточной 8.5 (800). Канон шва в смете — Плитка; plumbing.finish-bath-seal не усиливать в сценариях.',
     defaultEnabled: false,
     defaultQuantityFrom: 'cornerLength',
   },
@@ -604,6 +692,7 @@ export const TILE_PRICE_MAPPING: readonly TilePriceMappingItem[] = [
     unitPrice: 350,
     source: 'pdf',
     kind: 'seal',
+    note: 'PDF: Монтаж дверей 7.6 (350). Не путать с плиточной 8.6 (600).',
     defaultEnabled: false,
     defaultQuantityFrom: 'cornerLength',
   },

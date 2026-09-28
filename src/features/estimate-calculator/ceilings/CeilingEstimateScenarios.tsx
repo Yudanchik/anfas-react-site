@@ -36,6 +36,7 @@ type CeilingEstimateScenariosProps = {
     label: string
     addedCount: number
     zoneName?: string
+    error?: string
   }
 }
 
@@ -143,6 +144,10 @@ export function CeilingEstimateScenarios({
       application,
       selectedZone ? { zone: selectedZone } : undefined,
     )
+    if (result.error) {
+      setError(result.error)
+      return
+    }
     setSuccess(
       result.zoneName
         ? formatCeilingScenarioZoneFeedback(result.label, result.zoneName, result.addedCount)

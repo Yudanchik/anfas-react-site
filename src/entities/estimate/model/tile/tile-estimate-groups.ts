@@ -41,7 +41,7 @@ const GROUP_TITLES: Record<TileEstimateGroupId, string> = {
   grout: 'Затирка / очистка',
   seal: 'Герметизация примыканий',
   repair: 'Ремонт / замена',
-  accessory: 'Плинтус / бордюр',
+  accessory: 'Плинтус / профиль / люки',
   manual: 'Ручные строки',
 }
 

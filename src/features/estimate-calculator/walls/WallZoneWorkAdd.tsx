@@ -6,6 +6,7 @@ import {
   getWallZoneMappingOptions,
   WALL_ZONE_WORK_CATEGORIES,
   type EstimateZone,
+  type WallPriceMappingItem,
   type WallZoneWorkCategoryId,
 } from '@/entities/estimate'
 
@@ -24,6 +25,7 @@ type WallZoneWorkAddProps = {
   /** Без своей рамки/заголовка — внутри панели «Строки сметы». */
   embedded?: boolean
   feedbackEpoch?: number
+  mapping?: readonly WallPriceMappingItem[]
   onAdd: (params: {
     priceKey: string
     quantity: number
@@ -38,10 +40,14 @@ export function WallZoneWorkAdd({
   onZonesChange,
   embedded = false,
   feedbackEpoch,
+  mapping,
   onAdd,
 }: WallZoneWorkAddProps) {
   const [categoryId, setCategoryId] = useState<WallZoneWorkCategoryId>('demolition')
-  const options = useMemo(() => getWallZoneMappingOptions(categoryId), [categoryId])
+  const options = useMemo(
+    () => getWallZoneMappingOptions(categoryId, mapping),
+    [categoryId, mapping],
+  )
   const [priceKey, setPriceKey] = useState(() => options[0]?.id ?? '')
   const [zoneSelect, setZoneSelect] = useState(GENERAL_ZONE)
   const [customZoneName, setCustomZoneName] = useState('')
@@ -98,7 +104,7 @@ export function WallZoneWorkAdd({
 
   function handleCategoryChange(next: WallZoneWorkCategoryId) {
     setCategoryId(next)
-    const nextOptions = getWallZoneMappingOptions(next)
+    const nextOptions = getWallZoneMappingOptions(next, mapping)
     setPriceKey(nextOptions[0]?.id ?? '')
   }
 

@@ -43,6 +43,7 @@ type TileEstimateScenariosProps = {
     label: string
     addedCount: number
     zoneName?: string
+    error?: string
   }
 }
 
@@ -192,6 +193,10 @@ export function TileEstimateScenarios({
       application,
       selectedZone ? { zone: selectedZone } : undefined,
     )
+    if (result.error) {
+      setError(result.error)
+      return
+    }
     setSuccess(
       result.zoneName
         ? formatTileScenarioZoneFeedback(result.label, result.zoneName, result.addedCount)

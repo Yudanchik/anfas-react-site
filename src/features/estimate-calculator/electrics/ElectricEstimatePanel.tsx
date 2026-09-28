@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 
 import {
   groupElectricEstimateLines,
+  type ElectricPriceMappingItem,
   type EstimateLine,
   type EstimateZone,
 } from '@/entities/estimate'
@@ -26,6 +27,7 @@ type ElectricEstimatePanelProps = {
   onScenarioDraftChange: (patch: Partial<ElectricScenarioDraftState>) => void
   onResetSection: () => void
   globalFeedbackEpoch?: number
+  mapping?: readonly ElectricPriceMappingItem[]
 }
 
 export function ElectricEstimatePanel({
@@ -37,6 +39,7 @@ export function ElectricEstimatePanel({
   onScenarioDraftChange,
   onResetSection,
   globalFeedbackEpoch,
+  mapping,
 }: ElectricEstimatePanelProps) {
   const groups = useMemo(() => groupElectricEstimateLines(editor.lines), [editor.lines])
   const [sectionFeedbackEpoch, setSectionFeedbackEpoch] = useState(0)
@@ -99,6 +102,7 @@ export function ElectricEstimatePanel({
               onZonesChange={onZonesChange}
               embedded
               feedbackEpoch={feedbackEpoch}
+              mapping={mapping}
               onAdd={editor.addZonedLine}
             />
           }

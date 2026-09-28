@@ -1,4 +1,4 @@
-import { faqItems } from '@/features/faq/model/faq.data'
+import type { FaqItem } from '@/entities/faq/model/faq.types'
 import { PlusIcon } from '@/shared/ui/icons/PlusIcon'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
 import { SectionHeader } from '../../ui'
@@ -6,9 +6,11 @@ import styles from './HomeFaq.module.scss'
 import { tieRussianShortWords } from '@/shared/lib/tie-russian-short-words'
 
 export function HomeFaq({
+  items,
   openFaq,
   setOpenFaq,
 }: {
+  items: readonly FaqItem[]
   openFaq: number
   setOpenFaq: (value: number) => void
 }) {
@@ -22,15 +24,14 @@ export function HomeFaq({
           label="Частые вопросы"
           title={
             <>
-              Закрываем{' '}
-              <br />
+              Закрываем <br />
               <em>главные страхи.</em>
             </>
           }
           lead="Здесь собрали короткие ответы про сроки, бюджет, контроль, удалённый ремонт и выбор между дизайн-проектом и пакетным решением."
         />
         <div className={styles.faq__list}>
-          {faqItems.map((item, index) => {
+          {items.map((item, index) => {
             const isOpen = openFaq === index
             const triggerId = `faq-trigger-${index + 1}`
             const answerId = `faq-answer-${index + 1}`

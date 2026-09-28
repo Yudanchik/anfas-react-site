@@ -181,6 +181,11 @@ export type EstimateLine = {
   source: EstimatePriceSource
   frontendCategorySlug?: PriceCategorySlug
   note?: string
+  /**
+   * Пользователь вручную менял название или цену прайс-строки.
+   * Не выводить сравнением с прайсом: только явный признак (для старых снимков может отсутствовать).
+   */
+  priceEdited?: boolean
 }
 
 export type EstimateSection = {
@@ -333,6 +338,8 @@ export type FloorPriceMappingItem = {
   note?: string
   defaultEnabled: boolean
   defaultQuantityFrom: FloorQuantityField
+  /** false — работа выключена в активном пользовательском прайсе */
+  profileActive?: boolean
 }
 
 export type WallPriceMappingItem = {
@@ -348,6 +355,7 @@ export type WallPriceMappingItem = {
   note?: string
   defaultEnabled: boolean
   defaultQuantityFrom: WallQuantityField
+  profileActive?: boolean
 }
 
 export type CeilingPriceMappingItem = {
@@ -363,6 +371,7 @@ export type CeilingPriceMappingItem = {
   note?: string
   defaultEnabled: boolean
   defaultQuantityFrom: CeilingQuantityField
+  profileActive?: boolean
 }
 
 export type TilePriceMappingItem = {
@@ -378,6 +387,7 @@ export type TilePriceMappingItem = {
   note?: string
   defaultEnabled: boolean
   defaultQuantityFrom: TileQuantityField
+  profileActive?: boolean
 }
 
 export type ElectricPriceMappingItem = {
@@ -393,6 +403,7 @@ export type ElectricPriceMappingItem = {
   note?: string
   defaultEnabled: boolean
   defaultQuantityFrom: ElectricQuantityField
+  profileActive?: boolean
 }
 
 export type PlumbingPriceMappingItem = {
@@ -408,4 +419,5 @@ export type PlumbingPriceMappingItem = {
   note?: string
   defaultEnabled: boolean
   defaultQuantityFrom: PlumbingQuantityField
+  profileActive?: boolean
 }

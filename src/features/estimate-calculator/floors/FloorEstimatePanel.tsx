@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react'
 
-import { groupFloorEstimateLines, type EstimateLine, type EstimateZone } from '@/entities/estimate'
+import {
+  groupFloorEstimateLines,
+  type EstimateLine,
+  type EstimateZone,
+  type FloorPriceMappingItem,
+} from '@/entities/estimate'
 import type { FloorEstimateEditor } from '@/features/floor-estimate/model/use-floor-estimate-editor'
 import { FloorEstimateHelpers } from '@/features/floor-estimate/ui/FloorEstimateHelpers'
 import { FloorEstimatePresets } from '@/features/floor-estimate/ui/FloorEstimatePresets'
@@ -22,6 +27,7 @@ type FloorEstimatePanelProps = {
   onPresetDraftChange: (patch: Partial<FloorPresetDraftState>) => void
   onResetAll: () => void
   globalFeedbackEpoch?: number
+  mapping?: readonly FloorPriceMappingItem[]
 }
 
 export function FloorEstimatePanel({
@@ -33,6 +39,7 @@ export function FloorEstimatePanel({
   onPresetDraftChange,
   onResetAll,
   globalFeedbackEpoch,
+  mapping,
 }: FloorEstimatePanelProps) {
   const groups = useMemo(() => groupFloorEstimateLines(editor.lines), [editor.lines])
   const [sectionFeedbackEpoch, setSectionFeedbackEpoch] = useState(0)
@@ -94,6 +101,7 @@ export function FloorEstimatePanel({
               onZonesChange={onZonesChange}
               embedded
               feedbackEpoch={feedbackEpoch}
+              mapping={mapping}
               onAdd={editor.addZonedLine}
             />
           }

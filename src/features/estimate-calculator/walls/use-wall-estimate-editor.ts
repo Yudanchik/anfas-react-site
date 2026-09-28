@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import {
+  applyActivePriceToCanonicalLine,
   applyWallCornersLength,
   applyWallDemolitionArea,
   applyWallFinishArea,
@@ -14,13 +15,20 @@ import {
   calculateSectionTotal,
   countEnabledLines,
   createManualWallEstimateLine,
-  createZonedWallEstimateLine,
+  createZonedLineFromMapping,
   enableCanonicalEstimateLine,
+  formatUnavailableScenarioMessage,
+  getUnavailableMappingKeys,
+  resolveWallScenarioKeys,
+  syncNewLinesFromMapping,
   updateEstimateLine,
   removeRemovableEstimateLine,
+  WALL_PRICE_MAPPING,
+  WALL_SECTION_ID,
   type EstimateLine,
   type EstimateZone,
   type WallEstimateInput,
+  type WallPriceMappingItem,
   type WallScenarioApplication,
 } from '@/entities/estimate'
 
@@ -49,13 +57,15 @@ const EMPTY_INPUT: WallEstimateInput = {
 export type WallEstimateEditorInitial = {
   input?: WallEstimateInput
   lines?: EstimateLine[]
+  mapping?: readonly WallPriceMappingItem[]
 }
 
 export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
   const initialInput = initial.input ?? EMPTY_INPUT
+  const mapping = initial.mapping ?? WALL_PRICE_MAPPING
   const [input, setInput] = useState<WallEstimateInput>(initialInput)
   const [lines, setLines] = useState<EstimateLine[]>(
-    () => initial.lines ?? buildWallEstimateLines(initialInput),
+    () => initial.lines ?? buildWallEstimateLines(initialInput, { mapping }),
   )
 
   const selectedCount = useMemo(() => countEnabledLines(lines), [lines])
@@ -68,7 +78,10 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
   function patchLine(
     lineId: string,
     patch: Partial<
-      Pick<EstimateLine, 'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'>
+      Pick<
+        EstimateLine,
+        'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit'
+      >
     >,
   ) {
     setLines((prev) => updateEstimateLine(prev, lineId, patch))
@@ -124,8 +137,18 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
   function applyScenario(
     application: WallScenarioApplication,
     target?: { zone?: EstimateZone },
-  ): { label: string; addedCount: number; zoneName?: string } {
+  ): { label: string; addedCount: number; zoneName?: string; error?: string } {
     const zone = target?.zone
+    const keys = resolveWallScenarioKeys(application)
+    const unavailable = getUnavailableMappingKeys(keys, mapping)
+    if (unavailable.length > 0) {
+      return {
+        label: '',
+        addedCount: 0,
+        error: formatUnavailableScenarioMessage(unavailable),
+      }
+    }
+
     let result = zone
       ? applyWallScenarioToZone(lines, zone, application)
       : applyWallScenario(lines, input, application)
@@ -133,7 +156,7 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
       result = zone
         ? applyWallScenarioToZone(prev, zone, application)
         : applyWallScenario(prev, input, application)
-      return result.lines
+      return syncNewLinesFromMapping(prev, result.lines, WALL_SECTION_ID, mapping)
     })
     return {
       label: result.scenarioLabel,
@@ -167,11 +190,16 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
       setLines((prev) => {
         const result = enableCanonicalEstimateLine(prev, params)
         ok = result.ok
-        return result.lines
+        if (!ok) return prev
+        return result.lines.map((line) =>
+          line.priceKey === params.priceKey && !line.zoneId
+            ? applyActivePriceToCanonicalLine(line, mapping)
+            : line,
+        )
       })
       return ok
     }
-    const line = createZonedWallEstimateLine(params)
+    const line = createZonedLineFromMapping(WALL_SECTION_ID, mapping, params)
     if (!line) return false
     setLines((prev) => [...prev, line])
     return true
@@ -191,7 +219,7 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
 
   function resetEstimate() {
     setInput(EMPTY_INPUT)
-    setLines(buildWallEstimateLines(EMPTY_INPUT))
+    setLines(buildWallEstimateLines(EMPTY_INPUT, { mapping }))
   }
 
   function replaceEstimate(next: { input: WallEstimateInput; lines: EstimateLine[] }) {
