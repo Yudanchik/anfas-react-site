@@ -17,6 +17,7 @@ import {
   type EstimateCalculatorSnapshot,
 } from '../model/estimate-calculator-persistence'
 import { EstimateConfirmDialog } from './EstimateConfirmDialog'
+import { EstimateDocumentFields } from './EstimateDocumentFields'
 import styles from './EstimateDocumentPanel.module.scss'
 
 type Props = {
@@ -24,10 +25,25 @@ type Props = {
   lines: readonly EstimateLine[]
   snapshot: EstimateCalculatorSnapshot
   onNew: () => void
+  accountDetails?: EstimateDocumentDetails
+  onAccountDetailsChange?: (details: EstimateDocumentDetails) => void
+  onAccountImport?: (payload: {
+    snapshot: EstimateCalculatorSnapshot
+    details: EstimateDocumentDetails
+  }) => void
 }
 
-export function EstimateDocumentPanel({ sections, lines, snapshot, onNew }: Props) {
-  const [details, setDetails] = useState(readDocumentDetails)
+export function EstimateDocumentPanel({
+  sections,
+  lines,
+  snapshot,
+  onNew,
+  accountDetails,
+  onAccountDetailsChange,
+  onAccountImport,
+}: Props) {
+  const [localDetails, setDetails] = useState(() => accountDetails ?? readDocumentDetails())
+  const details = accountDetails ?? localDetails
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [confirmation, setConfirmation] = useState<'new' | 'import' | null>(null)
@@ -64,6 +80,10 @@ export function EstimateDocumentPanel({ sections, lines, snapshot, onNew }: Prop
 
   function update(patch: Partial<EstimateDocumentDetails>) {
     const next = { ...details, ...patch }
+    if (onAccountDetailsChange) {
+      onAccountDetailsChange(next)
+      return
+    }
     setDetails(next)
     try {
       localStorage.setItem(DOCUMENT_STORAGE_KEY, JSON.stringify(next))
@@ -125,6 +145,12 @@ export function EstimateDocumentPanel({ sections, lines, snapshot, onNew }: Prop
     } else if (pendingImport.current) {
       const next = pendingImport.current
       try {
+        if (onAccountImport) {
+          onAccountImport(next)
+          pendingImport.current = null
+          setConfirmation(null)
+          return
+        }
         const previousDetails = localStorage.getItem(DOCUMENT_STORAGE_KEY)
         localStorage.setItem(DOCUMENT_STORAGE_KEY, JSON.stringify(next.details))
         if (!writeEstimateCalculatorSnapshot(next.snapshot)) {
@@ -145,41 +171,16 @@ export function EstimateDocumentPanel({ sections, lines, snapshot, onNew }: Prop
   return (
     <section className={styles.panel} aria-labelledby="estimate-document-title">
       <div className={styles.heading}>
-        <h2 id="estimate-document-title">Смета для заказчика</h2>
+        <h2 id="estimate-document-title">
+          {accountDetails ? 'Экспорт и копия файла' : 'Смета для заказчика'}
+        </h2>
         <button type="button" className={styles.secondary} onClick={() => setConfirmation('new')}>
-          Новая смета
+          {accountDetails ? 'Очистить расчёт' : 'Новая смета'}
         </button>
       </div>
-      <div className={styles.fields}>
-        {(
-          [
-            ['number', 'Номер сметы'],
-            ['date', 'Дата'],
-            ['customer', 'Заказчик'],
-            ['object', 'Объект / адрес'],
-            ['estimator', 'Составил'],
-          ] as const
-        ).map(([key, label]) => (
-          <label key={key}>
-            {label}
-            <input
-              type={key === 'date' ? 'date' : 'text'}
-              maxLength={240}
-              value={details[key]}
-              onChange={(e) => update({ [key]: e.target.value })}
-            />
-          </label>
-        ))}
-        <label className={styles.note}>
-          Примечание для заказчика
-          <textarea
-            rows={2}
-            maxLength={2000}
-            value={details.note}
-            onChange={(e) => update({ note: e.target.value })}
-          />
-        </label>
-      </div>
+      {!accountDetails && (
+        <EstimateDocumentFields value={details} onChange={(next) => update(next)} />
+      )}
       {issues.length > 0 && (
         <div className={styles.issues}>
           <strong>Проверьте перед выдачей</strong>
@@ -242,14 +243,14 @@ export function EstimateDocumentPanel({ sections, lines, snapshot, onNew }: Prop
             )
           }
         >
-          Сохранить копию
+          {accountDetails ? 'Скачать JSON' : 'Сохранить копию'}
         </button>
         <button
           type="button"
           className={styles.secondary}
           onClick={() => fileInput.current?.click()}
         >
-          Открыть копию
+          {accountDetails ? 'Загрузить JSON' : 'Открыть копию'}
         </button>
         <input
           ref={fileInput}

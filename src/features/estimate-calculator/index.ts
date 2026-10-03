@@ -1,3 +1,4 @@
+export { EstimateLibrary } from './ui/EstimateLibrary'
 export { EstimateCalculatorWorkspace } from './ui/EstimateCalculatorWorkspace'
 export { EstimateTabs } from './ui/EstimateTabs'
 export type { EstimateTabId } from './ui/EstimateTabs'

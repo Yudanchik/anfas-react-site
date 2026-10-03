@@ -13,7 +13,7 @@ export function SiteHeader() {
   const auth = useAuth()
   const navItems =
     backendAuthEnabled && auth.user
-      ? [...navigation, { label: 'Смета', to: '/internal/estimate' }]
+      ? [...navigation, { label: 'Мои сметы', to: '/internal/estimate' }]
       : navigation
   const isHeroPage =
     pathname === '/' ||

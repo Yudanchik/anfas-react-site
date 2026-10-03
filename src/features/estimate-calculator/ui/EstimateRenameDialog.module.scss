@@ -1,0 +1,51 @@
+@use './estimate-ui' as eu;
+
+.dialog {
+  @include eu.panel;
+
+  width: min(440px, calc(100vw - 32px));
+  margin: auto;
+  padding: 24px;
+  color: var(--ink);
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--ink) 42%, transparent);
+  }
+
+  h2 {
+    @include eu.section-title;
+
+    font-size: 18px;
+  }
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  font-size: 12px;
+
+  input {
+    @include eu.control;
+  }
+}
+
+.error {
+  color: #a82a24;
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.primary {
+  @include eu.button-primary;
+}
+
+.secondary {
+  @include eu.button-secondary;
+}

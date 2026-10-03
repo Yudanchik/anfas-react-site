@@ -56,7 +56,7 @@ export default defineConfig(({ mode }): UserConfig => {
       proxy:
         env.VITE_AUTH_MODE === 'nest'
           ? {
-              '/api/auth': {
+              '/api': {
                 target: env.AUTH_BACKEND_ORIGIN || 'http://127.0.0.1:3000',
                 changeOrigin: true,
               },

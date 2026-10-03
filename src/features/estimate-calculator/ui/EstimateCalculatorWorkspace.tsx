@@ -95,7 +95,10 @@ import { WallEstimatePanel } from '../walls/WallEstimatePanel'
 import { EstimateCombinedSummary } from './EstimateCombinedSummary'
 import { EstimateIntro } from './EstimateIntro'
 import { EstimateDocumentPanel } from './EstimateDocumentPanel'
-import { EstimatePriceProfilePanel, type PriceProfileApplyOptions } from './EstimatePriceProfilePanel'
+import {
+  EstimatePriceProfilePanel,
+  type PriceProfileApplyOptions,
+} from './EstimatePriceProfilePanel'
 import { EstimateTabs, type EstimateTabId } from './EstimateTabs'
 import {
   readEstimatePriceProfile,
@@ -103,10 +106,26 @@ import {
 } from '../model/estimate-price-profile-xlsx'
 import styles from './EstimateCalculatorWorkspace.module.scss'
 
-export function EstimateCalculatorWorkspace() {
+import { type EstimateDocumentDetails } from '../model/estimate-document'
+import type { EstimatePayload } from '../model/saved-estimates'
+
+type AccountProps = {
+  accountDetails?: EstimateDocumentDetails
+  onAccountDetailsChange?: (details: EstimateDocumentDetails) => void
+  accountPayload?: EstimatePayload
+  onAccountChange?: (payload: EstimatePayload) => void
+  onAccountImport?: (payload: EstimatePayload) => void
+}
+export function EstimateCalculatorWorkspace({
+  accountPayload,
+  accountDetails,
+  onAccountDetailsChange,
+  onAccountChange,
+  onAccountImport,
+}: AccountProps = {}) {
   const [initial] = useState(() => {
-    const snapshot = readEstimateCalculatorSnapshot()
-    const storedProfile = readEstimatePriceProfile()
+    const snapshot = accountPayload ? accountPayload.snapshot : readEstimateCalculatorSnapshot()
+    const storedProfile = accountPayload ? accountPayload.priceProfile : readEstimatePriceProfile()
     const mappings = buildActiveEstimateMappings(storedProfile)
     return {
       snapshot,
@@ -149,7 +168,9 @@ export function EstimateCalculatorWorkspace() {
     initial.plumbingScenarios,
   )
   const [globalFeedbackEpoch, setGlobalFeedbackEpoch] = useState(0)
-  const [priceProfile, setPriceProfile] = useState<EstimatePriceProfile | null>(initial.priceProfile)
+  const [priceProfile, setPriceProfile] = useState<EstimatePriceProfile | null>(
+    initial.priceProfile,
+  )
   /** Профиль, с которым ассоциирована текущая смета (из снимка); обновляется при явном apply. */
   const [estimateProfileRef, setEstimateProfileRef] = useState(
     () => initial.snapshot?.priceProfileRef,
@@ -199,14 +220,7 @@ export function EstimateCalculatorWorkspace() {
       ...electrics.lines,
       ...plumbing.lines,
     ],
-    [
-      floors.lines,
-      walls.lines,
-      ceilings.lines,
-      tile.lines,
-      electrics.lines,
-      plumbing.lines,
-    ],
+    [floors.lines, walls.lines, ceilings.lines, tile.lines, electrics.lines, plumbing.lines],
   )
 
   const snapshot = useMemo(
@@ -260,12 +274,17 @@ export function EstimateCalculatorWorkspace() {
   )
 
   useEffect(() => {
+    if (accountPayload) return
     if (skipFirstPersist.current) {
       skipFirstPersist.current = false
       return
     }
     setStorageFailed(!writeEstimateCalculatorSnapshot(snapshot))
-  }, [snapshot])
+  }, [snapshot, accountPayload])
+
+  useEffect(() => {
+    if (accountDetails) onAccountChange?.({ snapshot, details: accountDetails, priceProfile })
+  }, [snapshot, accountDetails, priceProfile, onAccountChange])
 
   function handleZonesChange(nextZones: EstimateZone[]) {
     const prevById = new Map(zones.map((zone) => [zone.id, zone]))
@@ -294,7 +313,7 @@ export function EstimateCalculatorWorkspace() {
   }
 
   function resetAllEstimate() {
-    clearEstimateCalculatorSnapshot()
+    if (!accountPayload) clearEstimateCalculatorSnapshot()
     setGlobalFeedbackEpoch((n) => n + 1)
     setActiveTab('floors')
     setZones([])
@@ -336,7 +355,7 @@ export function EstimateCalculatorWorkspace() {
     nextProfile: EstimatePriceProfile | null,
     options: PriceProfileApplyOptions,
   ): boolean {
-    if (!writeEstimatePriceProfile(nextProfile)) return false
+    if (!accountPayload && !writeEstimatePriceProfile(nextProfile)) return false
 
     const nextMappings = buildActiveEstimateMappings(nextProfile)
     const nextRef = getPriceProfileRef(nextProfile)
@@ -670,6 +689,11 @@ export function EstimateCalculatorWorkspace() {
           ]}
           snapshot={snapshot}
           onNew={resetAllEstimate}
+          accountDetails={accountPayload ? accountDetails : undefined}
+          onAccountDetailsChange={accountPayload ? onAccountDetailsChange : undefined}
+          onAccountImport={
+            accountPayload ? (next) => onAccountImport?.({ ...next, priceProfile }) : undefined
+          }
         />
       </div>
     </div>
