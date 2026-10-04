@@ -21,9 +21,11 @@ import {
   type CeilingFinishTargetOption,
   type CeilingPaintLayersOption,
   type CeilingPriceMappingItem,
+  type CeilingScenarioApplication,
   type CeilingStateOption,
   type DemolitionCoveringOption,
   type ElectricEstimateInput,
+  type ElectricScenarioApplication,
   type ElectricPriceMappingItem,
   type ElectricStateOption,
   type EstimateLine,
@@ -31,6 +33,7 @@ import {
   type FloorEstimateInput,
   type FloorPriceMappingItem,
   type PlumbingEstimateInput,
+  type PlumbingScenarioApplication,
   type PlumbingPriceMappingItem,
   type PlumbingStateOption,
   type ScreedTypeOption,
@@ -94,6 +97,9 @@ export type PersistedPriceProfileRef = {
 }
 
 export type FloorPresetDraftState = {
+  roomOldCovering: DemolitionCoveringOption | 'none'
+  roomLeveling: ScreedTypeOption | 'self-leveling' | 'none'
+  roomWaterproofing: WaterproofingLayersOption | 'none'
   covering: DemolitionCoveringOption
   screedType: ScreedTypeOption
   layers: WaterproofingLayersOption
@@ -121,6 +127,10 @@ export type CeilingScenarioDraftState = {
   finishTarget: CeilingFinishTargetOption
   demolitionCovering: CeilingDemolitionCoveringOption
   paintLayers: CeilingPaintLayersOption
+  demolitionBeforeWork: boolean
+  substrate: NonNullable<CeilingScenarioApplication['substrate']>
+  quality: NonNullable<CeilingScenarioApplication['quality']>
+  reinforce: boolean
 }
 
 export type TileScenarioDraftState = {
@@ -132,10 +142,16 @@ export type TileScenarioDraftState = {
 
 export type ElectricScenarioDraftState = {
   state: ElectricStateOption
+  wallMaterial: NonNullable<ElectricScenarioApplication['wallMaterial']>
+  cableRoute: NonNullable<ElectricScenarioApplication['cableRoute']>
 }
 
 export type PlumbingScenarioDraftState = {
   state: PlumbingStateOption
+  toiletKind: NonNullable<PlumbingScenarioApplication['toiletKind']>
+  bathKind: NonNullable<PlumbingScenarioApplication['bathKind']>
+  showerKind: NonNullable<PlumbingScenarioApplication['showerKind']>
+  sinkKind: NonNullable<PlumbingScenarioApplication['sinkKind']>
 }
 
 export type EstimateCalculatorSnapshot = {
@@ -254,6 +270,9 @@ const EMPTY_PLUMBING_INPUT: PlumbingEstimateInput = {
 }
 
 const DEFAULT_FLOOR_PRESETS: FloorPresetDraftState = {
+  roomOldCovering: 'none',
+  roomLeveling: 'none',
+  roomWaterproofing: 'none',
   covering: 'laminate',
   screedType: 'semidry-up-to-80',
   layers: 'acrylic-2',
@@ -281,6 +300,10 @@ const DEFAULT_CEILING_SCENARIOS: CeilingScenarioDraftState = {
   finishTarget: 'none',
   demolitionCovering: 'paint',
   paintLayers: 'paint-ceiling-2',
+  demolitionBeforeWork: false,
+  substrate: 'unknown',
+  quality: 'q3',
+  reinforce: false,
 }
 
 const DEFAULT_TILE_SCENARIOS: TileScenarioDraftState = {
@@ -292,10 +315,16 @@ const DEFAULT_TILE_SCENARIOS: TileScenarioDraftState = {
 
 const DEFAULT_ELECTRIC_SCENARIOS: ElectricScenarioDraftState = {
   state: 'apartment-from-scratch',
+  wallMaterial: 'unknown',
+  cableRoute: 'unknown',
 }
 
 const DEFAULT_PLUMBING_SCENARIOS: PlumbingScenarioDraftState = {
   state: 'bathroom-from-scratch',
+  toiletKind: 'unknown',
+  bathKind: 'unknown',
+  showerKind: 'unknown',
+  sinkKind: 'unknown',
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -420,64 +449,101 @@ function parseWallMeasurements(raw: unknown): EstimateZone['wallMeasurements'] {
     roomLengthM: asNonNegative(raw.roomLengthM),
     roomWidthM: asNonNegative(raw.roomWidthM),
     roomHeightM: asNonNegative(raw.roomHeightM),
-    autoFootprintArea: typeof raw.autoFootprintArea === 'number' ? asNonNegative(raw.autoFootprintArea) : undefined,
-    walls: raw.walls.slice(0, 40).filter(isRecord).map((wall, index) => ({
-      id: asString(wall.id) || `wall-${index + 1}`,
-      name: asString(wall.name).slice(0, 60),
-      lengthM: asNonNegative(wall.lengthM),
-      heightM: asNonNegative(wall.heightM),
-      lengthSource: wall.lengthSource === 'room-length' || wall.lengthSource === 'room-width'
-        ? wall.lengthSource : undefined,
-      heightSource: wall.heightSource === 'room-height' ? 'room-height' as const : undefined,
-      openings: Array.isArray(wall.openings)
-        ? wall.openings.slice(0, 30).filter(isRecord).map((opening, openingIndex) => ({
-            id: asString(opening.id) || `opening-${openingIndex + 1}`,
-            kind: opening.kind === 'door' ? 'door' as const : 'window' as const,
-            widthM: asNonNegative(opening.widthM),
-            heightM: asNonNegative(opening.heightM),
-            count: Math.max(1, Math.floor(asNonNegative(opening.count, 1))),
-            deduct: opening.deduct !== false,
-            finishSlopes: opening.finishSlopes === true,
-            slopeSides: opening.slopeSides === 4 ? 4 as const : 3 as const,
-          }))
-        : [],
-    })),
+    autoFootprintArea:
+      typeof raw.autoFootprintArea === 'number' ? asNonNegative(raw.autoFootprintArea) : undefined,
+    walls: raw.walls
+      .slice(0, 40)
+      .filter(isRecord)
+      .map((wall, index) => ({
+        id: asString(wall.id) || `wall-${index + 1}`,
+        name: asString(wall.name).slice(0, 60),
+        lengthM: asNonNegative(wall.lengthM),
+        heightM: asNonNegative(wall.heightM),
+        lengthSource:
+          wall.lengthSource === 'room-length' || wall.lengthSource === 'room-width'
+            ? wall.lengthSource
+            : undefined,
+        heightSource: wall.heightSource === 'room-height' ? ('room-height' as const) : undefined,
+        openings: Array.isArray(wall.openings)
+          ? wall.openings
+              .slice(0, 30)
+              .filter(isRecord)
+              .map((opening, openingIndex) => ({
+                id: asString(opening.id) || `opening-${openingIndex + 1}`,
+                kind: opening.kind === 'door' ? ('door' as const) : ('window' as const),
+                widthM: asNonNegative(opening.widthM),
+                heightM: asNonNegative(opening.heightM),
+                count: Math.max(1, Math.floor(asNonNegative(opening.count, 1))),
+                deduct: opening.deduct !== false,
+                finishSlopes: opening.finishSlopes === true,
+                slopeSides: opening.slopeSides === 4 ? (4 as const) : (3 as const),
+              }))
+          : [],
+      })),
   }
 }
 
 function parseAppliedWallScenario(raw: unknown): EstimateZone['wallScenario'] {
-  if (!isRecord(raw) || !isRecord(raw.application) || typeof raw.measureSignature !== 'string') return undefined
+  if (!isRecord(raw) || !isRecord(raw.application) || typeof raw.measureSignature !== 'string')
+    return undefined
   const application = raw.application
-  const states = ['from-scratch', 'after-demolition', 'prefinish', 'demolition-only', 'local-leveling', 'finish-only']
+  const states = [
+    'from-scratch',
+    'after-demolition',
+    'prefinish',
+    'demolition-only',
+    'local-leveling',
+    'finish-only',
+  ]
   const finishes = ['none', 'wallpaper', 'paint']
-  if (!states.includes(String(application.state)) || !finishes.includes(String(application.finishTarget))) return undefined
+  if (
+    !states.includes(String(application.state)) ||
+    !finishes.includes(String(application.finishTarget))
+  )
+    return undefined
   const parseApplication = (value: Record<string, unknown>): WallScenarioApplication => ({
     state: value.state as WallScenarioApplication['state'],
     finishTarget: value.finishTarget as WallScenarioApplication['finishTarget'],
-    demolitionCovering: asString(value.demolitionCovering, 'wallpaper') as WallDemolitionCoveringOption,
+    demolitionCovering: asString(
+      value.demolitionCovering,
+      'wallpaper',
+    ) as WallDemolitionCoveringOption,
     demolitionBeforeWork: value.demolitionBeforeWork === true,
     wallpaperType: asString(value.wallpaperType, 'flizelin') as WallWallpaperTypeOption,
     paintLayers: asString(value.paintLayers, 'paint-2') as WallPaintLayersOption,
     slopesWork: asString(value.slopesWork, 'none') as WallSlopesWorkOption,
-    substrate: ['absorbent', 'dense', 'plastered', 'drywall', 'unknown'].includes(String(value.substrate))
-      ? value.substrate as WallSubstrateOption : undefined,
+    substrate: ['absorbent', 'dense', 'plastered', 'drywall', 'unknown'].includes(
+      String(value.substrate),
+    )
+      ? (value.substrate as WallSubstrateOption)
+      : undefined,
     leveling: ['full', 'local', 'none'].includes(String(value.leveling))
-      ? value.leveling as WallLevelingOption : undefined,
+      ? (value.leveling as WallLevelingOption)
+      : undefined,
     moisture: ['normal', 'wet'].includes(String(value.moisture))
-      ? value.moisture as WallMoistureOption : undefined,
+      ? (value.moisture as WallMoistureOption)
+      : undefined,
     quality: ['q2', 'q3', 'q4'].includes(String(value.quality))
-      ? value.quality as WallQualityOption : undefined,
+      ? (value.quality as WallQualityOption)
+      : undefined,
     reinforce: value.reinforce === true,
     baseCondition: ['unknown', 'sound', 'loose'].includes(String(value.baseCondition))
-      ? value.baseCondition as WallBaseConditionOption : undefined,
+      ? (value.baseCondition as WallBaseConditionOption)
+      : undefined,
   })
   return {
     measureSignature: raw.measureSignature,
     application: parseApplication(application),
     applications: Array.isArray(raw.applications)
-      ? raw.applications.filter((item): item is Record<string, unknown> => isRecord(item) &&
-        states.includes(String(item.state)) && finishes.includes(String(item.finishTarget)))
-        .slice(0, 20).map(parseApplication)
+      ? raw.applications
+          .filter(
+            (item): item is Record<string, unknown> =>
+              isRecord(item) &&
+              states.includes(String(item.state)) &&
+              finishes.includes(String(item.finishTarget)),
+          )
+          .slice(0, 20)
+          .map(parseApplication)
       : undefined,
   }
 }
@@ -681,6 +747,18 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
 
   if (isRecord(raw.floorPresets)) {
     snapshot.floorPresets = {
+      roomOldCovering: asString(
+        raw.floorPresets.roomOldCovering,
+        'none',
+      ) as FloorPresetDraftState['roomOldCovering'],
+      roomLeveling: asString(
+        raw.floorPresets.roomLeveling,
+        'none',
+      ) as FloorPresetDraftState['roomLeveling'],
+      roomWaterproofing: asString(
+        raw.floorPresets.roomWaterproofing,
+        'none',
+      ) as FloorPresetDraftState['roomWaterproofing'],
       covering: asString(
         raw.floorPresets.covering,
         DEFAULT_FLOOR_PRESETS.covering,
@@ -724,16 +802,22 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.wallScenarios.slopesWork,
         DEFAULT_WALL_SCENARIOS.slopesWork,
       ) as WallSlopesWorkOption,
-      substrate: ['absorbent', 'dense', 'plastered', 'drywall', 'unknown'].includes(String(raw.wallScenarios.substrate))
-        ? raw.wallScenarios.substrate as WallSubstrateOption : DEFAULT_WALL_SCENARIOS.substrate,
+      substrate: ['absorbent', 'dense', 'plastered', 'drywall', 'unknown'].includes(
+        String(raw.wallScenarios.substrate),
+      )
+        ? (raw.wallScenarios.substrate as WallSubstrateOption)
+        : DEFAULT_WALL_SCENARIOS.substrate,
       leveling: ['full', 'local', 'none'].includes(String(raw.wallScenarios.leveling))
-        ? raw.wallScenarios.leveling as WallLevelingOption : DEFAULT_WALL_SCENARIOS.leveling,
+        ? (raw.wallScenarios.leveling as WallLevelingOption)
+        : DEFAULT_WALL_SCENARIOS.leveling,
       moisture: raw.wallScenarios.moisture === 'wet' ? 'wet' : 'normal',
       quality: ['q2', 'q3', 'q4'].includes(String(raw.wallScenarios.quality))
-        ? raw.wallScenarios.quality as WallQualityOption : DEFAULT_WALL_SCENARIOS.quality,
+        ? (raw.wallScenarios.quality as WallQualityOption)
+        : DEFAULT_WALL_SCENARIOS.quality,
       reinforce: raw.wallScenarios.reinforce === true,
       baseCondition: ['unknown', 'sound', 'loose'].includes(String(raw.wallScenarios.baseCondition))
-        ? raw.wallScenarios.baseCondition as WallBaseConditionOption : DEFAULT_WALL_SCENARIOS.baseCondition,
+        ? (raw.wallScenarios.baseCondition as WallBaseConditionOption)
+        : DEFAULT_WALL_SCENARIOS.baseCondition,
     }
   }
 
@@ -755,6 +839,16 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.ceilingScenarios.paintLayers,
         DEFAULT_CEILING_SCENARIOS.paintLayers,
       ) as CeilingPaintLayersOption,
+      demolitionBeforeWork: raw.ceilingScenarios.demolitionBeforeWork === true,
+      substrate: ['unknown', 'mineral', 'plastered', 'drywall'].includes(
+        String(raw.ceilingScenarios.substrate),
+      )
+        ? (raw.ceilingScenarios.substrate as CeilingScenarioDraftState['substrate'])
+        : DEFAULT_CEILING_SCENARIOS.substrate,
+      quality: ['q2', 'q3', 'q4'].includes(String(raw.ceilingScenarios.quality))
+        ? (raw.ceilingScenarios.quality as CeilingScenarioDraftState['quality'])
+        : DEFAULT_CEILING_SCENARIOS.quality,
+      reinforce: raw.ceilingScenarios.reinforce === true,
     }
   }
 
@@ -779,6 +873,16 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.electricScenarios.state,
         DEFAULT_ELECTRIC_SCENARIOS.state,
       ) as ElectricStateOption,
+      wallMaterial: ['unknown', 'concrete', 'brick', 'drywall', 'ready'].includes(
+        String(raw.electricScenarios.wallMaterial),
+      )
+        ? (raw.electricScenarios.wallMaterial as ElectricScenarioDraftState['wallMaterial'])
+        : DEFAULT_ELECTRIC_SCENARIOS.wallMaterial,
+      cableRoute: ['unknown', 'chase', 'open', 'existing'].includes(
+        String(raw.electricScenarios.cableRoute),
+      )
+        ? (raw.electricScenarios.cableRoute as ElectricScenarioDraftState['cableRoute'])
+        : DEFAULT_ELECTRIC_SCENARIOS.cableRoute,
     }
   }
 
@@ -788,6 +892,24 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.plumbingScenarios.state,
         DEFAULT_PLUMBING_SCENARIOS.state,
       ) as PlumbingStateOption,
+      toiletKind: ['unknown', 'floor', 'installation'].includes(
+        String(raw.plumbingScenarios.toiletKind),
+      )
+        ? (raw.plumbingScenarios.toiletKind as PlumbingScenarioDraftState['toiletKind'])
+        : DEFAULT_PLUMBING_SCENARIOS.toiletKind,
+      bathKind: ['unknown', 'acrylic', 'cast-iron', 'quaryl'].includes(
+        String(raw.plumbingScenarios.bathKind),
+      )
+        ? (raw.plumbingScenarios.bathKind as PlumbingScenarioDraftState['bathKind'])
+        : DEFAULT_PLUMBING_SCENARIOS.bathKind,
+      showerKind: ['unknown', 'tray', 'cabin'].includes(String(raw.plumbingScenarios.showerKind))
+        ? (raw.plumbingScenarios.showerKind as PlumbingScenarioDraftState['showerKind'])
+        : DEFAULT_PLUMBING_SCENARIOS.showerKind,
+      sinkKind: ['unknown', 'ordinary', 'wall', 'countertop', 'inset'].includes(
+        String(raw.plumbingScenarios.sinkKind),
+      )
+        ? (raw.plumbingScenarios.sinkKind as PlumbingScenarioDraftState['sinkKind'])
+        : DEFAULT_PLUMBING_SCENARIOS.sinkKind,
     }
   }
 
@@ -1193,9 +1315,7 @@ export function restoreFloorPresetDraft(
 export function restoreWallScenarioDraft(
   snapshot: EstimateCalculatorSnapshot | null,
 ): WallScenarioDraftState {
-  return snapshot?.wallScenarios
-    ? { ...snapshot.wallScenarios }
-    : { ...DEFAULT_WALL_SCENARIOS }
+  return snapshot?.wallScenarios ? { ...snapshot.wallScenarios } : { ...DEFAULT_WALL_SCENARIOS }
 }
 
 export function restoreCeilingScenarioDraft(

@@ -83,7 +83,15 @@ export {
   resolveEstimateZoneType,
 } from './shared/estimate-zone'
 export type { EstimateZone, EstimateZoneId, EstimateZoneType } from './shared/estimate-zone'
-export { calculateWallMeasurements, createRectangularWalls, EMPTY_WALL_MEASUREMENTS, relinkRectangularWalls, roomFootprintArea, syncRoomFootprintAreas, updateRoomDimensions } from './shared/wall-measurements'
+export {
+  calculateWallMeasurements,
+  createRectangularWalls,
+  EMPTY_WALL_MEASUREMENTS,
+  relinkRectangularWalls,
+  roomFootprintArea,
+  syncRoomFootprintAreas,
+  updateRoomDimensions,
+} from './shared/wall-measurements'
 export type { WallMeasurements, MeasuredWall, WallOpening } from './shared/wall-measurements'
 export {
   partitionScenariosByZoneType,
@@ -195,12 +203,14 @@ export {
   formatFloorPresetZoneFeedback,
   getFloorPresetLabel,
   resolveFloorPresetKeys,
+  resolveFloorRoomPlan,
 } from './floors/apply-floor-preset'
 export type {
   ApplyFloorPresetResult,
   DemolitionCoveringOption,
   FloorPresetApplication,
   FloorPresetId,
+  FloorRoomPlan,
   ScreedTypeOption,
   WasteTripOption,
   WaterproofingLayersOption,
@@ -258,7 +268,10 @@ export {
   wallScenarioForZone,
   wallScenarioIncludesFinish,
 } from './walls/apply-wall-scenario'
-export { getWallScenarioProgress, wallScenarioMeasureSignature } from './walls/wall-scenario-progress'
+export {
+  getWallScenarioProgress,
+  wallScenarioMeasureSignature,
+} from './walls/wall-scenario-progress'
 export type { WallScenarioProgress } from './walls/wall-scenario-progress'
 export type {
   ApplyWallScenarioResult,
@@ -337,6 +350,7 @@ export {
   formatCeilingScenarioZoneFeedback,
   isCeilingFinishPriceKey,
   resolveCeilingScenarioKeys,
+  resolveCeilingScenarioPlan,
 } from './ceilings/apply-ceiling-scenario'
 export type {
   ApplyCeilingScenarioResult,
@@ -344,6 +358,7 @@ export type {
   CeilingFinishTargetOption,
   CeilingPaintLayersOption,
   CeilingScenarioApplication,
+  CeilingScenarioPlan,
   CeilingStateOption,
 } from './ceilings/apply-ceiling-scenario'
 export {
@@ -446,6 +461,7 @@ export {
 } from './electrics/build-electric-estimate-lines'
 export type { BuildElectricEstimateLinesOptions } from './electrics/build-electric-estimate-lines'
 export { buildElectricEstimate } from './electrics/build-electric-estimate'
+export { estimateSocketBoxes, patchElectricPoints } from './electrics/electric-measurements'
 export {
   applyElectricCableLength,
   applyElectricLightPointsCount,
@@ -480,11 +496,13 @@ export {
   formatElectricScenarioZoneFeedback,
   resolveElectricScenarioKeys,
   resolveMeasuredElectricScenarioKeys,
+  resolveElectricScenarioPlan,
   resolveElectricScenarioQuantity,
 } from './electrics/apply-electric-scenario'
 export type {
   ApplyElectricScenarioResult,
   ElectricScenarioApplication,
+  ElectricScenarioPlan,
   ElectricStateOption,
 } from './electrics/apply-electric-scenario'
 export {
@@ -559,10 +577,12 @@ export {
   plumbingInputFromZone,
   resolvePlumbingScenarioKeys,
   resolveMeasuredPlumbingScenarioKeys,
+  resolvePlumbingScenarioPlan,
 } from './plumbing/apply-plumbing-scenario'
 export type {
   ApplyPlumbingScenarioResult,
   PlumbingScenarioApplication,
+  PlumbingScenarioPlan,
   PlumbingStateOption,
 } from './plumbing/apply-plumbing-scenario'
 export {

@@ -140,6 +140,13 @@
   color: color-mix(in srgb, var(--ink) 58%, transparent);
 }
 
+.preview {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
 .status {
   @include eu.status-chip;
 }

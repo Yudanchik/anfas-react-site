@@ -2,12 +2,17 @@ import { useMemo, useState } from 'react'
 
 import {
   ESTIMATE_GENERAL_WORKS_TITLE,
+  PLUMBING_PRICE_MAPPING,
   formatPlumbingScenarioFeedback,
   formatPlumbingScenarioLabel,
   formatPlumbingScenarioZoneFeedback,
   formatPlumbingScenarioZoneMismatchMessage,
   isPlumbingScenarioAllowedForZone,
   resolvePlumbingScenarioOptionsForZone,
+  resolvePlumbingScenarioPlan,
+  resolveMeasuredPlumbingScenarioKeys,
+  resolvePlumbingDefaultQuantity,
+  plumbingInputFromZone,
   type EstimateZone,
   type PlumbingEstimateInput,
   type PlumbingScenarioApplication,
@@ -63,7 +68,7 @@ export function PlumbingEstimateScenarios({
   feedbackEpoch,
   onApplyScenario,
 }: PlumbingEstimateScenariosProps) {
-  const { state } = draft
+  const { state, toiletKind, bathKind, showerKind, sinkKind } = draft
   const [targetId, setTargetId] = useState(GENERAL_TARGET)
   const { status, setSuccess, setError } = useEstimateStatusMessage({
     clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
@@ -90,11 +95,39 @@ export function PlumbingEstimateScenarios({
 
   const application: PlumbingScenarioApplication = {
     state: compatibleState,
+    toiletKind,
+    bathKind,
+    showerKind,
+    sinkKind,
   }
+
+  const previewInput = selectedZone ? plumbingInputFromZone(selectedZone) : generalInput
+  const plan = resolvePlumbingScenarioPlan(application, previewInput)
+  const mappingById = new Map(PLUMBING_PRICE_MAPPING.map((item) => [item.id, item]))
+  const preview = resolveMeasuredPlumbingScenarioKeys(application, previewInput).map((key) => {
+    const item = mappingById.get(key)
+    return {
+      key,
+      title: item?.title ?? key,
+      unit: item?.unit ?? '',
+      quantity: resolvePlumbingDefaultQuantity(item?.defaultQuantityFrom ?? 'manual', previewInput),
+    }
+  })
+  const bathroom =
+    compatibleState === 'bathroom-from-scratch' || compatibleState === 'bathroom-replacement'
+  const fixtures = bathroom || compatibleState === 'fixtures-only'
+  const hasToilet =
+    (fixtures || compatibleState === 'toilet-zone') && previewInput.plumbingToiletsCount > 0
+  const hasBath =
+    (fixtures || compatibleState === 'bath-zone') && previewInput.plumbingBathtubsCount > 0
+  const hasShower =
+    (fixtures || compatibleState === 'bath-zone') && previewInput.plumbingShowersCount > 0
+  const hasSink = fixtures && previewInput.plumbingSinksCount > 0
 
   const zoneFitOk = isPlumbingScenarioAllowedForZone(application.state, filterZoneType)
   const canApply =
     zoneFitOk &&
+    plan.issues.length === 0 &&
     canApplyPlumbingScenario({
       application,
       input: generalInput,
@@ -102,9 +135,11 @@ export function PlumbingEstimateScenarios({
     })
   const applyDisabledHint = !zoneFitOk
     ? formatPlumbingScenarioZoneMismatchMessage(application.state)
-    : canApply
-      ? null
-      : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
+    : plan.issues.length
+      ? plan.issues.join(' ')
+      : canApply
+        ? null
+        : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
 
   const previewLabel = formatPlumbingScenarioLabel(application)
 
@@ -126,10 +161,7 @@ export function PlumbingEstimateScenarios({
       return
     }
 
-    const result = onApplyScenario(
-      application,
-      selectedZone ? { zone: selectedZone } : undefined,
-    )
+    const result = onApplyScenario(application, selectedZone ? { zone: selectedZone } : undefined)
     if (result.error) {
       setError(result.error)
       return
@@ -191,7 +223,95 @@ export function PlumbingEstimateScenarios({
             />
           </div>
 
-          <p className={styles.hydroHint}>Будет применено: {previewLabel}</p>
+          {hasToilet ? (
+            <div className={styles.field}>
+              <span>Какой унитаз устанавливаем?</span>
+              <EstimateSelect
+                value={toiletKind}
+                ariaLabel="Тип унитаза"
+                options={[
+                  { value: 'unknown', label: 'Пока неизвестно' },
+                  { value: 'floor', label: 'Напольный' },
+                  { value: 'installation', label: 'На инсталляции' },
+                ]}
+                onChange={(next) =>
+                  onDraftChange({ toiletKind: next as PlumbingScenarioDraftState['toiletKind'] })
+                }
+              />
+            </div>
+          ) : null}
+          {hasBath ? (
+            <div className={styles.field}>
+              <span>Какая ванна?</span>
+              <EstimateSelect
+                value={bathKind}
+                ariaLabel="Тип ванны"
+                options={[
+                  { value: 'unknown', label: 'Пока неизвестно' },
+                  { value: 'acrylic', label: 'Акриловая' },
+                  { value: 'cast-iron', label: 'Чугунная' },
+                  { value: 'quaryl', label: 'Кварил или искусственный камень' },
+                ]}
+                onChange={(next) =>
+                  onDraftChange({ bathKind: next as PlumbingScenarioDraftState['bathKind'] })
+                }
+              />
+            </div>
+          ) : null}
+          {hasShower ? (
+            <div className={styles.field}>
+              <span>Какой душ?</span>
+              <EstimateSelect
+                value={showerKind}
+                ariaLabel="Тип душа"
+                options={[
+                  { value: 'unknown', label: 'Пока неизвестно' },
+                  { value: 'tray', label: 'Готовый поддон' },
+                  { value: 'cabin', label: 'Душевая кабина' },
+                ]}
+                onChange={(next) =>
+                  onDraftChange({ showerKind: next as PlumbingScenarioDraftState['showerKind'] })
+                }
+              />
+            </div>
+          ) : null}
+          {hasSink ? (
+            <div className={styles.field}>
+              <span>Какая раковина?</span>
+              <EstimateSelect
+                value={sinkKind}
+                ariaLabel="Тип раковины"
+                options={[
+                  { value: 'unknown', label: 'Пока неизвестно' },
+                  { value: 'ordinary', label: 'Обычная' },
+                  { value: 'wall', label: 'Подвесная' },
+                  { value: 'countertop', label: 'Накладная на столешницу' },
+                  { value: 'inset', label: 'Врезная' },
+                ]}
+                onChange={(next) =>
+                  onDraftChange({ sinkKind: next as PlumbingScenarioDraftState['sinkKind'] })
+                }
+              />
+            </div>
+          ) : null}
+
+          <p className={styles.hydroHint}>{previewLabel}. Работы с заполненным объёмом:</p>
+          {preview.length ? (
+            <ul className={styles.preview}>
+              {preview.map((item) => (
+                <li key={item.key}>
+                  {item.title} — {item.quantity.toLocaleString('ru-RU')} {item.unit}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.applyHint}>Для этого сценария ещё нет подходящих замеров.</p>
+          )}
+          {plan.notes.map((note) => (
+            <p key={note} className={styles.applyHint}>
+              {note}
+            </p>
+          ))}
 
           <button
             type="button"
@@ -201,9 +321,7 @@ export function PlumbingEstimateScenarios({
           >
             Применить сценарий
           </button>
-          {applyDisabledHint ? (
-            <p className={styles.applyHint}>{applyDisabledHint}</p>
-          ) : null}
+          {applyDisabledHint ? <p className={styles.applyHint}>{applyDisabledHint}</p> : null}
         </article>
       </div>
 

@@ -185,6 +185,23 @@
   color: color-mix(in srgb, var(--ink) 62%, transparent);
 }
 
+.measureHint {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}
+
+.measureRecalculate {
+  @include eu.button-secondary;
+
+  justify-self: start;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
 .field {
   display: flex;
   flex-direction: column;

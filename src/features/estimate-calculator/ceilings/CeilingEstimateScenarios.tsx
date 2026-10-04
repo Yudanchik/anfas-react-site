@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 
 import {
   ESTIMATE_GENERAL_WORKS_TITLE,
+  CEILING_PRICE_MAPPING,
+  resolveCeilingScenarioPlan,
   formatCeilingScenarioFeedback,
   formatCeilingScenarioZoneFeedback,
   type CeilingDemolitionCoveringOption,
@@ -84,7 +86,16 @@ export function CeilingEstimateScenarios({
   feedbackEpoch,
   onApplyScenario,
 }: CeilingEstimateScenariosProps) {
-  const { state, finishTarget, demolitionCovering, paintLayers } = draft
+  const {
+    state,
+    finishTarget,
+    demolitionCovering,
+    paintLayers,
+    demolitionBeforeWork,
+    substrate,
+    quality,
+    reinforce,
+  } = draft
   const [targetId, setTargetId] = useState(GENERAL_TARGET)
   const { status, setSuccess, setError } = useEstimateStatusMessage({
     clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
@@ -92,7 +103,8 @@ export function CeilingEstimateScenarios({
 
   const finishDisabled = state === 'demolition-only' || state === 'local-leveling'
   const needsFinishChoice = state === 'finish-only'
-  const showDemolitionCovering = state === 'demolition-only' || state === 'after-demolition'
+  const showDemolitionCovering =
+    state === 'demolition-only' || (state === 'from-scratch' && demolitionBeforeWork)
   const showPaintLayers = finishTarget === 'paint' && !finishDisabled
 
   const targetOptions = useMemo(
@@ -118,16 +130,26 @@ export function CeilingEstimateScenarios({
     finishTarget: resolvedFinish,
     demolitionCovering: showDemolitionCovering ? demolitionCovering : undefined,
     paintLayers: resolvedFinish === 'paint' ? paintLayers : undefined,
+    demolitionBeforeWork: state === 'from-scratch' && demolitionBeforeWork,
+    substrate: state === 'prefinish' || state === 'finish-only' ? 'plastered' : substrate,
+    quality,
+    reinforce: resolvedFinish === 'paint' && reinforce,
   }
+  const plan = resolveCeilingScenarioPlan(application)
+  const mappingById = new Map(CEILING_PRICE_MAPPING.map((item) => [item.id, item]))
 
-  const canApply = canApplyCeilingScenario({
-    application,
-    input: generalInput,
-    zone: selectedZone,
-  })
-  const applyDisabledHint = canApply
-    ? null
-    : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
+  const canApply =
+    plan.issues.length === 0 &&
+    canApplyCeilingScenario({
+      application,
+      input: generalInput,
+      zone: selectedZone,
+    })
+  const applyDisabledHint = plan.issues.length
+    ? plan.issues.join(' ')
+    : canApply
+      ? null
+      : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
 
   function handleApply() {
     const check = validateCeilingScenarioMeasures({
@@ -140,10 +162,7 @@ export function CeilingEstimateScenarios({
       return
     }
 
-    const result = onApplyScenario(
-      application,
-      selectedZone ? { zone: selectedZone } : undefined,
-    )
+    const result = onApplyScenario(application, selectedZone ? { zone: selectedZone } : undefined)
     if (result.error) {
       setError(result.error)
       return
@@ -204,6 +223,39 @@ export function CeilingEstimateScenarios({
             />
           </div>
 
+          {state === 'from-scratch' ? (
+            <div className={styles.field}>
+              <span>Сначала снять старое покрытие?</span>
+              <EstimateSelect
+                value={demolitionBeforeWork ? 'yes' : 'no'}
+                ariaLabel="Демонтаж перед подготовкой потолка"
+                options={[
+                  { value: 'no', label: 'Нет, основание свободно' },
+                  { value: 'yes', label: 'Да, затем подготовить заново' },
+                ]}
+                onChange={(next) => onDraftChange({ demolitionBeforeWork: next === 'yes' })}
+              />
+            </div>
+          ) : null}
+          {['from-scratch', 'after-demolition', 'local-leveling'].includes(state) ? (
+            <div className={styles.field}>
+              <span>Какое основание потолка?</span>
+              <EstimateSelect
+                value={substrate}
+                ariaLabel="Основание потолка"
+                options={[
+                  { value: 'unknown', label: 'Пока неизвестно' },
+                  { value: 'mineral', label: 'Минеральное перекрытие' },
+                  { value: 'plastered', label: 'Прочная старая штукатурка' },
+                  { value: 'drywall', label: 'Гипсокартон' },
+                ]}
+                onChange={(next) =>
+                  onDraftChange({ substrate: next as CeilingScenarioDraftState['substrate'] })
+                }
+              />
+            </div>
+          ) : null}
+
           <div className={styles.field}>
             <span>Целевой результат</span>
             <EstimateSelect
@@ -249,6 +301,45 @@ export function CeilingEstimateScenarios({
             </div>
           ) : null}
 
+          {['from-scratch', 'after-demolition', 'prefinish'].includes(state) ? (
+            <div className={styles.field}>
+              <span>Требуемое качество подготовки</span>
+              <EstimateSelect
+                value={quality}
+                ariaLabel="Качество потолка"
+                options={[
+                  { value: 'q2', label: 'Q2 · фактурный финиш' },
+                  { value: 'q3', label: 'Q3 · матовая окраска' },
+                  { value: 'q4', label: 'Q4 · требовательная глянцевая отделка' },
+                ]}
+                onChange={(next) =>
+                  onDraftChange({ quality: next as CeilingScenarioDraftState['quality'] })
+                }
+              />
+            </div>
+          ) : null}
+          {resolvedFinish === 'paint' &&
+          ['from-scratch', 'after-demolition', 'prefinish'].includes(state) ? (
+            <div className={styles.field}>
+              <span>Стеклохолст предусмотрен проектом?</span>
+              <EstimateSelect
+                value={reinforce ? 'yes' : 'no'}
+                ariaLabel="Стеклохолст потолка"
+                options={[
+                  { value: 'no', label: 'Нет' },
+                  { value: 'yes', label: 'Да, добавить отдельно' },
+                ]}
+                onChange={(next) => onDraftChange({ reinforce: next === 'yes' })}
+              />
+            </div>
+          ) : null}
+          <p className={styles.applyHint}>В черновик попадут:</p>
+          <ul className={styles.preview}>
+            {plan.keys.map((key) => (
+              <li key={key}>{mappingById.get(key)?.title ?? key}</li>
+            ))}
+          </ul>
+
           <button
             type="button"
             className={styles.action}
@@ -257,9 +348,7 @@ export function CeilingEstimateScenarios({
           >
             Применить сценарий
           </button>
-          {applyDisabledHint ? (
-            <p className={styles.applyHint}>{applyDisabledHint}</p>
-          ) : null}
+          {applyDisabledHint ? <p className={styles.applyHint}>{applyDisabledHint}</p> : null}
         </article>
       </div>
 

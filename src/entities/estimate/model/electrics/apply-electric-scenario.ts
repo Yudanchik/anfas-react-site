@@ -30,7 +30,11 @@ export type ElectricStateOption =
 
 export type ElectricScenarioApplication = {
   state: ElectricStateOption
+  wallMaterial?: 'unknown' | 'concrete' | 'brick' | 'drywall' | 'ready'
+  cableRoute?: 'unknown' | 'chase' | 'open' | 'existing'
 }
+
+export type ElectricScenarioPlan = { keys: readonly string[]; issues: readonly string[] }
 
 export type ApplyElectricScenarioResult = {
   lines: EstimateLine[]
@@ -186,7 +190,56 @@ export function applyElectricScenarioToZone(
 export function resolveElectricScenarioKeys(
   application: ElectricScenarioApplication,
 ): readonly string[] {
-  return [...new Set(STATE_KEYS[application.state] ?? [])]
+  return resolveElectricScenarioPlan(application).keys
+}
+
+/** Старые сметы без ответов сохраняют прежние ключи. Для новых ответов
+ * несовместимые технологические позиции не попадают в предпросмотр. */
+export function resolveElectricScenarioPlan(
+  application: ElectricScenarioApplication,
+): ElectricScenarioPlan {
+  const original = STATE_KEYS[application.state] ?? []
+  const needsWall = original.some(
+    (key) => key.startsWith('chase-') || key.startsWith('hole-podrozetnik-'),
+  )
+  const needsRoute = original.includes('cable-chase-1-5-2-5')
+  const issues: string[] = []
+  if (needsWall && application.wallMaterial === 'unknown')
+    issues.push('Укажите материал стены или готовые отверстия для подрозетников.')
+  if (needsRoute && application.cableRoute === 'unknown')
+    issues.push('Укажите, как прокладывается новый кабель.')
+  if (needsRoute && application.wallMaterial === 'drywall' && application.cableRoute === 'chase')
+    issues.push(
+      'Для ГКЛ нельзя применять работу по штроблению кладки; выберите открытый маршрут или согласуйте монтаж в каркасе отдельно.',
+    )
+  const keys = original.flatMap((key) => {
+    if (key.startsWith('chase-') && key !== 'chase-ufh-sensor') {
+      if (
+        application.cableRoute === 'open' ||
+        application.cableRoute === 'existing' ||
+        application.cableRoute === 'unknown' ||
+        application.wallMaterial === 'ready' ||
+        application.wallMaterial === 'unknown' ||
+        application.wallMaterial === 'drywall'
+      )
+        return []
+      if (application.wallMaterial === 'brick') return ['chase-brick-to-35']
+      if (application.wallMaterial === 'concrete') return ['chase-concrete-to-35']
+    }
+    if (key.startsWith('hole-podrozetnik-')) {
+      if (application.wallMaterial === 'ready' || application.wallMaterial === 'unknown') return []
+      if (application.wallMaterial === 'brick') return ['hole-podrozetnik-brick']
+      if (application.wallMaterial === 'concrete') return ['hole-podrozetnik-concrete']
+      if (application.wallMaterial === 'drywall') return ['hole-podrozetnik-gkl']
+    }
+    if (key === 'cable-chase-1-5-2-5') {
+      if (application.cableRoute === 'existing' || application.cableRoute === 'unknown') return []
+      if (application.cableRoute === 'open') return ['cable-open-1-5-2-5']
+    }
+    if (key === 'layout-routes' && application.cableRoute === 'existing') return []
+    return [key]
+  })
+  return { keys: [...new Set(keys)], issues }
 }
 
 export function formatElectricScenarioLabel(application: ElectricScenarioApplication): string {

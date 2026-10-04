@@ -21,7 +21,11 @@ import {
   isPlumbingScenarioAllowedForZone,
   isTileScenarioAllowedForZone,
   resolveMeasuredElectricScenarioKeys,
+  resolveElectricScenarioPlan,
+  resolveCeilingScenarioPlan,
   resolveMeasuredPlumbingScenarioKeys,
+  resolvePlumbingScenarioPlan,
+  resolveFloorRoomPlan,
   electricInputFromZone,
   plumbingInputFromZone,
 } from '@/entities/estimate'
@@ -32,23 +36,17 @@ export type ScenarioMeasureCheck = { ok: true } | { ok: false; message: string }
 export const SCENARIO_MEASURES_HINT_GENERAL = 'Заполните замеры раздела'
 export const SCENARIO_MEASURES_HINT_ZONE = 'В выбранной зоне нет нужных замеров'
 
-const FLOOR_GENERAL =
-  'Заполните замеры раздела перед применением сценария'
+const FLOOR_GENERAL = 'Заполните замеры раздела перед применением сценария'
 const FLOOR_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
-const WALL_GENERAL =
-  'Заполните замеры раздела перед применением сценария'
+const WALL_GENERAL = 'Заполните замеры раздела перед применением сценария'
 const WALL_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
-const CEILING_GENERAL =
-  'Заполните замеры раздела перед применением сценария'
+const CEILING_GENERAL = 'Заполните замеры раздела перед применением сценария'
 const CEILING_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
-const TILE_GENERAL =
-  'Заполните замеры раздела перед применением сценария'
+const TILE_GENERAL = 'Заполните замеры раздела перед применением сценария'
 const TILE_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
-const ELECTRIC_GENERAL =
-  'Заполните замеры раздела перед применением сценария'
+const ELECTRIC_GENERAL = 'Заполните замеры раздела перед применением сценария'
 const ELECTRIC_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
-const PLUMBING_GENERAL =
-  'Заполните замеры раздела перед применением сценария'
+const PLUMBING_GENERAL = 'Заполните замеры раздела перед применением сценария'
 const PLUMBING_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
 
 export function getScenarioMeasuresDisabledHint(forZone: boolean): string {
@@ -75,6 +73,20 @@ export function validateFloorPresetMeasures(params: {
     ok: false,
     message: forZone ? FLOOR_ZONE : FLOOR_GENERAL,
   })
+
+  if (application.presetId === 'room-plan') {
+    const measured: FloorEstimateInput = zone
+      ? {
+          totalFloorArea: zone.floorArea,
+          demolitionArea: zone.demolitionFloorArea,
+          screedArea: zone.screedArea,
+          wetZonesArea: zone.wetArea,
+          avgDeltaMm: 0,
+        }
+      : input
+    const plan = resolveFloorRoomPlan(application, measured)
+    return plan.issues.length ? { ok: false, message: plan.issues.join(' ') } : { ok: true }
+  }
 
   if (application.presetId === 'waste') return { ok: true }
 
@@ -114,7 +126,8 @@ export function validateWallScenarioMeasures(params: {
   const putty = zone ? zone.puttyArea : input.puttyArea
   const finish = zone ? zone.finishArea : input.finishArea
   const slopes = zone ? zone.slopesLength : input.slopesLengthM
-  if (application.slopesWork && application.slopesWork !== 'none' && !positive(slopes)) return fail()
+  if (application.slopesWork && application.slopesWork !== 'none' && !positive(slopes))
+    return fail()
 
   switch (application.state) {
     case 'demolition-only':
@@ -144,6 +157,9 @@ export function validateCeilingScenarioMeasures(params: {
     message: forZone ? CEILING_ZONE : CEILING_GENERAL,
   })
 
+  const plan = resolveCeilingScenarioPlan(application)
+  if (plan.issues.length) return { ok: false, message: plan.issues.join(' ') }
+
   const demolition = zone ? zone.demolitionCeilingArea : input.demolitionArea
   const total = zone ? zone.ceilingArea : input.totalCeilingArea
   const plaster = zone ? zone.plasterCeilingArea : input.plasterArea
@@ -158,9 +174,7 @@ export function validateCeilingScenarioMeasures(params: {
     case 'finish-only':
       return anyPositive([finish, putty, total]) ? { ok: true } : fail()
     case 'after-demolition':
-      return positive(demolition) && anyPositive([total, plaster, putty])
-        ? { ok: true }
-        : fail()
+      return anyPositive([total, plaster, putty]) ? { ok: true } : fail()
     case 'from-scratch':
     case 'prefinish':
       return anyPositive([total, plaster, putty]) ? { ok: true } : fail()
@@ -246,6 +260,9 @@ export function validateElectricScenarioMeasures(params: {
     message: forZone ? ELECTRIC_ZONE : ELECTRIC_GENERAL,
   })
 
+  const plan = resolveElectricScenarioPlan(application)
+  if (plan.issues.length) return { ok: false, message: plan.issues.join(' ') }
+
   const measured = resolveMeasuredElectricScenarioKeys(
     application,
     zone ? electricInputFromZone(zone) : input,
@@ -274,6 +291,9 @@ export function validatePlumbingScenarioMeasures(params: {
     ok: false,
     message: forZone ? PLUMBING_ZONE : PLUMBING_GENERAL,
   })
+
+  const plan = resolvePlumbingScenarioPlan(application, zone ? plumbingInputFromZone(zone) : input)
+  if (plan.issues.length) return { ok: false, message: plan.issues.join(' ') }
 
   const measured = resolveMeasuredPlumbingScenarioKeys(
     application,

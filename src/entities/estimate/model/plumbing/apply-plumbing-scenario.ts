@@ -31,6 +31,16 @@ export type PlumbingStateOption =
 
 export type PlumbingScenarioApplication = {
   state: PlumbingStateOption
+  toiletKind?: 'unknown' | 'floor' | 'installation'
+  bathKind?: 'unknown' | 'acrylic' | 'cast-iron' | 'quaryl'
+  showerKind?: 'unknown' | 'tray' | 'cabin'
+  sinkKind?: 'unknown' | 'ordinary' | 'wall' | 'countertop' | 'inset'
+}
+
+export type PlumbingScenarioPlan = {
+  keys: readonly string[]
+  issues: readonly string[]
+  notes: readonly string[]
 }
 
 export type ApplyPlumbingScenarioResult = {
@@ -148,6 +158,24 @@ const STATE_KEYS: Record<PlumbingStateOption, readonly string[]> = {
 }
 
 const MAPPING_BY_ID = new Map(PLUMBING_PRICE_MAPPING.map((item) => [item.id, item]))
+const FIXTURE_VARIANTS = new Set([
+  'finish-toilet-soft',
+  'finish-toilet-floor',
+  'finish-bath-acrylic',
+  'finish-bath-cast-iron',
+  'finish-bath-quaryl',
+  'finish-shower-tray',
+  'finish-shower-cabin',
+  'finish-sink-ordinary',
+  'finish-sink-wall',
+  'finish-sink-countertop',
+  'finish-sink-inset',
+  'finish-sink-mixer',
+  'finish-bath-mixer',
+  'install-frame',
+  'install-water-connect',
+  'install-sewer-connect',
+])
 
 /**
  * Применяет сценарий сантехники: включает набор ключей, подставляет объёмы, гасит конфликты.
@@ -243,10 +271,77 @@ export function resolveMeasuredPlumbingScenarioKeys(
   application: PlumbingScenarioApplication,
   input: PlumbingEstimateInput,
 ): readonly string[] {
-  return resolvePlumbingScenarioKeys(application).filter((key) => {
+  return resolvePlumbingScenarioPlan(application, input).keys.filter((key) => {
     const field = MAPPING_BY_ID.get(key)?.defaultQuantityFrom ?? 'manual'
     return resolvePlumbingDefaultQuantity(field, input) > 0
   })
+}
+
+/** Новый вопросный маршрут не угадывает тип прибора по одному счётчику.
+ * Старые сохранённые сценарии без ответов оставляют прежний состав. */
+export function resolvePlumbingScenarioPlan(
+  application: PlumbingScenarioApplication,
+  input: PlumbingEstimateInput,
+): PlumbingScenarioPlan {
+  const initial = resolvePlumbingScenarioKeys(application)
+  if (
+    application.toiletKind === undefined &&
+    application.bathKind === undefined &&
+    application.showerKind === undefined &&
+    application.sinkKind === undefined
+  ) {
+    return { keys: initial, issues: [], notes: [] }
+  }
+  const issues: string[] = []
+  const notes: string[] = []
+  const keys = initial.filter((key) => !FIXTURE_VARIANTS.has(key))
+  const bathroom =
+    application.state === 'bathroom-from-scratch' || application.state === 'bathroom-replacement'
+  const fixtures = bathroom || application.state === 'fixtures-only'
+  const toilet = fixtures || application.state === 'toilet-zone'
+  const bath = fixtures || application.state === 'bath-zone'
+  const sink = fixtures
+  if (toilet && input.plumbingToiletsCount > 0) {
+    if (!application.toiletKind || application.toiletKind === 'unknown')
+      issues.push('Укажите тип унитаза.')
+    else if (application.toiletKind === 'floor') keys.push('finish-toilet-floor')
+    else {
+      keys.push('finish-toilet-soft')
+      if (input.plumbingInstallationsCount > 0)
+        keys.push('install-frame', 'install-water-connect', 'install-sewer-connect')
+    }
+  }
+  if (bath && input.plumbingBathtubsCount > 0) {
+    const selected = {
+      acrylic: 'finish-bath-acrylic',
+      'cast-iron': 'finish-bath-cast-iron',
+      quaryl: 'finish-bath-quaryl',
+    }
+    if (!application.bathKind || application.bathKind === 'unknown')
+      issues.push('Укажите тип ванны.')
+    else keys.push(selected[application.bathKind])
+  }
+  if (bath && input.plumbingShowersCount > 0) {
+    if (!application.showerKind || application.showerKind === 'unknown')
+      issues.push('Укажите тип душа.')
+    else keys.push(application.showerKind === 'tray' ? 'finish-shower-tray' : 'finish-shower-cabin')
+  }
+  if (sink && input.plumbingSinksCount > 0) {
+    const selected = {
+      ordinary: 'finish-sink-ordinary',
+      wall: 'finish-sink-wall',
+      countertop: 'finish-sink-countertop',
+      inset: 'finish-sink-inset',
+    }
+    if (!application.sinkKind || application.sinkKind === 'unknown')
+      issues.push('Укажите тип раковины.')
+    else keys.push(selected[application.sinkKind])
+  }
+  if (input.plumbingMixersCount > 0 && (bathroom || fixtures || application.state === 'bath-zone'))
+    notes.push(
+      'Виды смесителей и их количества уточните в строках прайса: общий счётчик не позволяет разделить смеситель ванны, душа и раковины.',
+    )
+  return { keys: [...new Set(keys)], issues, notes }
 }
 
 export function formatPlumbingScenarioFeedback(label: string, addedCount: number): string {

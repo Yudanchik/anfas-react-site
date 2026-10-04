@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 
 import {
   ESTIMATE_GENERAL_WORKS_TITLE,
+  FLOOR_PRICE_MAPPING,
+  resolveFloorRoomPlan,
   formatFloorPresetFeedback,
   formatFloorPresetZoneFeedback,
   type DemolitionCoveringOption,
@@ -23,6 +25,9 @@ import { EstimateSelect } from '@/features/estimate-calculator/ui/EstimateSelect
 import styles from './FloorEstimatePresets.module.scss'
 
 type FloorPresetDraft = {
+  roomOldCovering: DemolitionCoveringOption | 'none'
+  roomLeveling: ScreedTypeOption | 'self-leveling' | 'none'
+  roomWaterproofing: WaterproofingLayersOption | 'none'
   covering: DemolitionCoveringOption
   screedType: ScreedTypeOption
   layers: WaterproofingLayersOption
@@ -47,6 +52,9 @@ type FloorEstimatePresetsProps = {
 }
 
 const DEFAULT_DRAFT: FloorPresetDraft = {
+  roomOldCovering: 'none',
+  roomLeveling: 'none',
+  roomWaterproofing: 'none',
   covering: 'laminate',
   screedType: 'semidry-up-to-80',
   layers: 'acrylic-2',
@@ -126,6 +134,24 @@ export function FloorEstimatePresets({
     surveyorComment: '',
   }
 
+  const roomApplication: Extract<FloorPresetApplication, { presetId: 'room-plan' }> = {
+    presetId: 'room-plan',
+    oldCovering: draft.roomOldCovering,
+    leveling: draft.roomLeveling,
+    waterproofing: draft.roomWaterproofing,
+  }
+  const roomInput: FloorEstimateInput = effectiveZone
+    ? {
+        totalFloorArea: effectiveZone.floorArea,
+        demolitionArea: effectiveZone.demolitionFloorArea,
+        screedArea: effectiveZone.screedArea,
+        wetZonesArea: effectiveZone.wetArea,
+        avgDeltaMm: 0,
+      }
+    : generalInput
+  const roomPlan = resolveFloorRoomPlan(roomApplication, roomInput)
+  const floorMappingById = new Map(FLOOR_PRICE_MAPPING.map((item) => [item.id, item]))
+
   const forZone = Boolean(effectiveZone)
   const disabledHint = getScenarioMeasuresDisabledHint(forZone)
 
@@ -166,10 +192,7 @@ export function FloorEstimatePresets({
       return
     }
 
-    const result = onApplyPreset(
-      application,
-      effectiveZone ? { zone: effectiveZone } : undefined,
-    )
+    const result = onApplyPreset(application, effectiveZone ? { zone: effectiveZone } : undefined)
     if (result.error) {
       setError(result.error)
       return
@@ -203,123 +226,197 @@ export function FloorEstimatePresets({
         />
       </div>
 
-      <div className={styles.grid}>
-        <article className={`${styles.card} ${styles.cardAccent}`}>
-          <div className={styles.cardTop}>
-            <h3 className={styles.cardTitle}>Демонтаж покрытия</h3>
-            <span className={styles.badge}>Демонтаж</span>
-          </div>
+      <article className={`${styles.card} ${styles.cardAccent}`}>
+        <div className={styles.cardTop}>
+          <h3 className={styles.cardTitle}>Подготовка пола по вопросам</h3>
+          <span className={styles.badge}>Основной маршрут</span>
+        </div>
+        <p className={styles.cardHint}>
+          Ответьте про старое покрытие, выравнивание и гидроизоляцию. Площадь каждого этапа берётся
+          из замеров выбранного помещения.
+        </p>
+        <div className={styles.roomQuestions}>
           <div className={styles.field}>
-            <span>Тип</span>
+            <span>Нужно снять старое покрытие?</span>
             <EstimateSelect
-              value={covering}
-              options={DEMOLITION_OPTIONS}
-              onChange={(next) => patchDraft({ covering: next as DemolitionCoveringOption })}
-              ariaLabel="Тип демонтажа покрытия"
+              value={draft.roomOldCovering}
+              ariaLabel="Старое покрытие пола"
+              options={[{ value: 'none', label: 'Нет / уже снято' }, ...DEMOLITION_OPTIONS]}
+              onChange={(next) =>
+                patchDraft({ roomOldCovering: next as FloorPresetDraft['roomOldCovering'] })
+              }
             />
           </div>
-          <button
-            type="button"
-            className={styles.action}
-            disabled={!canDemolition}
-            onClick={() => apply({ presetId: 'demolition-covering', covering })}
-          >
-            Применить
-          </button>
-          {!canDemolition ? <p className={styles.applyHint}>{disabledHint}</p> : null}
-        </article>
-
-        <article className={`${styles.card} ${styles.cardAccent}`}>
-          <div className={styles.cardTop}>
-            <h3 className={styles.cardTitle}>Стяжка по плите</h3>
-            <span className={styles.badge}>Стяжка</span>
-          </div>
           <div className={styles.field}>
-            <span>Тип</span>
+            <span>Как выравниваем основание?</span>
             <EstimateSelect
-              value={screedType}
-              options={SCREED_OPTIONS}
-              onChange={(next) => patchDraft({ screedType: next as ScreedTypeOption })}
-              ariaLabel="Тип стяжки"
+              value={draft.roomLeveling}
+              ariaLabel="Выравнивание пола"
+              options={[
+                { value: 'none', label: 'Не требуется' },
+                { value: 'self-leveling', label: 'Ровнитель по подходящему основанию' },
+                ...SCREED_OPTIONS,
+              ]}
+              onChange={(next) =>
+                patchDraft({ roomLeveling: next as FloorPresetDraft['roomLeveling'] })
+              }
             />
           </div>
-          <button
-            type="button"
-            className={styles.action}
-            disabled={!canScreed}
-            onClick={() => apply({ presetId: 'screed-on-slab', screedType })}
-          >
-            Применить
-          </button>
-          {!canScreed ? <p className={styles.applyHint}>{disabledHint}</p> : null}
-        </article>
-
-        <article className={styles.card}>
-          <div className={styles.cardTop}>
-            <h3 className={styles.cardTitle}>Ровнитель</h3>
-            <span className={styles.badge}>Финиш</span>
-          </div>
-          <p className={styles.cardHint}>Грунт + наливной, без стяжки</p>
-          <button
-            type="button"
-            className={styles.action}
-            disabled={!canSelfLeveling}
-            onClick={() => apply({ presetId: 'self-leveling' })}
-          >
-            Применить
-          </button>
-          {!canSelfLeveling ? <p className={styles.applyHint}>{disabledHint}</p> : null}
-        </article>
-
-        <article className={styles.card}>
-          <div className={styles.cardTop}>
-            <h3 className={styles.cardTitle}>Мокрые зоны</h3>
-            <span className={styles.badge}>Гидро</span>
-          </div>
           <div className={styles.field}>
-            <span>Гидроизоляция</span>
+            <span>Есть площадь под гидроизоляцию?</span>
             <EstimateSelect
-              value={layers}
-              options={HYDRO_OPTIONS}
-              onChange={(next) => patchDraft({ layers: next as WaterproofingLayersOption })}
-              ariaLabel="Гидроизоляция"
+              value={draft.roomWaterproofing}
+              ariaLabel="Гидроизоляция пола"
+              options={[{ value: 'none', label: 'Нет' }, ...HYDRO_OPTIONS]}
+              onChange={(next) =>
+                patchDraft({ roomWaterproofing: next as FloorPresetDraft['roomWaterproofing'] })
+              }
             />
           </div>
-          <button
-            type="button"
-            className={styles.action}
-            disabled={!canWet}
-            onClick={() => apply({ presetId: 'wet-zones', layers })}
-          >
-            Применить
-          </button>
-          {!canWet ? <p className={styles.applyHint}>{disabledHint}</p> : null}
-        </article>
+        </div>
+        <p className={styles.cardHint}>В смету попадут:</p>
+        <ul className={styles.roomPreview}>
+          {roomPlan.works.map((work) => (
+            <li key={work.key}>
+              {floorMappingById.get(work.key)?.title ?? work.key} · {work.quantity} м²
+            </li>
+          ))}
+        </ul>
+        {roomPlan.issues.map((issue) => (
+          <p className={styles.applyHint} key={issue}>
+            {issue}
+          </p>
+        ))}
+        <button
+          type="button"
+          className={styles.action}
+          disabled={roomPlan.issues.length > 0}
+          onClick={() => apply(roomApplication)}
+        >
+          Применить маршрут помещения
+        </button>
+      </article>
 
-        <article className={styles.card}>
-          <div className={styles.cardTop}>
-            <h3 className={styles.cardTitle}>Вывоз мусора</h3>
-            <span className={styles.badgeMuted}>Опционально</span>
-          </div>
-          <div className={styles.field}>
-            <span>Вариант</span>
-            <EstimateSelect
-              value={wasteTrip}
-              options={WASTE_OPTIONS}
-              onChange={(next) => patchDraft({ wasteTrip: next as WasteTripOption })}
-              ariaLabel="Вариант вывоза мусора"
-            />
-          </div>
-          <button
-            type="button"
-            className={styles.action}
-            disabled={!canWaste}
-            onClick={() => apply({ presetId: 'waste', trip: wasteTrip })}
-          >
-            Применить
-          </button>
-        </article>
-      </div>
+      <details className={styles.extra}>
+        <summary>Отдельные сценарии и дополнительные работы</summary>
+        <div className={styles.grid}>
+          <article className={`${styles.card} ${styles.cardAccent}`}>
+            <div className={styles.cardTop}>
+              <h3 className={styles.cardTitle}>Демонтаж покрытия</h3>
+              <span className={styles.badge}>Демонтаж</span>
+            </div>
+            <div className={styles.field}>
+              <span>Тип</span>
+              <EstimateSelect
+                value={covering}
+                options={DEMOLITION_OPTIONS}
+                onChange={(next) => patchDraft({ covering: next as DemolitionCoveringOption })}
+                ariaLabel="Тип демонтажа покрытия"
+              />
+            </div>
+            <button
+              type="button"
+              className={styles.action}
+              disabled={!canDemolition}
+              onClick={() => apply({ presetId: 'demolition-covering', covering })}
+            >
+              Применить
+            </button>
+            {!canDemolition ? <p className={styles.applyHint}>{disabledHint}</p> : null}
+          </article>
+
+          <article className={`${styles.card} ${styles.cardAccent}`}>
+            <div className={styles.cardTop}>
+              <h3 className={styles.cardTitle}>Стяжка по плите</h3>
+              <span className={styles.badge}>Стяжка</span>
+            </div>
+            <div className={styles.field}>
+              <span>Тип</span>
+              <EstimateSelect
+                value={screedType}
+                options={SCREED_OPTIONS}
+                onChange={(next) => patchDraft({ screedType: next as ScreedTypeOption })}
+                ariaLabel="Тип стяжки"
+              />
+            </div>
+            <button
+              type="button"
+              className={styles.action}
+              disabled={!canScreed}
+              onClick={() => apply({ presetId: 'screed-on-slab', screedType })}
+            >
+              Применить
+            </button>
+            {!canScreed ? <p className={styles.applyHint}>{disabledHint}</p> : null}
+          </article>
+
+          <article className={styles.card}>
+            <div className={styles.cardTop}>
+              <h3 className={styles.cardTitle}>Ровнитель</h3>
+              <span className={styles.badge}>Финиш</span>
+            </div>
+            <p className={styles.cardHint}>Грунт + наливной, без стяжки</p>
+            <button
+              type="button"
+              className={styles.action}
+              disabled={!canSelfLeveling}
+              onClick={() => apply({ presetId: 'self-leveling' })}
+            >
+              Применить
+            </button>
+            {!canSelfLeveling ? <p className={styles.applyHint}>{disabledHint}</p> : null}
+          </article>
+
+          <article className={styles.card}>
+            <div className={styles.cardTop}>
+              <h3 className={styles.cardTitle}>Мокрые зоны</h3>
+              <span className={styles.badge}>Гидро</span>
+            </div>
+            <div className={styles.field}>
+              <span>Гидроизоляция</span>
+              <EstimateSelect
+                value={layers}
+                options={HYDRO_OPTIONS}
+                onChange={(next) => patchDraft({ layers: next as WaterproofingLayersOption })}
+                ariaLabel="Гидроизоляция"
+              />
+            </div>
+            <button
+              type="button"
+              className={styles.action}
+              disabled={!canWet}
+              onClick={() => apply({ presetId: 'wet-zones', layers })}
+            >
+              Применить
+            </button>
+            {!canWet ? <p className={styles.applyHint}>{disabledHint}</p> : null}
+          </article>
+
+          <article className={styles.card}>
+            <div className={styles.cardTop}>
+              <h3 className={styles.cardTitle}>Вывоз мусора</h3>
+              <span className={styles.badgeMuted}>Опционально</span>
+            </div>
+            <div className={styles.field}>
+              <span>Вариант</span>
+              <EstimateSelect
+                value={wasteTrip}
+                options={WASTE_OPTIONS}
+                onChange={(next) => patchDraft({ wasteTrip: next as WasteTripOption })}
+                ariaLabel="Вариант вывоза мусора"
+              />
+            </div>
+            <button
+              type="button"
+              className={styles.action}
+              disabled={!canWaste}
+              onClick={() => apply({ presetId: 'waste', trip: wasteTrip })}
+            >
+              Применить
+            </button>
+          </article>
+        </div>
+      </details>
 
       {status ? (
         <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
