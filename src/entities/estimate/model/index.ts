@@ -419,6 +419,7 @@ export {
   formatTileScenarioLabel,
   formatTileScenarioZoneFeedback,
   resolveTileScenarioKeys,
+  tilePreparationIssue,
 } from './tile/apply-tile-scenario'
 export type {
   ApplyTileScenarioResult,

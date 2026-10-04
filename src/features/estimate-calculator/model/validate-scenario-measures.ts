@@ -26,6 +26,7 @@ import {
   resolveMeasuredPlumbingScenarioKeys,
   resolvePlumbingScenarioPlan,
   resolveFloorRoomPlan,
+  tilePreparationIssue,
   electricInputFromZone,
   plumbingInputFromZone,
 } from '@/entities/estimate'
@@ -200,6 +201,9 @@ export function validateTileScenarioMeasures(params: {
   zone?: EstimateZone
 }): ScenarioMeasureCheck {
   const { application, input, zone } = params
+
+  const preparationIssue = tilePreparationIssue(application)
+  if (preparationIssue) return { ok: false, message: preparationIssue }
 
   const zoneType = zone ? zone.zoneType : null
   if (!isTileScenarioAllowedForZone(application.state, zoneType)) {

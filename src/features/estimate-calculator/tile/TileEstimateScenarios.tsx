@@ -120,7 +120,7 @@ export function TileEstimateScenarios({
   feedbackEpoch,
   onApplyScenario,
 }: TileEstimateScenariosProps) {
-  const { state, cladFormat, grout, demolitionSurfaces } = draft
+  const { state, preparation, cladFormat, grout, demolitionSurfaces } = draft
   const [targetId, setTargetId] = useState('')
   const { status, setSuccess, setError } = useEstimateStatusMessage({
     clearTokens: [targetId, feedbackEpoch ?? 0, zones.length],
@@ -155,6 +155,7 @@ export function TileEstimateScenarios({
 
   const application: TileScenarioApplication = {
     state: compatibleState,
+    preparation: showClad ? preparation : undefined,
     cladFormat: showClad ? cladFormat : undefined,
     grout: showGrout ? grout : undefined,
     demolitionSurfaces: showDemoSurfaces ? demolitionSurfaces : undefined,
@@ -282,6 +283,25 @@ export function TileEstimateScenarios({
           title: 'Уточните выбранные работы',
           content: (
             <>
+              {showClad ? (
+                <div className={styles.field}>
+                  <span>Основание уже подготовлено под плитку?</span>
+                  <EstimateSelect
+                    value={preparation}
+                    options={[
+                      { value: 'inspect', label: 'Пока не проверено' },
+                      { value: 'prepare', label: 'Нет · добавить обеспыливание и грунтование' },
+                      { value: 'ready', label: 'Да · не считать подготовку повторно' },
+                    ]}
+                    ariaLabel="Подготовка основания под плитку"
+                    onChange={(next) => onDraftChange({ preparation: next as TileScenarioDraftState['preparation'] })}
+                  />
+                  <p className={styles.applyHint}>
+                    Если пол и стены подготовлены по-разному, примените маршруты для них отдельно.
+                    Гидроизоляция учитывается в разделе «Полы».
+                  </p>
+                </div>
+              ) : null}
               {' '}
               {showClad ? (
                 <div className={styles.field}>

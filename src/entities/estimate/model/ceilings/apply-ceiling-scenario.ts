@@ -113,6 +113,7 @@ const PREP_PLASTER_CHAIN = [
   'plaster-beacons-ceiling',
   'plaster-ceiling-main',
   'plaster-beacon-removal-ceiling',
+  'primer-before-ceiling-putty',
   'putty-ceiling-2',
   'putty-sanding-ceiling',
 ] as const
@@ -157,12 +158,14 @@ export function applyCeilingScenarioToZone(
     'gkl-ceiling-paint-prep',
   ])
   const selected = new Set(keys)
+  const stagedPrimerKeys = ['primer-before-ceiling-putty', 'primer-before-ceiling-paint']
   const gklSelected = keys.some((key) => gklKeys.has(key))
   const mineralOnly = new Set(['primer-deep-penetration', 'plaster-beacons-ceiling',
     'plaster-ceiling-main', 'plaster-beacon-removal-ceiling'])
   let next = disableCeilingConflictingAlternativesInZone(lines, keys, zone.id).map((line) =>
     line.zoneId === zone.id && line.source !== 'manual' &&
-    ((gklKeys.has(line.priceKey) && !selected.has(line.priceKey)) ||
+    ((stagedPrimerKeys.includes(line.priceKey) && !selected.has(line.priceKey)) ||
+    (gklKeys.has(line.priceKey) && !selected.has(line.priceKey)) ||
     (gklSelected && mineralOnly.has(line.priceKey)))
       ? { ...line, enabled: false } : line,
   )
@@ -251,11 +254,12 @@ export function resolveCeilingScenarioPlan(
       const quality = application.quality ?? 'q3'
       if (quality === 'q2') keys.push('gkl-ceiling-paint-prep')
       else {
+        keys.push('primer-before-ceiling-putty')
         keys.push(quality === 'q4' ? 'putty-ceiling-2' : 'putty-ceiling-1')
         if (application.reinforce && finishTarget === 'paint') keys.push('reinforce-glassfiber-ceiling')
         keys.push(quality === 'q4' ? 'putty-finish-ceiling-2' : 'putty-finish-ceiling-1', 'putty-finish-sanding-ceiling')
       }
-      if (finishTarget === 'paint') keys.push(PAINT_KEYS[application.paintLayers ?? 'paint-ceiling-2'])
+      if (finishTarget === 'paint') keys.push('primer-before-ceiling-paint', PAINT_KEYS[application.paintLayers ?? 'paint-ceiling-2'])
       return { keys: [...new Set(keys)], issues }
     }
   }
@@ -325,6 +329,7 @@ export function resolveCeilingScenarioPlan(
   ) {
     if (!modern && (state === 'from-scratch' || state === 'after-demolition'))
       keys.push(...PAINT_FINISH_CHAIN)
+    if (state !== 'finish-only') keys.push('primer-before-ceiling-paint')
     keys.push(PAINT_KEYS[application.paintLayers ?? 'paint-ceiling-2'])
   }
 
@@ -375,7 +380,11 @@ function enableCeilingScenarioKeys(
   input: CeilingEstimateInput,
 ): EstimateLine[] {
   const keySet = new Set(keys)
-  const withConflictsDisabled = disableCeilingConflictingAlternatives(lines, keys)
+  const withConflictsDisabled = disableCeilingConflictingAlternatives(lines, keys).map((line) =>
+    line.source !== 'manual' && !isZonedEstimateLine(line) &&
+    ['primer-before-ceiling-putty', 'primer-before-ceiling-paint'].includes(line.priceKey) &&
+    !keySet.has(line.priceKey) ? { ...line, enabled: false } : line,
+  )
 
   return withConflictsDisabled.map((line) => {
     if (line.source === 'manual') return line

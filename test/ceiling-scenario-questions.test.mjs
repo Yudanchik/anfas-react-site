@@ -24,6 +24,8 @@ test('после демонтажа не считаем его второй ра
   }
   const normal = resolveCeilingScenarioPlan(base)
   assert.deepEqual(normal.issues, [])
+  assert.ok(normal.keys.indexOf('primer-before-ceiling-putty') > normal.keys.indexOf('plaster-ceiling-main'))
+  assert.ok(normal.keys.indexOf('primer-before-ceiling-paint') < normal.keys.indexOf('paint-ceiling-2'))
   assert.equal(
     normal.keys.some((key) => key.startsWith('demolition-')),
     false,
@@ -49,6 +51,7 @@ test('Q2/Q4 меняют подготовку; ГКЛ получает отде�
   const drywall = resolveCeilingScenarioPlan({ ...base, substrate: 'drywall', quality: 'q3' })
   assert.deepEqual(drywall.issues, [])
   assert.ok(drywall.keys.includes('gkl-ceiling-joint-tape'))
+  assert.ok(drywall.keys.includes('primer-before-ceiling-putty'))
   assert.equal(drywall.keys.includes('plaster-ceiling-main'), false)
   const existingPlaster = resolveCeilingScenarioPlan({
     ...base,
@@ -57,4 +60,6 @@ test('Q2/Q4 меняют подготовку; ГКЛ получает отде�
   })
   assert.equal(existingPlaster.keys.includes('plaster-ceiling-main'), false)
   assert.ok(existingPlaster.keys.includes('putty-ceiling-2'))
+  assert.ok(existingPlaster.keys.includes('primer-one-layer'))
+  assert.ok(!existingPlaster.keys.includes('primer-before-ceiling-putty'))
 })

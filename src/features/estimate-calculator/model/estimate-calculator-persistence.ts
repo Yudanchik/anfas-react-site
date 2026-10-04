@@ -102,6 +102,8 @@ export type PersistedPriceProfileRef = {
 export type FloorPresetDraftState = {
   roomOldCovering: DemolitionCoveringOption | 'none'
   roomLeveling: ScreedTypeOption | 'self-leveling' | 'none'
+  selfLevelingBase: 'inspect' | 'ready' | 'grind' | 'other'
+  roomScreedBase: 'inspect' | 'bonded' | 'film' | 'floating'
   roomWaterproofing: WaterproofingLayersOption | 'none'
   covering: DemolitionCoveringOption
   screedType: ScreedTypeOption
@@ -143,6 +145,7 @@ export type CeilingScenarioDraftState = {
 
 export type TileScenarioDraftState = {
   state: TileStateOption
+  preparation: 'inspect' | 'prepare' | 'ready'
   cladFormat: TileCladFormatOption
   grout: TileGroutOption
   demolitionSurfaces: TileDemolitionSurfacesOption
@@ -281,6 +284,8 @@ const EMPTY_PLUMBING_INPUT: PlumbingEstimateInput = {
 const DEFAULT_FLOOR_PRESETS: FloorPresetDraftState = {
   roomOldCovering: 'none',
   roomLeveling: 'none',
+  selfLevelingBase: 'inspect',
+  roomScreedBase: 'inspect',
   roomWaterproofing: 'none',
   covering: 'laminate',
   screedType: 'semidry-up-to-80',
@@ -322,6 +327,7 @@ const DEFAULT_CEILING_SCENARIOS: CeilingScenarioDraftState = {
 
 const DEFAULT_TILE_SCENARIOS: TileScenarioDraftState = {
   state: 'bathroom-from-scratch',
+  preparation: 'inspect',
   cladFormat: '301-1300',
   grout: 'cement',
   demolitionSurfaces: 'both',
@@ -874,6 +880,12 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.floorPresets.roomLeveling,
         'none',
       ) as FloorPresetDraftState['roomLeveling'],
+      selfLevelingBase: (['inspect', 'ready', 'grind', 'other'].includes(raw.floorPresets.selfLevelingBase as string)
+        ? raw.floorPresets.selfLevelingBase
+        : 'ready') as FloorPresetDraftState['selfLevelingBase'],
+      roomScreedBase: (['inspect', 'bonded', 'film', 'floating'].includes(String(raw.floorPresets.roomScreedBase))
+        ? raw.floorPresets.roomScreedBase
+        : 'bonded') as FloorPresetDraftState['roomScreedBase'],
       roomWaterproofing: asString(
         raw.floorPresets.roomWaterproofing,
         'none',
@@ -983,6 +995,10 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
   if (isRecord(raw.tileScenarios)) {
     snapshot.tileScenarios = {
       state: asString(raw.tileScenarios.state, DEFAULT_TILE_SCENARIOS.state) as TileStateOption,
+      preparation: ['inspect', 'prepare', 'ready'].includes(String(raw.tileScenarios.preparation))
+        ? (raw.tileScenarios.preparation as TileScenarioDraftState['preparation'])
+        : raw.tileScenarios.state === 'bathroom-from-scratch' || raw.tileScenarios.state === 'bathroom-replacement'
+          ? 'prepare' : 'ready',
       cladFormat: asString(
         raw.tileScenarios.cladFormat,
         DEFAULT_TILE_SCENARIOS.cladFormat,

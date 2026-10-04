@@ -36,6 +36,7 @@ export type TileDemolitionSurfacesOption = 'floor' | 'walls' | 'both'
 
 export type TileScenarioApplication = {
   state: TileStateOption
+  preparation?: 'inspect' | 'prepare' | 'ready'
   cladFormat?: TileCladFormatOption
   grout?: TileGroutOption
   demolitionSurfaces?: TileDemolitionSurfacesOption
@@ -84,6 +85,13 @@ const GROUT_LABELS: Record<TileGroutOption, string> = {
 }
 
 const BATHROOM_PREP = ['prep-dust', 'prep-primer', 'prep-layout'] as const
+const PREPARATION_KEYS = ['prep-dust', 'prep-primer'] as const
+
+export function tilePreparationIssue(application: TileScenarioApplication): string | null {
+  if (application.preparation !== 'inspect') return null
+  if (application.state === 'demolition-only' || application.state === 'grout-repair-only') return null
+  return 'Уточните основание под плитку: требуется обеспыливание и грунтование или оно уже подготовлено?'
+}
 
 const MAPPING_BY_ID = new Map(TILE_PRICE_MAPPING.map((item) => [item.id, item]))
 
@@ -119,7 +127,12 @@ export function applyTileScenarioToZone(
 ): ApplyTileScenarioResult {
   const input = tileInputFromZone(zone)
   const keys = resolveTileScenarioKeys(application)
-  let next = disableTileConflictingAlternativesInZone(lines, keys, zone.id)
+  const selected = new Set(keys)
+  let next = disableTileConflictingAlternativesInZone(lines, keys, zone.id).map((line) =>
+    line.zoneId === zone.id && line.source !== 'manual' &&
+    PREPARATION_KEYS.includes(line.priceKey as typeof PREPARATION_KEYS[number]) &&
+    !selected.has(line.priceKey) ? { ...line, enabled: false } : line,
+  )
 
   for (const priceKey of keys) {
     const mappingItem = MAPPING_BY_ID.get(priceKey)
@@ -214,6 +227,13 @@ export function resolveTileScenarioKeys(application: TileScenarioApplication): r
       break
   }
 
+  if (application.preparation !== undefined) {
+    const prepared = keys.filter((key) => !PREPARATION_KEYS.includes(key as typeof PREPARATION_KEYS[number]))
+    if (application.preparation === 'prepare' &&
+      state !== 'demolition-only' && state !== 'grout-repair-only')
+      prepared.unshift(...PREPARATION_KEYS)
+    return [...new Set(prepared)]
+  }
   return [...new Set(keys)]
 }
 
@@ -295,7 +315,11 @@ function enableTileScenarioKeys(
   application: TileScenarioApplication,
 ): EstimateLine[] {
   const keySet = new Set(keys)
-  const withConflictsDisabled = disableTileConflictingAlternatives(lines, keys)
+  const withConflictsDisabled = disableTileConflictingAlternatives(lines, keys).map((line) =>
+    line.source !== 'manual' && !isZonedEstimateLine(line) &&
+    PREPARATION_KEYS.includes(line.priceKey as typeof PREPARATION_KEYS[number]) &&
+    !keySet.has(line.priceKey) ? { ...line, enabled: false } : line,
+  )
 
   return withConflictsDisabled.map((line) => {
     if (line.source === 'manual') return line

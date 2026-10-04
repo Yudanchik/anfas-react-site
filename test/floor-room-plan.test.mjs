@@ -55,3 +55,36 @@ test('маршрут не включает работу без нужного з
   assert.equal(plan.works.length, 0)
   assert.deepEqual(plan.issues, ['Укажите площадь пола или выравнивания.'])
 })
+
+test('шлифование наливного пола зависит от осмотра, обеспыливание и грунт остаются в обоих вариантах', () => {
+  const input = { demolitionArea: 0, totalFloorArea: 12, screedArea: 0, wetZonesArea: 0, avgDeltaMm: 0 }
+  const common = { presetId: 'room-plan', oldCovering: 'none', leveling: 'self-leveling', waterproofing: 'none' }
+  const pending = resolveFloorRoomPlan({ ...common, selfLevelingBase: 'inspect' }, input)
+  assert.match(pending.issues[0], /Осмотрите бетонное основание/)
+  assert.equal(pending.works.length, 0)
+  const other = resolveFloorRoomPlan({ ...common, selfLevelingBase: 'other' }, input)
+  assert.match(other.issues[0], /прочного бетонного основания/)
+  assert.equal(other.works.length, 0)
+  const ready = resolveFloorRoomPlan({ ...common, selfLevelingBase: 'ready' }, input)
+  const grind = resolveFloorRoomPlan({ ...common, selfLevelingBase: 'grind' }, input)
+  assert.deepEqual(ready.works.map((work) => work.key), [
+    'self-leveling-dust-removal', 'self-leveling-primer', 'self-leveling-device',
+  ])
+  assert.deepEqual(grind.works.map((work) => work.key), [
+    'self-leveling-grind', 'self-leveling-dust-removal', 'self-leveling-primer', 'self-leveling-device',
+  ])
+  assert.equal(grind.works[0].quantity, 12)
+})
+
+test('стяжка на плёнке заменяет грунт укладкой плёнки; неизвестная и плавающая схемы требуют уточнения', () => {
+  const input = { demolitionArea: 0, totalFloorArea: 14, screedArea: 12, wetZonesArea: 0, avgDeltaMm: 0 }
+  const common = { presetId: 'room-plan', oldCovering: 'none', leveling: 'wet-up-to-50', waterproofing: 'none' }
+  const bonded = resolveFloorRoomPlan({ ...common, screedBase: 'bonded' }, input)
+  const film = resolveFloorRoomPlan({ ...common, screedBase: 'film' }, input)
+  assert.ok(bonded.works.some((work) => work.key === 'wet-primer'))
+  assert.ok(!bonded.works.some((work) => work.key === 'wet-pe-film'))
+  assert.ok(film.works.some((work) => work.key === 'wet-pe-film' && work.quantity === 12))
+  assert.ok(!film.works.some((work) => work.key === 'wet-primer'))
+  assert.match(resolveFloorRoomPlan({ ...common, screedBase: 'inspect' }, input).issues[0], /конструкцию стяжки/)
+  assert.match(resolveFloorRoomPlan({ ...common, screedBase: 'floating' }, input).issues[0], /плавающей стяжки/)
+})

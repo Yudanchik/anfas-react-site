@@ -54,6 +54,28 @@ test('сухая комната не блокирует подготовку п�
   assert.ok(resolveFloorRoomPlan({ ...application, leveling: 'none' }, dry).issues.length > 0)
 })
 
+test('повторный проход без шлифования выключает прежнюю автоматическую строку той же комнаты', () => {
+  const zone = createEstimateZone({ name: 'Кухня', fields: { floorArea: 12 } })
+  const withGrinding = applyFloorPresetToZone([], zone, {
+    ...application, selfLevelingBase: 'grind', waterproofing: 'none',
+  }).lines
+  assert.equal(withGrinding.find((line) => line.priceKey === 'self-leveling-grind').enabled, true)
+  const withoutGrinding = applyFloorPresetToZone(withGrinding, zone, {
+    ...application, selfLevelingBase: 'ready', waterproofing: 'none',
+  }).lines
+  assert.equal(withoutGrinding.find((line) => line.priceKey === 'self-leveling-grind').enabled, false)
+  assert.equal(withoutGrinding.find((line) => line.priceKey === 'self-leveling-primer').enabled, true)
+})
+
+test('смена стяжки с контактной на плёнку выключает прежний грунт в той же комнате', () => {
+  const zone = createEstimateZone({ name: 'Кухня', fields: { floorArea: 12 } })
+  const common = { ...application, leveling: 'wet-up-to-50', waterproofing: 'none' }
+  const bonded = applyFloorPresetToZone([], zone, { ...common, screedBase: 'bonded' }).lines
+  const film = applyFloorPresetToZone(bonded, zone, { ...common, screedBase: 'film' }).lines
+  assert.equal(film.find((line) => line.priceKey === 'wet-primer')?.enabled, false)
+  assert.equal(film.find((line) => line.priceKey === 'wet-pe-film')?.enabled, true)
+})
+
 test('массовый проход берёт отдельные замеры, пропускает пустую комнату и сохраняет записи одним обновлением', () => {
   const zones = [
     createEstimateZone({ name: 'Кухня', fields: { floorArea: 12 } }),
@@ -153,6 +175,26 @@ test('статусы переживают сохранение; старые и 
   assert.deepEqual(parseEstimateCalculatorSnapshot(snapshot).zones[0].scenarioStatuses, {})
   delete snapshot.zones[0].scenarioStatuses
   assert.equal(parseEstimateCalculatorSnapshot(snapshot).zones[0].scenarioStatuses, undefined)
+})
+
+test('ответы о подготовке пола и плитки восстанавливаются; старые снимки сохраняют прежний маршрут', () => {
+  const snapshot = {
+    version: 2, activeTab: 'floors', zones: [],
+    floors: { input: {}, lines: [] }, walls: { input: {}, lines: [] },
+    floorPresets: { roomLeveling: 'wet-up-to-50', selfLevelingBase: 'grind', roomScreedBase: 'film' },
+    tileScenarios: { state: 'floor-only', preparation: 'prepare' },
+  }
+  const restored = parseEstimateCalculatorSnapshot(snapshot)
+  assert.equal(restored.floorPresets.selfLevelingBase, 'grind')
+  assert.equal(restored.floorPresets.roomScreedBase, 'film')
+  assert.equal(restored.tileScenarios.preparation, 'prepare')
+  delete snapshot.floorPresets.selfLevelingBase
+  delete snapshot.floorPresets.roomScreedBase
+  delete snapshot.tileScenarios.preparation
+  const legacy = parseEstimateCalculatorSnapshot(snapshot)
+  assert.equal(legacy.floorPresets.selfLevelingBase, 'ready')
+  assert.equal(legacy.floorPresets.roomScreedBase, 'bonded')
+  assert.equal(legacy.tileScenarios.preparation, 'ready')
 })
 
 const validators = await moduleFrom(

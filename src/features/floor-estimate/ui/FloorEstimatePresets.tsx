@@ -25,6 +25,8 @@ import styles from '@/features/estimate-calculator/ui/EstimateScenarioWizard.mod
 type FloorPresetDraft = {
   roomOldCovering: DemolitionCoveringOption | 'none'
   roomLeveling: ScreedTypeOption | 'self-leveling' | 'none'
+  selfLevelingBase: 'inspect' | 'ready' | 'grind' | 'other'
+  roomScreedBase: 'inspect' | 'bonded' | 'film' | 'floating'
   roomWaterproofing: WaterproofingLayersOption | 'none'
   covering: DemolitionCoveringOption
   screedType: ScreedTypeOption
@@ -52,6 +54,8 @@ type FloorEstimatePresetsProps = {
 const DEFAULT_DRAFT: FloorPresetDraft = {
   roomOldCovering: 'none',
   roomLeveling: 'none',
+  selfLevelingBase: 'inspect',
+  roomScreedBase: 'inspect',
   roomWaterproofing: 'none',
   covering: 'laminate',
   screedType: 'semidry-up-to-80',
@@ -128,6 +132,8 @@ export function FloorEstimatePresets({
     presetId: 'room-plan',
     oldCovering: draft.roomOldCovering,
     leveling: draft.roomLeveling,
+    selfLevelingBase: draft.selfLevelingBase,
+    screedBase: draft.roomScreedBase,
     waterproofing: draft.roomWaterproofing,
   }
   const plan = resolveFloorRoomPlan(application, input)
@@ -232,6 +238,51 @@ export function FloorEstimatePresets({
                   }
                 />
               </div>
+              {draft.roomLeveling === 'self-leveling' ? (
+                <div className={styles.field}>
+                  <span>Нужно шлифовать бетон перед наливным полом?</span>
+                  <EstimateSelect
+                    value={draft.selfLevelingBase}
+                    ariaLabel="Состояние основания перед наливным полом"
+                    options={[
+                      { value: 'inspect', label: 'Пока не осмотрено' },
+                      { value: 'ready', label: 'Нет, основание прочное и подготовлено' },
+                      { value: 'grind', label: 'Да, снять слабый верхний слой / цементное молочко' },
+                      { value: 'other', label: 'Основание не бетонное или непрочное' },
+                    ]}
+                    onChange={(next) =>
+                      patchDraft({ selfLevelingBase: next as FloorPresetDraft['selfLevelingBase'] })
+                    }
+                  />
+                  <p className={styles.applyHint}>
+                    Шлифование добавится только при ответе «Да». Сильно крошащееся, влажное или
+                    загрязнённое основание нужно сначала оценить: одной шлифовки недостаточно.
+                    Обеспыливание и грунтование уже входят в маршрут наливного пола.
+                  </p>
+                </div>
+              ) : null}
+              {draft.roomLeveling !== 'none' && draft.roomLeveling !== 'self-leveling' ? (
+                <div className={styles.field}>
+                  <span>Как устроена стяжка?</span>
+                  <EstimateSelect
+                    value={draft.roomScreedBase}
+                    ariaLabel="Конструкция стяжки пола"
+                    options={[
+                      { value: 'inspect', label: 'Пока не определено' },
+                      { value: 'bonded', label: 'Контактная по основанию · грунтование' },
+                      { value: 'film', label: 'На полиэтиленовой плёнке · без грунта под стяжку' },
+                      { value: 'floating', label: 'Плавающая по изоляции · уточнить систему' },
+                    ]}
+                    onChange={(next) =>
+                      patchDraft({ roomScreedBase: next as FloorPresetDraft['roomScreedBase'] })
+                    }
+                  />
+                  <p className={styles.applyHint}>
+                    Для варианта на плёнке добавляется её укладка вместо грунта. Демпферную ленту
+                    и изоляцию добавляйте после замера и проверки выбранной системы.
+                  </p>
+                </div>
+              ) : null}
               <div className={styles.field}>
                 <span>Есть площадь под гидроизоляцию?</span>
                 <EstimateSelect

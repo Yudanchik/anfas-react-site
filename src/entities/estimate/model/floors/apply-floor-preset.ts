@@ -25,6 +25,8 @@ export type FloorPresetApplication =
       presetId: 'room-plan'
       oldCovering: DemolitionCoveringOption | 'none'
       leveling: ScreedTypeOption | 'self-leveling' | 'none'
+      selfLevelingBase?: 'inspect' | 'ready' | 'grind' | 'other'
+      screedBase?: 'inspect' | 'bonded' | 'film' | 'floating'
       waterproofing: WaterproofingLayersOption | 'none'
     }
   | { presetId: 'demolition-covering'; covering: DemolitionCoveringOption }
@@ -81,6 +83,18 @@ const SELF_LEVELING_KEYS = [
   'self-leveling-device',
 ] as const
 
+const SCREED_FILM_KEY: Record<'semidry' | 'wet', string> = {
+  semidry: 'semidry-pe-film',
+  wet: 'wet-pe-film',
+}
+
+function screedKeysOnFilm(type: ScreedTypeOption): string[] {
+  const prefix = type.startsWith('semidry') ? 'semidry' : 'wet'
+  const keys = SCREED_PRESET_KEYS[type].filter((key) => key !== `${prefix}-primer`)
+  keys.splice(keys.length - 1, 0, SCREED_FILM_KEY[prefix])
+  return keys
+}
+
 const WASTE_KEYS: Record<WasteTripOption, readonly string[]> = {
   'gazelle-6': ['waste-gazelle-6'],
   'gazelle-12': ['waste-gazelle-12'],
@@ -95,7 +109,9 @@ export type FloorRoomPlan = {
 const ROOM_PLAN_KEYS = new Set([
   ...Object.values(DEMOLITION_COVERING_KEYS).flat(),
   ...Object.values(SCREED_PRESET_KEYS).flat(),
+  ...Object.values(SCREED_FILM_KEY),
   ...SELF_LEVELING_KEYS,
+  'self-leveling-grind',
   'waterproofing-acrylic-1',
   'waterproofing-acrylic-2',
 ])
@@ -117,13 +133,25 @@ export function resolveFloorRoomPlan(
   if (application.leveling !== 'none') {
     const area = resolveScreedQuantity(input)
     if (area <= 0) issues.push('Укажите площадь пола или выравнивания.')
-    else
-      add(
-        application.leveling === 'self-leveling'
-          ? SELF_LEVELING_KEYS
-          : SCREED_PRESET_KEYS[application.leveling],
-        area,
-      )
+    else if (application.leveling === 'self-leveling') {
+      if (application.selfLevelingBase === 'inspect')
+        issues.push('Осмотрите бетонное основание: требуется ли шлифование перед наливным полом?')
+      else if (application.selfLevelingBase === 'other')
+        issues.push('Этот маршрут и позиции прайса рассчитаны для прочного бетонного основания. Уточните систему пола и добавьте подходящие работы вручную.')
+      else {
+        if (application.selfLevelingBase === 'grind') add(['self-leveling-grind'], area)
+        add(SELF_LEVELING_KEYS, area)
+      }
+    } else if (application.screedBase === 'inspect')
+      issues.push('Уточните конструкцию стяжки: связанная с основанием или на полиэтиленовой плёнке?')
+    else if (application.screedBase === 'floating')
+      issues.push('Для плавающей стяжки уточните изоляционный слой, толщину и состав работ; этот маршрут пока не создаёт полный набор.')
+    else add(
+      application.screedBase === 'film'
+        ? screedKeysOnFilm(application.leveling)
+        : SCREED_PRESET_KEYS[application.leveling],
+      area,
+    )
   }
   if (application.waterproofing !== 'none' && input.wetZonesArea > 0) {
     add(

@@ -82,6 +82,17 @@ test('ГКЛ потолок: тариф двухслойного потолка 
   assert.equal(result.lines.find((line) => line.priceKey === 'gkl-ceiling-two')?.quantity, 18)
   assert.equal(result.lines.find((line) => line.priceKey === 'gkl-ceiling-joint-tape')?.quantity, 9)
   assert.equal(result.lines.find((line) => line.priceKey === 'gkl-ceiling-joint-fill')?.quantity, 9)
+  assert.equal(result.lines.find((line) => line.priceKey === 'primer-before-ceiling-putty')?.quantity, 18)
+  assert.equal(result.lines.find((line) => line.priceKey === 'primer-before-ceiling-paint')?.quantity, 18)
+})
+
+test('потолок: переход к одному финишу выключает прежние автоматические грунты по этапам', () => {
+  const full = ceilings.applyCeilingScenarioToZone([], ceilingZone, ceilingApplication)
+  const finish = ceilings.applyCeilingScenarioToZone(full.lines, ceilingZone, {
+    state: 'finish-only', finishTarget: 'paint', substrate: 'plastered',
+  })
+  assert.equal(finish.lines.find((line) => line.priceKey === 'primer-before-ceiling-putty')?.enabled, false)
+  assert.equal(finish.lines.find((line) => line.priceKey === 'primer-before-ceiling-paint')?.enabled, false)
 })
 
 test('ГКЛ потолок: повторный выбор одного слоя выключает старый двухслойный пакет', () => {
