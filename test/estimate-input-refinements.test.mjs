@@ -30,6 +30,25 @@ const validators = await moduleFrom(
   'src/features/estimate-calculator/model/validate-scenario-measures.ts',
 )
 
+test('выбранный дополнительный маршрут без замеров назван и не теряется молча', () => {
+  const kitchen = createEstimateZone({ name: 'Кухня', fields: {
+    electricSocketsCount: 2, plumbingSinksCount: 1,
+  } })
+  const electric = validators.validateElectricScenarioMeasures({
+    application: { state: 'outlets-switches', states: ['outlets-switches', 'lighting-only'] },
+    input: {}, zone: kitchen,
+  })
+  assert.equal(electric.ok, false)
+  assert.match(electric.message, /Только освещение/)
+  const plumbing = validators.validatePlumbingScenarioMeasures({
+    application: { state: 'kitchen', states: ['kitchen', 'drainage-only'],
+      toiletKind: 'unknown', bathKind: 'unknown', showerKind: 'unknown', sinkKind: 'unknown' },
+    input: {}, zone: kitchen,
+  })
+  assert.equal(plumbing.ok, false)
+  assert.match(plumbing.message, /Канализация/)
+})
+
 test('смесители следуют за приборами; рамы считаются только по явно выбранной новой инсталляции', () => {
   const zone = createEstimateZone({
     name: 'Санузел',

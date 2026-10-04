@@ -1,4 +1,4 @@
-import type { EstimateLine, EstimateZone } from '@/entities/estimate'
+import { resolveFloorPlinthLength, type EstimateLine, type EstimateZone } from '@/entities/estimate'
 import type { RoomSection } from './room-quick-fill'
 
 export const ALL_SCENARIO_ROOMS = '__all__'
@@ -20,6 +20,7 @@ export function scenarioMeasureSignature(section: RoomSection, zone: EstimateZon
   return JSON.stringify([
     zone.zoneType,
     fields.sort(([a], [b]) => a.localeCompare(b)),
+    ...(section === 'floors' ? [resolveFloorPlinthLength(zone)] : []),
     ...(section === 'plumbing' ? [zone.plumbingToiletMount ?? 'unknown'] : []),
   ])
 }

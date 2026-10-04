@@ -15,7 +15,9 @@ import type {
 } from '@/entities/estimate'
 import {
   formatElectricScenarioZoneMismatchMessage,
+  formatElectricScenarioLabel,
   formatPlumbingScenarioZoneMismatchMessage,
+  formatPlumbingScenarioLabel,
   formatTileScenarioZoneMismatchMessage,
   isElectricScenarioAllowedForZone,
   isPlumbingScenarioAllowedForZone,
@@ -26,6 +28,7 @@ import {
   resolveMeasuredPlumbingScenarioKeys,
   resolvePlumbingScenarioPlan,
   resolveFloorRoomPlan,
+  resolveFloorPlinthLength,
   tilePreparationIssue,
   electricInputFromZone,
   plumbingInputFromZone,
@@ -71,6 +74,7 @@ export function validateFloorPresetMeasures(params: {
     const measured: FloorEstimateInput = zone
       ? {
           totalFloorArea: zone.floorArea,
+          plinthLength: resolveFloorPlinthLength(zone) ?? 0,
           demolitionArea: zone.demolitionFloorArea,
           screedArea: zone.screedArea,
           wetZonesArea: zone.wetArea,
@@ -277,10 +281,23 @@ export function validateElectricScenarioMeasures(params: {
   const { application, input, zone } = params
 
   const zoneType = zone ? zone.zoneType : null
-  if (!isElectricScenarioAllowedForZone(application.state, zoneType)) {
+  const incompatible = (application.states?.length ? application.states : [application.state])
+    .find((state) => !isElectricScenarioAllowedForZone(state, zoneType))
+  if (incompatible) {
     return {
       ok: false,
-      message: formatElectricScenarioZoneMismatchMessage(application.state),
+      message: formatElectricScenarioZoneMismatchMessage(incompatible),
+    }
+  }
+
+  if (application.states && application.states.length > 1) {
+    for (const state of application.states) {
+      const single = validateElectricScenarioMeasures({
+        ...params,
+        application: { ...application, state, states: undefined, demolitionBeforeWork: false },
+      })
+      if (!single.ok) return { ok: false,
+        message: `${formatElectricScenarioLabel({ state })}: ${single.message}` }
     }
   }
 
@@ -333,10 +350,25 @@ export function validatePlumbingScenarioMeasures(params: {
   const { application, input, zone } = params
 
   const zoneType = zone ? zone.zoneType : null
-  if (!isPlumbingScenarioAllowedForZone(application.state, zoneType)) {
+  const incompatible = (application.states?.length ? application.states : [application.state])
+    .find((state) => !isPlumbingScenarioAllowedForZone(state, zoneType))
+  if (incompatible) {
     return {
       ok: false,
-      message: formatPlumbingScenarioZoneMismatchMessage(application.state),
+      message: formatPlumbingScenarioZoneMismatchMessage(incompatible),
+    }
+  }
+
+  if (application.states && application.states.length > 1) {
+    for (const state of application.states) {
+      const kitchenFixtures = state === 'fixtures-only' && application.states.includes('kitchen')
+      const single = validatePlumbingScenarioMeasures({
+        application: { ...application, state, states: undefined },
+        input: kitchenFixtures ? { ...input, plumbingSinksCount: 0 } : input,
+        zone: kitchenFixtures && zone ? { ...zone, plumbingSinksCount: 0 } : zone,
+      })
+      if (!single.ok) return { ok: false,
+        message: `${formatPlumbingScenarioLabel({ state })}: ${single.message}` }
     }
   }
 

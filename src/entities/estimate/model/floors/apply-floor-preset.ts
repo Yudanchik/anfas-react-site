@@ -2,6 +2,7 @@ import { normalizeNonNegative } from '../shared/calculate-line-total'
 import { isZonedEstimateLine } from '../shared/estimate-zoned-line'
 import type { EstimateLine, FloorEstimateInput } from '../shared/estimate.types'
 import type { EstimateZone } from '../shared/estimate-zone'
+import { roomFootprintPerimeter } from '../shared/wall-measurements'
 import { createZonedFloorEstimateLine } from './create-zoned-floor-estimate-line'
 import {
   disableConflictingAlternatives,
@@ -16,6 +17,8 @@ export type ScreedTypeOption =
 export type WaterproofingLayersOption = 'acrylic-1' | 'acrylic-2'
 
 export type WasteTripOption = 'gazelle-6' | 'gazelle-12' | 'carry-out'
+export type FloorFinishOption = 'none' | 'laminate-floating' | 'quartz-floating' | 'quartz-glue'
+export type FloorPlinthOption = 'none' | 'plastic' | 'mdf' | 'duropolymer' | 'shadow'
 
 export type FloorPresetId =
   'room-plan' | 'demolition-covering' | 'screed-on-slab' | 'self-leveling' | 'wet-zones' | 'waste'
@@ -28,6 +31,8 @@ export type FloorPresetApplication =
       selfLevelingBase?: 'inspect' | 'ready' | 'grind' | 'other'
       screedBase?: 'inspect' | 'bonded' | 'film' | 'floating'
       waterproofing: WaterproofingLayersOption | 'none'
+      finish?: FloorFinishOption
+      plinth?: FloorPlinthOption
     }
   | { presetId: 'demolition-covering'; covering: DemolitionCoveringOption }
   | { presetId: 'screed-on-slab'; screedType: ScreedTypeOption }
@@ -101,6 +106,31 @@ const WASTE_KEYS: Record<WasteTripOption, readonly string[]> = {
   'carry-out': ['waste-carry-out'],
 }
 
+const FINISH_KEYS: Record<Exclude<FloorFinishOption, 'none'>, readonly string[]> = {
+  'laminate-floating': ['finish-underlay-laminate-lock-quartz', 'finish-laminate-quartz-floating'],
+  'quartz-floating': ['finish-underlay-laminate-lock-quartz', 'finish-laminate-quartz-floating'],
+  'quartz-glue': ['finish-quartz-glue'],
+}
+
+const PLINTH_KEYS: Record<Exclude<FloorPlinthOption, 'none'>, string> = {
+  plastic: 'finish-plinth-plastic',
+  mdf: 'finish-plinth-mdf-glue',
+  duropolymer: 'finish-plinth-duropolymer-up-to-100',
+  shadow: 'finish-plinth-shadow',
+}
+
+/** Длина вдоль контура минус дверные проёмы до пола; окна не вычитаются. */
+export function resolveFloorPlinthLength(zone: EstimateZone): number | null {
+  const measurements = zone.wallMeasurements
+  if (!measurements) return null
+  const perimeter = roomFootprintPerimeter(measurements)
+  if (perimeter === null) return null
+  const doors = measurements.walls.flatMap((wall) => wall.openings)
+    .filter((opening) => opening.kind === 'door')
+    .reduce((sum, opening) => sum + opening.widthM * opening.count, 0)
+  return Math.round(Math.max(0, perimeter - doors) * 100) / 100
+}
+
 export type FloorRoomPlan = {
   works: readonly { key: string; quantity: number }[]
   issues: readonly string[]
@@ -114,6 +144,8 @@ const ROOM_PLAN_KEYS = new Set([
   'self-leveling-grind',
   'waterproofing-acrylic-1',
   'waterproofing-acrylic-2',
+  ...Object.values(FINISH_KEYS).flat(),
+  ...Object.values(PLINTH_KEYS),
 ])
 
 /** Один маршрут помещения: отдельный объём для демонтажа, основания и гидроизоляции. */
@@ -162,6 +194,15 @@ export function resolveFloorRoomPlan(
       ],
       input.wetZonesArea,
     )
+  }
+  if (application.finish && application.finish !== 'none') {
+    if (input.totalFloorArea <= 0) issues.push('Укажите площадь пола для финишного покрытия.')
+    else add(FINISH_KEYS[application.finish], input.totalFloorArea)
+  }
+  if (application.plinth && application.plinth !== 'none') {
+    if (!input.plinthLength || input.plinthLength <= 0)
+      issues.push('Для плинтуса задайте контур комнаты или длину и ширину; дверные проёмы отметьте в стенах.')
+    else add([PLINTH_KEYS[application.plinth]], input.plinthLength)
   }
   if (!works.length && !issues.length)
     issues.push(
@@ -311,6 +352,7 @@ export function formatFloorPresetZoneFeedback(
 function floorInputFromZone(zone: EstimateZone): FloorEstimateInput {
   return {
     totalFloorArea: zone.floorArea,
+    plinthLength: resolveFloorPlinthLength(zone) ?? 0,
     demolitionArea: zone.demolitionFloorArea,
     screedArea: zone.screedArea,
     wetZonesArea: zone.wetArea,
@@ -322,6 +364,7 @@ export function resolveFloorPresetKeys(application: FloorPresetApplication): rea
   if (application.presetId === 'room-plan')
     return resolveFloorRoomPlan(application, {
       totalFloorArea: 1,
+      plinthLength: 1,
       demolitionArea: 1,
       screedArea: 1,
       wetZonesArea: 1,

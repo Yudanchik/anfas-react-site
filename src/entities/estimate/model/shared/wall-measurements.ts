@@ -26,6 +26,8 @@ export type WallMeasurements = {
   roomHeightM: number
   /** Последняя площадь, автоматически переданная в полы и потолки. */
   autoFootprintArea?: number
+  /** Точки контура пола по порядку обхода; последняя соединяется с первой. */
+  footprintVertices?: { id: string; xM: number; yM: number }[]
   walls: MeasuredWall[]
 }
 
@@ -48,8 +50,55 @@ const roundArea = (value: number) => Math.round(value * 100) / 100
 const valid = (value: number) => Number.isFinite(value) && value > 0
 
 export function roomFootprintArea(measurements: WallMeasurements): number | null {
+  if (measurements.footprintVertices?.length) {
+    const points = measurements.footprintVertices
+    if (points.length < 3 || points.some((point) => !Number.isFinite(point.xM) || !Number.isFinite(point.yM))) return null
+    if (footprintHasIntersections(points)) return null
+    const twiceArea = points.reduce((sum, point, index) => {
+      const next = points[(index + 1) % points.length]
+      return sum + point.xM * next.yM - next.xM * point.yM
+    }, 0)
+    return Math.abs(twiceArea) > 0.000001 ? roundArea(Math.abs(twiceArea) / 2) : null
+  }
+  if (measurements.walls.length > 4) return null
   return valid(measurements.roomLengthM) && valid(measurements.roomWidthM)
     ? roundArea(measurements.roomLengthM * measurements.roomWidthM) : null
+}
+
+export function roomFootprintPerimeter(measurements: WallMeasurements): number | null {
+  const points = measurements.footprintVertices
+  if (points?.length) {
+    if (roomFootprintArea(measurements) === null) return null
+    return roundArea(points.reduce((sum, point, index) => {
+      const next = points[(index + 1) % points.length]
+      return sum + Math.hypot(next.xM - point.xM, next.yM - point.yM)
+    }, 0))
+  }
+  if (measurements.walls.length > 4) return null
+  return valid(measurements.roomLengthM) && valid(measurements.roomWidthM)
+    ? roundArea(2 * (measurements.roomLengthM + measurements.roomWidthM)) : null
+}
+
+function footprintHasIntersections(points: NonNullable<WallMeasurements['footprintVertices']>): boolean {
+  const turn = (a: typeof points[number], b: typeof points[number], c: typeof points[number]) =>
+    (b.xM - a.xM) * (c.yM - a.yM) - (b.yM - a.yM) * (c.xM - a.xM)
+  const onSegment = (a: typeof points[number], b: typeof points[number], c: typeof points[number]) =>
+    Math.min(a.xM, b.xM) <= c.xM && c.xM <= Math.max(a.xM, b.xM) &&
+    Math.min(a.yM, b.yM) <= c.yM && c.yM <= Math.max(a.yM, b.yM)
+  for (let i = 0; i < points.length; i++) {
+    const a = points[i], b = points[(i + 1) % points.length]
+    if (Math.hypot(b.xM - a.xM, b.yM - a.yM) < 0.000001) return true
+    for (let j = i + 1; j < points.length; j++) {
+      if (j === i + 1 || (i === 0 && j === points.length - 1)) continue
+      const c = points[j], d = points[(j + 1) % points.length]
+      const abC = turn(a, b, c), abD = turn(a, b, d)
+      const cdA = turn(c, d, a), cdB = turn(c, d, b)
+      if ((abC * abD < 0 && cdA * cdB < 0) ||
+        (abC === 0 && onSegment(a, b, c)) || (abD === 0 && onSegment(a, b, d)) ||
+        (cdA === 0 && onSegment(c, d, a)) || (cdB === 0 && onSegment(c, d, b))) return true
+    }
+  }
+  return false
 }
 
 /** Заполняет пол и потолок из габаритов комнаты, но не перезаписывает их ручную правку. */
@@ -60,8 +109,15 @@ export function syncRoomFootprintAreas(
   ceilingArea: number,
 ): { measurements: WallMeasurements; floorArea?: number; ceilingArea?: number } {
   const area = roomFootprintArea(next)
-  if (area === null) return { measurements: next }
   const lastAuto = previous.autoFootprintArea ?? roomFootprintArea(previous) ?? 0
+  if (area === null) {
+    if (next.walls.length > 4 || next.footprintVertices?.length) return {
+      measurements: { ...next, autoFootprintArea: undefined },
+      ...(floorArea === lastAuto ? { floorArea: 0 } : {}),
+      ...(ceilingArea === lastAuto ? { ceilingArea: 0 } : {}),
+    }
+    return { measurements: next }
+  }
   return {
     measurements: { ...next, autoFootprintArea: area },
     ...(floorArea === 0 || floorArea === lastAuto ? { floorArea: area } : {}),

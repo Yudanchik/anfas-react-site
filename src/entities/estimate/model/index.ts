@@ -89,6 +89,7 @@ export {
   EMPTY_WALL_MEASUREMENTS,
   relinkRectangularWalls,
   roomFootprintArea,
+  roomFootprintPerimeter,
   syncRoomFootprintAreas,
   updateRoomDimensions,
 } from './shared/wall-measurements'
@@ -204,6 +205,7 @@ export {
   getFloorPresetLabel,
   resolveFloorPresetKeys,
   resolveFloorRoomPlan,
+  resolveFloorPlinthLength,
 } from './floors/apply-floor-preset'
 export type {
   ApplyFloorPresetResult,
@@ -211,6 +213,8 @@ export type {
   FloorPresetApplication,
   FloorPresetId,
   FloorRoomPlan,
+  FloorFinishOption,
+  FloorPlinthOption,
   ScreedTypeOption,
   WasteTripOption,
   WaterproofingLayersOption,

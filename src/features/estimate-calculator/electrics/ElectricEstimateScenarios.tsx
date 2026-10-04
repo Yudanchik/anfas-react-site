@@ -100,15 +100,17 @@ export function ElectricEstimateScenarios({
   const { primary } = resolveElectricScenarioOptionsForZone(filterZoneType, false)
   const stateOptions = primary.map((option) => ({ value: option.id, label: option.label }))
   const compatibleState = resolveCompatibleState(state, filterZoneType)
+  const selectedStates = draft.states?.length ? [...new Set(draft.states)] : [compatibleState]
 
   const application: ElectricScenarioApplication = {
-    state: compatibleState,
+    state: selectedStates[0],
+    states: selectedStates,
     wallMaterial,
     cableRoute,
-    demolitionBeforeWork: state !== 'demolition-only' && draft.demolitionBeforeWork,
+    demolitionBeforeWork: !selectedStates.includes('demolition-only') && draft.demolitionBeforeWork,
   }
 
-  const originalKeys = resolveElectricScenarioKeys({ state: compatibleState })
+  const originalKeys = resolveElectricScenarioKeys({ state: selectedStates[0], states: selectedStates })
   const needsWall = originalKeys.some(
     (key) => key.startsWith('chase-') || key.startsWith('hole-podrozetnik-'),
   )
@@ -131,7 +133,9 @@ export function ElectricEstimateScenarios({
     }
   })
 
-  const zoneFitOk = isElectricScenarioAllowedForZone(application.state, filterZoneType)
+  const incompatibleState = selectedStates.find((selected) =>
+    !isElectricScenarioAllowedForZone(selected, filterZoneType))
+  const zoneFitOk = !incompatibleState
   const measureCheck = validateElectricScenarioMeasures({
     application,
     input: generalInput,
@@ -147,7 +151,7 @@ export function ElectricEstimateScenarios({
       zone: selectedZone,
     })
   const applyDisabledHint = !zoneFitOk
-    ? formatElectricScenarioZoneMismatchMessage(application.state)
+    ? formatElectricScenarioZoneMismatchMessage(incompatibleState!)
     : plan.issues.length
       ? plan.issues.join(' ')
       : canApply
@@ -159,10 +163,9 @@ export function ElectricEstimateScenarios({
   const previewLabel = formatElectricScenarioLabel(application)
 
   function syncStateForZoneType(zoneType: EstimateZone['zoneType'] | null) {
-    if (isElectricScenarioAllowedForZone(state, zoneType)) return
-    const next = resolveCompatibleState(state, zoneType)
-    if (next === state) return
-    onDraftChange({ state: next })
+    const retained = selectedStates.filter((selected) => isElectricScenarioAllowedForZone(selected, zoneType))
+    const next = retained.length ? retained : [resolveCompatibleState(state, zoneType)]
+    onDraftChange({ state: next[0], states: next })
   }
 
   const batch = useRoomScenarioBatch({
@@ -222,7 +225,7 @@ export function ElectricEstimateScenarios({
               ) : (
                 <p className={styles.applyHint}>Добавьте помещение в блоке замеров выше.</p>
               )}{' '}
-              {compatibleState !== 'demolition-only' ? (
+              {!selectedStates.includes('demolition-only') ? (
                 <div className={styles.field}>
                   <span>Снять старую электрику перед монтажом?</span>
                   <EstimateSelect
@@ -237,20 +240,23 @@ export function ElectricEstimateScenarios({
                 </div>
               ) : null}
               <div className={styles.field}>
-                <span>Сценарий</span>
-                <EstimateSelect
-                  value={compatibleState}
-                  options={stateOptions}
-                  ariaLabel="Сценарий электрики"
-                  onChange={(nextValue) => {
-                    const next = nextValue as ElectricStateOption
-                    if (!isElectricScenarioAllowedForZone(next, filterZoneType)) {
-                      setError(formatElectricScenarioZoneMismatchMessage(next))
-                      return
-                    }
-                    onDraftChange({ state: next })
-                  }}
-                />
+                <span>Выберите нужные сценарии для помещения</span>
+                <div className={styles.scenarioChoices} role="group" aria-label="Сценарии электрики">
+                  {stateOptions.map((option) => (
+                    <label key={option.value}>
+                      <input type="checkbox" checked={selectedStates.includes(option.value)}
+                        disabled={selectedStates.length === 1 && selectedStates.includes(option.value)}
+                        onChange={(event) => {
+                          const next = event.target.checked
+                            ? [...selectedStates, option.value]
+                            : selectedStates.filter((selected) => selected !== option.value)
+                          onDraftChange({ state: next[0] ?? state, states: next })
+                        }} />
+                      {option.label}
+                    </label>
+                  ))}
+                </div>
+                <p className={styles.applyHint}>Совпадающие работы войдут в смету один раз.</p>
               </div>
             </>
           ),

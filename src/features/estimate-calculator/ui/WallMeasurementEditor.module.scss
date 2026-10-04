@@ -55,6 +55,34 @@
   }
 }
 
+.contourRow {
+  display: grid;
+  grid-template-columns: 70px repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 8px;
+
+  @include mq.media(phone) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.contour {
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: var(--radius-sm);
+
+  summary {
+    font-size: 12px;
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+  }
+
+  &[open] {
+    display: grid;
+    gap: 10px;
+  }
+}
+
 .measure,
 .wallName,
 .kind {

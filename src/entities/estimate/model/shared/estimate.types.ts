@@ -185,6 +185,7 @@ export type EstimateSection = {
 
 export type FloorEstimateInput = {
   totalFloorArea: number
+  plinthLength?: number
   demolitionArea: number
   screedArea: number
   wetZonesArea: number

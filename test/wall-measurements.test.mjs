@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { calculateWallMeasurements, createRectangularWalls, relinkRectangularWalls, syncRoomFootprintAreas, updateRoomDimensions } from '../src/entities/estimate/model/shared/wall-measurements.ts'
+import { calculateWallMeasurements, createRectangularWalls, relinkRectangularWalls, roomFootprintArea, roomFootprintPerimeter, syncRoomFootprintAreas, updateRoomDimensions } from '../src/entities/estimate/model/shared/wall-measurements.ts'
 
 test('четыре стены и проёмы дают проверяемую площадь и отдельные откосы', () => {
   const walls = createRectangularWalls(4, 3, 2.7)
@@ -75,4 +75,37 @@ test('площадь комнаты автоматически заполняе�
   const restored = syncRoomFootprintAreas(emptyResult.measurements, updateRoomDimensions(temporaryEmpty, { roomLengthM: 6 }), 15, 10)
   assert.equal(restored.floorArea, 18)
   assert.equal(restored.ceilingArea, undefined)
+})
+
+test('непрямоугольный контур из шести точек даёт площадь и периметр, не зависящие от числа стен', () => {
+  const initial = { roomLengthM: 4, roomWidthM: 4, roomHeightM: 2.7, walls: [], autoFootprintArea: 16 }
+  const shape = { ...initial, footprintVertices: [
+    [0, 0], [4, 0], [4, 2], [2, 2], [2, 4], [0, 4],
+  ].map(([xM, yM], index) => ({ id: String(index), xM, yM })) }
+  assert.equal(roomFootprintArea(shape), 12)
+  assert.equal(roomFootprintPerimeter(shape), 16)
+  const synced = syncRoomFootprintAreas(initial, shape, 16, 16)
+  assert.equal(synced.floorArea, 12)
+  assert.equal(synced.ceilingArea, 12)
+  assert.equal(syncRoomFootprintAreas(initial, shape, 10, 16).floorArea, undefined)
+})
+
+test('самопересекающийся контур не сохраняет прежнюю автоматическую площадь прямоугольника', () => {
+  const initial = { roomLengthM: 4, roomWidthM: 3, roomHeightM: 2.7, walls: [] }
+  const shape = { ...initial, footprintVertices: [
+    [0, 0], [4, 3], [0, 3], [4, 0],
+  ].map(([xM, yM], index) => ({ id: String(index), xM, yM })) }
+  assert.equal(roomFootprintArea(shape), null)
+  assert.equal(syncRoomFootprintAreas(initial, shape, 12, 12).floorArea, 0)
+})
+
+test('пятая стена без контура сбрасывает только прежнюю автоматическую площадь прямоугольника', () => {
+  const initial = { roomLengthM: 4, roomWidthM: 3, roomHeightM: 2.7,
+    autoFootprintArea: 12, walls: createRectangularWalls(4, 3, 2.7) }
+  const next = { ...initial, walls: [...initial.walls, { ...initial.walls[0], id: 'fifth' }] }
+  assert.equal(roomFootprintArea(next), null)
+  assert.equal(roomFootprintPerimeter(next), null)
+  const result = syncRoomFootprintAreas(initial, next, 12, 10)
+  assert.equal(result.floorArea, 0)
+  assert.equal(result.ceilingArea, undefined)
 })

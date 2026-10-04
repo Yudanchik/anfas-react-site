@@ -99,9 +99,11 @@ export function PlumbingEstimateScenarios({
   const { primary } = resolvePlumbingScenarioOptionsForZone(filterZoneType, false)
   const stateOptions = primary.map((option) => ({ value: option.id, label: option.label }))
   const compatibleState = resolveCompatibleState(state, filterZoneType)
+  const selectedStates = draft.states?.length ? [...new Set(draft.states)] : [compatibleState]
 
   const application: PlumbingScenarioApplication = {
-    state: compatibleState,
+    state: selectedStates[0],
+    states: selectedStates,
     toiletKind,
     bathKind,
     showerKind,
@@ -143,21 +145,21 @@ export function PlumbingEstimateScenarios({
       ),
     }
   })
-  const bathroom =
-    compatibleState === 'bathroom-from-scratch' || compatibleState === 'bathroom-replacement'
-  const fixtures = bathroom || compatibleState === 'fixtures-only'
+  const bathroom = selectedStates.some((selected) =>
+    selected === 'bathroom-from-scratch' || selected === 'bathroom-replacement')
+  const fixtures = bathroom || selectedStates.includes('fixtures-only')
   const hasToilet =
-    (fixtures || compatibleState === 'toilet-zone') &&
+    (fixtures || selectedStates.includes('toilet-zone')) &&
     (resolvedTargetId === ALL_SCENARIO_ROOMS
       ? zones.some((zone) => zone.plumbingToiletsCount > 0)
       : previewInput.plumbingToiletsCount > 0)
   const hasBath =
-    (fixtures || compatibleState === 'bath-zone') &&
+    (fixtures || selectedStates.includes('bath-zone')) &&
     (resolvedTargetId === ALL_SCENARIO_ROOMS
       ? zones.some((zone) => zone.plumbingBathtubsCount > 0)
       : previewInput.plumbingBathtubsCount > 0)
   const hasShower =
-    (fixtures || compatibleState === 'bath-zone') &&
+    (fixtures || selectedStates.includes('bath-zone')) &&
     (resolvedTargetId === ALL_SCENARIO_ROOMS
       ? zones.some((zone) => zone.plumbingShowersCount > 0)
       : previewInput.plumbingShowersCount > 0)
@@ -167,7 +169,9 @@ export function PlumbingEstimateScenarios({
       ? zones.some((zone) => zone.plumbingSinksCount > 0)
       : previewInput.plumbingSinksCount > 0)
 
-  const zoneFitOk = isPlumbingScenarioAllowedForZone(application.state, filterZoneType)
+  const incompatibleState = selectedStates.find((selected) =>
+    !isPlumbingScenarioAllowedForZone(selected, filterZoneType))
+  const zoneFitOk = !incompatibleState
   const measureCheck = validatePlumbingScenarioMeasures({
     application: selectedZone ? applicationForZone(selectedZone) : application,
     input: generalInput,
@@ -183,7 +187,7 @@ export function PlumbingEstimateScenarios({
       zone: selectedZone,
     })
   const applyDisabledHint = !zoneFitOk
-    ? formatPlumbingScenarioZoneMismatchMessage(application.state)
+    ? formatPlumbingScenarioZoneMismatchMessage(incompatibleState!)
     : plan.issues.length
       ? plan.issues.join(' ')
       : canApply
@@ -195,10 +199,9 @@ export function PlumbingEstimateScenarios({
   const previewLabel = formatPlumbingScenarioLabel(application)
 
   function syncStateForZoneType(zoneType: EstimateZone['zoneType'] | null) {
-    if (isPlumbingScenarioAllowedForZone(state, zoneType)) return
-    const next = resolveCompatibleState(state, zoneType)
-    if (next === state) return
-    onDraftChange({ state: next })
+    const retained = selectedStates.filter((selected) => isPlumbingScenarioAllowedForZone(selected, zoneType))
+    const next = retained.length ? retained : [resolveCompatibleState(state, zoneType)]
+    onDraftChange({ state: next[0], states: next })
   }
 
   const batch = useRoomScenarioBatch({
@@ -264,20 +267,26 @@ export function PlumbingEstimateScenarios({
                 <p className={styles.applyHint}>Добавьте помещение в блоке замеров выше.</p>
               )}{' '}
               <div className={styles.field}>
-                <span>Сценарий</span>
-                <EstimateSelect
-                  value={compatibleState}
-                  options={stateOptions}
-                  ariaLabel="Сценарий сантехники"
-                  onChange={(nextValue) => {
-                    const next = nextValue as PlumbingStateOption
-                    if (!isPlumbingScenarioAllowedForZone(next, filterZoneType)) {
-                      setError(formatPlumbingScenarioZoneMismatchMessage(next))
-                      return
-                    }
-                    onDraftChange({ state: next })
-                  }}
-                />
+                <span>Выберите нужные сценарии для помещения</span>
+                <div className={styles.scenarioChoices} role="group" aria-label="Сценарии сантехники">
+                  {stateOptions.map((option) => (
+                    <label key={option.value}>
+                      <input type="checkbox" checked={selectedStates.includes(option.value)}
+                        disabled={selectedStates.length === 1 && selectedStates.includes(option.value)}
+                        onChange={(event) => {
+                          const next = event.target.checked
+                            ? [...selectedStates, option.value]
+                            : selectedStates.filter((selected) => selected !== option.value)
+                          onDraftChange({ state: next[0] ?? state, states: next })
+                        }} />
+                      {option.label}
+                    </label>
+                  ))}
+                </div>
+                <p className={styles.applyHint}>
+                  Повторяющиеся работы объединяются в одну строку на помещение. Противоречащие
+                  маршруты, например «санузел с нуля» и «замена», выбрать вместе нельзя.
+                </p>
               </div>
             </>
           ),
@@ -444,9 +453,9 @@ export function PlumbingEstimateScenarios({
           </>
         )
       }
-      canApply={batch.canApply}
+      canApply={selectedStates.length > 0 && batch.canApply}
       disabledHint={
-        batch.all
+        selectedStates.length === 0 ? 'Выберите хотя бы один сценарий.' : batch.all
           ? batch.canApply
             ? null
             : 'Нет помещений с подходящими замерами.'

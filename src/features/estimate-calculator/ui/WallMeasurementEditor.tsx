@@ -4,6 +4,7 @@ import {
   calculateWallMeasurements,
   createRectangularWalls,
   EMPTY_WALL_MEASUREMENTS,
+  roomFootprintArea,
   syncRoomFootprintAreas,
   updateRoomDimensions,
   type EstimateZone,
@@ -32,6 +33,8 @@ export function WallMeasurementEditor({ zone, onPatch }: Props) {
     measurements.roomLengthM > 0 && measurements.roomWidthM > 0 && measurements.roomHeightM > 0
   const [expandedOpeningId, setExpandedOpeningId] = useState<string | null>(null)
   const [expandedWallId, setExpandedWallId] = useState<string | null>(null)
+  const contour = measurements.footprintVertices
+  const contourArea = contour?.length ? roomFootprintArea(measurements) : null
   function save(next: WallMeasurements) {
     const result = calculateWallMeasurements(next)
     const footprint = syncRoomFootprintAreas(measurements, next, zone.floorArea, zone.ceilingArea)
@@ -148,10 +151,69 @@ export function WallMeasurementEditor({ zone, onPatch }: Props) {
           Создать 4 стены
         </button>
       </div>
+      <details className={styles.contour}>
+        <summary>Контур пола сложной формы</summary>
+        <p className={styles.hint}>
+          Если комната не прямоугольная, отметьте углы по порядку обхода. X и Y — расстояния
+          от выбранного угла комнаты в метрах. Одних длин 5–7 стен недостаточно для определения
+          площади: нужна форма контура. Последняя точка соединяется с первой автоматически.
+        </p>
+        {!contour?.length ? (
+          <button type="button" className={styles.secondary} onClick={() => save({
+            ...measurements,
+            footprintVertices: [
+              { id: newId(), xM: 0, yM: 0 },
+              { id: newId(), xM: measurements.roomLengthM, yM: 0 },
+              { id: newId(), xM: measurements.roomLengthM, yM: measurements.roomWidthM },
+              { id: newId(), xM: 0, yM: measurements.roomWidthM },
+            ],
+          })}>
+            Начать с 4 углов
+          </button>
+        ) : (
+          <>
+            {contour.map((point, index) => (
+              <div className={styles.contourRow} key={point.id}>
+                <strong>Угол {index + 1}</strong>
+                <Measure label={`X угла ${index + 1}`} value={point.xM} onChange={(xM) => save({
+                  ...measurements,
+                  footprintVertices: contour.map((entry) => entry.id === point.id ? { ...entry, xM } : entry),
+                })} />
+                <Measure label={`Y угла ${index + 1}`} value={point.yM} onChange={(yM) => save({
+                  ...measurements,
+                  footprintVertices: contour.map((entry) => entry.id === point.id ? { ...entry, yM } : entry),
+                })} />
+                <button type="button" className={styles.deleteBtn} disabled={contour.length <= 3}
+                  onClick={() => save({ ...measurements, footprintVertices: contour.filter((entry) => entry.id !== point.id) })}>
+                  Удалить
+                </button>
+              </div>
+            ))}
+            <div className={styles.commands}>
+              <button type="button" className={styles.secondary} disabled={contour.length >= 40}
+                onClick={() => save({ ...measurements, footprintVertices: [
+                  ...contour, { id: newId(), xM: 0, yM: 0 },
+                ] })}>
+                + Добавить угол
+              </button>
+              <button type="button" className={styles.secondary}
+                onClick={() => save({ ...measurements, footprintVertices: undefined })}>
+                Вернуть прямоугольный расчёт
+              </button>
+            </div>
+            <p className={styles.hint} role="status">
+              {contourArea === null
+                ? 'Контур пока не замкнут корректно: проверьте координаты, пересечения и повторяющиеся углы.'
+                : `Площадь пола и потолка по контуру: ${format(contourArea)} м². Ручную правку площадей не перезаписываем.`}
+            </p>
+          </>
+        )}
+      </details>
       {measurements.walls.length > 0 ? (
         <p className={styles.hint}>
-          Размеры стен обновляются вместе с комнатой. Площадь пола и потолка тоже заполнится
-          автоматически; при необходимости её можно уточнить в их разделах.
+          Размеры связанных стен обновляются вместе с комнатой. Для прямоугольной комнаты площадь
+          пола и потолка берётся из длины и ширины. При пяти и более стенах задайте контур ниже:
+          по одним длинам стен площадь определить нельзя.
         </p>
       ) : null}
 

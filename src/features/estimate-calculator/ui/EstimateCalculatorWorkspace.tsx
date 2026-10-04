@@ -149,7 +149,7 @@ export function EstimateCalculatorWorkspace({
       tileScenarios: restoreTileScenarioDraft(snapshot),
       electricScenarios: restoreElectricScenarioDraft(snapshot),
       plumbingScenarios: restorePlumbingScenarioDraft(snapshot),
-      activeTab: (snapshot?.activeTab ?? 'walls') as EstimateTabId,
+      activeTab: 'walls' as EstimateTabId,
     }
   })
 
@@ -341,7 +341,7 @@ export function EstimateCalculatorWorkspace({
   function resetAllEstimate() {
     if (!accountPayload) clearEstimateCalculatorSnapshot()
     setGlobalFeedbackEpoch((n) => n + 1)
-    setActiveTab('floors')
+    setActiveTab('walls')
     setZones([])
     setFloorPresetDraft({ ...DEFAULT_FLOOR_PRESETS })
     setWallScenarioDraft({ ...DEFAULT_WALL_SCENARIOS })

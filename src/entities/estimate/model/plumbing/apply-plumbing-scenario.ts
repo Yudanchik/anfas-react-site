@@ -31,6 +31,8 @@ export type PlumbingStateOption =
 
 export type PlumbingScenarioApplication = {
   state: PlumbingStateOption
+  /** Несколько маршрутов для одного помещения объединяются до создания строк. */
+  states?: PlumbingStateOption[]
   toiletKind?: 'unknown' | 'floor' | 'installation'
   bathKind?: 'unknown' | 'acrylic' | 'cast-iron' | 'quaryl'
   showerKind?: 'unknown' | 'tray' | 'cabin'
@@ -260,10 +262,15 @@ export function applyPlumbingScenarioToZone(
 export function resolvePlumbingScenarioKeys(
   application: PlumbingScenarioApplication,
 ): readonly string[] {
+  if (application.states?.length) return [...new Set(application.states.flatMap((state) =>
+    resolvePlumbingScenarioKeys({ ...application, state, states: undefined }),
+  ))]
   return [...new Set(STATE_KEYS[application.state] ?? [])].filter((key) => MAPPING_BY_ID.has(key))
 }
 
 export function formatPlumbingScenarioLabel(application: PlumbingScenarioApplication): string {
+  if (application.states?.length) return [...new Set(application.states)]
+    .map((state) => STATE_LABELS[state] ?? state).join(' + ')
   return STATE_LABELS[application.state] ?? application.state
 }
 
@@ -283,6 +290,33 @@ export function resolvePlumbingScenarioPlan(
   application: PlumbingScenarioApplication,
   input: PlumbingEstimateInput,
 ): PlumbingScenarioPlan {
+  if (application.states?.length) {
+    const states = [...new Set(application.states)]
+    if (states.includes('bathroom-from-scratch') && states.includes('bathroom-replacement'))
+      return { keys: [], issues: ['Выберите один из двух маршрутов санузла: с нуля или замена.'], notes: [] }
+    if (states.includes('kitchen') && states.some((state) =>
+      ['bathroom-from-scratch', 'bathroom-replacement', 'bath-zone', 'toilet-zone'].includes(state)))
+      return { keys: [], issues: ['Маршруты кухни и санузла нельзя объединять в одном помещении.'], notes: [] }
+    const plans = states.map((state) => resolvePlumbingScenarioPlan({
+      ...application, state, states: undefined,
+    }, state === 'fixtures-only' && states.includes('kitchen')
+      ? { ...input, plumbingSinksCount: 0 } : input))
+    const keys = [...new Set(plans.flatMap((plan) => plan.keys))]
+    const conflictingVariants = Object.values({
+      toilet: ['finish-toilet-soft', 'finish-toilet-floor'],
+      bath: ['finish-bath-acrylic', 'finish-bath-cast-iron', 'finish-bath-quaryl'],
+    }).some((variants) => keys.filter((key) => variants.includes(key)).length > 1)
+    return {
+      keys,
+      issues: [
+        ...new Set([
+          ...plans.flatMap((plan) => plan.issues),
+          ...(conflictingVariants ? ['Выбранные маршруты предлагают несовместимые варианты прибора.'] : []),
+        ]),
+      ],
+      notes: [...new Set(plans.flatMap((plan) => plan.notes))],
+    }
+  }
   const initial = resolvePlumbingScenarioKeys(application)
   if (
     application.toiletKind === undefined &&

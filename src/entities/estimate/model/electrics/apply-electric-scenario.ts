@@ -31,6 +31,7 @@ export type ElectricStateOption =
 export type ElectricScenarioApplication = {
   demolitionBeforeWork?: boolean
   state: ElectricStateOption
+  states?: ElectricStateOption[]
   wallMaterial?: 'unknown' | 'concrete' | 'brick' | 'drywall' | 'ready'
   cableRoute?: 'unknown' | 'chase' | 'open' | 'mixed' | 'existing'
 }
@@ -199,6 +200,19 @@ export function resolveElectricScenarioKeys(
 export function resolveElectricScenarioPlan(
   application: ElectricScenarioApplication,
 ): ElectricScenarioPlan {
+  if (application.states?.length) {
+    const states = [...new Set(application.states)]
+    const plans = states.map((state) => resolveElectricScenarioPlan({
+      ...application, state, states: undefined, demolitionBeforeWork: false,
+    }))
+    return {
+      keys: [...new Set([
+        ...plans.flatMap((plan) => plan.keys),
+        ...(application.demolitionBeforeWork ? STATE_KEYS['demolition-only'] : []),
+      ])],
+      issues: [...new Set(plans.flatMap((plan) => plan.issues))],
+    }
+  }
   const original = STATE_KEYS[application.state] ?? []
   const needsWall = original.some(
     (key) => key.startsWith('chase-') || key.startsWith('hole-podrozetnik-'),
@@ -251,6 +265,10 @@ export function resolveElectricScenarioPlan(
 }
 
 export function formatElectricScenarioLabel(application: ElectricScenarioApplication): string {
+  if (application.states?.length) return [
+    ...(application.demolitionBeforeWork && !application.states.includes('demolition-only') ? ['Демонтаж'] : []),
+    ...[...new Set(application.states)].map((state) => STATE_LABELS[state] ?? state),
+  ].join(' + ')
   return `${application.demolitionBeforeWork && application.state !== 'demolition-only' ? 'Демонтаж + ' : ''}${STATE_LABELS[application.state] ?? application.state}`
 }
 
@@ -272,7 +290,8 @@ export function resolveElectricScenarioQuantity(
     if (key.startsWith('cable-open-')) return Math.max(0, input.electricCableOpenLength ?? 0)
     if (key.startsWith('cable-chase-')) return Math.max(0, input.electricCableChaseLength ?? 0)
   }
-  const combined = application?.demolitionBeforeWork && application.state !== 'demolition-only'
+  const combined = (application?.demolitionBeforeWork && application.state !== 'demolition-only') ||
+    (application?.states?.includes('demolition-only') && application.states.length > 1)
   if (key === 'demolition-outlets')
     return (
       Math.max(0, input.electricOldSocketsCount ?? (combined ? 0 : input.electricSocketsCount)) +

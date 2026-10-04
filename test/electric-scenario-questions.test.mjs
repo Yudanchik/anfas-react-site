@@ -59,3 +59,15 @@ test('неизвестный маршрут требует ответа; ста�
   )
   assert.ok(resolveElectricScenarioKeys({ state: 'kitchen' }).includes('chase-concrete-to-35'))
 })
+
+test('несколько электрических маршрутов дают объединение работ без повторов', () => {
+  const plan = resolveElectricScenarioPlan({
+    state: 'kitchen', states: ['kitchen', 'lighting-only', 'outlets-switches'],
+    wallMaterial: 'brick', cableRoute: 'mixed', demolitionBeforeWork: true,
+  })
+  assert.deepEqual(plan.issues, [])
+  assert.equal(plan.keys.length, new Set(plan.keys).size)
+  assert.ok(plan.keys.includes('finish-spot'))
+  assert.ok(plan.keys.includes('finish-outlet-switch'))
+  assert.ok(plan.keys.includes('demolition-outlets'))
+})

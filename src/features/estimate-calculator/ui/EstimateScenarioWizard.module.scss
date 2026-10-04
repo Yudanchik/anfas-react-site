@@ -99,6 +99,25 @@
   color: color-mix(in srgb, var(--ink) 66%, transparent);
 }
 
+.scenarioChoices {
+  display: grid;
+  gap: 6px;
+  max-height: 240px;
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  border-radius: var(--radius-sm);
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink);
+    font-size: 12px;
+    cursor: pointer;
+  }
+}
+
 .targetLabel {
   font-size: 11px;
 }

@@ -3,10 +3,13 @@ import { useState } from 'react'
 import {
   FLOOR_PRICE_MAPPING,
   resolveFloorRoomPlan,
+  resolveFloorPlinthLength,
   type DemolitionCoveringOption,
   type EstimateZone,
   type EstimateLine,
   type FloorEstimateInput,
+  type FloorFinishOption,
+  type FloorPlinthOption,
   type FloorPresetApplication,
   type ScreedTypeOption,
   type WasteTripOption,
@@ -28,6 +31,8 @@ type FloorPresetDraft = {
   selfLevelingBase: 'inspect' | 'ready' | 'grind' | 'other'
   roomScreedBase: 'inspect' | 'bonded' | 'film' | 'floating'
   roomWaterproofing: WaterproofingLayersOption | 'none'
+  roomFinish: FloorFinishOption
+  roomPlinth: FloorPlinthOption
   covering: DemolitionCoveringOption
   screedType: ScreedTypeOption
   layers: WaterproofingLayersOption
@@ -57,6 +62,8 @@ const DEFAULT_DRAFT: FloorPresetDraft = {
   selfLevelingBase: 'inspect',
   roomScreedBase: 'inspect',
   roomWaterproofing: 'none',
+  roomFinish: 'none',
+  roomPlinth: 'none',
   covering: 'laminate',
   screedType: 'semidry-up-to-80',
   layers: 'acrylic-2',
@@ -124,6 +131,7 @@ export function FloorEstimatePresets({
         demolitionArea: zone.demolitionFloorArea,
         screedArea: zone.screedArea,
         totalFloorArea: zone.floorArea,
+        plinthLength: resolveFloorPlinthLength(zone) ?? 0,
         wetZonesArea: zone.wetArea,
         avgDeltaMm: 0,
       }
@@ -135,6 +143,8 @@ export function FloorEstimatePresets({
     selfLevelingBase: draft.selfLevelingBase,
     screedBase: draft.roomScreedBase,
     waterproofing: draft.roomWaterproofing,
+    finish: draft.roomFinish,
+    plinth: draft.roomPlinth,
   }
   const plan = resolveFloorRoomPlan(application, input)
   const mappingById = new Map(FLOOR_PRICE_MAPPING.map((item) => [item.id, item]))
@@ -299,9 +309,35 @@ export function FloorEstimatePresets({
                 помещениях этот этап пропускается.
               </p>
               <p className={styles.applyHint}>
-                Покрытие, плинтусы и вывоз мусора добавляются ниже из прайса. Плитка — на своей
-                вкладке.
+                Плитка — на своей вкладке. Вывоз мусора добавляется отдельно из прайса.
               </p>
+              <div className={styles.field}>
+                <span>Какое финишное покрытие укладываем?</span>
+                <EstimateSelect value={draft.roomFinish} ariaLabel="Финишное покрытие пола"
+                  options={[
+                    { value: 'none', label: 'Не добавлять' },
+                    { value: 'laminate-floating', label: 'Ламинат плавающим способом с подложкой' },
+                    { value: 'quartz-floating', label: 'Замковый кварцвинил с подложкой' },
+                    { value: 'quartz-glue', label: 'Клеевой кварцвинил' },
+                  ]}
+                  onChange={(next) => patchDraft({ roomFinish: next as FloorFinishOption })} />
+              </div>
+              <div className={styles.field}>
+                <span>Какой плинтус монтируем?</span>
+                <EstimateSelect value={draft.roomPlinth} ariaLabel="Тип плинтуса"
+                  options={[
+                    { value: 'none', label: 'Не добавлять' },
+                    { value: 'plastic', label: 'Пластиковый' },
+                    { value: 'mdf', label: 'МДФ на клей' },
+                    { value: 'duropolymer', label: 'Дюрополимер / полиуретан' },
+                    { value: 'shadow', label: 'Теневой / скрытый' },
+                  ]}
+                  onChange={(next) => patchDraft({ roomPlinth: next as FloorPlinthOption })} />
+                <p className={styles.applyHint}>
+                  Длина считается по контуру пола за вычетом ширины дверных проёмов, отмеченных
+                  в замерах стен. Если геометрия сложная, задайте углы контура; итог можно поправить в строке сметы.
+                </p>
+              </div>
             </>
           ),
         },
@@ -324,6 +360,7 @@ export function FloorEstimatePresets({
                 demolitionArea: entry.demolitionFloorArea,
                 screedArea: entry.screedArea,
                 totalFloorArea: entry.floorArea,
+                plinthLength: resolveFloorPlinthLength(entry) ?? 0,
                 wetZonesArea: entry.wetArea,
                 avgDeltaMm: 0,
               })
@@ -334,7 +371,7 @@ export function FloorEstimatePresets({
                     {roomPlan.works.map((work) => (
                       <li key={work.key}>
                         {mappingById.get(work.key)?.title ?? work.key} —{' '}
-                        {work.quantity.toLocaleString('ru-RU')} м²
+                        {work.quantity.toLocaleString('ru-RU')}{' '}{mappingById.get(work.key)?.unit}
                       </li>
                     ))}
                   </ul>
@@ -355,7 +392,7 @@ export function FloorEstimatePresets({
                 {plan.works.map((work) => (
                   <li key={work.key}>
                     {mappingById.get(work.key)?.title ?? work.key} —{' '}
-                    {work.quantity.toLocaleString('ru-RU')} м²
+                    {work.quantity.toLocaleString('ru-RU')}{' '}{mappingById.get(work.key)?.unit}
                   </li>
                 ))}
               </ul>

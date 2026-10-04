@@ -105,6 +105,8 @@ export type FloorPresetDraftState = {
   selfLevelingBase: 'inspect' | 'ready' | 'grind' | 'other'
   roomScreedBase: 'inspect' | 'bonded' | 'film' | 'floating'
   roomWaterproofing: WaterproofingLayersOption | 'none'
+  roomFinish: 'none' | 'laminate-floating' | 'quartz-floating' | 'quartz-glue'
+  roomPlinth: 'none' | 'plastic' | 'mdf' | 'duropolymer' | 'shadow'
   covering: DemolitionCoveringOption
   screedType: ScreedTypeOption
   layers: WaterproofingLayersOption
@@ -154,12 +156,14 @@ export type TileScenarioDraftState = {
 export type ElectricScenarioDraftState = {
   demolitionBeforeWork?: boolean
   state: ElectricStateOption
+  states?: ElectricStateOption[]
   wallMaterial: NonNullable<ElectricScenarioApplication['wallMaterial']>
   cableRoute: NonNullable<ElectricScenarioApplication['cableRoute']>
 }
 
 export type PlumbingScenarioDraftState = {
   state: PlumbingStateOption
+  states?: PlumbingStateOption[]
   toiletKind: NonNullable<PlumbingScenarioApplication['toiletKind']>
   bathKind: NonNullable<PlumbingScenarioApplication['bathKind']>
   showerKind: NonNullable<PlumbingScenarioApplication['showerKind']>
@@ -287,6 +291,8 @@ const DEFAULT_FLOOR_PRESETS: FloorPresetDraftState = {
   selfLevelingBase: 'inspect',
   roomScreedBase: 'inspect',
   roomWaterproofing: 'none',
+  roomFinish: 'none',
+  roomPlinth: 'none',
   covering: 'laminate',
   screedType: 'semidry-up-to-80',
   layers: 'acrylic-2',
@@ -495,6 +501,13 @@ function parseWallMeasurements(raw: unknown): EstimateZone['wallMeasurements'] {
     roomHeightM: asNonNegative(raw.roomHeightM),
     autoFootprintArea:
       typeof raw.autoFootprintArea === 'number' ? asNonNegative(raw.autoFootprintArea) : undefined,
+    footprintVertices: Array.isArray(raw.footprintVertices)
+      ? raw.footprintVertices.slice(0, 40).filter(isRecord).map((point, index) => ({
+          id: asString(point.id) || `point-${index + 1}`,
+          xM: asNonNegative(point.xM),
+          yM: asNonNegative(point.yM),
+        }))
+      : undefined,
     walls: raw.walls
       .slice(0, 40)
       .filter(isRecord)
@@ -890,6 +903,10 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.floorPresets.roomWaterproofing,
         'none',
       ) as FloorPresetDraftState['roomWaterproofing'],
+      roomFinish: (['none', 'laminate-floating', 'quartz-floating', 'quartz-glue'].includes(String(raw.floorPresets.roomFinish))
+        ? raw.floorPresets.roomFinish : 'none') as FloorPresetDraftState['roomFinish'],
+      roomPlinth: (['none', 'plastic', 'mdf', 'duropolymer', 'shadow'].includes(String(raw.floorPresets.roomPlinth))
+        ? raw.floorPresets.roomPlinth : 'none') as FloorPresetDraftState['roomPlinth'],
       covering: asString(
         raw.floorPresets.covering,
         DEFAULT_FLOOR_PRESETS.covering,
@@ -1018,6 +1035,13 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.electricScenarios.state,
         DEFAULT_ELECTRIC_SCENARIOS.state,
       ) as ElectricStateOption,
+      states: Array.isArray(raw.electricScenarios.states)
+        ? raw.electricScenarios.states.filter((state): state is ElectricStateOption =>
+            typeof state === 'string' && [
+              'apartment-from-scratch', 'room-rewire', 'kitchen', 'bathroom', 'lighting-only',
+              'outlets-switches', 'low-current', 'panel-only', 'demolition-only',
+            ].includes(state)).slice(0, 9)
+        : undefined,
       wallMaterial: ['unknown', 'concrete', 'brick', 'drywall', 'ready'].includes(
         String(raw.electricScenarios.wallMaterial),
       )
@@ -1037,6 +1061,14 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.plumbingScenarios.state,
         DEFAULT_PLUMBING_SCENARIOS.state,
       ) as PlumbingStateOption,
+      states: Array.isArray(raw.plumbingScenarios.states)
+        ? raw.plumbingScenarios.states.filter((state): state is PlumbingStateOption =>
+            typeof state === 'string' && [
+              'bathroom-from-scratch', 'bathroom-replacement', 'kitchen', 'bath-zone',
+              'toilet-zone', 'manifold', 'drainage-only', 'water-supply-only',
+              'fixtures-only', 'demolition-only',
+            ].includes(state)).slice(0, 10)
+        : undefined,
       toiletKind: ['unknown', 'floor', 'installation'].includes(
         String(raw.plumbingScenarios.toiletKind),
       )

@@ -18,9 +18,33 @@ async function moduleFrom(path) {
 const { createEstimateZone, updateEstimateZone } = await moduleFrom(
   'src/entities/estimate/model/shared/estimate-zone.ts',
 )
-const { resolveFloorRoomPlan, applyFloorPresetToZone } = await moduleFrom(
+const { resolveFloorRoomPlan, applyFloorPresetToZone, resolveFloorPlinthLength } = await moduleFrom(
   'src/entities/estimate/model/floors/apply-floor-preset.ts',
 )
+
+test('покрытие и плинтус получают разные объёмы; двери вычитаются только из периметра', () => {
+  const zone = createEstimateZone({ name: 'Комната', fields: {
+    floorArea: 12,
+    wallMeasurements: {
+      roomLengthM: 4, roomWidthM: 3, roomHeightM: 2.7,
+      walls: [{ id: 'w', name: 'Стена', lengthM: 4, heightM: 2.7, openings: [
+        { id: 'd', kind: 'door', widthM: 0.9, heightM: 2, count: 1, deduct: true, finishSlopes: false, slopeSides: 3 },
+        { id: 'o', kind: 'window', widthM: 1.2, heightM: 1, count: 1, deduct: true, finishSlopes: false, slopeSides: 3 },
+      ] }],
+    },
+  } })
+  assert.equal(resolveFloorPlinthLength(zone), 13.1)
+  const app = { presetId: 'room-plan', oldCovering: 'none', leveling: 'none',
+    waterproofing: 'none', finish: 'laminate-floating', plinth: 'plastic' }
+  const first = applyFloorPresetToZone([], zone, app).lines
+  assert.equal(first.find((line) => line.priceKey === 'finish-laminate-quartz-floating')?.quantity, 12)
+  assert.equal(first.find((line) => line.priceKey === 'finish-underlay-laminate-lock-quartz')?.quantity, 12)
+  assert.equal(first.find((line) => line.priceKey === 'finish-plinth-plastic')?.quantity, 13.1)
+  const changed = applyFloorPresetToZone(first, zone, { ...app, finish: 'quartz-glue', plinth: 'mdf' }).lines
+  assert.equal(changed.find((line) => line.priceKey === 'finish-plinth-plastic')?.enabled, false)
+  assert.equal(changed.find((line) => line.priceKey === 'finish-underlay-laminate-lock-quartz')?.enabled, false)
+  assert.equal(changed.find((line) => line.priceKey === 'finish-plinth-mdf-glue')?.enabled, true)
+})
 const { useRoomScenarioBatch } = await moduleFrom(
   'src/features/estimate-calculator/model/use-room-scenario-batch.ts',
 )
@@ -181,20 +205,51 @@ test('ответы о подготовке пола и плитки восста
   const snapshot = {
     version: 2, activeTab: 'floors', zones: [],
     floors: { input: {}, lines: [] }, walls: { input: {}, lines: [] },
-    floorPresets: { roomLeveling: 'wet-up-to-50', selfLevelingBase: 'grind', roomScreedBase: 'film' },
+    floorPresets: { roomLeveling: 'wet-up-to-50', selfLevelingBase: 'grind', roomScreedBase: 'film',
+      roomFinish: 'quartz-glue', roomPlinth: 'mdf' },
     tileScenarios: { state: 'floor-only', preparation: 'prepare' },
+    electricScenarios: { state: 'kitchen', states: ['kitchen', 'lighting-only'] },
+    plumbingScenarios: { state: 'kitchen', states: ['kitchen', 'drainage-only'] },
   }
   const restored = parseEstimateCalculatorSnapshot(snapshot)
   assert.equal(restored.floorPresets.selfLevelingBase, 'grind')
   assert.equal(restored.floorPresets.roomScreedBase, 'film')
+  assert.equal(restored.floorPresets.roomFinish, 'quartz-glue')
+  assert.equal(restored.floorPresets.roomPlinth, 'mdf')
+  assert.deepEqual(restored.electricScenarios.states, ['kitchen', 'lighting-only'])
+  assert.deepEqual(restored.plumbingScenarios.states, ['kitchen', 'drainage-only'])
   assert.equal(restored.tileScenarios.preparation, 'prepare')
   delete snapshot.floorPresets.selfLevelingBase
   delete snapshot.floorPresets.roomScreedBase
+  delete snapshot.floorPresets.roomFinish
+  delete snapshot.floorPresets.roomPlinth
+  delete snapshot.electricScenarios.states
+  delete snapshot.plumbingScenarios.states
   delete snapshot.tileScenarios.preparation
   const legacy = parseEstimateCalculatorSnapshot(snapshot)
   assert.equal(legacy.floorPresets.selfLevelingBase, 'ready')
   assert.equal(legacy.floorPresets.roomScreedBase, 'bonded')
+  assert.equal(legacy.floorPresets.roomFinish, 'none')
+  assert.equal(legacy.floorPresets.roomPlinth, 'none')
+  assert.equal(legacy.electricScenarios.states, undefined)
+  assert.equal(legacy.plumbingScenarios.states, undefined)
   assert.equal(legacy.tileScenarios.preparation, 'ready')
+})
+
+test('точки сложного контура переживают сохранение помещения', () => {
+  const points = [[0, 0], [4, 0], [4, 2], [2, 2], [2, 4], [0, 4]]
+    .map(([xM, yM], index) => ({ id: String(index), xM, yM }))
+  const zone = createEstimateZone({ name: 'Сложная комната', fields: {
+    floorArea: 12, ceilingArea: 12,
+    wallMeasurements: { roomLengthM: 4, roomWidthM: 4, roomHeightM: 2.7,
+      footprintVertices: points, walls: [] },
+  } })
+  const snapshot = parseEstimateCalculatorSnapshot({
+    version: 2, activeTab: 'walls', zones: [serializeEstimateZone(zone)],
+    floors: { input: {}, lines: [] }, walls: { input: {}, lines: [] },
+  })
+  assert.deepEqual(snapshot.zones[0].wallMeasurements.footprintVertices, points)
+  assert.equal(resolveFloorPlinthLength(snapshot.zones[0]), 16)
 })
 
 const validators = await moduleFrom(
