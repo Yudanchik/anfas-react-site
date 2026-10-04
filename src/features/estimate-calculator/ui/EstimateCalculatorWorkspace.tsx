@@ -27,7 +27,6 @@ import {
   getWallEstimateGroupTitle,
   PLUMBING_SECTION_ID,
   PLUMBING_SECTION_TITLE,
-  removeEstimateZone,
   resolveCeilingEstimateGroupId,
   resolveElectricEstimateGroupId,
   resolveFloorEstimateGroupId,
@@ -42,6 +41,12 @@ import {
   type EstimateZone,
   type EstimatePriceProfile,
 } from '@/entities/estimate'
+import {
+  mergeSectionRooms,
+  sectionRooms,
+  setRoomParticipation,
+  type RoomSection,
+} from '../model/room-section-participation'
 import { useFloorEstimateEditor } from '@/features/floor-estimate/model/use-floor-estimate-editor'
 
 import {
@@ -312,17 +317,25 @@ export function EstimateCalculatorWorkspace({
         plumbing.syncZoneName(zone.id, zone.name)
       }
     }
-    setZones(nextZones)
+    setZones((previous) => mergeSectionRooms(previous, nextZones))
   }
 
-  function handleDeleteZone(zoneId: string) {
-    floors.removeLinesByZoneId(zoneId)
-    walls.removeLinesByZoneId(zoneId)
-    ceilings.removeLinesByZoneId(zoneId)
-    tile.removeLinesByZoneId(zoneId)
-    electrics.removeLinesByZoneId(zoneId)
-    plumbing.removeLinesByZoneId(zoneId)
-    setZones((prev) => removeEstimateZone(prev, zoneId))
+  function handleDeleteZone(zoneId: string, section: RoomSection) {
+    const editors = { floors, walls, ceilings, tile, electrics, plumbing }
+    editors[section].removeLinesByZoneId(zoneId)
+    setZones((previous) =>
+      previous.map((zone) =>
+        zone.id === zoneId ? setRoomParticipation(zone, section, false) : zone,
+      ),
+    )
+  }
+
+  function restoreZone(zoneId: string, section: RoomSection) {
+    setZones((previous) =>
+      previous.map((zone) =>
+        zone.id === zoneId ? setRoomParticipation(zone, section, true) : zone,
+      ),
+    )
   }
 
   function resetAllEstimate() {
@@ -435,27 +448,48 @@ export function EstimateCalculatorWorkspace({
     return true
   }
 
+  function clearAppliedScenario(section: keyof NonNullable<EstimateZone['scenarioStatuses']>) {
+    setZones((previous) =>
+      previous.map((zone) => {
+        const scenarioStatuses = { ...zone.scenarioStatuses }
+        delete scenarioStatuses[section]
+        return { ...zone, scenarioStatuses }
+      }),
+    )
+  }
+
+  function resetFloorsSection() {
+    clearAppliedScenario('floors')
+    floors.resetEstimate()
+    setFloorPresetDraft({ ...DEFAULT_FLOOR_PRESETS })
+  }
+
   function resetWallsSection() {
     walls.resetEstimate()
     setWallScenarioDraft({ ...DEFAULT_WALL_SCENARIOS })
+    setZones((previous) => previous.map((zone) => ({ ...zone, wallScenario: undefined })))
   }
 
   function resetCeilingsSection() {
+    clearAppliedScenario('ceilings')
     ceilings.resetEstimate()
     setCeilingScenarioDraft({ ...DEFAULT_CEILING_SCENARIOS })
   }
 
   function resetTileSection() {
+    clearAppliedScenario('tile')
     tile.resetEstimate()
     setTileScenarioDraft({ ...DEFAULT_TILE_SCENARIOS })
   }
 
   function resetElectricsSection() {
+    clearAppliedScenario('electrics')
     electrics.resetEstimate()
     setElectricScenarioDraft({ ...DEFAULT_ELECTRIC_SCENARIOS })
   }
 
   function resetPlumbingSection() {
+    clearAppliedScenario('plumbing')
     plumbing.resetEstimate()
     setPlumbingScenarioDraft({ ...DEFAULT_PLUMBING_SCENARIOS })
   }
@@ -536,12 +570,21 @@ export function EstimateCalculatorWorkspace({
         </p>
       )}
       <div className={styles.zone}>
-        {!accountPayload ? <section className={styles.documentSetup} aria-labelledby="estimate-document-setup-title">
-          <h1 id="estimate-document-setup-title">Данные сметы</h1>
-          <p>Заполните данные заказчика перед расчётом. Их можно изменить и позже.</p>
-          <EstimateDocumentFields value={localDocumentDetails} onChange={handleLocalDocumentChange} />
-          {documentStorageFailed ? <p role="alert">Данные документа не сохранились в браузере. Скачайте резервную копию сметы.</p> : null}
-        </section> : null}
+        {!accountPayload ? (
+          <section className={styles.documentSetup} aria-labelledby="estimate-document-setup-title">
+            <h1 id="estimate-document-setup-title">Данные сметы</h1>
+            <p>Заполните данные заказчика перед расчётом. Их можно изменить и позже.</p>
+            <EstimateDocumentFields
+              value={localDocumentDetails}
+              onChange={handleLocalDocumentChange}
+            />
+            {documentStorageFailed ? (
+              <p role="alert">
+                Данные документа не сохранились в браузере. Скачайте резервную копию сметы.
+              </p>
+            ) : null}
+          </section>
+        ) : null}
         <EstimatePriceProfilePanel
           profile={priceProfile}
           lines={allLines}
@@ -559,6 +602,19 @@ export function EstimateCalculatorWorkspace({
           onApply={handlePriceProfileApply}
         />
         <EstimateTabs activeTab={activeTab} onChange={setActiveTab} />
+        {zones.some((zone) => zone.excludedSections?.includes(activeTab)) ? (
+          <details className={styles.excludedRooms}>
+            <summary>Убранные из этого раздела помещения</summary>
+            <p>Замеры сохранены. Верните помещение, если здесь появились работы.</p>
+            {zones
+              .filter((zone) => zone.excludedSections?.includes(activeTab))
+              .map((zone) => (
+                <button key={zone.id} type="button" onClick={() => restoreZone(zone.id, activeTab)}>
+                  Вернуть: {zone.name}
+                </button>
+              ))}
+          </details>
+        ) : null}
       </div>
 
       <div
@@ -569,12 +625,12 @@ export function EstimateCalculatorWorkspace({
       >
         <FloorEstimatePanel
           editor={floors}
-          zones={zones}
+          zones={sectionRooms(zones, 'floors')}
           onZonesChange={handleZonesChange}
-          onDeleteZone={handleDeleteZone}
+          onDeleteZone={(id) => handleDeleteZone(id, 'floors')}
           presetDraft={floorPresetDraft}
           onPresetDraftChange={(patch) => setFloorPresetDraft((prev) => ({ ...prev, ...patch }))}
-          onResetAll={resetAllEstimate}
+          onResetSection={resetFloorsSection}
           globalFeedbackEpoch={globalFeedbackEpoch}
           mapping={activeMappings.floors}
         />
@@ -588,9 +644,9 @@ export function EstimateCalculatorWorkspace({
       >
         <WallEstimatePanel
           editor={walls}
-          zones={zones}
+          zones={sectionRooms(zones, 'walls')}
           onZonesChange={handleZonesChange}
-          onDeleteZone={handleDeleteZone}
+          onDeleteZone={(id) => handleDeleteZone(id, 'walls')}
           scenarioDraft={wallScenarioDraft}
           onScenarioDraftChange={(patch) => setWallScenarioDraft((prev) => ({ ...prev, ...patch }))}
           onResetSection={resetWallsSection}
@@ -607,9 +663,9 @@ export function EstimateCalculatorWorkspace({
       >
         <CeilingEstimatePanel
           editor={ceilings}
-          zones={zones}
+          zones={sectionRooms(zones, 'ceilings')}
           onZonesChange={handleZonesChange}
-          onDeleteZone={handleDeleteZone}
+          onDeleteZone={(id) => handleDeleteZone(id, 'ceilings')}
           scenarioDraft={ceilingScenarioDraft}
           onScenarioDraftChange={(patch) =>
             setCeilingScenarioDraft((prev) => ({ ...prev, ...patch }))
@@ -628,9 +684,9 @@ export function EstimateCalculatorWorkspace({
       >
         <TileEstimatePanel
           editor={tile}
-          zones={zones}
+          zones={sectionRooms(zones, 'tile')}
           onZonesChange={handleZonesChange}
-          onDeleteZone={handleDeleteZone}
+          onDeleteZone={(id) => handleDeleteZone(id, 'tile')}
           scenarioDraft={tileScenarioDraft}
           onScenarioDraftChange={(patch) => setTileScenarioDraft((prev) => ({ ...prev, ...patch }))}
           onResetSection={resetTileSection}
@@ -647,9 +703,9 @@ export function EstimateCalculatorWorkspace({
       >
         <ElectricEstimatePanel
           editor={electrics}
-          zones={zones}
+          zones={sectionRooms(zones, 'electrics')}
           onZonesChange={handleZonesChange}
-          onDeleteZone={handleDeleteZone}
+          onDeleteZone={(id) => handleDeleteZone(id, 'electrics')}
           scenarioDraft={electricScenarioDraft}
           onScenarioDraftChange={(patch) =>
             setElectricScenarioDraft((prev) => ({ ...prev, ...patch }))
@@ -668,9 +724,9 @@ export function EstimateCalculatorWorkspace({
       >
         <PlumbingEstimatePanel
           editor={plumbing}
-          zones={zones}
+          zones={sectionRooms(zones, 'plumbing')}
           onZonesChange={handleZonesChange}
-          onDeleteZone={handleDeleteZone}
+          onDeleteZone={(id) => handleDeleteZone(id, 'plumbing')}
           scenarioDraft={plumbingScenarioDraft}
           onScenarioDraftChange={(patch) =>
             setPlumbingScenarioDraft((prev) => ({ ...prev, ...patch }))

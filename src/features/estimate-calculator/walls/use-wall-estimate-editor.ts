@@ -1,3 +1,8 @@
+import { applyUnifiedCatalogueFill } from '@/features/estimate-calculator/model/catalogue-volume-fill'
+import {
+  applyRoomWorkFill,
+  type RoomFillChange,
+} from '@/features/estimate-calculator/model/room-work-quantity'
 import { useMemo, useState } from 'react'
 
 import {
@@ -143,8 +148,13 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
   ): { label: string; addedCount: number; zoneName?: string; error?: string } {
     const zone = target?.zone
     const keys = resolveWallScenarioKeys(application)
-    if (keys.length === 0) return { label: '', addedCount: 0,
-      error: 'По этим ответам нельзя безопасно подобрать работы. Проверьте состояние основания и финиш.' }
+    if (keys.length === 0)
+      return {
+        label: '',
+        addedCount: 0,
+        error:
+          'По этим ответам нельзя безопасно подобрать работы. Проверьте состояние основания и финиш.',
+      }
     const unavailable = getUnavailableMappingKeys(keys, mapping)
     if (unavailable.length > 0) {
       return {
@@ -175,11 +185,23 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
     targetZones: readonly EstimateZone[],
     mode: WallScenarioApplyMode = 'add',
   ): { addedCount: number; error?: string } {
-    const scenarios = targetZones.map((zone) => ({ zone, application: wallScenarioForZone(application, zone) }))
-    if (scenarios.some(({ application: effective }) => resolveWallScenarioKeys(effective).length === 0)) {
-      return { addedCount: 0, error: 'Для одного из помещений не удалось подобрать безопасный сценарий.' }
+    const scenarios = targetZones.map((zone) => ({
+      zone,
+      application: wallScenarioForZone(application, zone),
+    }))
+    if (
+      scenarios.some(
+        ({ application: effective }) => resolveWallScenarioKeys(effective).length === 0,
+      )
+    ) {
+      return {
+        addedCount: 0,
+        error: 'Для одного из помещений не удалось подобрать безопасный сценарий.',
+      }
     }
-    const keys = scenarios.flatMap(({ application: effective }) => resolveWallScenarioKeys(effective))
+    const keys = scenarios.flatMap(({ application: effective }) =>
+      resolveWallScenarioKeys(effective),
+    )
     const unavailable = getUnavailableMappingKeys([...new Set(keys)], mapping)
     if (unavailable.length > 0) {
       return { addedCount: 0, error: formatUnavailableScenarioMessage(unavailable) }
@@ -234,6 +256,14 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
     return true
   }
 
+  function fillCatalogueQuantities(changes: readonly RoomFillChange[]) {
+    setLines((previous) => applyUnifiedCatalogueFill(previous, changes))
+  }
+
+  function fillRoomWorkQuantities(zone: EstimateZone, changes: readonly RoomFillChange[]) {
+    setLines((previous) => applyRoomWorkFill(previous, zone, changes))
+  }
+
   function removeLinesByZoneId(zoneId: string) {
     setLines((prev) => prev.filter((line) => line.zoneId !== zoneId))
   }
@@ -277,6 +307,8 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
     removeManualLine,
     addZonedLine,
     removeLinesByZoneId,
+    fillRoomWorkQuantities,
+    fillCatalogueQuantities,
     syncZoneName,
     resetEstimate,
     replaceEstimate,

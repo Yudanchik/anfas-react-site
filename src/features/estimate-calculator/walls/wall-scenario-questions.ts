@@ -14,7 +14,7 @@ import type {
 
 /** Тексты и варианты вопросов пилотного маршрута стен. Состав работ живёт в apply-wall-scenario.ts. */
 export const WALL_STATE_OPTIONS: ReadonlyArray<{ value: WallStateOption; label: string }> = [
-  { value: 'from-scratch', label: 'С нуля — штукатурка и подготовка' },
+  { value: 'from-scratch', label: 'С нуля — подготовить основание' },
   { value: 'after-demolition', label: 'Демонтаж уже выполнен' },
   { value: 'prefinish', label: 'Стены уже оштукатурены' },
   { value: 'local-leveling', label: 'Только локально выровнять' },

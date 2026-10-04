@@ -74,7 +74,14 @@ export function updateEstimateLine(
   patch: Partial<
     Pick<
       EstimateLine,
-      'enabled' | 'quantity' | 'unitPrice' | 'coefficient' | 'comment' | 'title' | 'unit' | 'zoneName'
+      | 'enabled'
+      | 'quantity'
+      | 'unitPrice'
+      | 'coefficient'
+      | 'comment'
+      | 'title'
+      | 'unit'
+      | 'zoneName'
     >
   >,
 ): EstimateLine[] {
@@ -92,19 +99,21 @@ export function updateEstimateLine(
     return {
       ...line,
       ...patch,
-      quantity:
-        patch.quantity === undefined ? line.quantity : normalizeNonNegative(patch.quantity),
+      quantity: patch.quantity === undefined ? line.quantity : normalizeNonNegative(patch.quantity),
       unitPrice: nextUnitPrice,
       coefficient:
         patch.coefficient === undefined
           ? line.coefficient
           : normalizePositiveCoefficient(patch.coefficient),
       comment: patch.comment === undefined ? line.comment : patch.comment.trim() || undefined,
-      zoneName:
-        patch.zoneName === undefined ? line.zoneName : patch.zoneName.trim() || undefined,
+      zoneName: patch.zoneName === undefined ? line.zoneName : patch.zoneName.trim() || undefined,
       title: nextTitle,
       unit: patch.unit === undefined ? line.unit : patch.unit.trim() || line.unit,
       priceEdited: priceOrTitleChanged ? true : line.priceEdited,
+      quantityEdited:
+        patch.quantity !== undefined && normalizeNonNegative(patch.quantity) !== line.quantity
+          ? true
+          : line.quantityEdited,
     }
   })
 }

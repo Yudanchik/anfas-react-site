@@ -188,7 +188,7 @@ export function applyPlumbingScenario(
   application: PlumbingScenarioApplication,
 ): ApplyPlumbingScenarioResult {
   const keys = resolveMeasuredPlumbingScenarioKeys(application, input)
-  const next = enablePlumbingScenarioKeys(lines, keys, input)
+  const next = enablePlumbingScenarioKeys(lines, keys, input, application)
 
   return {
     lines: next,
@@ -214,7 +214,7 @@ export function applyPlumbingScenarioToZone(
   for (const priceKey of keys) {
     const mappingItem = MAPPING_BY_ID.get(priceKey)
     const field = mappingItem?.defaultQuantityFrom ?? 'manual'
-    const qty = resolvePlumbingDefaultQuantity(field, input)
+    const qty = resolvePlumbingScenarioQuantity(priceKey, field, input, application)
 
     const existingIndex = next.findIndex(
       (line) =>
@@ -273,7 +273,7 @@ export function resolveMeasuredPlumbingScenarioKeys(
 ): readonly string[] {
   return resolvePlumbingScenarioPlan(application, input).keys.filter((key) => {
     const field = MAPPING_BY_ID.get(key)?.defaultQuantityFrom ?? 'manual'
-    return resolvePlumbingDefaultQuantity(field, input) > 0
+    return resolvePlumbingScenarioQuantity(key, field, input, application) > 0
   })
 }
 
@@ -358,6 +358,10 @@ export function formatPlumbingScenarioZoneFeedback(
 
 export function plumbingInputFromZone(zone: EstimateZone): PlumbingEstimateInput {
   return {
+    plumbingOldToiletsCount: zone.plumbingOldToiletsCount,
+    plumbingOldSinksCount: zone.plumbingOldSinksCount,
+    plumbingOldBathtubsCount: zone.plumbingOldBathtubsCount,
+    plumbingOldMixersCount: zone.plumbingOldMixersCount,
     plumbingWaterPointsCount: zone.plumbingWaterPointsCount,
     plumbingSewerPointsCount: zone.plumbingSewerPointsCount,
     plumbingWaterPipeLength: zone.plumbingWaterPipeLength,
@@ -383,6 +387,7 @@ function enablePlumbingScenarioKeys(
   lines: readonly EstimateLine[],
   keys: readonly string[],
   input: PlumbingEstimateInput,
+  application: PlumbingScenarioApplication,
 ): EstimateLine[] {
   const keySet = new Set(keys)
   const withConflictsDisabled = disablePlumbingConflictingAlternatives(lines, keys)
@@ -394,7 +399,7 @@ function enablePlumbingScenarioKeys(
 
     const mappingItem = MAPPING_BY_ID.get(line.priceKey)
     const field: PlumbingQuantityField = mappingItem?.defaultQuantityFrom ?? 'manual'
-    const qty = resolvePlumbingDefaultQuantity(field, input)
+    const qty = resolvePlumbingScenarioQuantity(line.priceKey, field, input, application)
 
     return {
       ...line,
@@ -402,4 +407,21 @@ function enablePlumbingScenarioKeys(
       quantity: qty > 0 ? qty : line.quantity,
     }
   })
+}
+
+/** Старый прибор при замене не определяется количеством новых приборов. */
+export function resolvePlumbingScenarioQuantity(
+  key: string,
+  field: PlumbingQuantityField,
+  input: PlumbingEstimateInput,
+  application?: PlumbingScenarioApplication,
+): number {
+  const legacy = application?.state === 'demolition-only' || !application
+  const values: Record<string, number> = {
+    'demolition-toilet': input.plumbingOldToiletsCount ?? (legacy ? input.plumbingToiletsCount : 0),
+    'demolition-sink': input.plumbingOldSinksCount ?? (legacy ? input.plumbingSinksCount : 0),
+    'demolition-bath': input.plumbingOldBathtubsCount ?? (legacy ? input.plumbingBathtubsCount : 0),
+    'demolition-mixer': input.plumbingOldMixersCount ?? (legacy ? input.plumbingMixersCount : 0),
+  }
+  return key in values ? Math.max(0, values[key]) : resolvePlumbingDefaultQuantity(field, input)
 }

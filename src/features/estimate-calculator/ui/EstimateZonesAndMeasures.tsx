@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 
 import {
   createEstimateZone,
-  estimateSocketBoxes,
   formatWallScenarioLabel,
   getWallScenarioProgress,
   patchElectricPoints,
+  patchPlumbingFixturePoints,
   ESTIMATE_ZONE_TEMPLATES,
   ESTIMATE_ZONE_TYPE_OPTIONS,
   updateEstimateZone,
@@ -20,7 +20,10 @@ import {
   type WallEstimateInput,
 } from '@/entities/estimate'
 
+import { getRoomScenarioStatus } from '../model/room-scenario-status'
 import { validateEstimateZoneName } from '../model/estimate-zone-name'
+import { MEASURE_FIELD_HINTS } from '../model/measure-field-hints'
+import { EstimateFieldHint } from './EstimateFieldHint'
 import { EstimateClearableInput } from './EstimateClearableInput'
 import { EstimateConfirmDialog } from './EstimateConfirmDialog'
 import { EstimateNumberInput } from './EstimateNumberInput'
@@ -28,7 +31,7 @@ import { EstimateSelect } from './EstimateSelect'
 import { WallMeasurementEditor } from './WallMeasurementEditor'
 import styles from './EstimateZonesAndMeasures.module.scss'
 
-type EstimateZonesAndMeasuresProps =
+type EstimateZonesAndMeasuresProps = { lines?: readonly EstimateLine[] } & (
   | {
       section: 'floors'
       zones: readonly EstimateZone[]
@@ -78,33 +81,10 @@ type EstimateZonesAndMeasuresProps =
       generalInput: PlumbingEstimateInput
       onGeneralChange: (patch: Partial<PlumbingEstimateInput>) => void
     }
+)
 
 function formatArea(value: number): string {
   return value > 0 ? String(value) : '—'
-}
-
-function floorGeneralSummary(input: FloorEstimateInput): string {
-  return `Общая площадь пола ${formatArea(input.totalFloorArea)} м²`
-}
-
-function wallGeneralSummary(input: WallEstimateInput): string {
-  return `Площадь стен ${formatArea(input.totalWallArea)} м²`
-}
-
-function ceilingGeneralSummary(input: CeilingEstimateInput): string {
-  return `Площадь потолков ${formatArea(input.totalCeilingArea)} м²`
-}
-
-function tileGeneralSummary(input: TileEstimateInput): string {
-  return `Пол ${formatArea(input.floorTileArea)} м² · Стены ${formatArea(input.wallTileArea)} м²`
-}
-
-function electricGeneralSummary(input: ElectricEstimateInput): string {
-  return `Розетки ${formatArea(input.electricSocketsCount)} · Свет ${formatArea(input.electricLightPointsCount)} · Кабель ${formatArea(input.electricCableLength)} м`
-}
-
-function plumbingGeneralSummary(input: PlumbingEstimateInput): string {
-  return `Точки воды ${formatArea(input.plumbingWaterPointsCount)} · Канализация ${formatArea(input.plumbingSewerPointsCount)} · ТП ${formatArea(input.plumbingWarmFloorArea)} м²`
 }
 
 function floorZoneSummary(zone: EstimateZone): string {
@@ -151,34 +131,17 @@ function sectionTitleId(section: EstimateZonesAndMeasuresProps['section']): stri
 function sectionLead(section: EstimateZonesAndMeasuresProps['section']): string {
   switch (section) {
     case 'floors':
-      return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев полов.'
+      return 'Добавьте помещения и укажите площади пола. Если размеры комнаты уже заполнены на вкладке стен, площадь пола подставится автоматически.'
     case 'walls':
       return 'Добавьте помещение, укажите размеры стен и проёмов. Ниже выберите отделку — сценарий возьмёт замеры выбранной комнаты.'
     case 'ceilings':
-      return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев потолков.'
+      return 'Укажите площадь потолка по помещениям. Размеры комнаты со вкладки стен уже используются для расчёта; отдельные объёмы можно уточнить.'
     case 'tile':
-      return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев плитки.'
+      return 'Укажите площади облицовки и дополнительные замеры по каждому помещению.'
     case 'electrics':
-      return 'Общие счётчики раздела — для работ без зоны. Ниже — точки и трассы выбранных зон для сценариев электрики.'
+      return 'Посчитайте точки и замерьте трассы в каждом помещении. Подрозетники рассчитываются по розеткам, выключателям и слаботочным точкам.'
     case 'plumbing':
-      return 'Общие счётчики раздела — для работ без зоны. Ниже — точки, трассы и приборы выбранных зон для сценариев сантехники.'
-  }
-}
-
-function generalSummary(props: EstimateZonesAndMeasuresProps): string {
-  switch (props.section) {
-    case 'floors':
-      return floorGeneralSummary(props.generalInput)
-    case 'walls':
-      return wallGeneralSummary(props.generalInput)
-    case 'ceilings':
-      return ceilingGeneralSummary(props.generalInput)
-    case 'tile':
-      return tileGeneralSummary(props.generalInput)
-    case 'electrics':
-      return electricGeneralSummary(props.generalInput)
-    case 'plumbing':
-      return plumbingGeneralSummary(props.generalInput)
+      return 'Начните со списка приборов помещения, затем уточните выводы и длины труб.'
   }
 }
 
@@ -205,9 +168,7 @@ function zoneSummary(
 export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
   const { zones, onZonesChange, onDeleteZone, section } = props
   const [draftName, setDraftName] = useState('')
-  const [expandedId, setExpandedId] = useState<string | 'general' | null>(
-    section === 'walls' ? null : 'general',
-  )
+  const [expandedId, setExpandedId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [pendingDelete, setPendingDelete] = useState<EstimateZone | null>(null)
 
@@ -219,7 +180,20 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
     }
     const zone = createEstimateZone({
       name: validated.value,
-      fields: { zoneType },
+      fields: {
+        zoneType,
+        plumbingPointsMode: 'fixtures',
+        plumbingFixtureCountsMode: 'auto',
+        plumbingOldToiletsCount: 0,
+        plumbingOldSinksCount: 0,
+        plumbingOldBathtubsCount: 0,
+        plumbingOldMixersCount: 0,
+
+        electricOldSocketsCount: 0,
+        electricOldSwitchesCount: 0,
+        electricOldLightPointsCount: 0,
+        electricOldCableLength: 0,
+      },
     })
     onZonesChange([...zones, zone])
     setDraftName('')
@@ -244,67 +218,18 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
     <section className={styles.wrap} aria-labelledby={titleId}>
       <div className={styles.head}>
         <h2 className={styles.title} id={titleId}>
-          {section === 'walls' ? 'Помещения и замеры' : 'Зоны и замеры'}
+          Помещения и замеры
         </h2>
         <p className={styles.lead}>{sectionLead(section)}</p>
       </div>
 
       <ul className={styles.list}>
-        {section !== 'walls' ? (
-          <li className={styles.item} data-kind="general">
-            <div
-              className={styles.itemHead}
-              data-open={expandedId === 'general' ? 'true' : 'false'}
-            >
-              <button
-                type="button"
-                className={styles.itemToggle}
-                data-open={expandedId === 'general' ? 'true' : 'false'}
-                aria-expanded={expandedId === 'general'}
-                onClick={() => setExpandedId(expandedId === 'general' ? null : 'general')}
-              >
-                <span
-                  className={styles.chevron}
-                  data-open={expandedId === 'general' ? 'true' : 'false'}
-                  aria-hidden="true"
-                />
-                <span className={styles.itemCopy}>
-                  <span className={styles.itemName}>Общие работы</span>
-                  <span className={styles.itemMeta}>{generalSummary(props)}</span>
-                </span>
-              </button>
-            </div>
-            {expandedId === 'general' ? (
-              <div className={styles.editor}>
-                {section === 'floors' ? (
-                  <FloorGeneralFields input={props.generalInput} onChange={props.onGeneralChange} />
-                ) : section === 'ceilings' ? (
-                  <CeilingGeneralFields
-                    input={props.generalInput}
-                    onChange={props.onGeneralChange}
-                  />
-                ) : section === 'tile' ? (
-                  <TileGeneralFields input={props.generalInput} onChange={props.onGeneralChange} />
-                ) : section === 'electrics' ? (
-                  <ElectricGeneralFields
-                    input={props.generalInput}
-                    onChange={props.onGeneralChange}
-                  />
-                ) : (
-                  <PlumbingGeneralFields
-                    input={props.generalInput}
-                    onChange={props.onGeneralChange}
-                  />
-                )}
-              </div>
-            ) : null}
-          </li>
-        ) : null}
-
         {zones.map((zone) => {
           const open = expandedId === zone.id
           const scenarioProgress =
             section === 'walls' ? getWallScenarioProgress(zone, props.wallLines) : null
+          const otherProgress =
+            section !== 'walls' ? getRoomScenarioStatus(section, zone, props.lines ?? []) : null
           return (
             <li key={zone.id} className={styles.item}>
               <div className={styles.itemHead} data-open={open ? 'true' : 'false'}>
@@ -334,6 +259,14 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                               : `Сценарий стен: ${formatWallScenarioLabel(zone.wallScenario!.application)}`}
                       </span>
                     ) : null}
+                    {otherProgress ? (
+                      <span
+                        className={styles.scenarioBadge}
+                        data-state={otherProgress.applied ? 'applied' : 'pending'}
+                      >
+                        {otherProgress.text}
+                      </span>
+                    ) : null}
                   </span>
                 </button>
                 <button
@@ -341,7 +274,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                   className={styles.deleteBtn}
                   onClick={() => setPendingDelete(zone)}
                 >
-                  Удалить
+                  Убрать из раздела
                 </button>
               </div>
               {open ? (
@@ -354,11 +287,11 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                   />
                   {section !== 'walls' ? (
                     <div className={styles.field}>
-                      <span className={styles.label}>Тип зоны</span>
+                      <span className={styles.label}>Тип помещения</span>
                       <EstimateSelect
                         value={zone.zoneType}
                         options={ESTIMATE_ZONE_TYPE_OPTIONS}
-                        ariaLabel={`Тип зоны ${zone.name}`}
+                        ariaLabel={`Тип помещения ${zone.name}`}
                         onChange={(next) =>
                           patchZone(zone.id, { zoneType: next as EstimateZoneType })
                         }
@@ -445,7 +378,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
         <div className={styles.addRow}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor={`${titleId}-new-zone`}>
-              {section === 'walls' ? 'Новое помещение' : 'Новая зона'}
+              Новое помещение
             </label>
             <EstimateClearableInput
               id={`${titleId}-new-zone`}
@@ -460,7 +393,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
             />
           </div>
           <button type="button" className={styles.addBtn} onClick={() => addZone(draftName)}>
-            {section === 'walls' ? 'Добавить помещение' : 'Добавить зону'}
+            Добавить помещение
           </button>
         </div>
         {error ? (
@@ -472,13 +405,13 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
 
       <EstimateConfirmDialog
         open={pendingDelete !== null}
-        title="Удалить зону?"
+        title="Убрать помещение из этого раздела?"
         description={
           pendingDelete
-            ? `Будут удалены строки сметы, которые относятся к зоне «${pendingDelete.name}». Общие работы и другие зоны останутся.`
+            ? `Помещение «${pendingDelete.name}» будет убрано только из этого раздела. Его строки в этом разделе будут удалены. Замеры и работы в остальных разделах сохранятся. Помещение можно вернуть, но удалённые строки потребуется добавить заново.`
             : 'Будут удалены строки сметы, которые относятся к этой зоне. Общие работы и другие зоны останутся.'
         }
-        confirmLabel="Удалить"
+        confirmLabel="Убрать из раздела"
         cancelLabel="Отмена"
         onCancel={() => setPendingDelete(null)}
         onConfirm={confirmDeleteZone}
@@ -539,58 +472,6 @@ function ZoneNameField(props: {
         </span>
       ) : null}
     </div>
-  )
-}
-
-function FloorGeneralFields(props: {
-  input: FloorEstimateInput
-  onChange: (patch: Partial<FloorEstimateInput>) => void
-}) {
-  const { input, onChange } = props
-  return (
-    <>
-      <div className={styles.grid}>
-        <NumberField
-          label="Общая площадь пола"
-          unit="м²"
-          value={input.totalFloorArea}
-          onChange={(totalFloorArea) => onChange({ totalFloorArea })}
-        />
-        <NumberField
-          label="Демонтаж пола"
-          unit="м²"
-          value={input.demolitionArea}
-          onChange={(demolitionArea) => onChange({ demolitionArea })}
-        />
-        <NumberField
-          label="Стяжка / выравнивание"
-          unit="м²"
-          value={input.screedArea}
-          onChange={(screedArea) => onChange({ screedArea })}
-        />
-        <NumberField
-          label="Мокрые зоны"
-          unit="м²"
-          value={input.wetZonesArea}
-          onChange={(wetZonesArea) => onChange({ wetZonesArea })}
-        />
-        <NumberField
-          label="Средний перепад"
-          unit="мм"
-          value={input.avgDeltaMm}
-          onChange={(avgDeltaMm) => onChange({ avgDeltaMm })}
-        />
-      </div>
-      <details className={styles.details}>
-        <summary>Комментарий замерщика</summary>
-        <textarea
-          className={styles.comment}
-          rows={2}
-          value={input.surveyorComment ?? ''}
-          onChange={(event) => onChange({ surveyorComment: event.target.value })}
-        />
-      </details>
-    </>
   )
 }
 
@@ -672,59 +553,13 @@ function WallZoneFields(props: {
         value={zone.cornersLength}
         onChange={(cornersLength) => onPatch({ cornersLength })}
       />
+      <NumberField
+        label="Стыки листов ГКЛ на стенах"
+        unit="м. пог."
+        value={zone.gklWallSeamsLength ?? 0}
+        onChange={(gklWallSeamsLength) => onPatch({ gklWallSeamsLength })}
+      />
     </div>
-  )
-}
-
-function CeilingGeneralFields(props: {
-  input: CeilingEstimateInput
-  onChange: (patch: Partial<CeilingEstimateInput>) => void
-}) {
-  const { input, onChange } = props
-  return (
-    <>
-      <div className={styles.grid}>
-        <NumberField
-          label="Площадь потолков"
-          unit="м²"
-          value={input.totalCeilingArea}
-          onChange={(totalCeilingArea) => onChange({ totalCeilingArea })}
-        />
-        <NumberField
-          label="Демонтаж потолков"
-          unit="м²"
-          value={input.demolitionArea}
-          onChange={(demolitionArea) => onChange({ demolitionArea })}
-        />
-        <NumberField
-          label="Штукатурка"
-          unit="м²"
-          value={input.plasterArea}
-          onChange={(plasterArea) => onChange({ plasterArea })}
-        />
-        <NumberField
-          label="Шпаклёвка"
-          unit="м²"
-          value={input.puttyArea}
-          onChange={(puttyArea) => onChange({ puttyArea })}
-        />
-        <NumberField
-          label="Финиш"
-          unit="м²"
-          value={input.finishArea}
-          onChange={(finishArea) => onChange({ finishArea })}
-        />
-      </div>
-      <details className={styles.details}>
-        <summary>Комментарий замерщика</summary>
-        <textarea
-          className={styles.comment}
-          rows={2}
-          value={input.surveyorComment ?? ''}
-          onChange={(event) => onChange({ surveyorComment: event.target.value })}
-        />
-      </details>
-    </>
   )
 }
 
@@ -765,71 +600,13 @@ function CeilingZoneFields(props: {
         value={zone.finishCeilingArea}
         onChange={(finishCeilingArea) => onPatch({ finishCeilingArea })}
       />
+      <NumberField
+        label="Стыки листов ГКЛ на потолке"
+        unit="м. пог."
+        value={zone.gklCeilingSeamsLength ?? 0}
+        onChange={(gklCeilingSeamsLength) => onPatch({ gklCeilingSeamsLength })}
+      />
     </div>
-  )
-}
-
-function TileGeneralFields(props: {
-  input: TileEstimateInput
-  onChange: (patch: Partial<TileEstimateInput>) => void
-}) {
-  const { input, onChange } = props
-  return (
-    <>
-      <div className={styles.grid}>
-        <NumberField
-          label="Плитка пола"
-          unit="м²"
-          value={input.floorTileArea}
-          onChange={(floorTileArea) => onChange({ floorTileArea })}
-        />
-        <NumberField
-          label="Плитка стен"
-          unit="м²"
-          value={input.wallTileArea}
-          onChange={(wallTileArea) => onChange({ wallTileArea })}
-        />
-        <NumberField
-          label="Фартук"
-          unit="м²"
-          value={input.backsplashArea}
-          onChange={(backsplashArea) => onChange({ backsplashArea })}
-        />
-        <NumberField
-          label="Подрезка / кромка"
-          unit="м. пог."
-          value={input.cuttingLength}
-          onChange={(cuttingLength) => onChange({ cuttingLength })}
-        />
-        <NumberField
-          label="Углы / примыкания"
-          unit="м. пог."
-          value={input.cornerLength}
-          onChange={(cornerLength) => onChange({ cornerLength })}
-        />
-        <NumberField
-          label="Отверстия"
-          unit="шт."
-          value={input.holesCount}
-          onChange={(holesCount) => onChange({ holesCount })}
-        />
-        <NumberField
-          label="Замена плитки"
-          unit="шт."
-          value={input.repairCount}
-          onChange={(repairCount) => onChange({ repairCount })}
-        />
-      </div>
-      <details className={styles.details}>
-        <summary>Комментарий замерщика</summary>
-        <textarea
-          className={styles.comment}
-          rows={2}
-          value={input.surveyorComment ?? ''}
-          onChange={(event) => onChange({ surveyorComment: event.target.value })}
-        />
-      </details>
-    </>
   )
 }
 
@@ -886,68 +663,117 @@ function TileZoneFields(props: {
   )
 }
 
-function ElectricGeneralFields(props: {
-  input: ElectricEstimateInput
-  onChange: (patch: Partial<ElectricEstimateInput>) => void
-}) {
-  const { input, onChange } = props
-  return (
-    <>
-      <ElectricMeasureGroups
-        values={{
-          electricSocketsCount: input.electricSocketsCount,
-          electricSwitchesCount: input.electricSwitchesCount,
-          electricLightPointsCount: input.electricLightPointsCount,
-          electricDataPointsCount: input.electricDataPointsCount,
-          electricStrobeLength: input.electricStrobeLength,
-          electricCableLength: input.electricCableLength,
-          electricSocketBoxesCount: input.electricSocketBoxesCount,
-          electricJunctionBoxesCount: input.electricJunctionBoxesCount,
-          electricPanelModulesCount: input.electricPanelModulesCount,
-          electricWarmFloorArea: input.electricWarmFloorArea,
-          electricApplianceConnectionsCount: input.electricApplianceConnectionsCount,
-        }}
-        onChange={onChange}
-      />
-      <details className={styles.details}>
-        <summary>Комментарий замерщика</summary>
-        <textarea
-          className={styles.comment}
-          rows={2}
-          value={input.surveyorComment ?? ''}
-          onChange={(event) => onChange({ surveyorComment: event.target.value })}
-        />
-      </details>
-    </>
-  )
-}
-
 function ElectricZoneFields(props: {
   zone: EstimateZone
   onPatch: (patch: Partial<Omit<EstimateZone, 'id'>>) => void
 }) {
   const { zone, onPatch } = props
   return (
-    <ElectricMeasureGroups
-      values={{
-        electricSocketsCount: zone.electricSocketsCount,
-        electricSwitchesCount: zone.electricSwitchesCount,
-        electricLightPointsCount: zone.electricLightPointsCount,
-        electricDataPointsCount: zone.electricDataPointsCount,
-        electricStrobeLength: zone.electricStrobeLength,
-        electricCableLength: zone.electricCableLength,
-        electricSocketBoxesCount: zone.electricSocketBoxesCount,
-        electricJunctionBoxesCount: zone.electricJunctionBoxesCount,
-        electricPanelModulesCount: zone.electricPanelModulesCount,
-        electricWarmFloorArea: zone.electricWarmFloorArea,
-        electricApplianceConnectionsCount: zone.electricApplianceConnectionsCount,
-      }}
-      onChange={onPatch}
-    />
+    <>
+      <details className={styles.details}>
+        <summary>Демонтаж старой электрики</summary>
+        <p className={styles.measureHint}>
+          Отдельные объёмы снимаемой электрики. Новые точки ниже не определяют объём демонтажа. В
+          старых сметах уточните эти поля перед повторным применением.
+        </p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Старые розетки"
+            unit="шт."
+            value={zone.electricOldSocketsCount ?? 0}
+            onChange={(electricOldSocketsCount) => onPatch({ electricOldSocketsCount })}
+          />
+          <NumberField
+            label="Старые выключатели"
+            unit="шт."
+            value={zone.electricOldSwitchesCount ?? 0}
+            onChange={(electricOldSwitchesCount) => onPatch({ electricOldSwitchesCount })}
+          />
+          <NumberField
+            label="Старые светильники"
+            unit="шт."
+            value={zone.electricOldLightPointsCount ?? 0}
+            onChange={(electricOldLightPointsCount) => onPatch({ electricOldLightPointsCount })}
+          />
+          <NumberField
+            label="Старый кабель"
+            unit="м. пог."
+            value={zone.electricOldCableLength ?? 0}
+            onChange={(electricOldCableLength) => onPatch({ electricOldCableLength })}
+          />
+        </div>
+      </details>
+      <details className={styles.details}>
+        <summary>Разделить кабель по способам прокладки</summary>
+        <p className={styles.measureHint}>
+          Введите метры каждого кабеля: например, 80 м открыто и 20 м в штробе. Новые штробы
+          измеряйте отдельно: два кабеля в одной штробе не удваивают её длину. Для готовой штробы
+          укажите 0 м штробления.
+        </p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Кабель открыто на крепёж"
+            unit="м. пог."
+            value={zone.electricCableOpenLength ?? 0}
+            onChange={(electricCableOpenLength) =>
+              onPatch({
+                electricCableOpenLength,
+                electricCableChaseLength: zone.electricCableChaseLength ?? 0,
+                electricCableLength: electricCableOpenLength + (zone.electricCableChaseLength ?? 0),
+              })
+            }
+          />
+          <NumberField
+            label="Кабель в штробе"
+            unit="м. пог."
+            value={zone.electricCableChaseLength ?? 0}
+            onChange={(electricCableChaseLength) =>
+              onPatch({
+                electricCableChaseLength,
+                electricCableOpenLength: zone.electricCableOpenLength ?? 0,
+                electricCableLength: electricCableChaseLength + (zone.electricCableOpenLength ?? 0),
+              })
+            }
+          />
+        </div>
+        {zone.electricCableOpenLength !== undefined ||
+        zone.electricCableChaseLength !== undefined ? (
+          <button
+            type="button"
+            className={styles.deleteBtn}
+            onClick={() =>
+              onPatch({ electricCableOpenLength: undefined, electricCableChaseLength: undefined })
+            }
+          >
+            Использовать общий метраж
+          </button>
+        ) : null}
+      </details>
+      <ElectricMeasureGroups
+        values={{
+          electricSocketsCount: zone.electricSocketsCount,
+          electricSwitchesCount: zone.electricSwitchesCount,
+          electricLightPointsCount: zone.electricLightPointsCount,
+          electricDataPointsCount: zone.electricDataPointsCount,
+          electricStrobeLength: zone.electricStrobeLength,
+          electricCableLength: zone.electricCableLength,
+          electricCableOpenLength: zone.electricCableOpenLength,
+          electricCableChaseLength: zone.electricCableChaseLength,
+          electricSocketBoxesCount: zone.electricSocketBoxesCount,
+          electricJunctionBoxesCount: zone.electricJunctionBoxesCount,
+          electricPanelModulesCount: zone.electricPanelModulesCount,
+          electricWarmFloorArea: zone.electricWarmFloorArea,
+          electricApplianceConnectionsCount: zone.electricApplianceConnectionsCount,
+        }}
+        onChange={onPatch}
+      />
+    </>
   )
 }
 
 type ElectricMeasureValues = {
+  electricCableOpenLength?: number
+  electricCableChaseLength?: number
   electricSocketsCount: number
   electricSwitchesCount: number
   electricLightPointsCount: number
@@ -1007,13 +833,6 @@ function ElectricMeasureGroups(props: {
             Считаются по розеткам, выключателям и слаботочным точкам. Для накладных или уже готовых
             мест исправьте число вручную.
           </p>
-          <button
-            type="button"
-            className={styles.measureRecalculate}
-            onClick={() => onChange({ electricSocketBoxesCount: estimateSocketBoxes(values) })}
-          >
-            Пересчитать по точкам
-          </button>
           <NumberField
             label="Распаечные коробки"
             unit="шт."
@@ -1034,9 +853,19 @@ function ElectricMeasureGroups(props: {
           />
           <NumberField
             label="Кабель"
+            disabled={
+              values.electricCableOpenLength !== undefined ||
+              values.electricCableChaseLength !== undefined
+            }
             unit="м. пог."
             value={values.electricCableLength}
-            onChange={(electricCableLength) => onChange({ electricCableLength })}
+            onChange={(electricCableLength) =>
+              onChange({
+                electricCableLength,
+                electricCableOpenLength: undefined,
+                electricCableChaseLength: undefined,
+              })
+            }
           />
         </div>
       </div>
@@ -1076,76 +905,135 @@ function ElectricMeasureGroups(props: {
   )
 }
 
-function PlumbingGeneralFields(props: {
-  input: PlumbingEstimateInput
-  onChange: (patch: Partial<PlumbingEstimateInput>) => void
-}) {
-  const { input, onChange } = props
-  return (
-    <>
-      <PlumbingMeasureGroups
-        values={{
-          plumbingWaterPointsCount: input.plumbingWaterPointsCount,
-          plumbingSewerPointsCount: input.plumbingSewerPointsCount,
-          plumbingWaterPipeLength: input.plumbingWaterPipeLength,
-          plumbingSewerPipeLength: input.plumbingSewerPipeLength,
-          plumbingCollectorsCount: input.plumbingCollectorsCount,
-          plumbingToiletsCount: input.plumbingToiletsCount,
-          plumbingSinksCount: input.plumbingSinksCount,
-          plumbingBathtubsCount: input.plumbingBathtubsCount,
-          plumbingShowersCount: input.plumbingShowersCount,
-          plumbingMixersCount: input.plumbingMixersCount,
-          plumbingInstallationsCount: input.plumbingInstallationsCount,
-          plumbingDrainsCount: input.plumbingDrainsCount,
-          plumbingWasherConnectionsCount: input.plumbingWasherConnectionsCount,
-          plumbingDishwasherConnectionsCount: input.plumbingDishwasherConnectionsCount,
-          plumbingWaterHeatersCount: input.plumbingWaterHeatersCount,
-          plumbingTowelWarmersCount: input.plumbingTowelWarmersCount,
-          plumbingWarmFloorArea: input.plumbingWarmFloorArea,
-        }}
-        onChange={onChange}
-      />
-      <details className={styles.details}>
-        <summary>Комментарий замерщика</summary>
-        <textarea
-          className={styles.comment}
-          rows={2}
-          value={input.surveyorComment ?? ''}
-          onChange={(event) => onChange({ surveyorComment: event.target.value })}
-        />
-      </details>
-    </>
-  )
-}
-
 function PlumbingZoneFields(props: {
   zone: EstimateZone
   onPatch: (patch: Partial<Omit<EstimateZone, 'id'>>) => void
 }) {
   const { zone, onPatch } = props
   return (
-    <PlumbingMeasureGroups
-      values={{
-        plumbingWaterPointsCount: zone.plumbingWaterPointsCount,
-        plumbingSewerPointsCount: zone.plumbingSewerPointsCount,
-        plumbingWaterPipeLength: zone.plumbingWaterPipeLength,
-        plumbingSewerPipeLength: zone.plumbingSewerPipeLength,
-        plumbingCollectorsCount: zone.plumbingCollectorsCount,
-        plumbingToiletsCount: zone.plumbingToiletsCount,
-        plumbingSinksCount: zone.plumbingSinksCount,
-        plumbingBathtubsCount: zone.plumbingBathtubsCount,
-        plumbingShowersCount: zone.plumbingShowersCount,
-        plumbingMixersCount: zone.plumbingMixersCount,
-        plumbingInstallationsCount: zone.plumbingInstallationsCount,
-        plumbingDrainsCount: zone.plumbingDrainsCount,
-        plumbingWasherConnectionsCount: zone.plumbingWasherConnectionsCount,
-        plumbingDishwasherConnectionsCount: zone.plumbingDishwasherConnectionsCount,
-        plumbingWaterHeatersCount: zone.plumbingWaterHeatersCount,
-        plumbingTowelWarmersCount: zone.plumbingTowelWarmersCount,
-        plumbingWarmFloorArea: zone.plumbingWarmFloorArea,
-      }}
-      onChange={onPatch}
-    />
+    <>
+      <details className={styles.details}>
+        <summary>Демонтаж старой сантехники</summary>
+        <p className={styles.measureHint}>
+          Сколько приборов снимаем. Новые приборы заполняйте ниже: их количество может отличаться.
+        </p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Старые унитазы"
+            unit="шт."
+            value={zone.plumbingOldToiletsCount ?? 0}
+            onChange={(plumbingOldToiletsCount) => onPatch({ plumbingOldToiletsCount })}
+          />
+          <NumberField
+            label="Старые раковины"
+            unit="шт."
+            value={zone.plumbingOldSinksCount ?? 0}
+            onChange={(plumbingOldSinksCount) => onPatch({ plumbingOldSinksCount })}
+          />
+          <NumberField
+            label="Старые ванны"
+            unit="шт."
+            value={zone.plumbingOldBathtubsCount ?? 0}
+            onChange={(plumbingOldBathtubsCount) => onPatch({ plumbingOldBathtubsCount })}
+          />
+          <NumberField
+            label="Старые смесители"
+            unit="шт."
+            value={zone.plumbingOldMixersCount ?? 0}
+            onChange={(plumbingOldMixersCount) => onPatch({ plumbingOldMixersCount })}
+          />
+        </div>
+      </details>
+      <div className={styles.field}>
+        <span className={styles.label}>Как заполнять выводы воды и канализации?</span>
+        <EstimateSelect
+          value={zone.plumbingPointsMode ?? 'manual'}
+          ariaLabel="Способ заполнения сантехнических выводов"
+          options={[
+            { value: 'fixtures', label: 'По списку приборов · типовая схема' },
+            { value: 'manual', label: 'Вручную по схеме объекта' },
+          ]}
+          onChange={(next) =>
+            onPatch(
+              patchPlumbingFixturePoints(zone, {
+                plumbingPointsMode: next as 'fixtures' | 'manual',
+              }),
+            )
+          }
+        />
+        <p className={styles.measureHint}>
+          Типовая схема: раковина, ванна и душ — по 2 вывода воды и 1 сливу; унитаз и машины — по 1
+          выводу и сливу. Бойлер, полотенцесушитель, общие подключения и другие исключения уточните
+          вручную. Изменение выводов переключает ручной режим.
+        </p>
+      </div>
+      <div className={styles.field}>
+        <span className={styles.label}>Тип унитазов в помещении</span>
+        <EstimateSelect
+          value={zone.plumbingToiletMount ?? 'unknown'}
+          options={[
+            { value: 'unknown', label: 'Пока не выбран / разные типы — рамы вручную' },
+            { value: 'floor', label: 'Напольные · без новых рам' },
+            { value: 'installation', label: 'Подвесные · нужна новая рама на каждый' },
+            { value: 'existing', label: 'Подвесные · рамы уже установлены' },
+          ]}
+          ariaLabel="Тип установки унитазов"
+          onChange={(next) =>
+            onPatch(
+              patchPlumbingFixturePoints(zone, {
+                plumbingToiletMount: next as EstimateZone['plumbingToiletMount'],
+              }),
+            )
+          }
+        />
+      </div>
+      <div className={styles.field}>
+        <span className={styles.label}>Смесители и новые инсталляции</span>
+        <EstimateSelect
+          value={zone.plumbingFixtureCountsMode ?? 'manual'}
+          options={[
+            { value: 'auto', label: 'По приборам · отдельный смеситель на раковину, ванну и душ' },
+            { value: 'manual', label: 'Вручную · общие/встроенные смесители или разные типы' },
+          ]}
+          ariaLabel="Расчёт смесителей и инсталляций"
+          onChange={(next) =>
+            onPatch(
+              patchPlumbingFixturePoints(zone, {
+                plumbingFixtureCountsMode: next as 'auto' | 'manual',
+              }),
+            )
+          }
+        />
+        <p className={styles.measureHint}>
+          Типовой расчёт: раковина + ванна + душ = смесители. Общий смеситель ванны и раковины,
+          готовая кабина или встроенная система требуют ручной правки. Новые рамы считаются только
+          при явном выборе подвесных унитазов с новой рамой. Изменение этих количеств включает
+          ручной режим этой группы.
+        </p>
+      </div>
+      <PlumbingMeasureGroups
+        values={{
+          plumbingWaterPointsCount: zone.plumbingWaterPointsCount,
+          plumbingSewerPointsCount: zone.plumbingSewerPointsCount,
+          plumbingWaterPipeLength: zone.plumbingWaterPipeLength,
+          plumbingSewerPipeLength: zone.plumbingSewerPipeLength,
+          plumbingCollectorsCount: zone.plumbingCollectorsCount,
+          plumbingToiletsCount: zone.plumbingToiletsCount,
+          plumbingSinksCount: zone.plumbingSinksCount,
+          plumbingBathtubsCount: zone.plumbingBathtubsCount,
+          plumbingShowersCount: zone.plumbingShowersCount,
+          plumbingMixersCount: zone.plumbingMixersCount,
+          plumbingInstallationsCount: zone.plumbingInstallationsCount,
+          plumbingDrainsCount: zone.plumbingDrainsCount,
+          plumbingWasherConnectionsCount: zone.plumbingWasherConnectionsCount,
+          plumbingDishwasherConnectionsCount: zone.plumbingDishwasherConnectionsCount,
+          plumbingWaterHeatersCount: zone.plumbingWaterHeatersCount,
+          plumbingTowelWarmersCount: zone.plumbingTowelWarmersCount,
+          plumbingWarmFloorArea: zone.plumbingWarmFloorArea,
+        }}
+        onChange={(patch) => onPatch(patchPlumbingFixturePoints(zone, patch))}
+      />
+    </>
   )
 }
 
@@ -1176,54 +1064,6 @@ function PlumbingMeasureGroups(props: {
   const { values, onChange } = props
   return (
     <div className={styles.measureGroups}>
-      <div className={styles.measureGroup}>
-        <p className={styles.measureGroupTitle}>Точки</p>
-        <div className={styles.grid}>
-          <NumberField
-            label="Водорозетки"
-            unit="шт."
-            value={values.plumbingWaterPointsCount}
-            onChange={(plumbingWaterPointsCount) => onChange({ plumbingWaterPointsCount })}
-          />
-          <NumberField
-            label="Выводы канализации"
-            unit="шт."
-            value={values.plumbingSewerPointsCount}
-            onChange={(plumbingSewerPointsCount) => onChange({ plumbingSewerPointsCount })}
-          />
-        </div>
-      </div>
-
-      <div className={styles.measureGroup}>
-        <p className={styles.measureGroupTitle}>Трассы</p>
-        <div className={styles.grid}>
-          <NumberField
-            label="Трубы воды"
-            unit="м. пог."
-            value={values.plumbingWaterPipeLength}
-            onChange={(plumbingWaterPipeLength) => onChange({ plumbingWaterPipeLength })}
-          />
-          <NumberField
-            label="Трубы канализации"
-            unit="м. пог."
-            value={values.plumbingSewerPipeLength}
-            onChange={(plumbingSewerPipeLength) => onChange({ plumbingSewerPipeLength })}
-          />
-        </div>
-      </div>
-
-      <div className={styles.measureGroup}>
-        <p className={styles.measureGroupTitle}>Коллектор / учёт</p>
-        <div className={styles.grid}>
-          <NumberField
-            label="Коллекторы"
-            unit="шт."
-            value={values.plumbingCollectorsCount}
-            onChange={(plumbingCollectorsCount) => onChange({ plumbingCollectorsCount })}
-          />
-        </div>
-      </div>
-
       <div className={styles.measureGroup}>
         <p className={styles.measureGroupTitle}>Приборы</p>
         <div className={styles.grid}>
@@ -1301,6 +1141,54 @@ function PlumbingMeasureGroups(props: {
       </div>
 
       <div className={styles.measureGroup}>
+        <p className={styles.measureGroupTitle}>Точки</p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Водорозетки"
+            unit="шт."
+            value={values.plumbingWaterPointsCount}
+            onChange={(plumbingWaterPointsCount) => onChange({ plumbingWaterPointsCount })}
+          />
+          <NumberField
+            label="Выводы канализации"
+            unit="шт."
+            value={values.plumbingSewerPointsCount}
+            onChange={(plumbingSewerPointsCount) => onChange({ plumbingSewerPointsCount })}
+          />
+        </div>
+      </div>
+
+      <div className={styles.measureGroup}>
+        <p className={styles.measureGroupTitle}>Трассы</p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Трубы воды"
+            unit="м. пог."
+            value={values.plumbingWaterPipeLength}
+            onChange={(plumbingWaterPipeLength) => onChange({ plumbingWaterPipeLength })}
+          />
+          <NumberField
+            label="Трубы канализации"
+            unit="м. пог."
+            value={values.plumbingSewerPipeLength}
+            onChange={(plumbingSewerPipeLength) => onChange({ plumbingSewerPipeLength })}
+          />
+        </div>
+      </div>
+
+      <div className={styles.measureGroup}>
+        <p className={styles.measureGroupTitle}>Коллектор / учёт</p>
+        <div className={styles.grid}>
+          <NumberField
+            label="Коллекторы"
+            unit="шт."
+            value={values.plumbingCollectorsCount}
+            onChange={(plumbingCollectorsCount) => onChange({ plumbingCollectorsCount })}
+          />
+        </div>
+      </div>
+
+      <div className={styles.measureGroup}>
         <p className={styles.measureGroupTitle}>Водяной тёплый пол</p>
         <div className={styles.grid}>
           <NumberField
@@ -1316,22 +1204,28 @@ function PlumbingMeasureGroups(props: {
 }
 
 function NumberField(props: {
+  disabled?: boolean
   label: string
   unit: string
   value: number
   onChange: (value: number) => void
 }) {
+  const id = useId()
+  const hint = MEASURE_FIELD_HINTS[props.label]
   return (
-    <label className={styles.field}>
+    <div className={styles.field}>
       <span className={styles.label}>
-        {props.label}
+        <label htmlFor={id}>{props.label}</label>
         <span className={styles.unit}>{props.unit}</span>
+        {hint ? <EstimateFieldHint label={props.label} text={hint} /> : null}
       </span>
       <EstimateNumberInput
+        id={id}
+        disabled={props.disabled}
         className={styles.control}
         value={props.value}
         onValueChange={props.onChange}
       />
-    </label>
+    </div>
   )
 }

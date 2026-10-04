@@ -30,6 +30,7 @@ export const CEILING_CONFLICT_GROUPS: Readonly<Record<string, readonly string[]>
     'paint-ceiling-mech-2',
   ],
   'plaster-mode': ['plaster-ceiling-main', 'plaster-ceiling-partial'],
+  'gkl-ceiling-layers': ['gkl-ceiling-one', 'gkl-ceiling-two'],
 }
 
 const PRICE_KEY_TO_CONFLICT_GROUP = buildPriceKeyIndex(CEILING_CONFLICT_GROUPS)

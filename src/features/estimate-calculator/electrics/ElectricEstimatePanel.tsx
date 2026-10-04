@@ -8,11 +8,11 @@ import {
 } from '@/entities/estimate'
 
 import type { ElectricScenarioDraftState } from '../model/estimate-calculator-persistence'
+import { EstimateRoomQuickFill } from '../ui/EstimateRoomQuickFill'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
 import { EstimateManualLine } from '../ui/EstimateManualLine'
 import { EstimateSectionLines } from '../ui/EstimateSectionLines'
 import { EstimateZonesAndMeasures } from '../ui/EstimateZonesAndMeasures'
-import { ElectricEstimateHelpers } from './ElectricEstimateHelpers'
 import { ElectricEstimateScenarios } from './ElectricEstimateScenarios'
 import { ElectricZoneWorkAdd } from './ElectricZoneWorkAdd'
 import type { ElectricEstimateEditor } from './use-electric-estimate-editor'
@@ -54,6 +54,7 @@ export function ElectricEstimatePanel({
     <div className={styles.workspace}>
       <div className={styles.zone}>
         <EstimateZonesAndMeasures
+          lines={editor.lines}
           section="electrics"
           zones={zones}
           onZonesChange={onZonesChange}
@@ -65,6 +66,8 @@ export function ElectricEstimatePanel({
 
       <div className={styles.zoneAlt}>
         <ElectricEstimateScenarios
+          lines={editor.lines}
+          onZonesChange={onZonesChange}
           draft={scenarioDraft}
           onDraftChange={onScenarioDraftChange}
           zones={zones}
@@ -74,30 +77,13 @@ export function ElectricEstimatePanel({
         />
       </div>
 
-      <div className={styles.zone}>
-        <ElectricEstimateHelpers
-          electricSocketsCount={editor.input.electricSocketsCount}
-          electricSwitchesCount={editor.input.electricSwitchesCount}
-          electricLightPointsCount={editor.input.electricLightPointsCount}
-          electricStrobeLength={editor.input.electricStrobeLength}
-          electricCableLength={editor.input.electricCableLength}
-          electricWarmFloorArea={editor.input.electricWarmFloorArea}
-          onApplySocketsCount={editor.applySocketsCount}
-          onApplySwitchesCount={editor.applySwitchesCount}
-          onApplyLightPointsCount={editor.applyLightPointsCount}
-          onApplyStrobeLength={editor.applyStrobeLength}
-          onApplyCableLength={editor.applyCableLength}
-          onApplyWarmFloorArea={editor.applyWarmFloorArea}
-          onReset={handleReset}
-        />
-      </div>
-
       <div className={styles.zoneAlt}>
         <EstimateSectionLines
           idPrefix="electric-estimate"
           title="Строки сметы — электрика"
           pricePanel={
             <ElectricZoneWorkAdd
+              lines={editor.lines}
               zones={zones}
               onZonesChange={onZonesChange}
               embedded
@@ -115,6 +101,14 @@ export function ElectricEstimatePanel({
             />
           }
         >
+          <EstimateRoomQuickFill
+            section="electrics"
+            zones={zones}
+            lines={editor.lines}
+            onFill={editor.fillRoomWorkQuantities}
+            onCatalogueFill={editor.fillCatalogueQuantities}
+            onReset={handleReset}
+          />
           <EstimateGroupedTable
             idPrefix="electric-estimate"
             embedded

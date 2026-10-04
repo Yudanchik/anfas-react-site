@@ -42,3 +42,21 @@ test('новые ответы, история добавления и прина
   assert.equal(restoreWallScenarioDraft(restored).quality, 'q3')
   assert.equal(restoreWallEstimateState(restored).lines.find((item) => item.id === line.id)?.scenarioManaged, true)
 })
+
+
+test('ответ о промежуточном грунте сохраняется в сценарии помещения и черновике мастера', () => {
+  const application = { state: 'from-scratch', finishTarget: 'paint',
+    primerBetweenPuttyLayers: true }
+  const raw = { version: 2, activeTab: 'walls',
+    zones: [{ id: 'zone-intercoat', name: 'Комната', wallArea: 20,
+      wallScenario: { application, measureSignature: '20|0|0|0|0|0' } }],
+    floors: { input: {}, lines: [] }, walls: { input: {}, lines: [] },
+    wallScenarios: { ...application } }
+  const restored = parseEstimateCalculatorSnapshot(raw)
+  assert.equal(restored?.zones[0].wallScenario?.application.primerBetweenPuttyLayers, true)
+  assert.equal(restoreWallScenarioDraft(restored).primerBetweenPuttyLayers, true)
+  const old = parseEstimateCalculatorSnapshot({ ...raw, wallScenarios: {},
+    zones: [{ ...raw.zones[0], wallScenario: { application: { state: 'from-scratch',
+      finishTarget: 'paint' }, measureSignature: '20|0|0|0|0|0' } }] })
+  assert.equal(restoreWallScenarioDraft(old).primerBetweenPuttyLayers, false)
+})

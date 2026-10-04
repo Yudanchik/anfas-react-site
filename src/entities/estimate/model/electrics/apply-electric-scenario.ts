@@ -29,9 +29,10 @@ export type ElectricStateOption =
   | 'demolition-only'
 
 export type ElectricScenarioApplication = {
+  demolitionBeforeWork?: boolean
   state: ElectricStateOption
   wallMaterial?: 'unknown' | 'concrete' | 'brick' | 'drywall' | 'ready'
-  cableRoute?: 'unknown' | 'chase' | 'open' | 'existing'
+  cableRoute?: 'unknown' | 'chase' | 'open' | 'mixed' | 'existing'
 }
 
 export type ElectricScenarioPlan = { keys: readonly string[]; issues: readonly string[] }
@@ -102,7 +103,7 @@ const STATE_KEYS: Record<ElectricStateOption, readonly string[]> = {
   'outlets-switches': ['finish-outlet-switch'],
   'low-current': ['cable-utp', 'finish-rj45', 'low-current-test-internet'],
   'panel-only': ['panel-enclosure-outdoor-12', 'panel-assembly-12', 'check-panel-after-assembly'],
-  'demolition-only': ['demolition-outlets', 'demolition-cable'],
+  'demolition-only': ['demolition-outlets', 'demolition-luminaires', 'demolition-cable'],
 }
 
 const MAPPING_BY_ID = new Map(ELECTRIC_PRICE_MAPPING.map((item) => [item.id, item]))
@@ -118,7 +119,7 @@ export function applyElectricScenario(
   application: ElectricScenarioApplication,
 ): ApplyElectricScenarioResult {
   const keys = resolveMeasuredElectricScenarioKeys(application, input)
-  const next = enableElectricScenarioKeys(lines, keys, input)
+  const next = enableElectricScenarioKeys(lines, keys, input, application)
 
   return {
     lines: next,
@@ -144,7 +145,7 @@ export function applyElectricScenarioToZone(
   for (const priceKey of keys) {
     const mappingItem = MAPPING_BY_ID.get(priceKey)
     const field = mappingItem?.defaultQuantityFrom ?? 'manual'
-    const qty = resolveElectricScenarioQuantity(priceKey, field, input)
+    const qty = resolveElectricScenarioQuantity(priceKey, field, input, application)
 
     const existingIndex = next.findIndex(
       (line) =>
@@ -208,7 +209,11 @@ export function resolveElectricScenarioPlan(
     issues.push('Укажите материал стены или готовые отверстия для подрозетников.')
   if (needsRoute && application.cableRoute === 'unknown')
     issues.push('Укажите, как прокладывается новый кабель.')
-  if (needsRoute && application.wallMaterial === 'drywall' && application.cableRoute === 'chase')
+  if (
+    needsRoute &&
+    application.wallMaterial === 'drywall' &&
+    ['chase', 'mixed'].includes(application.cableRoute ?? '')
+  )
     issues.push(
       'Для ГКЛ нельзя применять работу по штроблению кладки; выберите открытый маршрут или согласуйте монтаж в каркасе отдельно.',
     )
@@ -235,15 +240,18 @@ export function resolveElectricScenarioPlan(
     if (key === 'cable-chase-1-5-2-5') {
       if (application.cableRoute === 'existing' || application.cableRoute === 'unknown') return []
       if (application.cableRoute === 'open') return ['cable-open-1-5-2-5']
+      if (application.cableRoute === 'mixed') return ['cable-open-1-5-2-5', 'cable-chase-1-5-2-5']
     }
     if (key === 'layout-routes' && application.cableRoute === 'existing') return []
     return [key]
   })
+  if (application.demolitionBeforeWork && application.state !== 'demolition-only')
+    keys.unshift(...STATE_KEYS['demolition-only'])
   return { keys: [...new Set(keys)], issues }
 }
 
 export function formatElectricScenarioLabel(application: ElectricScenarioApplication): string {
-  return STATE_LABELS[application.state] ?? application.state
+  return `${application.demolitionBeforeWork && application.state !== 'demolition-only' ? 'Демонтаж + ' : ''}${STATE_LABELS[application.state] ?? application.state}`
 }
 
 export function formatElectricScenarioFeedback(label: string, addedCount: number): string {
@@ -254,8 +262,30 @@ export function resolveElectricScenarioQuantity(
   key: string,
   field: ElectricQuantityField,
   input: ElectricEstimateInput,
+  application?: ElectricScenarioApplication,
 ): number {
-  if (['finish-outlet-switch', 'demolition-outlets', 'layout-supply-points'].includes(key)) {
+  if (
+    application?.cableRoute === 'mixed' ||
+    input.electricCableOpenLength !== undefined ||
+    input.electricCableChaseLength !== undefined
+  ) {
+    if (key.startsWith('cable-open-')) return Math.max(0, input.electricCableOpenLength ?? 0)
+    if (key.startsWith('cable-chase-')) return Math.max(0, input.electricCableChaseLength ?? 0)
+  }
+  const combined = application?.demolitionBeforeWork && application.state !== 'demolition-only'
+  if (key === 'demolition-outlets')
+    return (
+      Math.max(0, input.electricOldSocketsCount ?? (combined ? 0 : input.electricSocketsCount)) +
+      Math.max(0, input.electricOldSwitchesCount ?? (combined ? 0 : input.electricSwitchesCount))
+    )
+  if (key === 'demolition-luminaires')
+    return Math.max(
+      0,
+      input.electricOldLightPointsCount ?? (combined ? 0 : input.electricLightPointsCount),
+    )
+  if (key === 'demolition-cable')
+    return Math.max(0, input.electricOldCableLength ?? (combined ? 0 : input.electricCableLength))
+  if (['finish-outlet-switch', 'layout-supply-points'].includes(key)) {
     return Math.max(0, input.electricSocketsCount) + Math.max(0, input.electricSwitchesCount)
   }
   if (/^panel-(assembly|enclosure-outdoor)-(12|18|24)$/.test(key)) {
@@ -284,6 +314,7 @@ export function resolveMeasuredElectricScenarioKeys(
           key,
           MAPPING_BY_ID.get(key)?.defaultQuantityFrom ?? 'manual',
           input,
+          application,
         ) > 0,
     )
 }
@@ -298,12 +329,18 @@ export function formatElectricScenarioZoneFeedback(
 
 export function electricInputFromZone(zone: EstimateZone): ElectricEstimateInput {
   return {
+    electricOldSocketsCount: zone.electricOldSocketsCount,
+    electricOldSwitchesCount: zone.electricOldSwitchesCount,
+    electricOldLightPointsCount: zone.electricOldLightPointsCount,
+    electricOldCableLength: zone.electricOldCableLength,
     electricSocketsCount: zone.electricSocketsCount,
     electricSwitchesCount: zone.electricSwitchesCount,
     electricLightPointsCount: zone.electricLightPointsCount,
     electricDataPointsCount: zone.electricDataPointsCount,
     electricStrobeLength: zone.electricStrobeLength,
     electricCableLength: zone.electricCableLength,
+    electricCableOpenLength: zone.electricCableOpenLength,
+    electricCableChaseLength: zone.electricCableChaseLength,
     electricSocketBoxesCount: zone.electricSocketBoxesCount,
     electricJunctionBoxesCount: zone.electricJunctionBoxesCount,
     electricPanelModulesCount: zone.electricPanelModulesCount,
@@ -317,6 +354,7 @@ function enableElectricScenarioKeys(
   lines: readonly EstimateLine[],
   keys: readonly string[],
   input: ElectricEstimateInput,
+  application: ElectricScenarioApplication,
 ): EstimateLine[] {
   const keySet = new Set(keys)
   const withConflictsDisabled = disableElectricConflictingAlternatives(lines, keys)
@@ -328,7 +366,7 @@ function enableElectricScenarioKeys(
 
     const mappingItem = MAPPING_BY_ID.get(line.priceKey)
     const field: ElectricQuantityField = mappingItem?.defaultQuantityFrom ?? 'manual'
-    const qty = resolveElectricScenarioQuantity(line.priceKey, field, input)
+    const qty = resolveElectricScenarioQuantity(line.priceKey, field, input, application)
 
     return {
       ...line,

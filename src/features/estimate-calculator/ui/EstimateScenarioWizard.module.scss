@@ -1,0 +1,173 @@
+@use 'media' as mq;
+@use './estimate-ui' as eu;
+
+.wrap {
+  @include eu.panel;
+}
+
+.title {
+  @include eu.section-title;
+}
+
+.lead {
+  @include eu.section-lead;
+}
+
+.context {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.stepLabel {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 0.85fr);
+  gap: 10px;
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.questions,
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: var(--radius-sm);
+}
+
+.questions {
+  border-left: 3px solid var(--amber);
+  background: color-mix(in srgb, var(--paper-deep) 35%, var(--paper));
+}
+
+.preview {
+  align-self: start;
+  background: var(--paper);
+
+  ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+}
+
+.hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.applyHint,
+.hydroHint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.field,
+.targetRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--ink) 66%, transparent);
+}
+
+.targetLabel {
+  font-size: 11px;
+}
+
+.workList {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.status {
+  @include eu.status-chip;
+}
+
+.navigation {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.action {
+  @include eu.button-primary;
+
+  flex: 1;
+}
+
+.back {
+  @include eu.button-secondary;
+}
+
+.roomOverview {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.roomList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.room {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  text-align: left;
+  cursor: pointer;
+
+  strong {
+    font-size: 12px;
+  }
+
+  span {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  &[data-applied='true'] {
+    border-color: var(--amber);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+  }
+}

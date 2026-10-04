@@ -8,11 +8,11 @@ import {
 } from '@/entities/estimate'
 
 import type { PlumbingScenarioDraftState } from '../model/estimate-calculator-persistence'
+import { EstimateRoomQuickFill } from '../ui/EstimateRoomQuickFill'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
 import { EstimateManualLine } from '../ui/EstimateManualLine'
 import { EstimateSectionLines } from '../ui/EstimateSectionLines'
 import { EstimateZonesAndMeasures } from '../ui/EstimateZonesAndMeasures'
-import { PlumbingEstimateHelpers } from './PlumbingEstimateHelpers'
 import { PlumbingEstimateScenarios } from './PlumbingEstimateScenarios'
 import { PlumbingZoneWorkAdd } from './PlumbingZoneWorkAdd'
 import type { PlumbingEstimateEditor } from './use-plumbing-estimate-editor'
@@ -54,6 +54,7 @@ export function PlumbingEstimatePanel({
     <div className={styles.workspace}>
       <div className={styles.zone}>
         <EstimateZonesAndMeasures
+          lines={editor.lines}
           section="plumbing"
           zones={zones}
           onZonesChange={onZonesChange}
@@ -65,6 +66,8 @@ export function PlumbingEstimatePanel({
 
       <div className={styles.zoneAlt}>
         <PlumbingEstimateScenarios
+          lines={editor.lines}
+          onZonesChange={onZonesChange}
           draft={scenarioDraft}
           onDraftChange={onScenarioDraftChange}
           zones={zones}
@@ -74,28 +77,13 @@ export function PlumbingEstimatePanel({
         />
       </div>
 
-      <div className={styles.zone}>
-        <PlumbingEstimateHelpers
-          plumbingWaterPipeLength={editor.input.plumbingWaterPipeLength}
-          plumbingSewerPipeLength={editor.input.plumbingSewerPipeLength}
-          plumbingWaterPointsCount={editor.input.plumbingWaterPointsCount}
-          plumbingSewerPointsCount={editor.input.plumbingSewerPointsCount}
-          plumbingWarmFloorArea={editor.input.plumbingWarmFloorArea}
-          onApplyWaterPipeLength={editor.applyWaterPipeLength}
-          onApplySewerPipeLength={editor.applySewerPipeLength}
-          onApplyWaterPointsCount={editor.applyWaterPointsCount}
-          onApplySewerPointsCount={editor.applySewerPointsCount}
-          onApplyWarmFloorArea={editor.applyWarmFloorArea}
-          onReset={handleReset}
-        />
-      </div>
-
       <div className={styles.zoneAlt}>
         <EstimateSectionLines
           idPrefix="plumbing-estimate"
           title="Строки сметы — сантехника"
           pricePanel={
             <PlumbingZoneWorkAdd
+              lines={editor.lines}
               zones={zones}
               onZonesChange={onZonesChange}
               embedded
@@ -113,6 +101,14 @@ export function PlumbingEstimatePanel({
             />
           }
         >
+          <EstimateRoomQuickFill
+            section="plumbing"
+            zones={zones}
+            lines={editor.lines}
+            onFill={editor.fillRoomWorkQuantities}
+            onCatalogueFill={editor.fillCatalogueQuantities}
+            onReset={handleReset}
+          />
           <EstimateGroupedTable
             idPrefix="plumbing-estimate"
             embedded

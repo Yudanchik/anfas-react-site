@@ -6,7 +6,7 @@ export const CEILING_SECTION_TITLE = 'Потолки (черновые / под�
 /**
  * Whitelist labour-работ по потолкам для внутреннего калькулятора.
  * Primary: PDF `anfas-price-list.pdf`. Frontend — сверка при `source=both`.
- * Вне scope: ГКЛ-пакеты, карнизы, Armstrong/Грильято монтаж, натяжной монтаж, кабель, материалы.
+ * Вне scope: сложные ГКЛ-конструкции, карнизы, Armstrong/Грильято монтаж, натяжной монтаж, кабель, материалы.
  */
 export const CEILING_PRICE_MAPPING: readonly CeilingPriceMappingItem[] = [
   // —— Демонтаж ——
@@ -220,6 +220,15 @@ export const CEILING_PRICE_MAPPING: readonly CeilingPriceMappingItem[] = [
     defaultEnabled: false,
     defaultQuantityFrom: 'plasterArea',
   },
+
+  // —— Типовой одноуровневый потолок ГКЛ (PDF, стр. 2) ——
+  { id: 'gkl-ceiling-one', title: 'Устройство одноуровневого потолка ГКЛ: каркас и 1 слой листов', unit: 'м²', unitPrice: 2000, source: 'pdf', kind: 'other', defaultEnabled: false, defaultQuantityFrom: 'totalCeilingArea' },
+  { id: 'gkl-ceiling-two', title: 'Устройство одноуровневого потолка ГКЛ: каркас и 2 слоя листов', unit: 'м²', unitPrice: 2650, source: 'pdf', kind: 'other', defaultEnabled: false, defaultQuantityFrom: 'totalCeilingArea' },
+  { id: 'gkl-ceiling-first-layer-joints', title: 'Заделка швов первого слоя ГКЛ перед монтажом второго', unit: 'м²', unitPrice: 400, source: 'pdf', kind: 'putty', defaultEnabled: false, defaultQuantityFrom: 'totalCeilingArea' },
+  { id: 'gkl-ceiling-joint-tape', title: 'Проклейка швов ГКЛ армирующей лентой', unit: 'м. пог.', unitPrice: 300, source: 'pdf', kind: 'putty', defaultEnabled: false, defaultQuantityFrom: 'gklSeamsLength' },
+  { id: 'gkl-ceiling-joint-fill', title: 'Заделка швов ГКЛ шпаклёвкой', unit: 'м. пог.', unitPrice: 350, source: 'pdf', kind: 'putty', defaultEnabled: false, defaultQuantityFrom: 'gklSeamsLength' },
+  { id: 'gkl-ceiling-screws', title: 'Заделка саморезов на ГКЛ', unit: 'м²', unitPrice: 200, source: 'pdf', kind: 'putty', defaultEnabled: false, defaultQuantityFrom: 'totalCeilingArea' },
+  { id: 'gkl-ceiling-paint-prep', title: 'Подготовка ГКЛ под малярные работы без сплошного шпаклевания', unit: 'м²', unitPrice: 350, source: 'pdf', kind: 'putty', defaultEnabled: false, defaultQuantityFrom: 'totalCeilingArea' },
 
   // —— Шпаклёвка / шлифовка ——
   {

@@ -8,11 +8,11 @@ import {
 } from '@/entities/estimate'
 
 import type { CeilingScenarioDraftState } from '../model/estimate-calculator-persistence'
+import { EstimateRoomQuickFill } from '../ui/EstimateRoomQuickFill'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
 import { EstimateManualLine } from '../ui/EstimateManualLine'
 import { EstimateSectionLines } from '../ui/EstimateSectionLines'
 import { EstimateZonesAndMeasures } from '../ui/EstimateZonesAndMeasures'
-import { CeilingEstimateHelpers } from './CeilingEstimateHelpers'
 import { CeilingEstimateScenarios } from './CeilingEstimateScenarios'
 import { CeilingZoneWorkAdd } from './CeilingZoneWorkAdd'
 import type { CeilingEstimateEditor } from './use-ceiling-estimate-editor'
@@ -54,6 +54,7 @@ export function CeilingEstimatePanel({
     <div className={styles.workspace}>
       <div className={styles.zone}>
         <EstimateZonesAndMeasures
+          lines={editor.lines}
           section="ceilings"
           zones={zones}
           onZonesChange={onZonesChange}
@@ -65,6 +66,8 @@ export function CeilingEstimatePanel({
 
       <div className={styles.zoneAlt}>
         <CeilingEstimateScenarios
+          lines={editor.lines}
+          onZonesChange={onZonesChange}
           draft={scenarioDraft}
           onDraftChange={onScenarioDraftChange}
           zones={zones}
@@ -74,28 +77,13 @@ export function CeilingEstimatePanel({
         />
       </div>
 
-      <div className={styles.zone}>
-        <CeilingEstimateHelpers
-          totalCeilingArea={editor.input.totalCeilingArea}
-          demolitionArea={editor.input.demolitionArea}
-          plasterArea={editor.input.plasterArea}
-          puttyArea={editor.input.puttyArea}
-          finishArea={editor.input.finishArea}
-          onApplyTotalArea={editor.applyTotalArea}
-          onApplyDemolitionArea={editor.applyDemolitionArea}
-          onApplyPlasterArea={editor.applyPlasterArea}
-          onApplyPuttyArea={editor.applyPuttyArea}
-          onApplyFinishArea={editor.applyFinishArea}
-          onReset={handleReset}
-        />
-      </div>
-
       <div className={styles.zoneAlt}>
         <EstimateSectionLines
           idPrefix="ceiling-estimate"
           title="Строки сметы — потолки"
           pricePanel={
             <CeilingZoneWorkAdd
+              lines={editor.lines}
               zones={zones}
               onZonesChange={onZonesChange}
               embedded
@@ -113,6 +101,14 @@ export function CeilingEstimatePanel({
             />
           }
         >
+          <EstimateRoomQuickFill
+            section="ceilings"
+            zones={zones}
+            lines={editor.lines}
+            onFill={editor.fillRoomWorkQuantities}
+            onCatalogueFill={editor.fillCatalogueQuantities}
+            onReset={handleReset}
+          />
           <EstimateGroupedTable
             idPrefix="ceiling-estimate"
             embedded

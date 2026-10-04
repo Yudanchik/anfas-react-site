@@ -44,6 +44,7 @@ export type WallLevelingOption = 'full' | 'local' | 'none'
 export type WallMoistureOption = 'normal' | 'wet'
 export type WallQualityOption = 'q2' | 'q3' | 'q4'
 export type WallBaseConditionOption = 'unknown' | 'sound' | 'loose'
+export type GklConstructionOption = 'existing' | 'new-one' | 'new-two'
 export type WallScenarioApplyMode = 'replace' | 'add'
 
 export type WallScenarioApplication = {
@@ -60,7 +61,11 @@ export type WallScenarioApplication = {
   moisture?: WallMoistureOption
   quality?: WallQualityOption
   reinforce?: boolean
+  /** Отдельный проход грунта между базовой и финишной шпаклёвкой по выбранной системе. */
+  primerBetweenPuttyLayers?: boolean
   baseCondition?: WallBaseConditionOption
+  gklConstruction?: GklConstructionOption
+  gklSeamsReady?: boolean
 }
 
 export type WallScenarioPlan = {
@@ -342,9 +347,41 @@ export function resolveWallScenarioPlan(application: WallScenarioApplication): W
   if (application.baseCondition !== 'sound') issues.push(application.baseCondition === 'loose'
     ? 'Сначала определите причину сырости и объём удаления рыхлых участков; типовая отделка по ним ненадёжна.'
     : 'Проверьте прочность и сухость основания на объекте.')
-  if (substrate === 'drywall' && state !== 'finish-only') issues.push(
-    'Для ГКЛ нужны заделка швов с лентой и проверка крепления. В прайсе есть только расшивка незаводских швов без измеренной длины; полную систему автоматически оценить нельзя.',
-  )
+  if (substrate === 'drywall' && state !== 'finish-only') {
+    if (state !== 'from-scratch' && state !== 'after-demolition') issues.push(
+      'Для ГКЛ выберите «С нуля» или «После демонтажа».',
+    )
+    if (moisture === 'wet') issues.push(
+      'Для прямого попадания воды нужна отдельная система влагостойкого основания и гидроизоляции.',
+    )
+    if (finishTarget === 'paint' && quality === 'q2') issues.push(
+      'Для гладкой матовой окраски выберите Q3, для глянцевой — Q4; Q2 подходит только для фактурного покрытия.',
+    )
+    if (finishTarget === 'wallpaper' && quality === 'q2' &&
+      (application.wallpaperType === 'photo' || application.wallpaperType === 'textile-match')) issues.push(
+      'Для тонких фото- или тканевых обоев уточните более гладкую подготовку, обычно не ниже Q3.',
+    )
+    if (state === 'from-scratch' || state === 'after-demolition') {
+      const construction = application.gklConstruction ?? 'existing'
+      if (construction !== 'existing') {
+        keys.push('gkl-wall-frame', 'gkl-wall-sheet-1')
+        if (construction === 'new-two') keys.push('gkl-first-layer-joints', 'gkl-wall-sheet-2')
+      }
+      if (construction !== 'existing' || !application.gklSeamsReady) {
+        keys.push('gkl-joint-tape', 'gkl-joint-fill', 'gkl-screws')
+      }
+      if (quality === 'q2') keys.push('gkl-paint-prep')
+      else {
+        keys.push('primer-before-putty', quality === 'q4' ? 'putty-base-2' : 'putty-base-1')
+        if (application.primerBetweenPuttyLayers) keys.push('primer-between-putty-layers')
+        if (application.reinforce && finishTarget === 'paint') keys.push('reinforce-glassfiber')
+        keys.push(quality === 'q4' ? 'putty-finish-2' : 'putty-finish-1', 'putty-sanding')
+      }
+      if (finishTarget === 'wallpaper') keys.push('primer-one-layer', WALLPAPER_KEYS[application.wallpaperType ?? 'flizelin'])
+      if (finishTarget === 'paint') keys.push('primer-one-layer', PAINT_KEYS[application.paintLayers ?? 'paint-2'])
+      return { keys: [...new Set(keys)], issues }
+    }
+  }
   if (state === 'prefinish' && substrate !== 'plastered') issues.push(
     'Маршрут «стены уже оштукатурены» подходит только для готовой прочной штукатурки.',
   )
@@ -367,7 +404,6 @@ export function resolveWallScenarioPlan(application: WallScenarioApplication): W
     'Без выравнивания на необработанном основании сначала подтвердите плоскость и совместимость шпаклёвки.',
   )
   const readyForPreparation = substrate !== 'unknown' && application.baseCondition === 'sound' &&
-    !(substrate === 'drywall' && state !== 'finish-only') &&
     !(state === 'prefinish' && substrate !== 'plastered')
   const needsReinforcement = application.reinforce === true && finishTarget === 'paint'
   if (state === 'local-leveling') {
@@ -382,10 +418,14 @@ export function resolveWallScenarioPlan(application: WallScenarioApplication): W
       keys.push(substrate === 'plastered' ? 'plaster-local-fix' : 'plaster-gypsum-main')
     }
     if (moisture === 'normal') {
+      // Готовую прочную штукатурку грунтуем перед шпаклёвкой один раз.
+      // После новой штукатурки это отдельный этап от грунта под штукатурку.
       if (application.leveling === 'none' || state === 'prefinish') keys.push('primer-deep-penetration')
+      else keys.push('primer-before-putty')
       keys.push(quality === 'q2' ? 'putty-base-1' : 'putty-base-2')
       if (needsReinforcement) keys.push('reinforce-glassfiber')
       if (quality === 'q3' || quality === 'q4' || needsReinforcement) {
+        if (application.primerBetweenPuttyLayers) keys.push('primer-between-putty-layers')
         keys.push(quality === 'q4' ? 'putty-finish-2' : 'putty-finish-1')
       }
       keys.push('putty-sanding')
@@ -422,6 +462,7 @@ export function formatWallScenarioLabel(application: WallScenarioApplication): s
     if (application.leveling === 'none' && (state === 'from-scratch' || state === 'after-demolition')) base += ' · без штукатурки'
     if (application.moisture === 'wet') base += ' · мокрая зона'
   }
+  if (application.substrate === 'drywall') base += ' · ГКЛ'
   if (finishTarget === 'none') return `${base} (${FINISH_LABELS.none})`
   return `${base} ${FINISH_LABELS[finishTarget]}`
 }
@@ -448,6 +489,7 @@ function wallInputFromZone(zone: EstimateZone): WallEstimateInput {
     wallHeightM: 0,
     slopesLengthM: zone.slopesLength,
     cornersLengthM: zone.cornersLength,
+    gklSeamsLengthM: zone.gklWallSeamsLength,
     surveyorComment: '',
   }
 }
@@ -500,6 +542,7 @@ function resolveScenarioQuantity(field: WallQuantityField, input: WallEstimateIn
     case 'totalWallArea':
     case 'slopesLength':
     case 'cornersLength':
+    case 'gklSeamsLength':
     case 'manual':
       return resolveWallDefaultQuantity(field, input)
   }

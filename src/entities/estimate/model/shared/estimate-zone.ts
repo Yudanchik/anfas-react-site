@@ -13,13 +13,23 @@ export type EstimateZoneType = 'kitchen' | 'bathroom' | 'room' | 'corridor' | 'o
 
 export type EstimateZone = {
   id: EstimateZoneId
+  /** Помещение остаётся в объекте, но не участвует в перечисленных разделах. */
+  excludedSections?: Array<'floors' | 'walls' | 'ceilings' | 'tile' | 'electrics' | 'plumbing'>
   name: string
   zoneType: EstimateZoneType
   floorArea: number
   demolitionFloorArea: number
   screedArea: number
   wetArea: number
+  scenarioStatuses?: Partial<
+    Record<
+      'floors' | 'walls' | 'ceilings' | 'tile' | 'electrics' | 'plumbing',
+      { label: string; measureSignature: string }
+    >
+  >
   wallArea: number
+  /** Длина стыков листов ГКЛ на стенах, измеряется отдельно от площади. */
+  gklWallSeamsLength?: number
   wallMeasurements?: WallMeasurements
   /** Последний применённый сценарий стен для этого помещения. */
   wallScenario?: {
@@ -34,6 +44,7 @@ export type EstimateZone = {
   slopesLength: number
   cornersLength: number
   ceilingArea: number
+  gklCeilingSeamsLength?: number
   demolitionCeilingArea: number
   plasterCeilingArea: number
   puttyCeilingArea: number
@@ -45,18 +56,32 @@ export type EstimateZone = {
   tileCornerLength: number
   tileHolesCount: number
   tileRepairCount: number
+  electricOldSocketsCount?: number
+  electricOldSwitchesCount?: number
+  electricOldLightPointsCount?: number
+  electricOldCableLength?: number
   electricSocketsCount: number
   electricSwitchesCount: number
   electricLightPointsCount: number
   electricDataPointsCount: number
   electricStrobeLength: number
+  electricCableOpenLength?: number
+  electricCableChaseLength?: number
   electricCableLength: number
   electricSocketBoxesCount: number
   electricJunctionBoxesCount: number
   electricPanelModulesCount: number
   electricWarmFloorArea: number
   electricApplianceConnectionsCount: number
+  plumbingOldToiletsCount?: number
+  plumbingOldSinksCount?: number
+  plumbingOldBathtubsCount?: number
+  plumbingOldMixersCount?: number
   plumbingWaterPointsCount: number
+  /** Старые замеры сохраняют ручной режим; новый типовой расчёт включается явно. */
+  plumbingFixtureCountsMode?: 'auto' | 'manual'
+  plumbingToiletMount?: 'unknown' | 'floor' | 'installation' | 'existing'
+  plumbingPointsMode?: 'manual' | 'fixtures'
   plumbingSewerPointsCount: number
   plumbingWaterPipeLength: number
   plumbingSewerPipeLength: number
@@ -118,6 +143,7 @@ export const EMPTY_ESTIMATE_ZONE_FIELDS: Omit<EstimateZone, 'id' | 'name'> = {
   screedArea: 0,
   wetArea: 0,
   wallArea: 0,
+  gklWallSeamsLength: 0,
   demolitionWallArea: 0,
   plasterArea: 0,
   puttyArea: 0,
@@ -125,6 +151,7 @@ export const EMPTY_ESTIMATE_ZONE_FIELDS: Omit<EstimateZone, 'id' | 'name'> = {
   slopesLength: 0,
   cornersLength: 0,
   ceilingArea: 0,
+  gklCeilingSeamsLength: 0,
   demolitionCeilingArea: 0,
   plasterCeilingArea: 0,
   puttyCeilingArea: 0,
@@ -168,13 +195,7 @@ export const EMPTY_ESTIMATE_ZONE_FIELDS: Omit<EstimateZone, 'id' | 'name'> = {
 }
 
 const ZONE_ENTITY_ID_PATTERN = /^zone-(\d+)$/
-const ZONE_TYPES = new Set<EstimateZoneType>([
-  'kitchen',
-  'bathroom',
-  'room',
-  'corridor',
-  'other',
-])
+const ZONE_TYPES = new Set<EstimateZoneType>(['kitchen', 'bathroom', 'room', 'corridor', 'other'])
 
 let zoneEntityCounter = 0
 
@@ -266,7 +287,35 @@ export function createEstimateZone(params: {
     screedArea: normalizeNonNegative(fields.screedArea ?? 0),
     wetArea: normalizeNonNegative(fields.wetArea ?? 0),
     wallArea: normalizeNonNegative(fields.wallArea ?? 0),
+    gklWallSeamsLength: normalizeNonNegative(fields.gklWallSeamsLength ?? 0),
     wallMeasurements: fields.wallMeasurements,
+    electricOldSocketsCount:
+      fields.electricOldSocketsCount === undefined
+        ? undefined
+        : normalizeNonNegative(fields.electricOldSocketsCount),
+    electricOldSwitchesCount:
+      fields.electricOldSwitchesCount === undefined
+        ? undefined
+        : normalizeNonNegative(fields.electricOldSwitchesCount),
+    electricOldLightPointsCount:
+      fields.electricOldLightPointsCount === undefined
+        ? undefined
+        : normalizeNonNegative(fields.electricOldLightPointsCount),
+    electricOldCableLength:
+      fields.electricOldCableLength === undefined
+        ? undefined
+        : normalizeNonNegative(fields.electricOldCableLength),
+    plumbingFixtureCountsMode: fields.plumbingFixtureCountsMode ?? 'manual',
+    plumbingToiletMount: fields.plumbingToiletMount ?? 'unknown',
+    scenarioStatuses: fields.scenarioStatuses,
+    plumbingOldToiletsCount: fields.plumbingOldToiletsCount,
+    plumbingOldSinksCount: fields.plumbingOldSinksCount,
+    plumbingOldBathtubsCount: fields.plumbingOldBathtubsCount,
+    plumbingOldMixersCount: fields.plumbingOldMixersCount,
+
+    excludedSections: fields.excludedSections,
+    electricCableOpenLength: fields.electricCableOpenLength,
+    electricCableChaseLength: fields.electricCableChaseLength,
     demolitionWallArea: normalizeNonNegative(fields.demolitionWallArea ?? 0),
     plasterArea: normalizeNonNegative(fields.plasterArea ?? 0),
     puttyArea: normalizeNonNegative(fields.puttyArea ?? 0),
@@ -274,6 +323,7 @@ export function createEstimateZone(params: {
     slopesLength: normalizeNonNegative(fields.slopesLength ?? 0),
     cornersLength: normalizeNonNegative(fields.cornersLength ?? 0),
     ceilingArea: normalizeNonNegative(fields.ceilingArea ?? 0),
+    gklCeilingSeamsLength: normalizeNonNegative(fields.gklCeilingSeamsLength ?? 0),
     demolitionCeilingArea: normalizeNonNegative(fields.demolitionCeilingArea ?? 0),
     plasterCeilingArea: normalizeNonNegative(fields.plasterCeilingArea ?? 0),
     puttyCeilingArea: normalizeNonNegative(fields.puttyCeilingArea ?? 0),
@@ -299,6 +349,7 @@ export function createEstimateZone(params: {
       fields.electricApplianceConnectionsCount ?? 0,
     ),
     plumbingWaterPointsCount: normalizeNonNegative(fields.plumbingWaterPointsCount ?? 0),
+    plumbingPointsMode: fields.plumbingPointsMode ?? 'manual',
     plumbingSewerPointsCount: normalizeNonNegative(fields.plumbingSewerPointsCount ?? 0),
     plumbingWaterPipeLength: normalizeNonNegative(fields.plumbingWaterPipeLength ?? 0),
     plumbingSewerPipeLength: normalizeNonNegative(fields.plumbingSewerPipeLength ?? 0),
@@ -335,11 +386,60 @@ export function updateEstimateZone(
       patch.zoneType === undefined
         ? // Rename с типом other → можно уточнить по новому имени
           zone.zoneType === 'other'
-            ? resolveEstimateZoneType({ name: nextName, zoneType: 'other' })
-            : zone.zoneType
+          ? resolveEstimateZoneType({ name: nextName, zoneType: 'other' })
+          : zone.zoneType
         : normalizeEstimateZoneType(patch.zoneType)
     return {
       ...zone,
+      electricOldSocketsCount:
+        patch.electricOldSocketsCount === undefined
+          ? zone.electricOldSocketsCount
+          : normalizeNonNegative(patch.electricOldSocketsCount),
+      electricOldSwitchesCount:
+        patch.electricOldSwitchesCount === undefined
+          ? zone.electricOldSwitchesCount
+          : normalizeNonNegative(patch.electricOldSwitchesCount),
+      electricOldLightPointsCount:
+        patch.electricOldLightPointsCount === undefined
+          ? zone.electricOldLightPointsCount
+          : normalizeNonNegative(patch.electricOldLightPointsCount),
+      electricOldCableLength:
+        patch.electricOldCableLength === undefined
+          ? zone.electricOldCableLength
+          : normalizeNonNegative(patch.electricOldCableLength),
+      plumbingFixtureCountsMode: patch.plumbingFixtureCountsMode ?? zone.plumbingFixtureCountsMode,
+      plumbingToiletMount: patch.plumbingToiletMount ?? zone.plumbingToiletMount,
+      scenarioStatuses: patch.scenarioStatuses ?? zone.scenarioStatuses,
+      plumbingOldToiletsCount:
+        patch.plumbingOldToiletsCount === undefined
+          ? zone.plumbingOldToiletsCount
+          : normalizeNonNegative(patch.plumbingOldToiletsCount),
+      plumbingOldSinksCount:
+        patch.plumbingOldSinksCount === undefined
+          ? zone.plumbingOldSinksCount
+          : normalizeNonNegative(patch.plumbingOldSinksCount),
+      plumbingOldBathtubsCount:
+        patch.plumbingOldBathtubsCount === undefined
+          ? zone.plumbingOldBathtubsCount
+          : normalizeNonNegative(patch.plumbingOldBathtubsCount),
+      plumbingOldMixersCount:
+        patch.plumbingOldMixersCount === undefined
+          ? zone.plumbingOldMixersCount
+          : normalizeNonNegative(patch.plumbingOldMixersCount),
+
+      electricCableOpenLength:
+        'electricCableOpenLength' in patch
+          ? patch.electricCableOpenLength === undefined
+            ? undefined
+            : normalizeNonNegative(patch.electricCableOpenLength)
+          : zone.electricCableOpenLength,
+      electricCableChaseLength:
+        'electricCableChaseLength' in patch
+          ? patch.electricCableChaseLength === undefined
+            ? undefined
+            : normalizeNonNegative(patch.electricCableChaseLength)
+          : zone.electricCableChaseLength,
+      plumbingPointsMode: patch.plumbingPointsMode ?? zone.plumbingPointsMode,
       name: nextName,
       zoneType: nextType,
       floorArea:
@@ -352,7 +452,10 @@ export function updateEstimateZone(
         patch.screedArea === undefined ? zone.screedArea : normalizeNonNegative(patch.screedArea),
       wetArea: patch.wetArea === undefined ? zone.wetArea : normalizeNonNegative(patch.wetArea),
       wallArea: patch.wallArea === undefined ? zone.wallArea : normalizeNonNegative(patch.wallArea),
-      wallMeasurements: patch.wallMeasurements === undefined ? zone.wallMeasurements : patch.wallMeasurements,
+      gklWallSeamsLength: patch.gklWallSeamsLength === undefined
+        ? zone.gklWallSeamsLength : normalizeNonNegative(patch.gklWallSeamsLength),
+      wallMeasurements:
+        patch.wallMeasurements === undefined ? zone.wallMeasurements : patch.wallMeasurements,
       demolitionWallArea:
         patch.demolitionWallArea === undefined
           ? zone.demolitionWallArea
@@ -377,6 +480,8 @@ export function updateEstimateZone(
         patch.ceilingArea === undefined
           ? zone.ceilingArea
           : normalizeNonNegative(patch.ceilingArea),
+      gklCeilingSeamsLength: patch.gklCeilingSeamsLength === undefined
+        ? zone.gklCeilingSeamsLength : normalizeNonNegative(patch.gklCeilingSeamsLength),
       demolitionCeilingArea:
         patch.demolitionCeilingArea === undefined
           ? zone.demolitionCeilingArea
@@ -533,24 +638,17 @@ export function updateEstimateZone(
         patch.plumbingWarmFloorArea === undefined
           ? zone.plumbingWarmFloorArea
           : normalizeNonNegative(patch.plumbingWarmFloorArea),
-      comment:
-        patch.comment === undefined ? zone.comment : patch.comment.trim() || undefined,
+      comment: patch.comment === undefined ? zone.comment : patch.comment.trim() || undefined,
     }
   })
 }
 
-export function removeEstimateZone(
-  zones: readonly EstimateZone[],
-  zoneId: string,
-): EstimateZone[] {
+export function removeEstimateZone(zones: readonly EstimateZone[], zoneId: string): EstimateZone[] {
   return zones.filter((zone) => zone.id !== zoneId)
 }
 
 /** Строки без zoneId — «Общие работы»; с zoneId — зональные. */
-export function lineBelongsToZone(
-  line: { zoneId?: string },
-  zoneId: string | null,
-): boolean {
+export function lineBelongsToZone(line: { zoneId?: string }, zoneId: string | null): boolean {
   if (zoneId === null) return !line.zoneId
   return line.zoneId === zoneId
 }

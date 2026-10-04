@@ -1,9 +1,5 @@
 import { isZonedEstimateLine } from '../shared/estimate-zoned-line'
-import type {
-  EstimateLine,
-  TileEstimateInput,
-  TileQuantityField,
-} from '../shared/estimate.types'
+import type { EstimateLine, TileEstimateInput, TileQuantityField } from '../shared/estimate.types'
 import type { EstimateZone } from '../shared/estimate-zone'
 import {
   resolveTileCladArea,
@@ -32,12 +28,7 @@ export type TileStateOption =
   | 'grout-repair-only'
 
 export type TileCladFormatOption =
-  | '301-1300'
-  | '1301-1700'
-  | '1701-3600'
-  | 'over-3600'
-  | 'mosaic'
-  | 'small-format'
+  '301-1300' | '1301-1700' | '1701-3600' | 'over-3600' | 'mosaic' | 'small-format'
 
 export type TileGroutOption = 'none' | 'cement' | 'epoxy'
 
@@ -176,9 +167,7 @@ export function applyTileScenarioToZone(
   }
 }
 
-export function resolveTileScenarioKeys(
-  application: TileScenarioApplication,
-): readonly string[] {
+export function resolveTileScenarioKeys(application: TileScenarioApplication): readonly string[] {
   const { state } = application
   const cladFormat = application.cladFormat ?? defaultCladFormat(state)
   const grout = application.grout ?? 'cement'
@@ -207,10 +196,12 @@ export function resolveTileScenarioKeys(
       break
     case 'kitchen-backsplash':
       keys.push('prep-layout', CLAD_FORMAT_KEYS[cladFormat])
+      keys.push(...groutKeys(grout))
       break
     case 'large-format':
       keys.push('prep-layout', CLAD_FORMAT_KEYS[cladFormat])
       keys.push('cut-edge-large-small', 'hole-up-to-100')
+      keys.push(...groutKeys(grout))
       break
     case 'demolition-only':
       if (surfaces === 'floor' || surfaces === 'both') keys.push('demolition-floor-tile')
@@ -248,11 +239,11 @@ export function formatTileScenarioLabel(application: TileScenarioApplication): s
   }
 
   if (state === 'kitchen-backsplash') {
-    return `${STATE_LABELS[state]}, ${FORMAT_LABELS[cladFormat]}`
+    return `${STATE_LABELS[state]}, ${FORMAT_LABELS[cladFormat]}, ${GROUT_LABELS[grout]}`
   }
 
   if (state === 'large-format') {
-    return `${STATE_LABELS[state]}, ${FORMAT_LABELS[cladFormat]}`
+    return `${STATE_LABELS[state]}, ${FORMAT_LABELS[cladFormat]}, ${GROUT_LABELS[grout]}`
   }
 
   if (grout === 'none') {

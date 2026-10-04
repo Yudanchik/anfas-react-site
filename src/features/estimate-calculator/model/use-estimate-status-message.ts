@@ -12,7 +12,7 @@ export const ESTIMATE_STATUS_SUCCESS_CLEAR_MS = 4500
 
 type UseEstimateStatusMessageOptions = {
   /** When any token changes, status is cleared (e.g. section / full reset). */
-  clearTokens?: readonly number[]
+  clearTokens?: readonly (string | number)[]
 }
 
 export type EstimateStatusMessageApi = {
@@ -29,7 +29,7 @@ export function useEstimateStatusMessage(
   const { clearTokens = [] } = options
   const [status, setStatus] = useState<EstimateStatusState | null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const tokensKey = clearTokens.join(':')
+  const tokensKey = JSON.stringify(clearTokens)
   const prevTokensKeyRef = useRef(tokensKey)
 
   const clearTimer = useCallback(() => {

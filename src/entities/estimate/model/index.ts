@@ -463,6 +463,10 @@ export type { BuildElectricEstimateLinesOptions } from './electrics/build-electr
 export { buildElectricEstimate } from './electrics/build-electric-estimate'
 export { estimateSocketBoxes, patchElectricPoints } from './electrics/electric-measurements'
 export {
+  estimatePlumbingPoints,
+  patchPlumbingFixturePoints,
+} from './plumbing/plumbing-measurements'
+export {
   applyElectricCableLength,
   applyElectricLightPointsCount,
   applyElectricSocketsCount,
@@ -577,6 +581,7 @@ export {
   plumbingInputFromZone,
   resolvePlumbingScenarioKeys,
   resolveMeasuredPlumbingScenarioKeys,
+  resolvePlumbingScenarioQuantity,
   resolvePlumbingScenarioPlan,
 } from './plumbing/apply-plumbing-scenario'
 export type {

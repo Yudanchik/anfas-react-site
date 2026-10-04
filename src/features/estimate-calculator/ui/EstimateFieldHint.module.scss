@@ -1,0 +1,37 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+.button {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--ink) 35%, transparent);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  font-size: 11px;
+  cursor: help;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 10000;
+  box-sizing: border-box;
+  max-height: 150px;
+  overflow: auto;
+  padding: 9px 11px;
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  box-shadow: 0 6px 20px rgb(22 23 19 / 12%);
+  color: var(--ink);
+  font-size: 11px;
+  line-height: 1.5;
+  pointer-events: auto;
+}

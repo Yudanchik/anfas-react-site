@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react'
 
 import {
-  ESTIMATE_GENERAL_WORKS_TITLE,
-  formatTileScenarioFeedback,
+  TILE_PRICE_MAPPING,
+  resolveTileScenarioKeys,
   formatTileScenarioLabel,
-  formatTileScenarioZoneFeedback,
   formatTileScenarioZoneMismatchMessage,
   isTileScenarioAllowedForZone,
   resolveTileScenarioOptionsForZone,
   type EstimateZone,
+  type EstimateLine,
   type TileCladFormatOption,
   type TileDemolitionSurfacesOption,
   type TileEstimateInput,
@@ -21,18 +21,23 @@ import type { TileScenarioDraftState } from '../model/estimate-calculator-persis
 import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
 import {
   canApplyTileScenario,
-  getScenarioMeasuresDisabledHint,
   validateTileScenarioMeasures,
 } from '../model/validate-scenario-measures'
+import { ALL_SCENARIO_ROOMS } from '../model/room-scenario-status'
+import { useRoomScenarioBatch } from '../model/use-room-scenario-batch'
+import { EstimateScenarioRooms } from '../ui/EstimateScenarioRooms'
+import { EstimateScenarioWizard } from '../ui/EstimateScenarioWizard'
 import { EstimateSelect } from '../ui/EstimateSelect'
 import { formatTileScenarioTargetLabel } from './format-tile-scenario-target-label'
-import styles from './TileEstimateScenarios.module.scss'
+import styles from '../ui/EstimateScenarioWizard.module.scss'
 
 export { formatTileScenarioTargetLabel } from './format-tile-scenario-target-label'
 
 type TileEstimateScenariosProps = {
   draft: TileScenarioDraftState
   onDraftChange: (patch: Partial<TileScenarioDraftState>) => void
+  lines?: readonly EstimateLine[]
+  onZonesChange?: (zones: EstimateZone[]) => void
   zones?: readonly EstimateZone[]
   generalInput: TileEstimateInput
   feedbackEpoch?: number
@@ -46,8 +51,6 @@ type TileEstimateScenariosProps = {
     error?: string
   }
 }
-
-const GENERAL_TARGET = 'general'
 
 const CLAD_FORMAT_OPTIONS: ReadonlyArray<{ value: TileCladFormatOption; label: string }> = [
   { value: '301-1300', label: '301–1300' },
@@ -111,19 +114,21 @@ export function TileEstimateScenarios({
   draft,
   onDraftChange,
   zones = [],
+  lines = [],
+  onZonesChange,
   generalInput,
   feedbackEpoch,
   onApplyScenario,
 }: TileEstimateScenariosProps) {
   const { state, cladFormat, grout, demolitionSurfaces } = draft
-  const [targetId, setTargetId] = useState(GENERAL_TARGET)
+  const [targetId, setTargetId] = useState('')
   const { status, setSuccess, setError } = useEstimateStatusMessage({
-    clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
+    clearTokens: [targetId, feedbackEpoch ?? 0, zones.length],
   })
 
   const targetOptions = useMemo(
     () => [
-      { value: GENERAL_TARGET, label: ESTIMATE_GENERAL_WORKS_TITLE },
+      { value: ALL_SCENARIO_ROOMS, label: `Все помещения · ${zones.length}` },
       ...zones.map((zone) => ({
         value: zone.id,
         label: formatTileScenarioTargetLabel(zone),
@@ -133,9 +138,13 @@ export function TileEstimateScenarios({
   )
   const resolvedTargetId = targetOptions.some((option) => option.value === targetId)
     ? targetId
-    : GENERAL_TARGET
-  const selectedZone = zones.find((zone) => zone.id === resolvedTargetId)
-  const filterZoneType = selectedZone ? selectedZone.zoneType : null
+    : (zones[0]?.id ?? '')
+  const selectedZone =
+    resolvedTargetId === ALL_SCENARIO_ROOMS
+      ? zones[0]
+      : zones.find((zone) => zone.id === resolvedTargetId)
+  const filterZoneType =
+    resolvedTargetId === ALL_SCENARIO_ROOMS ? null : selectedZone ? selectedZone.zoneType : null
   const { primary } = resolveTileScenarioOptionsForZone(filterZoneType, false)
   const stateOptions = primary.map((option) => ({ value: option.id, label: option.label }))
   const compatibleState = resolveCompatibleState(state, filterZoneType)
@@ -152,7 +161,13 @@ export function TileEstimateScenarios({
   }
 
   const zoneFitOk = isTileScenarioAllowedForZone(application.state, filterZoneType)
+  const measureCheck = validateTileScenarioMeasures({
+    application,
+    input: generalInput,
+    zone: selectedZone,
+  })
   const canApply =
+    Boolean(selectedZone) &&
     zoneFitOk &&
     canApplyTileScenario({
       application,
@@ -163,9 +178,13 @@ export function TileEstimateScenarios({
     ? formatTileScenarioZoneMismatchMessage(application.state)
     : canApply
       ? null
-      : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
+      : measureCheck.ok
+        ? null
+        : measureCheck.message
 
   const previewLabel = formatTileScenarioLabel(application)
+  const mappingById = new Map(TILE_PRICE_MAPPING.map((item) => [item.id, item]))
+  const previewKeys = resolveTileScenarioKeys(application)
 
   function syncStateForZoneType(zoneType: EstimateZone['zoneType'] | null) {
     if (isTileScenarioAllowedForZone(state, zoneType)) return
@@ -178,155 +197,180 @@ export function TileEstimateScenarios({
     onDraftChange(patch)
   }
 
+  const batch = useRoomScenarioBatch({
+    section: 'tile',
+    zones,
+    lines,
+    targetId: resolvedTargetId,
+    onZonesChange,
+    setSuccess,
+    setError,
+    check: (zone) => validateTileScenarioMeasures({ application, input: generalInput, zone }),
+    apply: (zone) => onApplyScenario(application, { zone }),
+  })
   function handleApply() {
-    const check = validateTileScenarioMeasures({
-      application,
-      input: generalInput,
-      zone: selectedZone,
-    })
-    if (!check.ok) {
-      setError(check.message)
-      return
-    }
-
-    const result = onApplyScenario(
-      application,
-      selectedZone ? { zone: selectedZone } : undefined,
-    )
-    if (result.error) {
-      setError(result.error)
-      return
-    }
-    setSuccess(
-      result.zoneName
-        ? formatTileScenarioZoneFeedback(result.label, result.zoneName, result.addedCount)
-        : formatTileScenarioFeedback(result.label, result.addedCount),
-    )
+    return batch.apply()
   }
 
   return (
-    <section className={styles.wrap} aria-labelledby="tile-estimate-scenarios-title">
-      <div className={styles.head}>
-        <h2 className={styles.title} id="tile-estimate-scenarios-title">
-          Сценарий плитки
-        </h2>
-        <p className={styles.lead}>
-          Выберите сценарий и примените его к общим работам или конкретной зоне. Гидроизоляция —
-          через раздел «Полы». После применения смету можно вручную уточнить.
-        </p>
-      </div>
-
-      <div className={styles.targetRow}>
-        <span className={styles.targetLabel}>Применить к</span>
-        <EstimateSelect
-          value={resolvedTargetId}
-          options={targetOptions}
-          ariaLabel="Применить сценарий плитки к"
-          onChange={(next) => {
-            setTargetId(next)
-            const zone = zones.find((entry) => entry.id === next)
-            syncStateForZoneType(zone ? zone.zoneType : null)
-          }}
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <article className={`${styles.card} ${styles.cardAccent}`}>
-          <div className={styles.cardTop}>
-            <h3 className={styles.cardTitle}>Параметры сценария</h3>
-            <span className={styles.badge}>Черновик</span>
-          </div>
-
-          <div className={styles.field}>
-            <span>Сценарий</span>
-            <EstimateSelect
-              value={compatibleState}
-              options={stateOptions}
-              ariaLabel="Сценарий плитки"
-              onChange={(nextValue) => {
-                const next = nextValue as TileStateOption
-                if (!isTileScenarioAllowedForZone(next, filterZoneType)) {
-                  setError(formatTileScenarioZoneMismatchMessage(next))
-                  return
-                }
-                const patch: Partial<TileScenarioDraftState> = { state: next }
-                if (next === 'large-format' && cladFormat === '301-1300') {
-                  patch.cladFormat = '1701-3600'
-                }
-                onDraftChange(patch)
-              }}
-            />
-          </div>
-
-          {showClad ? (
-            <div className={styles.field}>
-              <span>Формат облицовки</span>
-              <EstimateSelect
-                value={cladFormat}
-                options={CLAD_FORMAT_OPTIONS}
-                ariaLabel="Формат облицовки"
-                onChange={(next) =>
-                  onDraftChange({ cladFormat: next as TileCladFormatOption })
-                }
-              />
-            </div>
-          ) : null}
-
-          {showGrout ? (
-            <div className={styles.field}>
-              <span>
-                {compatibleState === 'grout-repair-only' ? 'Затирка / ремонт' : 'Затирка'}
-              </span>
-              <EstimateSelect
-                value={grout}
-                options={
-                  compatibleState === 'grout-repair-only'
-                    ? GROUT_OPTIONS
-                    : GROUT_OPTIONS.filter((option) => option.value !== 'none')
-                }
-                ariaLabel="Затирка"
-                onChange={(next) => onDraftChange({ grout: next as TileGroutOption })}
-              />
-            </div>
-          ) : null}
-
-          {showDemoSurfaces ? (
-            <div className={styles.field}>
-              <span>Демонтаж плитки</span>
-              <EstimateSelect
-                value={demolitionSurfaces}
-                options={DEMOLITION_SURFACES_OPTIONS}
-                ariaLabel="Поверхности демонтажа плитки"
-                onChange={(next) =>
-                  onDraftChange({
-                    demolitionSurfaces: next as TileDemolitionSurfacesOption,
-                  })
-                }
-              />
-            </div>
-          ) : null}
-
+    <EstimateScenarioWizard
+      key={`${resolvedTargetId}:${feedbackEpoch ?? 0}`}
+      roomOverview={<EstimateScenarioRooms batch={batch} onSelect={setTargetId} />}
+      applyLabel={batch.applyLabel}
+      allRooms={batch.all}
+      title="Сценарий плитки"
+      context={
+        batch.all ? (
+          `Один набор ответов для всех ${zones.length} помещений. Замеры берутся отдельно из каждого.`
+        ) : selectedZone ? (
+          <>
+            Помещение: <strong>{selectedZone.name}</strong>
+          </>
+        ) : (
+          'Сначала добавьте помещение в блоке замеров.'
+        )
+      }
+      steps={[
+        {
+          label: 'помещение и исходные работы',
+          title: 'Что будем делать и где?',
+          blockedReason: selectedZone ? undefined : 'Сначала добавьте помещение.',
+          content: (
+            <>
+              {selectedZone ? (
+                <div className={styles.targetRow}>
+                  <span className={styles.targetLabel}>Применить к</span>
+                  <EstimateSelect
+                    value={resolvedTargetId}
+                    options={targetOptions}
+                    ariaLabel="Применить сценарий плитки к"
+                    onChange={(next) => {
+                      setTargetId(next)
+                      const zone = zones.find((entry) => entry.id === next)
+                      syncStateForZoneType(zone ? zone.zoneType : null)
+                    }}
+                  />
+                </div>
+              ) : (
+                <p className={styles.applyHint}>Добавьте помещение в блоке замеров выше.</p>
+              )}{' '}
+              <div className={styles.field}>
+                <span>Сценарий</span>
+                <EstimateSelect
+                  value={compatibleState}
+                  options={stateOptions}
+                  ariaLabel="Сценарий плитки"
+                  onChange={(nextValue) => {
+                    const next = nextValue as TileStateOption
+                    if (!isTileScenarioAllowedForZone(next, filterZoneType)) {
+                      setError(formatTileScenarioZoneMismatchMessage(next))
+                      return
+                    }
+                    const patch: Partial<TileScenarioDraftState> = { state: next }
+                    if (next === 'large-format' && cladFormat === '301-1300') {
+                      patch.cladFormat = '1701-3600'
+                    }
+                    onDraftChange(patch)
+                  }}
+                />
+              </div>
+            </>
+          ),
+        },
+        {
+          label: 'параметры работ',
+          title: 'Уточните выбранные работы',
+          content: (
+            <>
+              {' '}
+              {showClad ? (
+                <div className={styles.field}>
+                  <span>Формат облицовки</span>
+                  <EstimateSelect
+                    value={cladFormat}
+                    options={CLAD_FORMAT_OPTIONS}
+                    ariaLabel="Формат облицовки"
+                    onChange={(next) => onDraftChange({ cladFormat: next as TileCladFormatOption })}
+                  />
+                </div>
+              ) : null}
+              {showGrout ? (
+                <div className={styles.field}>
+                  <span>
+                    {compatibleState === 'grout-repair-only' ? 'Затирка / ремонт' : 'Затирка'}
+                  </span>
+                  <EstimateSelect
+                    value={grout}
+                    options={
+                      compatibleState === 'grout-repair-only'
+                        ? GROUT_OPTIONS
+                        : GROUT_OPTIONS.filter((option) => option.value !== 'none')
+                    }
+                    ariaLabel="Затирка"
+                    onChange={(next) => onDraftChange({ grout: next as TileGroutOption })}
+                  />
+                </div>
+              ) : null}
+              {showDemoSurfaces ? (
+                <div className={styles.field}>
+                  <span>Демонтаж плитки</span>
+                  <EstimateSelect
+                    value={demolitionSurfaces}
+                    options={DEMOLITION_SURFACES_OPTIONS}
+                    ariaLabel="Поверхности демонтажа плитки"
+                    onChange={(next) =>
+                      onDraftChange({
+                        demolitionSurfaces: next as TileDemolitionSurfacesOption,
+                      })
+                    }
+                  />
+                </div>
+              ) : null}
+            </>
+          ),
+        },
+        {
+          label: 'проверка работ',
+          title: 'Добавить предложенные работы?',
+          content: (
+            <p className={styles.applyHint}>
+              Проверьте список справа. Новые работы добавятся для выбранного помещения. Уже
+              добавленные одинаковые позиции обновятся; дополнительные строки сохранятся.
+            </p>
+          ),
+        },
+      ]}
+      preview={
+        <>
+          {' '}
           <p className={styles.hydroHint}>Будет применено: {previewLabel}</p>
-
-          <button
-            type="button"
-            className={styles.action}
-            disabled={!canApply}
-            onClick={handleApply}
-          >
-            Применить сценарий
-          </button>
-          {applyDisabledHint ? (
+          <ul>
+            {previewKeys.map((key) => (
+              <li key={key}>{mappingById.get(key)?.title ?? key}</li>
+            ))}
+          </ul>
+          <p className={styles.applyHint}>Гидроизоляция добавляется в разделе «Полы».</p>
+          {!batch.all && applyDisabledHint ? (
             <p className={styles.applyHint}>{applyDisabledHint}</p>
           ) : null}
-        </article>
-      </div>
-
-      {status ? (
-        <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
-          {status.message}
-        </p>
-      ) : null}
-    </section>
+        </>
+      }
+      canApply={batch.canApply}
+      disabledHint={
+        batch.all
+          ? batch.canApply
+            ? null
+            : 'Нет помещений с подходящими замерами.'
+          : applyDisabledHint
+      }
+      onApply={handleApply}
+      status={
+        status ? (
+          <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
+            {status.message}
+          </p>
+        ) : null
+      }
+    />
   )
 }

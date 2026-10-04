@@ -7,6 +7,7 @@ export type EstimateSelectOption = {
   label: string
   /** Полный текст для title / tooltip (если label укорочен). */
   title?: string
+  disabled?: boolean
 }
 
 type EstimateSelectProps = {
@@ -79,7 +80,9 @@ export function EstimateSelect({
 
   function resolveOpenHighlight(): number {
     const selectedIndex = options.findIndex((option) => option.value === value)
-    return selectedIndex >= 0 ? selectedIndex : 0
+    return selectedIndex >= 0 && !options[selectedIndex].disabled
+      ? selectedIndex
+      : options.findIndex((option) => !option.disabled)
   }
 
   function openMenu() {
@@ -101,6 +104,7 @@ export function EstimateSelect({
   }
 
   function selectValue(next: string) {
+    if (options.find((option) => option.value === next)?.disabled) return
     onChange(next)
     close()
   }
@@ -109,7 +113,11 @@ export function EstimateSelect({
     if (options.length === 0) return
     setHighlightIndex((prev) => {
       const start = prev < 0 ? (delta > 0 ? -1 : 0) : prev
-      return (start + delta + options.length) % options.length
+      for (let offset = 1; offset <= options.length; offset++) {
+        const index = (start + delta * offset + options.length * 2) % options.length
+        if (!options[index].disabled) return index
+      }
+      return -1
     })
   }
 
@@ -154,7 +162,14 @@ export function EstimateSelect({
       case 'End':
         if (open) {
           event.preventDefault()
-          setHighlightIndex(event.key === 'Home' ? 0 : options.length - 1)
+          const enabledIndices = options.flatMap((option, index) =>
+            option.disabled ? [] : [index],
+          )
+          setHighlightIndex(
+            event.key === 'Home'
+              ? (enabledIndices[0] ?? -1)
+              : (enabledIndices[enabledIndices.length - 1] ?? -1),
+          )
         }
         break
       default:
@@ -217,12 +232,15 @@ export function EstimateSelect({
                   id={`${listboxId}-option-${index}`}
                   role="option"
                   aria-selected={selectedOption}
+                  aria-disabled={option.disabled || undefined}
                   data-index={index}
                   data-selected={selectedOption ? 'true' : undefined}
                   data-highlighted={highlighted ? 'true' : undefined}
                   className={styles.option}
                   title={option.title ?? option.label}
-                  onMouseEnter={() => setHighlightIndex(index)}
+                  onMouseEnter={() => {
+                    if (!option.disabled) setHighlightIndex(index)
+                  }}
                   onMouseDown={(event) => {
                     event.preventDefault()
                     selectValue(option.value)

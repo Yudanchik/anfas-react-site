@@ -1,3 +1,7 @@
+import type { EstimateLine } from '@/entities/estimate'
+import { EstimateConfirmDialog } from '../ui/EstimateConfirmDialog'
+import type { TileMeasureSurface } from '../model/room-work-quantity'
+import { useRoomWorkQuantity } from '../model/use-room-work-quantity'
 import { useMemo, useState } from 'react'
 
 import {
@@ -20,6 +24,7 @@ const GENERAL_ZONE = '__general__'
 const CUSTOM_ZONE = '__custom__'
 
 type TileZoneWorkAddProps = {
+  lines?: readonly EstimateLine[]
   zones?: readonly EstimateZone[]
   onZonesChange?: (zones: EstimateZone[]) => void
   /** Без своей рамки/заголовка — внутри панели «Строки сметы». */
@@ -36,6 +41,7 @@ type TileZoneWorkAddProps = {
 }
 
 export function TileZoneWorkAdd({
+  lines = [],
   zones = [],
   onZonesChange,
   embedded = false,
@@ -49,9 +55,9 @@ export function TileZoneWorkAdd({
     [categoryId, mapping],
   )
   const [priceKey, setPriceKey] = useState(() => options[0]?.id ?? '')
-  const [zoneSelect, setZoneSelect] = useState(GENERAL_ZONE)
+  const [zoneSelect, setZoneSelect] = useState('')
   const [customZoneName, setCustomZoneName] = useState('')
-  const [quantity, setQuantity] = useState(0)
+  const [confirmDuplicate, setConfirmDuplicate] = useState(false)
   const [comment, setComment] = useState('')
   const { status, setSuccess, setError } = useEstimateStatusMessage({
     clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
@@ -77,8 +83,16 @@ export function TileZoneWorkAdd({
   const resolvedZoneSelect = useMemo(() => {
     if (zoneSelect === GENERAL_ZONE || zoneSelect === CUSTOM_ZONE) return zoneSelect
     if (zones.some((zone) => zone.id === zoneSelect)) return zoneSelect
-    return GENERAL_ZONE
+    return zones[0]?.id ?? GENERAL_ZONE
   }, [zones, zoneSelect])
+
+  const [tileSurface, setTileSurface] = useState<TileMeasureSurface | undefined>()
+  const { quantity, setQuantity, resetQuantity, useMeasure, suggestion } = useRoomWorkQuantity(
+    'tile',
+    zones.find((zone) => zone.id === resolvedZoneSelect),
+    selectedWork,
+    tileSurface,
+  )
 
   const categorySelectOptions = useMemo(
     () =>
@@ -109,6 +123,20 @@ export function TileZoneWorkAdd({
   }
 
   function handleSubmit() {
+    const alreadyExists = lines.some(
+      (line) =>
+        line.enabled &&
+        line.priceKey === effectivePriceKey &&
+        (resolvedZoneSelect === GENERAL_ZONE
+          ? !line.zoneId && !line.zoneName
+          : line.zoneId === resolvedZoneSelect),
+    )
+    if (quantity > 0 && alreadyExists && resolvedZoneSelect !== GENERAL_ZONE)
+      setConfirmDuplicate(true)
+    else handleConfirmedSubmit()
+  }
+
+  function handleConfirmedSubmit() {
     if (!effectivePriceKey || !selectedWork) {
       setError('Выберите работу из списка')
       return
@@ -165,7 +193,7 @@ export function TileZoneWorkAdd({
     setSuccess(
       `Работа добавлена в смету: ${selectedWork.title}, ${targetLabel}, объём: ${quantity} ${selectedWork.unit}`,
     )
-    setQuantity(0)
+    resetQuantity()
     setComment('')
   }
 
@@ -236,6 +264,29 @@ export function TileZoneWorkAdd({
           </label>
         ) : null}
 
+        <div className={styles.field}>
+          <span>Для какой поверхности подставить площадь?</span>
+          <EstimateSelect
+            value={tileSurface ?? ''}
+            ariaLabel="Поверхность для объёма плитки"
+            options={[
+              { value: '', label: 'Выберите поверхность' },
+              { value: 'floor', label: 'Пол' },
+              { value: 'walls', label: 'Стены' },
+              { value: 'backsplash', label: 'Фартук' },
+              { value: 'both', label: 'Пол и стены' },
+            ]}
+            onChange={(value) => setTileSurface(value ? (value as TileMeasureSurface) : undefined)}
+          />
+        </div>
+        <p className={styles.embeddedHint}>
+          {suggestion.reason}{' '}
+          {suggestion.quantity > 0 ? (
+            <button type="button" onClick={useMeasure}>
+              Подставить замер: {suggestion.quantity} {quantityUnit}
+            </button>
+          ) : null}
+        </p>
         <label className={styles.field} htmlFor="tile-zone-work-quantity">
           <span className={styles.label}>
             Площадь / метраж
@@ -271,6 +322,18 @@ export function TileZoneWorkAdd({
           {status.message}
         </p>
       ) : null}
+      <EstimateConfirmDialog
+        open={confirmDuplicate}
+        title="Добавить ещё одну строку этой работы?"
+        description="Такая работа уже включена в выбранном помещении. Повторное добавление может увеличить итог дважды. Для исправления количества используйте существующую строку; отдельную строку добавляйте для другого участка."
+        confirmLabel="Добавить отдельную строку"
+        cancelLabel="Отмена"
+        onCancel={() => setConfirmDuplicate(false)}
+        onConfirm={() => {
+          setConfirmDuplicate(false)
+          handleConfirmedSubmit()
+        }}
+      />
     </section>
   )
 }

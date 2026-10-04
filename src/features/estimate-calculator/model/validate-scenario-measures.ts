@@ -40,14 +40,6 @@ const FLOOR_GENERAL = 'Заполните замеры раздела перед
 const FLOOR_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
 const WALL_GENERAL = 'Заполните замеры раздела перед применением сценария'
 const WALL_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
-const CEILING_GENERAL = 'Заполните замеры раздела перед применением сценария'
-const CEILING_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
-const TILE_GENERAL = 'Заполните замеры раздела перед применением сценария'
-const TILE_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
-const ELECTRIC_GENERAL = 'Заполните замеры раздела перед применением сценария'
-const ELECTRIC_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
-const PLUMBING_GENERAL = 'Заполните замеры раздела перед применением сценария'
-const PLUMBING_ZONE = 'В выбранной зоне нет нужных замеров для этого сценария'
 
 export function getScenarioMeasuresDisabledHint(forZone: boolean): string {
   return forZone ? SCENARIO_MEASURES_HINT_ZONE : SCENARIO_MEASURES_HINT_GENERAL
@@ -126,6 +118,15 @@ export function validateWallScenarioMeasures(params: {
   const putty = zone ? zone.puttyArea : input.puttyArea
   const finish = zone ? zone.finishArea : input.finishArea
   const slopes = zone ? zone.slopesLength : input.slopesLengthM
+  if (application.substrate === 'drywall' && application.state !== 'finish-only' &&
+    application.state !== 'demolition-only') {
+    if (!positive(total)) return { ok: false, message: 'Укажите площадь стен ГКЛ, м².' }
+    const seams = zone ? zone.gklWallSeamsLength : input.gklSeamsLengthM
+    if ((application.gklConstruction !== 'existing' || !application.gklSeamsReady) &&
+      !positive(seams ?? 0)) return {
+      ok: false, message: 'Укажите длину стыков листов ГКЛ на стенах, м. пог., либо подтвердите, что швы уже готовы.',
+    }
+  }
   if (application.slopesWork && application.slopesWork !== 'none' && !positive(slopes))
     return fail()
 
@@ -151,10 +152,12 @@ export function validateCeilingScenarioMeasures(params: {
   zone?: EstimateZone
 }): ScenarioMeasureCheck {
   const { application, input, zone } = params
-  const forZone = Boolean(zone)
   const fail = (): ScenarioMeasureCheck => ({
     ok: false,
-    message: forZone ? CEILING_ZONE : CEILING_GENERAL,
+    message:
+      application.state === 'demolition-only'
+        ? 'Укажите «Демонтаж потолков», м².'
+        : 'Укажите «Площадь потолков», м², или отдельную площадь выбранной работы.',
   })
 
   const plan = resolveCeilingScenarioPlan(application)
@@ -165,6 +168,15 @@ export function validateCeilingScenarioMeasures(params: {
   const plaster = zone ? zone.plasterCeilingArea : input.plasterArea
   const putty = zone ? zone.puttyCeilingArea : input.puttyArea
   const finish = zone ? zone.finishCeilingArea : input.finishArea
+  if (application.substrate === 'drywall' && application.state !== 'finish-only' &&
+    application.state !== 'demolition-only') {
+    if (!positive(total)) return { ok: false, message: 'Укажите площадь потолка ГКЛ, м².' }
+    const seams = zone ? zone.gklCeilingSeamsLength : input.gklSeamsLengthM
+    if ((application.gklConstruction !== 'existing' || !application.gklSeamsReady) &&
+      !positive(seams ?? 0)) return {
+      ok: false, message: 'Укажите длину стыков листов ГКЛ на потолке, м. пог., либо подтвердите, что швы уже готовы.',
+    }
+  }
 
   switch (application.state) {
     case 'demolition-only':
@@ -188,7 +200,6 @@ export function validateTileScenarioMeasures(params: {
   zone?: EstimateZone
 }): ScenarioMeasureCheck {
   const { application, input, zone } = params
-  const forZone = Boolean(zone)
 
   const zoneType = zone ? zone.zoneType : null
   if (!isTileScenarioAllowedForZone(application.state, zoneType)) {
@@ -200,7 +211,22 @@ export function validateTileScenarioMeasures(params: {
 
   const fail = (): ScenarioMeasureCheck => ({
     ok: false,
-    message: forZone ? TILE_ZONE : TILE_GENERAL,
+    message:
+      application.state === 'floor-only'
+        ? 'Укажите «Плитка пола», м².'
+        : application.state === 'walls-only'
+          ? 'Укажите «Плитка стен», м².'
+          : application.state === 'kitchen-backsplash'
+            ? 'Укажите «Фартук», м².'
+            : application.state === 'grout-repair-only' && application.grout === 'none'
+              ? 'Укажите «Замена плитки», шт.'
+              : application.state === 'demolition-only' &&
+                  application.demolitionSurfaces === 'floor'
+                ? 'Укажите площадь демонтируемой плитки в «Плитка пола», м².'
+                : application.state === 'demolition-only' &&
+                    application.demolitionSurfaces === 'walls'
+                  ? 'Укажите площадь демонтируемой плитки в «Плитка стен», м².'
+                  : 'Укажите площадь нужной поверхности: «Плитка пола», «Плитка стен» или «Фартук», м²; для ремонта — количество плиток.',
   })
 
   const floor = zone ? zone.tileFloorArea : input.floorTileArea
@@ -245,7 +271,6 @@ export function validateElectricScenarioMeasures(params: {
   zone?: EstimateZone
 }): ScenarioMeasureCheck {
   const { application, input, zone } = params
-  const forZone = Boolean(zone)
 
   const zoneType = zone ? zone.zoneType : null
   if (!isElectricScenarioAllowedForZone(application.state, zoneType)) {
@@ -257,8 +282,33 @@ export function validateElectricScenarioMeasures(params: {
 
   const fail = (): ScenarioMeasureCheck => ({
     ok: false,
-    message: forZone ? ELECTRIC_ZONE : ELECTRIC_GENERAL,
+    message:
+      application.state === 'demolition-only'
+        ? 'Заполните «Демонтаж старой электрики»: старые розетки/выключатели, светильники (шт.) или кабель (м).'
+        : application.state === 'outlets-switches'
+          ? 'Укажите новые «Розетки» или «Выключатели», шт.; для установочных мест — «Подрозетники».'
+          : application.state === 'lighting-only'
+            ? 'Укажите «Световые точки», шт., или «Кабель», м.'
+            : application.state === 'panel-only'
+              ? 'Укажите «Модули щита» по схеме электрощита.'
+              : application.state === 'low-current'
+                ? 'Укажите «Слаботочка», шт., или «Кабель», м.'
+                : 'Заполните объёмы выбранной электрики: новые розетки/выключатели/световые точки (шт.), кабель/штробы (м), либо модули щита по составу работ.',
   })
+
+  const measuredInput = zone ? electricInputFromZone(zone) : input
+  if (
+    application.cableRoute === 'mixed' &&
+    !(
+      (measuredInput.electricCableOpenLength ?? 0) > 0 ||
+      (measuredInput.electricCableChaseLength ?? 0) > 0
+    )
+  )
+    return {
+      ok: false,
+      message:
+        'Заполните «Разделить кабель по способам прокладки»: кабель открыто и/или в штробе, м. Общий метраж не определяет доли маршрута.',
+    }
 
   const plan = resolveElectricScenarioPlan(application)
   if (plan.issues.length) return { ok: false, message: plan.issues.join(' ') }
@@ -277,7 +327,6 @@ export function validatePlumbingScenarioMeasures(params: {
   zone?: EstimateZone
 }): ScenarioMeasureCheck {
   const { application, input, zone } = params
-  const forZone = Boolean(zone)
 
   const zoneType = zone ? zone.zoneType : null
   if (!isPlumbingScenarioAllowedForZone(application.state, zoneType)) {
@@ -289,7 +338,20 @@ export function validatePlumbingScenarioMeasures(params: {
 
   const fail = (): ScenarioMeasureCheck => ({
     ok: false,
-    message: forZone ? PLUMBING_ZONE : PLUMBING_GENERAL,
+    message:
+      application.state === 'manifold'
+        ? 'Укажите «Коллекторы», шт.'
+        : application.state === 'water-supply-only'
+          ? 'Укажите «Водорозетки», шт., или длину водопроводных труб, м.'
+          : application.state === 'drainage-only'
+            ? 'Укажите «Выводы канализации», шт., или длину канализационных труб, м.'
+            : application.state === 'toilet-zone'
+              ? 'Укажите «Унитазы», шт., и тип унитаза; новые рамы — в «Инсталляции».'
+              : application.state === 'bath-zone'
+                ? 'Укажите «Ванны» или «Души», шт., и их тип.'
+                : application.state === 'fixtures-only'
+                  ? 'Укажите приборы, которые нужно подключить: унитазы, раковины, ванны, души, стиральные/посудомоечные машины, шт.'
+                  : 'Укажите относящиеся к этому сценарию приборы (шт.), выводы воды/канализации (шт.) или длины труб (м).',
   })
 
   const plan = resolvePlumbingScenarioPlan(application, zone ? plumbingInputFromZone(zone) : input)

@@ -8,11 +8,11 @@ import {
 } from '@/entities/estimate'
 
 import type { TileScenarioDraftState } from '../model/estimate-calculator-persistence'
+import { EstimateRoomQuickFill } from '../ui/EstimateRoomQuickFill'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
 import { EstimateManualLine } from '../ui/EstimateManualLine'
 import { EstimateSectionLines } from '../ui/EstimateSectionLines'
 import { EstimateZonesAndMeasures } from '../ui/EstimateZonesAndMeasures'
-import { TileEstimateHelpers } from './TileEstimateHelpers'
 import { TileEstimateScenarios } from './TileEstimateScenarios'
 import { TileZoneWorkAdd } from './TileZoneWorkAdd'
 import type { TileEstimateEditor } from './use-tile-estimate-editor'
@@ -54,6 +54,7 @@ export function TileEstimatePanel({
     <div className={styles.workspace}>
       <div className={styles.zone}>
         <EstimateZonesAndMeasures
+          lines={editor.lines}
           section="tile"
           zones={zones}
           onZonesChange={onZonesChange}
@@ -65,6 +66,8 @@ export function TileEstimatePanel({
 
       <div className={styles.zoneAlt}>
         <TileEstimateScenarios
+          lines={editor.lines}
+          onZonesChange={onZonesChange}
           draft={scenarioDraft}
           onDraftChange={onScenarioDraftChange}
           zones={zones}
@@ -74,28 +77,13 @@ export function TileEstimatePanel({
         />
       </div>
 
-      <div className={styles.zone}>
-        <TileEstimateHelpers
-          floorTileArea={editor.input.floorTileArea}
-          wallTileArea={editor.input.wallTileArea}
-          backsplashArea={editor.input.backsplashArea}
-          cuttingLength={editor.input.cuttingLength}
-          holesCount={editor.input.holesCount}
-          onApplyCladArea={editor.applyCladArea}
-          onApplyFloorArea={editor.applyFloorArea}
-          onApplyWallArea={editor.applyWallArea}
-          onApplyCuttingLength={editor.applyCuttingLength}
-          onApplyHolesCount={editor.applyHolesCount}
-          onReset={handleReset}
-        />
-      </div>
-
       <div className={styles.zoneAlt}>
         <EstimateSectionLines
           idPrefix="tile-estimate"
           title="Строки сметы — плитка"
           pricePanel={
             <TileZoneWorkAdd
+              lines={editor.lines}
               zones={zones}
               onZonesChange={onZonesChange}
               embedded
@@ -113,6 +101,14 @@ export function TileEstimatePanel({
             />
           }
         >
+          <EstimateRoomQuickFill
+            section="tile"
+            zones={zones}
+            lines={editor.lines}
+            onFill={editor.fillRoomWorkQuantities}
+            onCatalogueFill={editor.fillCatalogueQuantities}
+            onReset={handleReset}
+          />
           <EstimateGroupedTable
             idPrefix="tile-estimate"
             embedded

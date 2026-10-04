@@ -6,7 +6,7 @@ export const WALL_SECTION_TITLE = 'Стены (черновые / подгото
 /**
  * Явный whitelist работ по стенам для внутреннего калькулятора.
  * Основной источник: PDF `anfas-price-list.pdf`. `prices.data.ts` — сверка при `source` both.
- * Материалы, декоративные покрытия, плитка, ГКл-перегородки и т.п. — вне scope.
+ * Материалы, декоративные покрытия, плитка и сложные ГКЛ-конструкции — вне scope.
  * Покраска/обои — только labour (`materialsExcluded` в результате сметы).
  */
 export const WALL_PRICE_MAPPING: readonly WallPriceMappingItem[] = [
@@ -180,6 +180,28 @@ export const WALL_PRICE_MAPPING: readonly WallPriceMappingItem[] = [
     unitPrice: 120,
     source: 'pdf',
     kind: 'primer',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'puttyArea',
+  },
+  {
+    id: 'primer-before-putty',
+    title: 'Грунтование поверхности в 1 слой перед сплошным шпаклеванием',
+    unit: 'м²',
+    unitPrice: 120,
+    source: 'pdf',
+    kind: 'primer',
+    note: 'Тариф позиции «Грунтование поверхностей в 1 слой»; отдельный этап после штукатурки или по ГКЛ. Состав цены шпаклевания требует подтверждения заказчика.',
+    defaultEnabled: false,
+    defaultQuantityFrom: 'puttyArea',
+  },
+  {
+    id: 'primer-between-putty-layers',
+    title: 'Грунтование в 1 слой между базовой и финишной шпаклёвкой',
+    unit: 'м²',
+    unitPrice: 120,
+    source: 'pdf',
+    kind: 'primer',
+    note: 'Тариф позиции «Грунтование поверхностей в 1 слой»; добавляется только по отдельному ответу для выбранной системы материалов.',
     defaultEnabled: false,
     defaultQuantityFrom: 'puttyArea',
   },
@@ -392,6 +414,16 @@ export const WALL_PRICE_MAPPING: readonly WallPriceMappingItem[] = [
     defaultEnabled: false,
     defaultQuantityFrom: 'plasterArea',
   },
+
+  // —— Типовая облицовка ГКЛ и обработка швов (PDF, стр. 1–2) ——
+  { id: 'gkl-wall-frame', title: 'Монтаж каркаса облицовки стен на прямых подвесах', unit: 'м²', unitPrice: 1000, source: 'pdf', kind: 'other', defaultEnabled: false, defaultQuantityFrom: 'totalWallArea' },
+  { id: 'gkl-wall-sheet-1', title: 'Монтаж 1 слоя влагостойкого ГКЛ на каркас, включая расшивку незаводских швов (стена)', unit: 'м²', unitPrice: 450, source: 'pdf', kind: 'other', defaultEnabled: false, defaultQuantityFrom: 'totalWallArea' },
+  { id: 'gkl-wall-sheet-2', title: 'Монтаж 2-го слоя влагостойкого ГКЛ на каркас (стена)', unit: 'м²', unitPrice: 450, source: 'pdf', kind: 'other', defaultEnabled: false, defaultQuantityFrom: 'totalWallArea' },
+  { id: 'gkl-first-layer-joints', title: 'Заделка швов первого слоя ГКЛ перед монтажом второго', unit: 'м²', unitPrice: 400, source: 'pdf', kind: 'putty', defaultEnabled: false, defaultQuantityFrom: 'totalWallArea' },
+  { id: 'gkl-joint-tape', title: 'Проклейка швов ГКЛ армирующей лентой', unit: 'м. пог.', unitPrice: 300, source: 'pdf', kind: 'putty', defaultEnabled: false, defaultQuantityFrom: 'gklSeamsLength' },
+  { id: 'gkl-joint-fill', title: 'Заделка швов ГКЛ шпаклёвкой', unit: 'м. пог.', unitPrice: 350, source: 'pdf', kind: 'putty', defaultEnabled: false, defaultQuantityFrom: 'gklSeamsLength' },
+  { id: 'gkl-screws', title: 'Заделка саморезов на ГКЛ', unit: 'м²', unitPrice: 200, source: 'pdf', kind: 'putty', defaultEnabled: false, defaultQuantityFrom: 'totalWallArea' },
+  { id: 'gkl-paint-prep', title: 'Подготовка ГКЛ под малярные работы без сплошного шпаклевания', unit: 'м²', unitPrice: 350, source: 'pdf', kind: 'putty', defaultEnabled: false, defaultQuantityFrom: 'totalWallArea' },
 
   // —— Шпаклёвка / шлифовка ——
   {

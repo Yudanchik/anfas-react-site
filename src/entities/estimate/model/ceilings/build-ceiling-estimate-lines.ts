@@ -66,6 +66,8 @@ export function resolveCeilingDefaultQuantity(
       return normalizeNonNegative(input.totalCeilingArea)
     case 'demolitionArea':
       return normalizeNonNegative(input.demolitionArea)
+    case 'gklSeamsLength':
+      return normalizeNonNegative(input.gklSeamsLengthM ?? 0)
     case 'plasterArea':
       return resolveCeilingPlasterQuantity(input)
     case 'puttyArea':

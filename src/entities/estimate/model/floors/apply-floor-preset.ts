@@ -125,19 +125,22 @@ export function resolveFloorRoomPlan(
         area,
       )
   }
-  if (application.waterproofing !== 'none') {
-    if (input.wetZonesArea <= 0) issues.push('Укажите площадь гидроизоляции.')
-    else
-      add(
-        [
-          application.waterproofing === 'acrylic-1'
-            ? 'waterproofing-acrylic-1'
-            : 'waterproofing-acrylic-2',
-        ],
-        input.wetZonesArea,
-      )
+  if (application.waterproofing !== 'none' && input.wetZonesArea > 0) {
+    add(
+      [
+        application.waterproofing === 'acrylic-1'
+          ? 'waterproofing-acrylic-1'
+          : 'waterproofing-acrylic-2',
+      ],
+      input.wetZonesArea,
+    )
   }
-  if (!works.length && !issues.length) issues.push('Выберите хотя бы один вид работ.')
+  if (!works.length && !issues.length)
+    issues.push(
+      application.waterproofing !== 'none' && input.wetZonesArea <= 0
+        ? 'В помещении нет площади гидроизоляции; выберите другие работы или укажите мокрую площадь.'
+        : 'Выберите хотя бы один вид работ.',
+    )
   return { works, issues }
 }
 

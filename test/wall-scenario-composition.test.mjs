@@ -132,7 +132,6 @@ test('неподтверждённые ответы сохраняют част�
     { ...base, baseCondition: 'loose' },
     { ...base, baseCondition: 'sound', moisture: 'wet' },
     { ...base, baseCondition: 'sound', quality: 'q2' },
-    { ...base, substrate: 'drywall', baseCondition: 'sound' },
   ]) {
     const plan = resolveWallScenarioPlan(application)
     assert.ok(plan.keys.length > 0)
@@ -143,6 +142,8 @@ test('неподтверждённые ответы сохраняют част�
   assert.equal(wet.keys.some((key) => key.startsWith('paint-')), false)
   const drywall = resolveWallScenarioPlan({ ...base, substrate: 'drywall', baseCondition: 'sound' })
   assert.equal(drywall.keys.some((key) => key.startsWith('plaster-')), false)
+  assert.ok(drywall.keys.includes('gkl-joint-tape'))
+  assert.equal(drywall.issues.length, 0)
 })
 
 test('все стартовые маршруты дают осмысленный предпросмотр, а тип отделки меняет финиш', () => {
@@ -194,4 +195,58 @@ test('замена старого сценария без признака пр�
     { state: 'finish-only', finishTarget: 'paint' }, 'replace').lines
   assert.equal(result.filter((line) => line.zoneId === zone.id && line.scenarioManaged).length, 1)
   assert.equal(result.some((line) => line.id === extra.id && line.enabled), true)
+})
+
+
+test('грунтование стен учитывает этапы, не назначая промежуточный проход всем слоям шпаклёвки', () => {
+  const full = resolveWallScenarioPlan({
+    state: 'from-scratch', finishTarget: 'paint', substrate: 'absorbent',
+    baseCondition: 'sound', leveling: 'full', moisture: 'normal', quality: 'q3',
+  }).keys
+  assert.ok(full.indexOf('primer-gypsum-plaster') < full.indexOf('plaster-gypsum-main'))
+  assert.ok(full.indexOf('plaster-gypsum-main') < full.indexOf('primer-before-putty'))
+  assert.ok(full.indexOf('primer-before-putty') < full.indexOf('putty-base-2'))
+  assert.ok(full.indexOf('putty-sanding') < full.indexOf('primer-one-layer'))
+  assert.ok(full.indexOf('primer-one-layer') < full.indexOf('paint-2'))
+  assert.equal(full.filter((key) => key === 'primer-before-putty').length, 1)
+
+  const ready = resolveWallScenarioPlan({
+    state: 'prefinish', finishTarget: 'paint', substrate: 'plastered',
+    baseCondition: 'sound', leveling: 'none', moisture: 'normal', quality: 'q3',
+  }).keys
+  assert.ok(ready.includes('primer-deep-penetration'))
+  assert.equal(ready.includes('primer-before-putty'), false)
+  assert.ok(ready.includes('primer-one-layer'))
+})
+
+
+test('после штукатурки грунт под шпаклёвку берёт площадь шпаклёвки, а грунт под штукатурку — площадь штукатурки', () => {
+  const zone = { id: 'primer-zone', name: 'Комната', wallArea: 24,
+    demolitionWallArea: 0, plasterArea: 22, puttyArea: 19, finishArea: 19,
+    slopesLength: 0, cornersLength: 0 }
+  const application = { state: 'from-scratch', finishTarget: 'paint',
+    substrate: 'absorbent', baseCondition: 'sound', leveling: 'full',
+    moisture: 'normal', quality: 'q3' }
+  const lines = applyWallScenarioToZone([], zone, application).lines
+  assert.equal(lines.find((line) => line.priceKey === 'primer-gypsum-plaster')?.quantity, 22)
+  assert.equal(lines.find((line) => line.priceKey === 'primer-before-putty')?.quantity, 19)
+  assert.equal(lines.find((line) => line.priceKey === 'primer-one-layer')?.quantity, 19)
+})
+
+
+test('межслойный грунт добавляется только по ответу и берёт площадь шпаклёвки', () => {
+  const base = { state: 'from-scratch', finishTarget: 'paint', substrate: 'absorbent',
+    baseCondition: 'sound', leveling: 'full', moisture: 'normal', quality: 'q3' }
+  const normal = resolveWallScenarioPlan(base).keys
+  assert.equal(normal.includes('primer-between-putty-layers'), false)
+  const selected = resolveWallScenarioPlan({ ...base, primerBetweenPuttyLayers: true }).keys
+  assert.ok(selected.indexOf('putty-base-2') < selected.indexOf('primer-between-putty-layers'))
+  assert.ok(selected.indexOf('primer-between-putty-layers') < selected.indexOf('putty-finish-1'))
+  const zone = { id: 'intercoat-zone', name: 'Комната', wallArea: 24, demolitionWallArea: 0,
+    plasterArea: 22, puttyArea: 19, finishArea: 19, slopesLength: 0, cornersLength: 0 }
+  const lines = applyWallScenarioToZone([], zone, { ...base, primerBetweenPuttyLayers: true }).lines
+  assert.equal(lines.find((line) => line.priceKey === 'primer-between-putty-layers')?.quantity, 19)
+  const q2 = resolveWallScenarioPlan({ ...base, quality: 'q2', finishTarget: 'none',
+    primerBetweenPuttyLayers: true }).keys
+  assert.equal(q2.includes('primer-between-putty-layers'), false)
 })

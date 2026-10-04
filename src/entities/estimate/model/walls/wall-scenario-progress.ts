@@ -7,7 +7,7 @@ export type WallScenarioProgress = 'pending' | 'applied' | 'review' | 'unknown'
 /** Только объёмы, от которых зависит количество строк сценария стен. */
 export function wallScenarioMeasureSignature(zone: EstimateZone): string {
   return [zone.wallArea, zone.demolitionWallArea, zone.plasterArea, zone.puttyArea,
-    zone.finishArea, zone.slopesLength].join('|')
+    zone.finishArea, zone.slopesLength, ...(zone.gklWallSeamsLength ? [zone.gklWallSeamsLength] : [])].join('|')
 }
 
 export function getWallScenarioProgress(

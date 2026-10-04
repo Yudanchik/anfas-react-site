@@ -1,12 +1,9 @@
 import { useMemo, useState } from 'react'
 
 import {
-  ESTIMATE_GENERAL_WORKS_TITLE,
   ELECTRIC_PRICE_MAPPING,
   electricInputFromZone,
-  formatElectricScenarioFeedback,
   formatElectricScenarioLabel,
-  formatElectricScenarioZoneFeedback,
   formatElectricScenarioZoneMismatchMessage,
   isElectricScenarioAllowedForZone,
   resolveElectricScenarioOptionsForZone,
@@ -18,24 +15,30 @@ import {
   type ElectricScenarioApplication,
   type ElectricStateOption,
   type EstimateZone,
+  type EstimateLine,
 } from '@/entities/estimate'
 
 import type { ElectricScenarioDraftState } from '../model/estimate-calculator-persistence'
 import { useEstimateStatusMessage } from '../model/use-estimate-status-message'
 import {
   canApplyElectricScenario,
-  getScenarioMeasuresDisabledHint,
   validateElectricScenarioMeasures,
 } from '../model/validate-scenario-measures'
+import { ALL_SCENARIO_ROOMS } from '../model/room-scenario-status'
+import { useRoomScenarioBatch } from '../model/use-room-scenario-batch'
+import { EstimateScenarioRooms } from '../ui/EstimateScenarioRooms'
+import { EstimateScenarioWizard } from '../ui/EstimateScenarioWizard'
 import { EstimateSelect } from '../ui/EstimateSelect'
 import { formatElectricScenarioTargetLabel } from './format-electric-scenario-target-label'
-import styles from './ElectricEstimateScenarios.module.scss'
+import styles from '../ui/EstimateScenarioWizard.module.scss'
 
 export { formatElectricScenarioTargetLabel } from './format-electric-scenario-target-label'
 
 type ElectricEstimateScenariosProps = {
   draft: ElectricScenarioDraftState
   onDraftChange: (patch: Partial<ElectricScenarioDraftState>) => void
+  lines?: readonly EstimateLine[]
+  onZonesChange?: (zones: EstimateZone[]) => void
   zones?: readonly EstimateZone[]
   generalInput: ElectricEstimateInput
   feedbackEpoch?: number
@@ -50,8 +53,6 @@ type ElectricEstimateScenariosProps = {
   }
 }
 
-const GENERAL_TARGET = 'general'
-
 function resolveCompatibleState(
   state: ElectricStateOption,
   zoneType: EstimateZone['zoneType'] | null,
@@ -65,19 +66,21 @@ export function ElectricEstimateScenarios({
   draft,
   onDraftChange,
   zones = [],
+  lines = [],
+  onZonesChange,
   generalInput,
   feedbackEpoch,
   onApplyScenario,
 }: ElectricEstimateScenariosProps) {
   const { state, wallMaterial, cableRoute } = draft
-  const [targetId, setTargetId] = useState(GENERAL_TARGET)
+  const [targetId, setTargetId] = useState('')
   const { status, setSuccess, setError } = useEstimateStatusMessage({
-    clearTokens: feedbackEpoch === undefined ? [] : [feedbackEpoch],
+    clearTokens: [targetId, feedbackEpoch ?? 0, zones.length],
   })
 
   const targetOptions = useMemo(
     () => [
-      { value: GENERAL_TARGET, label: ESTIMATE_GENERAL_WORKS_TITLE },
+      { value: ALL_SCENARIO_ROOMS, label: `Все помещения · ${zones.length}` },
       ...zones.map((zone) => ({
         value: zone.id,
         label: formatElectricScenarioTargetLabel(zone),
@@ -87,9 +90,13 @@ export function ElectricEstimateScenarios({
   )
   const resolvedTargetId = targetOptions.some((option) => option.value === targetId)
     ? targetId
-    : GENERAL_TARGET
-  const selectedZone = zones.find((zone) => zone.id === resolvedTargetId)
-  const filterZoneType = selectedZone ? selectedZone.zoneType : null
+    : (zones[0]?.id ?? '')
+  const selectedZone =
+    resolvedTargetId === ALL_SCENARIO_ROOMS
+      ? zones[0]
+      : zones.find((zone) => zone.id === resolvedTargetId)
+  const filterZoneType =
+    resolvedTargetId === ALL_SCENARIO_ROOMS ? null : selectedZone ? selectedZone.zoneType : null
   const { primary } = resolveElectricScenarioOptionsForZone(filterZoneType, false)
   const stateOptions = primary.map((option) => ({ value: option.id, label: option.label }))
   const compatibleState = resolveCompatibleState(state, filterZoneType)
@@ -98,6 +105,7 @@ export function ElectricEstimateScenarios({
     state: compatibleState,
     wallMaterial,
     cableRoute,
+    demolitionBeforeWork: state !== 'demolition-only' && draft.demolitionBeforeWork,
   }
 
   const originalKeys = resolveElectricScenarioKeys({ state: compatibleState })
@@ -118,12 +126,19 @@ export function ElectricEstimateScenarios({
         key,
         item?.defaultQuantityFrom ?? 'manual',
         previewInput,
+        application,
       ),
     }
   })
 
   const zoneFitOk = isElectricScenarioAllowedForZone(application.state, filterZoneType)
+  const measureCheck = validateElectricScenarioMeasures({
+    application,
+    input: generalInput,
+    zone: selectedZone,
+  })
   const canApply =
+    Boolean(selectedZone) &&
     zoneFitOk &&
     plan.issues.length === 0 &&
     canApplyElectricScenario({
@@ -137,7 +152,9 @@ export function ElectricEstimateScenarios({
       ? plan.issues.join(' ')
       : canApply
         ? null
-        : getScenarioMeasuresDisabledHint(Boolean(selectedZone))
+        : measureCheck.ok
+          ? null
+          : measureCheck.message
 
   const previewLabel = formatElectricScenarioLabel(application)
 
@@ -148,149 +165,241 @@ export function ElectricEstimateScenarios({
     onDraftChange({ state: next })
   }
 
+  const batch = useRoomScenarioBatch({
+    section: 'electrics',
+    zones,
+    lines,
+    targetId: resolvedTargetId,
+    onZonesChange,
+    setSuccess,
+    setError,
+    check: (zone) => validateElectricScenarioMeasures({ application, input: generalInput, zone }),
+    apply: (zone) => onApplyScenario(application, { zone }),
+  })
   function handleApply() {
-    const check = validateElectricScenarioMeasures({
-      application,
-      input: generalInput,
-      zone: selectedZone,
-    })
-    if (!check.ok) {
-      setError(check.message)
-      return
-    }
-
-    const result = onApplyScenario(application, selectedZone ? { zone: selectedZone } : undefined)
-    if (result.error) {
-      setError(result.error)
-      return
-    }
-    setSuccess(
-      result.zoneName
-        ? formatElectricScenarioZoneFeedback(result.label, result.zoneName, result.addedCount)
-        : formatElectricScenarioFeedback(result.label, result.addedCount),
-    )
+    return batch.apply()
   }
 
   return (
-    <section className={styles.wrap} aria-labelledby="electric-estimate-scenarios-title">
-      <div className={styles.head}>
-        <h2 className={styles.title} id="electric-estimate-scenarios-title">
-          Сценарий электрики
-        </h2>
-        <p className={styles.lead}>
-          Компактный черновик типовых работ. Редкие позиции — через «Добавить работу из прайса».
-          Материалы не считаются. После применения смету можно вручную уточнить.
-        </p>
-      </div>
-
-      <div className={styles.targetRow}>
-        <span className={styles.targetLabel}>Применить к</span>
-        <EstimateSelect
-          value={resolvedTargetId}
-          options={targetOptions}
-          ariaLabel="Применить сценарий электрики к"
-          onChange={(next) => {
-            setTargetId(next)
-            const zone = zones.find((entry) => entry.id === next)
-            syncStateForZoneType(zone ? zone.zoneType : null)
-          }}
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <article className={`${styles.card} ${styles.cardAccent}`}>
-          <div className={styles.cardTop}>
-            <h3 className={styles.cardTitle}>Параметры сценария</h3>
-            <span className={styles.badge}>Черновик</span>
-          </div>
-
-          <div className={styles.field}>
-            <span>Сценарий</span>
-            <EstimateSelect
-              value={compatibleState}
-              options={stateOptions}
-              ariaLabel="Сценарий электрики"
-              onChange={(nextValue) => {
-                const next = nextValue as ElectricStateOption
-                if (!isElectricScenarioAllowedForZone(next, filterZoneType)) {
-                  setError(formatElectricScenarioZoneMismatchMessage(next))
-                  return
-                }
-                onDraftChange({ state: next })
-              }}
-            />
-          </div>
-
-          {needsWall ? (
-            <div className={styles.field}>
-              <span>Основание для отверстий и штроб</span>
-              <EstimateSelect
-                value={wallMaterial}
-                ariaLabel="Материал стены для электрики"
-                options={[
-                  { value: 'unknown', label: 'Пока неизвестно' },
-                  { value: 'concrete', label: 'Бетон' },
-                  { value: 'brick', label: 'Кирпич или блок' },
-                  { value: 'drywall', label: 'Гипсокартон' },
-                  { value: 'ready', label: 'Отверстия уже готовы' },
-                ]}
-                onChange={(next) =>
-                  onDraftChange({
-                    wallMaterial: next as ElectricScenarioDraftState['wallMaterial'],
-                  })
-                }
-              />
-            </div>
-          ) : null}
-          {needsRoute ? (
-            <div className={styles.field}>
-              <span>Как прокладываем новый кабель?</span>
-              <EstimateSelect
-                value={cableRoute}
-                ariaLabel="Способ прокладки кабеля"
-                options={[
-                  { value: 'unknown', label: 'Пока неизвестно' },
-                  { value: 'chase', label: 'В новой штробе' },
-                  { value: 'open', label: 'Открыто на крепёж' },
-                  { value: 'existing', label: 'Кабель уже проложен' },
-                ]}
-                onChange={(next) =>
-                  onDraftChange({ cableRoute: next as ElectricScenarioDraftState['cableRoute'] })
-                }
-              />
-            </div>
-          ) : null}
-
-          <p className={styles.hydroHint}>{previewLabel}. Работы с заполненным объёмом:</p>
-          {preview.length ? (
-            <ul className={styles.preview}>
-              {preview.map((item) => (
-                <li key={item.key}>
-                  {item.title} — {item.quantity.toLocaleString('ru-RU')} {item.unit}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={styles.applyHint}>Для этого сценария ещё нет подходящих замеров.</p>
-          )}
-
-          <button
-            type="button"
-            className={styles.action}
-            disabled={!canApply}
-            onClick={handleApply}
-          >
-            Применить сценарий
-          </button>
-          {applyDisabledHint ? <p className={styles.applyHint}>{applyDisabledHint}</p> : null}
-        </article>
-      </div>
-
-      {status ? (
-        <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
-          {status.message}
-        </p>
-      ) : null}
-    </section>
+    <EstimateScenarioWizard
+      key={`${resolvedTargetId}:${feedbackEpoch ?? 0}`}
+      roomOverview={<EstimateScenarioRooms batch={batch} onSelect={setTargetId} />}
+      applyLabel={batch.applyLabel}
+      allRooms={batch.all}
+      title="Сценарий электрики"
+      context={
+        batch.all ? (
+          `Один набор ответов для всех ${zones.length} помещений. Замеры берутся отдельно из каждого.`
+        ) : selectedZone ? (
+          <>
+            Помещение: <strong>{selectedZone.name}</strong>
+          </>
+        ) : (
+          'Сначала добавьте помещение в блоке замеров.'
+        )
+      }
+      steps={[
+        {
+          label: 'помещение и исходные работы',
+          title: 'Что будем делать и где?',
+          blockedReason: selectedZone ? undefined : 'Сначала добавьте помещение.',
+          content: (
+            <>
+              {selectedZone ? (
+                <div className={styles.targetRow}>
+                  <span className={styles.targetLabel}>Применить к</span>
+                  <EstimateSelect
+                    value={resolvedTargetId}
+                    options={targetOptions}
+                    ariaLabel="Применить сценарий электрики к"
+                    onChange={(next) => {
+                      setTargetId(next)
+                      const zone = zones.find((entry) => entry.id === next)
+                      syncStateForZoneType(zone ? zone.zoneType : null)
+                    }}
+                  />
+                </div>
+              ) : (
+                <p className={styles.applyHint}>Добавьте помещение в блоке замеров выше.</p>
+              )}{' '}
+              {compatibleState !== 'demolition-only' ? (
+                <div className={styles.field}>
+                  <span>Снять старую электрику перед монтажом?</span>
+                  <EstimateSelect
+                    value={draft.demolitionBeforeWork ? 'yes' : 'no'}
+                    options={[
+                      { value: 'no', label: 'Нет' },
+                      { value: 'yes', label: 'Да · объёмы из блока «Демонтаж старой электрики»' },
+                    ]}
+                    ariaLabel="Демонтаж перед новой электрикой"
+                    onChange={(next) => onDraftChange({ demolitionBeforeWork: next === 'yes' })}
+                  />
+                </div>
+              ) : null}
+              <div className={styles.field}>
+                <span>Сценарий</span>
+                <EstimateSelect
+                  value={compatibleState}
+                  options={stateOptions}
+                  ariaLabel="Сценарий электрики"
+                  onChange={(nextValue) => {
+                    const next = nextValue as ElectricStateOption
+                    if (!isElectricScenarioAllowedForZone(next, filterZoneType)) {
+                      setError(formatElectricScenarioZoneMismatchMessage(next))
+                      return
+                    }
+                    onDraftChange({ state: next })
+                  }}
+                />
+              </div>
+            </>
+          ),
+        },
+        {
+          label: 'параметры работ',
+          title: 'Уточните выбранные работы',
+          content: (
+            <>
+              {' '}
+              {needsWall ? (
+                <div className={styles.field}>
+                  <span>Основание для отверстий и штроб</span>
+                  <EstimateSelect
+                    value={wallMaterial}
+                    ariaLabel="Материал стены для электрики"
+                    options={[
+                      { value: 'unknown', label: 'Пока неизвестно' },
+                      { value: 'concrete', label: 'Бетон' },
+                      { value: 'brick', label: 'Кирпич или блок' },
+                      { value: 'drywall', label: 'Гипсокартон' },
+                      { value: 'ready', label: 'Отверстия уже готовы' },
+                    ]}
+                    onChange={(next) =>
+                      onDraftChange({
+                        wallMaterial: next as ElectricScenarioDraftState['wallMaterial'],
+                      })
+                    }
+                  />
+                </div>
+              ) : null}
+              {needsRoute ? (
+                <div className={styles.field}>
+                  <span>Как прокладываем новый кабель?</span>
+                  <EstimateSelect
+                    value={cableRoute}
+                    ariaLabel="Способ прокладки кабеля"
+                    options={[
+                      { value: 'unknown', label: 'Пока неизвестно' },
+                      {
+                        value: 'chase',
+                        label:
+                          wallMaterial === 'drywall'
+                            ? 'Новая штроба · недоступно для ГКЛ'
+                            : 'В штробе (новой или готовой)',
+                        disabled: wallMaterial === 'drywall',
+                      },
+                      { value: 'open', label: 'Открыто на крепёж' },
+                      {
+                        value: 'mixed',
+                        label: 'Часть открыто, часть в штробе',
+                        disabled: wallMaterial === 'drywall',
+                      },
+                      { value: 'existing', label: 'Кабель уже проложен' },
+                    ]}
+                    onChange={(next) =>
+                      onDraftChange({
+                        cableRoute: next as ElectricScenarioDraftState['cableRoute'],
+                      })
+                    }
+                  />
+                </div>
+              ) : null}
+              {!needsWall && !needsRoute ? (
+                <p className={styles.applyHint}>
+                  Для этого состава дополнительные вопросы не нужны. Объёмы уже взяты из замеров
+                  помещения.
+                </p>
+              ) : null}
+            </>
+          ),
+        },
+        {
+          label: 'проверка работ',
+          title: 'Добавить предложенные работы?',
+          content: (
+            <p className={styles.applyHint}>
+              Проверьте список справа. Новые работы добавятся для выбранного помещения. Уже
+              добавленные одинаковые позиции обновятся; дополнительные строки сохранятся.
+            </p>
+          ),
+        },
+      ]}
+      preview={
+        batch.all ? (
+          <>
+            {batch.ready.map(({ zone }) => {
+              const measured = electricInputFromZone(zone)
+              return (
+                <div key={zone.id}>
+                  <strong>{zone.name}</strong>
+                  <ul className={styles.workList}>
+                    {resolveMeasuredElectricScenarioKeys(application, measured).map((key) => {
+                      const item = mappingById.get(key)
+                      return (
+                        <li key={key}>
+                          {item?.title ?? key} —{' '}
+                          {resolveElectricScenarioQuantity(
+                            key,
+                            item?.defaultQuantityFrom ?? 'manual',
+                            measured,
+                            application,
+                          ).toLocaleString('ru-RU')}{' '}
+                          {item?.unit}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
+              )
+            })}
+          </>
+        ) : (
+          <>
+            {' '}
+            <p className={styles.hydroHint}>{previewLabel}. Работы с заполненным объёмом:</p>
+            {preview.length ? (
+              <ul className={styles.workList}>
+                {preview.map((item) => (
+                  <li key={item.key}>
+                    {item.title} — {item.quantity.toLocaleString('ru-RU')} {item.unit}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.applyHint}>Для этого сценария ещё нет подходящих замеров.</p>
+            )}
+            {!batch.all && applyDisabledHint ? (
+              <p className={styles.applyHint}>{applyDisabledHint}</p>
+            ) : null}
+          </>
+        )
+      }
+      canApply={batch.canApply}
+      disabledHint={
+        batch.all
+          ? batch.canApply
+            ? null
+            : 'Нет помещений с подходящими замерами.'
+          : applyDisabledHint
+      }
+      onApply={handleApply}
+      status={
+        status ? (
+          <p className={styles.status} data-kind={status.kind} role="status" aria-live="polite">
+            {status.message}
+          </p>
+        ) : null
+      }
+    />
   )
 }

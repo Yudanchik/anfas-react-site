@@ -7,10 +7,10 @@ import {
   type FloorPriceMappingItem,
 } from '@/entities/estimate'
 import type { FloorEstimateEditor } from '@/features/floor-estimate/model/use-floor-estimate-editor'
-import { FloorEstimateHelpers } from '@/features/floor-estimate/ui/FloorEstimateHelpers'
 import { FloorEstimatePresets } from '@/features/floor-estimate/ui/FloorEstimatePresets'
 
 import type { FloorPresetDraftState } from '../model/estimate-calculator-persistence'
+import { EstimateRoomQuickFill } from '../ui/EstimateRoomQuickFill'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
 import { EstimateManualLine } from '../ui/EstimateManualLine'
 import { EstimateSectionLines } from '../ui/EstimateSectionLines'
@@ -25,7 +25,7 @@ type FloorEstimatePanelProps = {
   onDeleteZone: (zoneId: string) => void
   presetDraft: FloorPresetDraftState
   onPresetDraftChange: (patch: Partial<FloorPresetDraftState>) => void
-  onResetAll: () => void
+  onResetSection: () => void
   globalFeedbackEpoch?: number
   mapping?: readonly FloorPriceMappingItem[]
 }
@@ -37,7 +37,7 @@ export function FloorEstimatePanel({
   onDeleteZone,
   presetDraft,
   onPresetDraftChange,
-  onResetAll,
+  onResetSection,
   globalFeedbackEpoch,
   mapping,
 }: FloorEstimatePanelProps) {
@@ -47,13 +47,14 @@ export function FloorEstimatePanel({
 
   function handleReset() {
     setSectionFeedbackEpoch((n) => n + 1)
-    onResetAll()
+    onResetSection()
   }
 
   return (
     <div className={styles.workspace}>
       <div className={styles.zone}>
         <EstimateZonesAndMeasures
+          lines={editor.lines}
           section="floors"
           zones={zones}
           onZonesChange={onZonesChange}
@@ -65,6 +66,8 @@ export function FloorEstimatePanel({
 
       <div className={styles.zoneAlt}>
         <FloorEstimatePresets
+          lines={editor.lines}
+          onZonesChange={onZonesChange}
           draft={presetDraft}
           onDraftChange={onPresetDraftChange}
           zones={zones}
@@ -77,26 +80,13 @@ export function FloorEstimatePanel({
         />
       </div>
 
-      <div className={styles.zone}>
-        <FloorEstimateHelpers
-          totalFloorArea={editor.input.totalFloorArea}
-          demolitionArea={editor.input.demolitionArea}
-          screedArea={editor.input.screedArea}
-          wetZonesArea={editor.input.wetZonesArea}
-          onApplyTotalArea={editor.applyTotalArea}
-          onApplyDemolitionArea={editor.applyDemolitionArea}
-          onApplyScreedArea={editor.applyScreedArea}
-          onApplyWetArea={editor.applyWetArea}
-          onReset={handleReset}
-        />
-      </div>
-
       <div className={styles.zoneAlt}>
         <EstimateSectionLines
           idPrefix="floor-estimate"
           title="Строки сметы — полы"
           pricePanel={
             <FloorZoneWorkAdd
+              lines={editor.lines}
               zones={zones}
               onZonesChange={onZonesChange}
               embedded
@@ -114,6 +104,14 @@ export function FloorEstimatePanel({
             />
           }
         >
+          <EstimateRoomQuickFill
+            section="floors"
+            zones={zones}
+            lines={editor.lines}
+            onFill={editor.fillRoomWorkQuantities}
+            onCatalogueFill={editor.fillCatalogueQuantities}
+            onReset={handleReset}
+          />
           <EstimateGroupedTable
             idPrefix="floor-estimate"
             embedded

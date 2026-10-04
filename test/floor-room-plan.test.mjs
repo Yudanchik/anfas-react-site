@@ -53,5 +53,5 @@ test('маршрут не включает работу без нужного з
     },
   )
   assert.equal(plan.works.length, 0)
-  assert.equal(plan.issues.length, 2)
+  assert.deepEqual(plan.issues, ['Укажите площадь пола или выравнивания.'])
 })

@@ -1,3 +1,4 @@
+import { parseExcludedSections } from './room-section-participation'
 import {
   buildCeilingEstimateLines,
   buildElectricEstimateLines,
@@ -87,6 +88,8 @@ export type PersistedEstimateLine = {
   /** Явная ручная правка цены/названия прайс-строки. У старых снимков может отсутствовать. */
   priceEdited?: boolean
   scenarioManaged?: boolean
+  catalogueAutoQuantity?: number
+  quantityEdited?: boolean
 }
 
 export type PersistedPriceProfileRef = {
@@ -119,7 +122,10 @@ export type WallScenarioDraftState = {
   moisture: WallMoistureOption
   quality: WallQualityOption
   reinforce: boolean
+  primerBetweenPuttyLayers: boolean
   baseCondition: WallBaseConditionOption
+  gklConstruction: 'existing' | 'new-one' | 'new-two'
+  gklSeamsReady: boolean
 }
 
 export type CeilingScenarioDraftState = {
@@ -131,6 +137,8 @@ export type CeilingScenarioDraftState = {
   substrate: NonNullable<CeilingScenarioApplication['substrate']>
   quality: NonNullable<CeilingScenarioApplication['quality']>
   reinforce: boolean
+  gklConstruction: 'existing' | 'new-one' | 'new-two'
+  gklSeamsReady: boolean
 }
 
 export type TileScenarioDraftState = {
@@ -141,6 +149,7 @@ export type TileScenarioDraftState = {
 }
 
 export type ElectricScenarioDraftState = {
+  demolitionBeforeWork?: boolean
   state: ElectricStateOption
   wallMaterial: NonNullable<ElectricScenarioApplication['wallMaterial']>
   cableRoute: NonNullable<ElectricScenarioApplication['cableRoute']>
@@ -292,7 +301,10 @@ const DEFAULT_WALL_SCENARIOS: WallScenarioDraftState = {
   moisture: 'normal',
   quality: 'q2',
   reinforce: false,
+  primerBetweenPuttyLayers: false,
   baseCondition: 'unknown',
+  gklConstruction: 'existing',
+  gklSeamsReady: false,
 }
 
 const DEFAULT_CEILING_SCENARIOS: CeilingScenarioDraftState = {
@@ -304,6 +316,8 @@ const DEFAULT_CEILING_SCENARIOS: CeilingScenarioDraftState = {
   substrate: 'unknown',
   quality: 'q3',
   reinforce: false,
+  gklConstruction: 'existing',
+  gklSeamsReady: false,
 }
 
 const DEFAULT_TILE_SCENARIOS: TileScenarioDraftState = {
@@ -410,6 +424,14 @@ function parseElectricInput(raw: unknown): ElectricEstimateInput {
     electricDataPointsCount: asNonNegative(raw.electricDataPointsCount),
     electricStrobeLength: asNonNegative(raw.electricStrobeLength),
     electricCableLength: asNonNegative(raw.electricCableLength),
+    electricCableOpenLength:
+      raw.electricCableOpenLength === undefined
+        ? undefined
+        : asNonNegative(raw.electricCableOpenLength),
+    electricCableChaseLength:
+      raw.electricCableChaseLength === undefined
+        ? undefined
+        : asNonNegative(raw.electricCableChaseLength),
     electricSocketBoxesCount: asNonNegative(raw.electricSocketBoxesCount),
     electricJunctionBoxesCount: asNonNegative(raw.electricJunctionBoxesCount),
     electricPanelModulesCount: asNonNegative(raw.electricPanelModulesCount),
@@ -422,6 +444,22 @@ function parseElectricInput(raw: unknown): ElectricEstimateInput {
 function parsePlumbingInput(raw: unknown): PlumbingEstimateInput {
   if (!isRecord(raw)) return { ...EMPTY_PLUMBING_INPUT }
   return {
+    plumbingOldToiletsCount:
+      raw.plumbingOldToiletsCount === undefined
+        ? undefined
+        : asNonNegative(raw.plumbingOldToiletsCount),
+    plumbingOldSinksCount:
+      raw.plumbingOldSinksCount === undefined
+        ? undefined
+        : asNonNegative(raw.plumbingOldSinksCount),
+    plumbingOldBathtubsCount:
+      raw.plumbingOldBathtubsCount === undefined
+        ? undefined
+        : asNonNegative(raw.plumbingOldBathtubsCount),
+    plumbingOldMixersCount:
+      raw.plumbingOldMixersCount === undefined
+        ? undefined
+        : asNonNegative(raw.plumbingOldMixersCount),
     plumbingWaterPointsCount: asNonNegative(raw.plumbingWaterPointsCount),
     plumbingSewerPointsCount: asNonNegative(raw.plumbingSewerPointsCount),
     plumbingWaterPipeLength: asNonNegative(raw.plumbingWaterPipeLength),
@@ -527,9 +565,13 @@ function parseAppliedWallScenario(raw: unknown): EstimateZone['wallScenario'] {
       ? (value.quality as WallQualityOption)
       : undefined,
     reinforce: value.reinforce === true,
+    primerBetweenPuttyLayers: value.primerBetweenPuttyLayers === true,
     baseCondition: ['unknown', 'sound', 'loose'].includes(String(value.baseCondition))
       ? (value.baseCondition as WallBaseConditionOption)
       : undefined,
+    gklConstruction: ['existing', 'new-one', 'new-two'].includes(String(value.gklConstruction))
+      ? (value.gklConstruction as 'existing' | 'new-one' | 'new-two') : 'existing',
+    gklSeamsReady: value.gklSeamsReady === true,
   })
   return {
     measureSignature: raw.measureSignature,
@@ -548,6 +590,25 @@ function parseAppliedWallScenario(raw: unknown): EstimateZone['wallScenario'] {
   }
 }
 
+function parseScenarioStatuses(raw: unknown): EstimateZone['scenarioStatuses'] {
+  if (!isRecord(raw)) return undefined
+  const result: NonNullable<EstimateZone['scenarioStatuses']> = {}
+  for (const section of ['floors', 'walls', 'ceilings', 'tile', 'electrics', 'plumbing'] as const) {
+    const value = raw[section]
+    if (
+      isRecord(value) &&
+      typeof value.label === 'string' &&
+      typeof value.measureSignature === 'string'
+    ) {
+      result[section] = {
+        label: value.label.slice(0, 500),
+        measureSignature: value.measureSignature.slice(0, 10000),
+      }
+    }
+  }
+  return result
+}
+
 function parsePersistedZone(raw: unknown): EstimateZone | null {
   if (!isRecord(raw)) return null
   const id = asString(raw.id).trim()
@@ -557,13 +618,39 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
     id,
     name,
     zoneType: resolveEstimateZoneType({ name, zoneType: raw.zoneType }),
+    plumbingPointsMode: raw.plumbingPointsMode === 'fixtures' ? 'fixtures' : 'manual',
     floorArea: asNonNegative(raw.floorArea),
     demolitionFloorArea: asNonNegative(raw.demolitionFloorArea ?? raw.demolitionArea),
     screedArea: asNonNegative(raw.screedArea),
     wetArea: asNonNegative(raw.wetArea),
     wallArea: asNonNegative(raw.wallArea),
+    gklWallSeamsLength: asNonNegative(raw.gklWallSeamsLength),
     wallMeasurements: parseWallMeasurements(raw.wallMeasurements),
     wallScenario: parseAppliedWallScenario(raw.wallScenario),
+    scenarioStatuses: parseScenarioStatuses(raw.scenarioStatuses),
+    excludedSections: parseExcludedSections(raw.excludedSections),
+    electricOldSocketsCount:
+      raw.electricOldSocketsCount === undefined
+        ? undefined
+        : asNonNegative(raw.electricOldSocketsCount),
+    electricOldSwitchesCount:
+      raw.electricOldSwitchesCount === undefined
+        ? undefined
+        : asNonNegative(raw.electricOldSwitchesCount),
+    electricOldLightPointsCount:
+      raw.electricOldLightPointsCount === undefined
+        ? undefined
+        : asNonNegative(raw.electricOldLightPointsCount),
+    electricOldCableLength:
+      raw.electricOldCableLength === undefined
+        ? undefined
+        : asNonNegative(raw.electricOldCableLength),
+    plumbingFixtureCountsMode: raw.plumbingFixtureCountsMode === 'auto' ? 'auto' : 'manual',
+    plumbingToiletMount: ['floor', 'installation', 'existing'].includes(
+      String(raw.plumbingToiletMount),
+    )
+      ? (raw.plumbingToiletMount as EstimateZone['plumbingToiletMount'])
+      : 'unknown',
     demolitionWallArea: asNonNegative(raw.demolitionWallArea),
     plasterArea: asNonNegative(raw.plasterArea),
     puttyArea: asNonNegative(raw.puttyArea),
@@ -571,6 +658,7 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
     slopesLength: asNonNegative(raw.slopesLength),
     cornersLength: asNonNegative(raw.cornersLength),
     ceilingArea: asNonNegative(raw.ceilingArea),
+    gklCeilingSeamsLength: asNonNegative(raw.gklCeilingSeamsLength),
     demolitionCeilingArea: asNonNegative(raw.demolitionCeilingArea),
     plasterCeilingArea: asNonNegative(raw.plasterCeilingArea),
     puttyCeilingArea: asNonNegative(raw.puttyCeilingArea),
@@ -588,11 +676,35 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
     electricDataPointsCount: asNonNegative(raw.electricDataPointsCount),
     electricStrobeLength: asNonNegative(raw.electricStrobeLength),
     electricCableLength: asNonNegative(raw.electricCableLength),
+    electricCableOpenLength:
+      raw.electricCableOpenLength === undefined
+        ? undefined
+        : asNonNegative(raw.electricCableOpenLength),
+    electricCableChaseLength:
+      raw.electricCableChaseLength === undefined
+        ? undefined
+        : asNonNegative(raw.electricCableChaseLength),
     electricSocketBoxesCount: asNonNegative(raw.electricSocketBoxesCount),
     electricJunctionBoxesCount: asNonNegative(raw.electricJunctionBoxesCount),
     electricPanelModulesCount: asNonNegative(raw.electricPanelModulesCount),
     electricWarmFloorArea: asNonNegative(raw.electricWarmFloorArea),
     electricApplianceConnectionsCount: asNonNegative(raw.electricApplianceConnectionsCount),
+    plumbingOldToiletsCount:
+      raw.plumbingOldToiletsCount === undefined
+        ? undefined
+        : asNonNegative(raw.plumbingOldToiletsCount),
+    plumbingOldSinksCount:
+      raw.plumbingOldSinksCount === undefined
+        ? undefined
+        : asNonNegative(raw.plumbingOldSinksCount),
+    plumbingOldBathtubsCount:
+      raw.plumbingOldBathtubsCount === undefined
+        ? undefined
+        : asNonNegative(raw.plumbingOldBathtubsCount),
+    plumbingOldMixersCount:
+      raw.plumbingOldMixersCount === undefined
+        ? undefined
+        : asNonNegative(raw.plumbingOldMixersCount),
     plumbingWaterPointsCount: asNonNegative(raw.plumbingWaterPointsCount),
     plumbingSewerPointsCount: asNonNegative(raw.plumbingSewerPointsCount),
     plumbingWaterPipeLength: asNonNegative(raw.plumbingWaterPipeLength),
@@ -655,6 +767,13 @@ function parsePersistedLine(raw: unknown): PersistedEstimateLine | null {
   if (typeof raw.sectionId === 'string') line.sectionId = raw.sectionId
   if (raw.priceEdited === true) line.priceEdited = true
   if (raw.scenarioManaged === true) line.scenarioManaged = true
+  if (raw.quantityEdited === true) line.quantityEdited = true
+  if (
+    typeof raw.catalogueAutoQuantity === 'number' &&
+    Number.isFinite(raw.catalogueAutoQuantity) &&
+    raw.catalogueAutoQuantity >= 0
+  )
+    line.catalogueAutoQuantity = raw.catalogueAutoQuantity
 
   return line
 }
@@ -815,9 +934,14 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         ? (raw.wallScenarios.quality as WallQualityOption)
         : DEFAULT_WALL_SCENARIOS.quality,
       reinforce: raw.wallScenarios.reinforce === true,
+      primerBetweenPuttyLayers: raw.wallScenarios.primerBetweenPuttyLayers === true,
       baseCondition: ['unknown', 'sound', 'loose'].includes(String(raw.wallScenarios.baseCondition))
         ? (raw.wallScenarios.baseCondition as WallBaseConditionOption)
         : DEFAULT_WALL_SCENARIOS.baseCondition,
+      gklConstruction: ['existing', 'new-one', 'new-two'].includes(String(raw.wallScenarios.gklConstruction))
+        ? (raw.wallScenarios.gklConstruction as WallScenarioDraftState['gklConstruction'])
+        : DEFAULT_WALL_SCENARIOS.gklConstruction,
+      gklSeamsReady: raw.wallScenarios.gklSeamsReady === true,
     }
   }
 
@@ -849,6 +973,10 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         ? (raw.ceilingScenarios.quality as CeilingScenarioDraftState['quality'])
         : DEFAULT_CEILING_SCENARIOS.quality,
       reinforce: raw.ceilingScenarios.reinforce === true,
+      gklConstruction: ['existing', 'new-one', 'new-two'].includes(String(raw.ceilingScenarios.gklConstruction))
+        ? (raw.ceilingScenarios.gklConstruction as CeilingScenarioDraftState['gklConstruction'])
+        : DEFAULT_CEILING_SCENARIOS.gklConstruction,
+      gklSeamsReady: raw.ceilingScenarios.gklSeamsReady === true,
     }
   }
 
@@ -869,6 +997,7 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
 
   if (isRecord(raw.electricScenarios)) {
     snapshot.electricScenarios = {
+      demolitionBeforeWork: raw.electricScenarios.demolitionBeforeWork === true,
       state: asString(
         raw.electricScenarios.state,
         DEFAULT_ELECTRIC_SCENARIOS.state,
@@ -878,7 +1007,7 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
       )
         ? (raw.electricScenarios.wallMaterial as ElectricScenarioDraftState['wallMaterial'])
         : DEFAULT_ELECTRIC_SCENARIOS.wallMaterial,
-      cableRoute: ['unknown', 'chase', 'open', 'existing'].includes(
+      cableRoute: ['unknown', 'chase', 'open', 'mixed', 'existing'].includes(
         String(raw.electricScenarios.cableRoute),
       )
         ? (raw.electricScenarios.cableRoute as ElectricScenarioDraftState['cableRoute'])
@@ -935,6 +1064,9 @@ export function serializeEstimateLine(line: EstimateLine): PersistedEstimateLine
   if (line.zoneName) persisted.zoneName = line.zoneName
   if (line.priceEdited) persisted.priceEdited = true
   if (line.scenarioManaged) persisted.scenarioManaged = true
+  if (line.quantityEdited) persisted.quantityEdited = true
+  if (line.catalogueAutoQuantity !== undefined)
+    persisted.catalogueAutoQuantity = line.catalogueAutoQuantity
   return persisted
 }
 
@@ -948,8 +1080,17 @@ export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
     screedArea: zone.screedArea,
     wetArea: zone.wetArea,
     wallArea: zone.wallArea,
+    gklWallSeamsLength: zone.gklWallSeamsLength,
     wallMeasurements: zone.wallMeasurements,
     wallScenario: zone.wallScenario,
+    scenarioStatuses: zone.scenarioStatuses,
+    excludedSections: zone.excludedSections,
+    electricOldSocketsCount: zone.electricOldSocketsCount,
+    electricOldSwitchesCount: zone.electricOldSwitchesCount,
+    electricOldLightPointsCount: zone.electricOldLightPointsCount,
+    electricOldCableLength: zone.electricOldCableLength,
+    plumbingFixtureCountsMode: zone.plumbingFixtureCountsMode,
+    plumbingToiletMount: zone.plumbingToiletMount,
     demolitionWallArea: zone.demolitionWallArea,
     plasterArea: zone.plasterArea,
     puttyArea: zone.puttyArea,
@@ -957,6 +1098,7 @@ export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
     slopesLength: zone.slopesLength,
     cornersLength: zone.cornersLength,
     ceilingArea: zone.ceilingArea,
+    gklCeilingSeamsLength: zone.gklCeilingSeamsLength,
     demolitionCeilingArea: zone.demolitionCeilingArea,
     plasterCeilingArea: zone.plasterCeilingArea,
     puttyCeilingArea: zone.puttyCeilingArea,
@@ -974,12 +1116,19 @@ export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
     electricDataPointsCount: zone.electricDataPointsCount,
     electricStrobeLength: zone.electricStrobeLength,
     electricCableLength: zone.electricCableLength,
+    electricCableOpenLength: zone.electricCableOpenLength,
+    electricCableChaseLength: zone.electricCableChaseLength,
     electricSocketBoxesCount: zone.electricSocketBoxesCount,
     electricJunctionBoxesCount: zone.electricJunctionBoxesCount,
     electricPanelModulesCount: zone.electricPanelModulesCount,
     electricWarmFloorArea: zone.electricWarmFloorArea,
     electricApplianceConnectionsCount: zone.electricApplianceConnectionsCount,
+    plumbingOldToiletsCount: zone.plumbingOldToiletsCount,
+    plumbingOldSinksCount: zone.plumbingOldSinksCount,
+    plumbingOldBathtubsCount: zone.plumbingOldBathtubsCount,
+    plumbingOldMixersCount: zone.plumbingOldMixersCount,
     plumbingWaterPointsCount: zone.plumbingWaterPointsCount,
+    plumbingPointsMode: zone.plumbingPointsMode,
     plumbingSewerPointsCount: zone.plumbingSewerPointsCount,
     plumbingWaterPipeLength: zone.plumbingWaterPipeLength,
     plumbingSewerPipeLength: zone.plumbingSewerPipeLength,
@@ -1103,6 +1252,8 @@ function applyPersistedPatches(
       title,
       unit,
       priceEdited: patch.priceEdited === true || unknownOriginEdit ? true : undefined,
+      quantityEdited: patch.quantityEdited,
+      catalogueAutoQuantity: patch.catalogueAutoQuantity,
     }
   })
 
@@ -1152,6 +1303,8 @@ function applyPersistedPatches(
         frontendCategorySlug: mapping?.frontendCategorySlug,
         note: mapping?.note,
         priceEdited: patch.priceEdited === true || unknownOriginEdit ? true : undefined,
+        quantityEdited: patch.quantityEdited,
+        catalogueAutoQuantity: patch.catalogueAutoQuantity,
         scenarioManaged: patch.scenarioManaged === true,
       })
       continue

@@ -32,14 +32,7 @@ export type WallWorkKind =
   | 'other'
 
 export type CeilingWorkKind =
-  | 'demolition'
-  | 'prep'
-  | 'primer'
-  | 'plaster'
-  | 'putty'
-  | 'reinforce'
-  | 'finish-paint'
-  | 'other'
+  'demolition' | 'prep' | 'primer' | 'plaster' | 'putty' | 'reinforce' | 'finish-paint' | 'other'
 
 export type TileWorkKind =
   | 'demolition'
@@ -93,11 +86,7 @@ export type EstimateWorkKind =
   | PlumbingWorkKind
 
 export type FloorQuantityField =
-  | 'totalFloorArea'
-  | 'demolitionArea'
-  | 'screedArea'
-  | 'wetZonesArea'
-  | 'manual'
+  'totalFloorArea' | 'demolitionArea' | 'screedArea' | 'wetZonesArea' | 'manual'
 
 export type WallQuantityField =
   | 'totalWallArea'
@@ -107,15 +96,11 @@ export type WallQuantityField =
   | 'finishArea'
   | 'slopesLength'
   | 'cornersLength'
+  | 'gklSeamsLength'
   | 'manual'
 
 export type CeilingQuantityField =
-  | 'totalCeilingArea'
-  | 'demolitionArea'
-  | 'plasterArea'
-  | 'puttyArea'
-  | 'finishArea'
-  | 'manual'
+  'totalCeilingArea' | 'demolitionArea' | 'plasterArea' | 'puttyArea' | 'finishArea' | 'gklSeamsLength' | 'manual'
 
 export type TileQuantityField =
   | 'floorTileArea'
@@ -188,6 +173,8 @@ export type EstimateLine = {
   priceEdited?: boolean
   /** Строка создана мастером сценария; ручные строки из прайса не затрагиваются при замене. */
   scenarioManaged?: boolean
+  catalogueAutoQuantity?: number
+  quantityEdited?: boolean
 }
 
 export type EstimateSection = {
@@ -231,6 +218,7 @@ export type WallEstimateInput = {
   wallHeightM: number
   slopesLengthM: number
   cornersLengthM: number
+  gklSeamsLengthM?: number
   surveyorComment?: string
 }
 
@@ -243,6 +231,7 @@ export type WallEstimateResult = {
 
 export type CeilingEstimateInput = {
   totalCeilingArea: number
+  gklSeamsLengthM?: number
   demolitionArea: number
   plasterArea: number
   puttyArea: number
@@ -276,11 +265,18 @@ export type TileEstimateResult = {
 }
 
 export type ElectricEstimateInput = {
+  electricOldSocketsCount?: number
+  electricOldSwitchesCount?: number
+  electricOldLightPointsCount?: number
+  electricOldCableLength?: number
+
   electricSocketsCount: number
   electricSwitchesCount: number
   electricLightPointsCount: number
   electricDataPointsCount: number
   electricStrobeLength: number
+  electricCableOpenLength?: number
+  electricCableChaseLength?: number
   electricCableLength: number
   electricSocketBoxesCount: number
   electricJunctionBoxesCount: number
@@ -298,6 +294,10 @@ export type ElectricEstimateResult = {
 }
 
 export type PlumbingEstimateInput = {
+  plumbingOldToiletsCount?: number
+  plumbingOldSinksCount?: number
+  plumbingOldBathtubsCount?: number
+  plumbingOldMixersCount?: number
   plumbingWaterPointsCount: number
   plumbingSewerPointsCount: number
   plumbingWaterPipeLength: number

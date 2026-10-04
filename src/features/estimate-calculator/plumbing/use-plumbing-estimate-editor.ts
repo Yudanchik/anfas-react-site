@@ -1,3 +1,8 @@
+import { applyUnifiedCatalogueFill } from '@/features/estimate-calculator/model/catalogue-volume-fill'
+import {
+  applyRoomWorkFill,
+  type RoomFillChange,
+} from '@/features/estimate-calculator/model/room-work-quantity'
 import { useMemo, useState } from 'react'
 
 import {
@@ -201,6 +206,14 @@ export function usePlumbingEstimateEditor(initial: PlumbingEstimateEditorInitial
     return true
   }
 
+  function fillCatalogueQuantities(changes: readonly RoomFillChange[]) {
+    setLines((previous) => applyUnifiedCatalogueFill(previous, changes))
+  }
+
+  function fillRoomWorkQuantities(zone: EstimateZone, changes: readonly RoomFillChange[]) {
+    setLines((previous) => applyRoomWorkFill(previous, zone, changes))
+  }
+
   function removeLinesByZoneId(zoneId: string) {
     setLines((prev) => prev.filter((line) => line.zoneId !== zoneId))
   }
@@ -242,6 +255,8 @@ export function usePlumbingEstimateEditor(initial: PlumbingEstimateEditorInitial
     removeManualLine,
     addZonedLine,
     removeLinesByZoneId,
+    fillRoomWorkQuantities,
+    fillCatalogueQuantities,
     syncZoneName,
     resetEstimate,
     replaceEstimate,

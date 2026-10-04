@@ -40,14 +40,15 @@ test('после демонтажа не считаем его второй ра
   assert.equal(demolition.keys[0], 'demolition-paint')
 })
 
-test('Q2/Q4 меняют подготовку; ГКЛ не получает штукатурку перекрытия', () => {
+test('Q2/Q4 меняют подготовку; ГКЛ получает отдельный маршрут без штукатурки', () => {
   const base = { state: 'from-scratch', finishTarget: 'none', substrate: 'mineral' }
   const q2 = resolveCeilingScenarioPlan({ ...base, quality: 'q2' })
   const q4 = resolveCeilingScenarioPlan({ ...base, quality: 'q4' })
   assert.ok(q2.keys.includes('putty-ceiling-1'))
   assert.ok(q4.keys.includes('putty-finish-ceiling-2'))
   const drywall = resolveCeilingScenarioPlan({ ...base, substrate: 'drywall', quality: 'q3' })
-  assert.ok(drywall.issues.length > 0)
+  assert.deepEqual(drywall.issues, [])
+  assert.ok(drywall.keys.includes('gkl-ceiling-joint-tape'))
   assert.equal(drywall.keys.includes('plaster-ceiling-main'), false)
   const existingPlaster = resolveCeilingScenarioPlan({
     ...base,

@@ -76,6 +76,8 @@ export function resolveWallDefaultQuantity(
       return normalizeNonNegative(input.slopesLengthM)
     case 'cornersLength':
       return normalizeNonNegative(input.cornersLengthM)
+    case 'gklSeamsLength':
+      return normalizeNonNegative(input.gklSeamsLengthM ?? 0)
     case 'manual':
       return 0
   }

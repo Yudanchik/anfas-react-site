@@ -56,6 +56,8 @@ export type CeilingScenarioApplication = {
   substrate?: 'unknown' | 'mineral' | 'plastered' | 'drywall'
   quality?: 'q2' | 'q3' | 'q4'
   reinforce?: boolean
+  gklConstruction?: 'existing' | 'new-one' | 'new-two'
+  gklSeamsReady?: boolean
 }
 
 export type CeilingScenarioPlan = { keys: readonly string[]; issues: readonly string[] }
@@ -149,7 +151,21 @@ export function applyCeilingScenarioToZone(
 ): ApplyCeilingScenarioResult {
   const input = ceilingInputFromZone(zone)
   const keys = resolveCeilingScenarioKeys(application)
-  let next = disableCeilingConflictingAlternativesInZone(lines, keys, zone.id)
+  const gklKeys = new Set([
+    'gkl-ceiling-one', 'gkl-ceiling-two', 'gkl-ceiling-first-layer-joints',
+    'gkl-ceiling-joint-tape', 'gkl-ceiling-joint-fill', 'gkl-ceiling-screws',
+    'gkl-ceiling-paint-prep',
+  ])
+  const selected = new Set(keys)
+  const gklSelected = keys.some((key) => gklKeys.has(key))
+  const mineralOnly = new Set(['primer-deep-penetration', 'plaster-beacons-ceiling',
+    'plaster-ceiling-main', 'plaster-beacon-removal-ceiling'])
+  let next = disableCeilingConflictingAlternativesInZone(lines, keys, zone.id).map((line) =>
+    line.zoneId === zone.id && line.source !== 'manual' &&
+    ((gklKeys.has(line.priceKey) && !selected.has(line.priceKey)) ||
+    (gklSelected && mineralOnly.has(line.priceKey)))
+      ? { ...line, enabled: false } : line,
+  )
 
   for (const priceKey of keys) {
     const mappingItem = MAPPING_BY_ID.get(priceKey)
@@ -213,10 +229,35 @@ export function resolveCeilingScenarioPlan(
   if (modern && state !== 'demolition-only' && state !== 'finish-only') {
     if (application.substrate === 'unknown')
       issues.push('Осмотрите основание потолка перед выбором подготовки.')
-    if (application.substrate === 'drywall')
-      issues.push('Для ГКЛ нужна отдельная обработка швов; штукатурный маршрут здесь не подходит.')
     if (state === 'prefinish' && application.substrate !== 'plastered')
       issues.push('Предчистовая предполагает уже готовую прочную штукатурку.')
+  }
+  if (application.substrate === 'drywall' && state !== 'finish-only' && state !== 'demolition-only') {
+    if (state !== 'from-scratch' && state !== 'after-demolition') issues.push(
+      'Для ГКЛ выберите «С нуля» или «После демонтажа».',
+    )
+    if (finishTarget === 'paint' && application.quality === 'q2') issues.push(
+      'Для гладкой матовой окраски выберите Q3, для глянцевой — Q4.',
+    )
+    if (state === 'from-scratch' || state === 'after-demolition') {
+      if (state === 'from-scratch' && application.demolitionBeforeWork)
+        keys.push(DEMOLITION_KEYS[application.demolitionCovering ?? 'paint'])
+      keys.push('prep-dust-removal')
+      const construction = application.gklConstruction ?? 'existing'
+      if (construction === 'new-one') keys.push('gkl-ceiling-one')
+      if (construction === 'new-two') keys.push('gkl-ceiling-two', 'gkl-ceiling-first-layer-joints')
+      if (construction !== 'existing' || !application.gklSeamsReady)
+        keys.push('gkl-ceiling-joint-tape', 'gkl-ceiling-joint-fill', 'gkl-ceiling-screws')
+      const quality = application.quality ?? 'q3'
+      if (quality === 'q2') keys.push('gkl-ceiling-paint-prep')
+      else {
+        keys.push(quality === 'q4' ? 'putty-ceiling-2' : 'putty-ceiling-1')
+        if (application.reinforce && finishTarget === 'paint') keys.push('reinforce-glassfiber-ceiling')
+        keys.push(quality === 'q4' ? 'putty-finish-ceiling-2' : 'putty-finish-ceiling-1', 'putty-finish-sanding-ceiling')
+      }
+      if (finishTarget === 'paint') keys.push(PAINT_KEYS[application.paintLayers ?? 'paint-ceiling-2'])
+      return { keys: [...new Set(keys)], issues }
+    }
   }
   const ready = !modern || issues.length === 0
   if (modern && finishTarget === 'paint' && application.quality === 'q2' && state !== 'finish-only')
@@ -299,6 +340,7 @@ export function formatCeilingScenarioLabel(application: CeilingScenarioApplicati
     if (finishTarget === 'paint') return 'Только финиш: покраска'
     return STATE_LABELS[state]
   }
+  if (application.substrate === 'drywall') return `ГКЛ потолок ${finishTarget === 'paint' ? 'под покраску' : 'без финиша'}`
   if (finishTarget === 'none') return `${STATE_LABELS[state]} (${FINISH_LABELS.none})`
   return `${STATE_LABELS[state]} ${FINISH_LABELS[finishTarget]}`
 }
@@ -318,6 +360,7 @@ export function formatCeilingScenarioZoneFeedback(
 function ceilingInputFromZone(zone: EstimateZone): CeilingEstimateInput {
   return {
     totalCeilingArea: zone.ceilingArea,
+    gklSeamsLengthM: zone.gklCeilingSeamsLength,
     demolitionArea: zone.demolitionCeilingArea,
     plasterArea: zone.plasterCeilingArea,
     puttyArea: zone.puttyCeilingArea,
@@ -369,6 +412,7 @@ function resolveScenarioQuantity(field: CeilingQuantityField, input: CeilingEsti
       return resolveCeilingFinishQuantity(input)
     case 'totalCeilingArea':
     case 'demolitionArea':
+    case 'gklSeamsLength':
     case 'manual':
       return resolveCeilingDefaultQuantity(field, input)
   }
