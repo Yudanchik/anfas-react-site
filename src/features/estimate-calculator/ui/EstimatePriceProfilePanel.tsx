@@ -24,6 +24,7 @@ type Props = {
   estimateProfileLabel?: string | null
   profileMismatchMessage?: string | null
   availableWorkCount: number
+  sectionCounts: readonly { label: string; count: number }[]
   onApply: (profile: EstimatePriceProfile | null, options: PriceProfileApplyOptions) => boolean
 }
 
@@ -41,6 +42,7 @@ export function EstimatePriceProfilePanel({
   estimateProfileLabel,
   profileMismatchMessage,
   availableWorkCount,
+  sectionCounts,
   onApply,
 }: Props) {
   const [busy, setBusy] = useState(false)
@@ -160,10 +162,10 @@ export function EstimatePriceProfilePanel({
           {describePriceProfile(profile)} · доступно {availableWorkCount} работ
         </strong>
       </div>
-      <p className={styles.text}>
-        Шаблон и загрузка — только XLSX. Смена прайса по умолчанию не меняет уже сохранённые суммы
-        сметы: новый прайс действует для новых работ, либо вы явно пересчитаете прайс-строки.
-      </p>
+      <ul className={styles.sectionCounts} aria-label="Доступные работы по разделам">
+        {sectionCounts.map((section) => <li key={section.label}><span>{section.label}</span><strong>{section.count}</strong></li>)}
+      </ul>
+      <p className={styles.text}>По умолчанию используется встроенный прайс Anfas. Чтобы загрузить свой, скачайте шаблон XLSX, измените цены или доступность работ и загрузите этот файл. В смете учитывается только стоимость работ; существующие суммы изменятся лишь после вашего выбора пересчёта.</p>
       {estimateProfileLabel ? (
         <p className={styles.meta} role="status">
           Смета сохранена с прайсом: {estimateProfileLabel}

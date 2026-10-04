@@ -1,4 +1,6 @@
 import { normalizeNonNegative } from './calculate-line-total'
+import type { WallMeasurements } from './wall-measurements'
+import type { WallScenarioApplication } from '../walls/apply-wall-scenario'
 
 /**
  * Зона объекта: именованное помещение с площадями для сценариев floors/walls/ceilings/tile/electrics/plumbing.
@@ -18,6 +20,13 @@ export type EstimateZone = {
   screedArea: number
   wetArea: number
   wallArea: number
+  wallMeasurements?: WallMeasurements
+  /** Последний применённый сценарий стен для этого помещения. */
+  wallScenario?: {
+    application: WallScenarioApplication
+    applications?: WallScenarioApplication[]
+    measureSignature: string
+  }
   demolitionWallArea: number
   plasterArea: number
   puttyArea: number
@@ -257,6 +266,7 @@ export function createEstimateZone(params: {
     screedArea: normalizeNonNegative(fields.screedArea ?? 0),
     wetArea: normalizeNonNegative(fields.wetArea ?? 0),
     wallArea: normalizeNonNegative(fields.wallArea ?? 0),
+    wallMeasurements: fields.wallMeasurements,
     demolitionWallArea: normalizeNonNegative(fields.demolitionWallArea ?? 0),
     plasterArea: normalizeNonNegative(fields.plasterArea ?? 0),
     puttyArea: normalizeNonNegative(fields.puttyArea ?? 0),
@@ -342,6 +352,7 @@ export function updateEstimateZone(
         patch.screedArea === undefined ? zone.screedArea : normalizeNonNegative(patch.screedArea),
       wetArea: patch.wetArea === undefined ? zone.wetArea : normalizeNonNegative(patch.wetArea),
       wallArea: patch.wallArea === undefined ? zone.wallArea : normalizeNonNegative(patch.wallArea),
+      wallMeasurements: patch.wallMeasurements === undefined ? zone.wallMeasurements : patch.wallMeasurements,
       demolitionWallArea:
         patch.demolitionWallArea === undefined
           ? zone.demolitionWallArea

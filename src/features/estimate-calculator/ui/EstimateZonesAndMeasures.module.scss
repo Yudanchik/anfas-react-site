@@ -112,6 +112,26 @@
   color: color-mix(in srgb, var(--ink) 58%, transparent);
 }
 
+.scenarioBadge {
+  align-self: flex-start;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--ink) 8%, var(--paper));
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  font-size: 10px;
+  line-height: 1.35;
+
+  &[data-state='applied'] {
+    background: color-mix(in srgb, var(--amber) 24%, var(--paper));
+    color: var(--ink);
+  }
+
+  &[data-state='review'] {
+    border: 1px solid var(--amber);
+    color: var(--ink);
+  }
+}
+
 .deleteBtn {
   @include eu.button-danger;
 
@@ -202,6 +222,13 @@
     font-size: 12px;
     font-weight: var(--weight-medium);
   }
+}
+
+.advancedHint {
+  margin: 8px 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
 }
 
 .comment {

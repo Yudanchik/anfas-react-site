@@ -8,8 +8,8 @@ type EstimateTabsProps = {
 }
 
 const TABS: ReadonlyArray<{ id: EstimateTabId; label: string }> = [
-  { id: 'floors', label: 'Полы' },
   { id: 'walls', label: 'Стены' },
+  { id: 'floors', label: 'Полы' },
   { id: 'ceilings', label: 'Потолки' },
   { id: 'tile', label: 'Плитка' },
   { id: 'electrics', label: 'Электрика' },

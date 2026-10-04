@@ -93,8 +93,9 @@ import { useTileEstimateEditor } from '../tile/use-tile-estimate-editor'
 import { useWallEstimateEditor } from '../walls/use-wall-estimate-editor'
 import { WallEstimatePanel } from '../walls/WallEstimatePanel'
 import { EstimateCombinedSummary } from './EstimateCombinedSummary'
-import { EstimateIntro } from './EstimateIntro'
 import { EstimateDocumentPanel } from './EstimateDocumentPanel'
+import { EstimateDocumentFields } from './EstimateDocumentFields'
+import { DOCUMENT_STORAGE_KEY, readDocumentDetails } from '../model/estimate-document'
 import {
   EstimatePriceProfilePanel,
   type PriceProfileApplyOptions,
@@ -143,11 +144,13 @@ export function EstimateCalculatorWorkspace({
       tileScenarios: restoreTileScenarioDraft(snapshot),
       electricScenarios: restoreElectricScenarioDraft(snapshot),
       plumbingScenarios: restorePlumbingScenarioDraft(snapshot),
-      activeTab: (snapshot?.activeTab ?? 'floors') as EstimateTabId,
+      activeTab: (snapshot?.activeTab ?? 'walls') as EstimateTabId,
     }
   })
 
   const [activeTab, setActiveTab] = useState<EstimateTabId>(initial.activeTab)
+  const [localDocumentDetails, setLocalDocumentDetails] = useState(readDocumentDetails)
+  const [documentStorageFailed, setDocumentStorageFailed] = useState(false)
   const [zones, setZones] = useState<EstimateZone[]>(initial.zones)
   const [floorPresetDraft, setFloorPresetDraft] = useState<FloorPresetDraftState>(
     initial.floorPresets,
@@ -285,6 +288,16 @@ export function EstimateCalculatorWorkspace({
   useEffect(() => {
     if (accountDetails) onAccountChange?.({ snapshot, details: accountDetails, priceProfile })
   }, [snapshot, accountDetails, priceProfile, onAccountChange])
+
+  function handleLocalDocumentChange(details: EstimateDocumentDetails) {
+    setLocalDocumentDetails(details)
+    try {
+      localStorage.setItem(DOCUMENT_STORAGE_KEY, JSON.stringify(details))
+      setDocumentStorageFailed(false)
+    } catch {
+      setDocumentStorageFailed(true)
+    }
+  }
 
   function handleZonesChange(nextZones: EstimateZone[]) {
     const prevById = new Map(zones.map((zone) => [zone.id, zone]))
@@ -523,33 +536,26 @@ export function EstimateCalculatorWorkspace({
         </p>
       )}
       <div className={styles.zone}>
-        <EstimateIntro
-          floorsSelectedCount={floors.selectedCount}
-          wallsSelectedCount={walls.selectedCount}
-          ceilingsSelectedCount={ceilings.selectedCount}
-          tileSelectedCount={tile.selectedCount}
-          electricsSelectedCount={electrics.selectedCount}
-          plumbingSelectedCount={plumbing.selectedCount}
-          floorsTotalRub={floors.totalRub}
-          wallsTotalRub={walls.totalRub}
-          ceilingsTotalRub={ceilings.totalRub}
-          tileTotalRub={tile.totalRub}
-          electricsTotalRub={electrics.totalRub}
-          plumbingTotalRub={plumbing.totalRub}
-          grandTotalRub={grandTotalRub}
-          floorsMappingCount={countAvailableMappingItems(activeMappings.floors)}
-          wallsMappingCount={countAvailableMappingItems(activeMappings.walls)}
-          ceilingsMappingCount={countAvailableMappingItems(activeMappings.ceilings)}
-          tileMappingCount={countAvailableMappingItems(activeMappings.tile)}
-          electricsMappingCount={countAvailableMappingItems(activeMappings.electrics)}
-          plumbingMappingCount={countAvailableMappingItems(activeMappings.plumbing)}
-        />
+        {!accountPayload ? <section className={styles.documentSetup} aria-labelledby="estimate-document-setup-title">
+          <h1 id="estimate-document-setup-title">Данные сметы</h1>
+          <p>Заполните данные заказчика перед расчётом. Их можно изменить и позже.</p>
+          <EstimateDocumentFields value={localDocumentDetails} onChange={handleLocalDocumentChange} />
+          {documentStorageFailed ? <p role="alert">Данные документа не сохранились в браузере. Скачайте резервную копию сметы.</p> : null}
+        </section> : null}
         <EstimatePriceProfilePanel
           profile={priceProfile}
           lines={allLines}
           estimateProfileLabel={estimateProfileRef?.name ?? null}
           profileMismatchMessage={profileMismatchMessage}
           availableWorkCount={availableWorkCount}
+          sectionCounts={[
+            { label: 'Стены', count: countAvailableMappingItems(activeMappings.walls) },
+            { label: 'Полы', count: countAvailableMappingItems(activeMappings.floors) },
+            { label: 'Потолки', count: countAvailableMappingItems(activeMappings.ceilings) },
+            { label: 'Плитка', count: countAvailableMappingItems(activeMappings.tile) },
+            { label: 'Электрика', count: countAvailableMappingItems(activeMappings.electrics) },
+            { label: 'Сантехника', count: countAvailableMappingItems(activeMappings.plumbing) },
+          ]}
           onApply={handlePriceProfileApply}
         />
         <EstimateTabs activeTab={activeTab} onChange={setActiveTab} />
@@ -689,6 +695,8 @@ export function EstimateCalculatorWorkspace({
           ]}
           snapshot={snapshot}
           onNew={resetAllEstimate}
+          documentDetails={accountPayload ? undefined : localDocumentDetails}
+          onDocumentDetailsChange={accountPayload ? undefined : handleLocalDocumentChange}
           accountDetails={accountPayload ? accountDetails : undefined}
           onAccountDetailsChange={accountPayload ? onAccountDetailsChange : undefined}
           onAccountImport={

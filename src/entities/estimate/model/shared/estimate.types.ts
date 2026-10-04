@@ -186,6 +186,8 @@ export type EstimateLine = {
    * Не выводить сравнением с прайсом: только явный признак (для старых снимков может отсутствовать).
    */
   priceEdited?: boolean
+  /** Строка создана мастером сценария; ручные строки из прайса не затрагиваются при замене. */
+  scenarioManaged?: boolean
 }
 
 export type EstimateSection = {

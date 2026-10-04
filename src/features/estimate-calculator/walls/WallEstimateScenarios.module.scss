@@ -37,15 +37,17 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
+  max-width: 760px;
 
-  @include mq.media(tablet) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  &.gridWithPreview {
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 0.85fr);
+    max-width: none;
 
-  @include mq.media(phone) {
-    grid-template-columns: 1fr;
+    @include mq.media(phone, tablet) {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 }
 
@@ -68,6 +70,17 @@
     background: var(--paper);
     box-shadow: 0 8px 24px rgb(22 23 19 / 5%);
   }
+}
+
+.livePreview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-self: start;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
 }
 
 .cardAccent {
@@ -148,4 +161,108 @@
   .card {
     transition: none;
   }
+}
+
+.roomContext {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.progressBlock {
+  margin: 0 0 12px;
+}
+
+.progressTitle {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  color: color-mix(in srgb, var(--ink) 75%, transparent);
+}
+
+.roomProgress {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  button {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    min-height: 46px;
+    padding: 7px 9px;
+    border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+    text-align: left;
+    cursor: pointer;
+
+    &[data-active='true'] {
+      border-color: var(--amber);
+      background: color-mix(in srgb, var(--amber) 8%, var(--paper));
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--amber);
+      outline-offset: 2px;
+    }
+  }
+
+  strong {
+    font-size: 11px;
+  }
+
+  span {
+    font-size: 10px;
+    line-height: 1.3;
+    color: color-mix(in srgb, var(--ink) 62%, transparent);
+  }
+}
+
+.stepLabel {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.navigation {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 6px;
+
+  @include mq.media(phone) {
+    flex-direction: column-reverse;
+
+    button { width: 100%; }
+  }
+}
+
+.back {
+  @include eu.button-secondary;
+}
+
+.preview {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  line-height: 1.4;
 }

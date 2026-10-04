@@ -25,6 +25,8 @@ type Props = {
   lines: readonly EstimateLine[]
   snapshot: EstimateCalculatorSnapshot
   onNew: () => void
+  documentDetails?: EstimateDocumentDetails
+  onDocumentDetailsChange?: (details: EstimateDocumentDetails) => void
   accountDetails?: EstimateDocumentDetails
   onAccountDetailsChange?: (details: EstimateDocumentDetails) => void
   onAccountImport?: (payload: {
@@ -38,12 +40,14 @@ export function EstimateDocumentPanel({
   lines,
   snapshot,
   onNew,
+  documentDetails,
+  onDocumentDetailsChange,
   accountDetails,
   onAccountDetailsChange,
   onAccountImport,
 }: Props) {
   const [localDetails, setDetails] = useState(() => accountDetails ?? readDocumentDetails())
-  const details = accountDetails ?? localDetails
+  const details = accountDetails ?? documentDetails ?? localDetails
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [confirmation, setConfirmation] = useState<'new' | 'import' | null>(null)
@@ -82,6 +86,10 @@ export function EstimateDocumentPanel({
     const next = { ...details, ...patch }
     if (onAccountDetailsChange) {
       onAccountDetailsChange(next)
+      return
+    }
+    if (onDocumentDetailsChange) {
+      onDocumentDetailsChange(next)
       return
     }
     setDetails(next)
@@ -172,13 +180,13 @@ export function EstimateDocumentPanel({
     <section className={styles.panel} aria-labelledby="estimate-document-title">
       <div className={styles.heading}>
         <h2 id="estimate-document-title">
-          {accountDetails ? 'Экспорт и копия файла' : 'Смета для заказчика'}
+          Экспорт сметы
         </h2>
         <button type="button" className={styles.secondary} onClick={() => setConfirmation('new')}>
           {accountDetails ? 'Очистить расчёт' : 'Новая смета'}
         </button>
       </div>
-      {!accountDetails && (
+      {!accountDetails && !documentDetails && (
         <EstimateDocumentFields value={details} onChange={(next) => update(next)} />
       )}
       {issues.length > 0 && (

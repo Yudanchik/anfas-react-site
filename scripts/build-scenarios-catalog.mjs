@@ -110,6 +110,9 @@ function resolveWallScenarioKeys(application) {
     case 'finish-only':
       break
     case 'from-scratch':
+      if (application.demolitionBeforeWork) {
+        keys.push(DEMOLITION_KEYS[application.demolitionCovering ?? 'wallpaper'], 'prep-dust-removal')
+      }
       keys.push(
         'primer-deep-penetration',
         'plaster-gypsum-beacons',
@@ -166,8 +169,11 @@ function formatWallScenarioLabel(application) {
     if (finishTarget === 'paint') return 'Только финиш: покраска'
     return WALL_STATE_LABELS[state]
   }
-  if (finishTarget === 'none') return `${WALL_STATE_LABELS[state]} (${FINISH_LABELS.none})`
-  return `${WALL_STATE_LABELS[state]} ${FINISH_LABELS[finishTarget]}`
+  const base = application.demolitionBeforeWork && state === 'from-scratch'
+    ? 'Демонтаж и стены с нуля'
+    : WALL_STATE_LABELS[state]
+  if (finishTarget === 'none') return `${base} (${FINISH_LABELS.none})`
+  return `${base} ${FINISH_LABELS[finishTarget]}`
 }
 
 // --- Ceiling ---
@@ -501,6 +507,9 @@ for (const state of [
       if (finishTarget === 'wallpaper') app.wallpaperType = 'flizelin'
       if (finishTarget === 'paint') app.paintLayers = 'paint-2'
       wallApps.push(app)
+      if (state === 'from-scratch') {
+        wallApps.push({ ...app, demolitionBeforeWork: true, demolitionCovering: 'wallpaper' })
+      }
     }
   }
 }
@@ -859,7 +868,7 @@ md += `---
 `
 
 const outMd = path.join(root, 'docs/estimate-calculator/scenarios-catalog.md')
-writeFileSync(outMd, md, 'utf8')
+writeFileSync(outMd, `${md.trimEnd()}\n`, 'utf8')
 console.log('wrote', outMd, 'chars', md.length)
 
 // sanity: count missing

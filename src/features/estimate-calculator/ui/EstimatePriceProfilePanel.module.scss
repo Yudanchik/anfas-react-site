@@ -33,6 +33,29 @@
   text-transform: uppercase;
 }
 
+.sectionCounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    padding: 6px 9px;
+    border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+  }
+
+  strong {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
 .text {
   max-width: 76ch;
   margin: 10px 0 0;

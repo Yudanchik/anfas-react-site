@@ -113,18 +113,18 @@ export function validateWallScenarioMeasures(params: {
   const plaster = zone ? zone.plasterArea : input.plasterArea
   const putty = zone ? zone.puttyArea : input.puttyArea
   const finish = zone ? zone.finishArea : input.finishArea
+  const slopes = zone ? zone.slopesLength : input.slopesLengthM
+  if (application.slopesWork && application.slopesWork !== 'none' && !positive(slopes)) return fail()
 
   switch (application.state) {
     case 'demolition-only':
-      return positive(demolition) ? { ok: true } : fail()
+      return anyPositive([demolition, total]) ? { ok: true } : fail()
     case 'local-leveling':
       return anyPositive([putty, plaster, total]) ? { ok: true } : fail()
     case 'finish-only':
       return anyPositive([finish, putty, total]) ? { ok: true } : fail()
     case 'after-demolition':
-      return positive(demolition) && anyPositive([total, plaster, putty])
-        ? { ok: true }
-        : fail()
+      return anyPositive([total, plaster, putty]) ? { ok: true } : fail()
     case 'from-scratch':
     case 'prefinish':
       return anyPositive([total, plaster, putty]) ? { ok: true } : fail()

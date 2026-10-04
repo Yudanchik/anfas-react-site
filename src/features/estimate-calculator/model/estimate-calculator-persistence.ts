@@ -44,6 +44,13 @@ import {
   type WallEstimateInput,
   type WallFinishTargetOption,
   type WallPaintLayersOption,
+  type WallSubstrateOption,
+  type WallLevelingOption,
+  type WallMoistureOption,
+  type WallQualityOption,
+  type WallBaseConditionOption,
+  type WallScenarioApplication,
+  type WallSlopesWorkOption,
   type WallPriceMappingItem,
   type WallStateOption,
   type WallWallpaperTypeOption,
@@ -76,6 +83,7 @@ export type PersistedEstimateLine = {
   sectionId?: string
   /** Явная ручная правка цены/названия прайс-строки. У старых снимков может отсутствовать. */
   priceEdited?: boolean
+  scenarioManaged?: boolean
 }
 
 export type PersistedPriceProfileRef = {
@@ -96,8 +104,16 @@ export type WallScenarioDraftState = {
   state: WallStateOption
   finishTarget: WallFinishTargetOption
   demolitionCovering: WallDemolitionCoveringOption
+  demolitionBeforeWork: boolean
   wallpaperType: WallWallpaperTypeOption
   paintLayers: WallPaintLayersOption
+  slopesWork: WallSlopesWorkOption
+  substrate: WallSubstrateOption
+  leveling: WallLevelingOption
+  moisture: WallMoistureOption
+  quality: WallQualityOption
+  reinforce: boolean
+  baseCondition: WallBaseConditionOption
 }
 
 export type CeilingScenarioDraftState = {
@@ -248,8 +264,16 @@ const DEFAULT_WALL_SCENARIOS: WallScenarioDraftState = {
   state: 'from-scratch',
   finishTarget: 'none',
   demolitionCovering: 'wallpaper',
+  demolitionBeforeWork: false,
   wallpaperType: 'flizelin',
   paintLayers: 'paint-2',
+  slopesWork: 'none',
+  substrate: 'unknown',
+  leveling: 'full',
+  moisture: 'normal',
+  quality: 'q2',
+  reinforce: false,
+  baseCondition: 'unknown',
 }
 
 const DEFAULT_CEILING_SCENARIOS: CeilingScenarioDraftState = {
@@ -390,6 +414,74 @@ function parsePlumbingInput(raw: unknown): PlumbingEstimateInput {
   }
 }
 
+function parseWallMeasurements(raw: unknown): EstimateZone['wallMeasurements'] {
+  if (!isRecord(raw) || !Array.isArray(raw.walls)) return undefined
+  return {
+    roomLengthM: asNonNegative(raw.roomLengthM),
+    roomWidthM: asNonNegative(raw.roomWidthM),
+    roomHeightM: asNonNegative(raw.roomHeightM),
+    autoFootprintArea: typeof raw.autoFootprintArea === 'number' ? asNonNegative(raw.autoFootprintArea) : undefined,
+    walls: raw.walls.slice(0, 40).filter(isRecord).map((wall, index) => ({
+      id: asString(wall.id) || `wall-${index + 1}`,
+      name: asString(wall.name).slice(0, 60),
+      lengthM: asNonNegative(wall.lengthM),
+      heightM: asNonNegative(wall.heightM),
+      lengthSource: wall.lengthSource === 'room-length' || wall.lengthSource === 'room-width'
+        ? wall.lengthSource : undefined,
+      heightSource: wall.heightSource === 'room-height' ? 'room-height' as const : undefined,
+      openings: Array.isArray(wall.openings)
+        ? wall.openings.slice(0, 30).filter(isRecord).map((opening, openingIndex) => ({
+            id: asString(opening.id) || `opening-${openingIndex + 1}`,
+            kind: opening.kind === 'door' ? 'door' as const : 'window' as const,
+            widthM: asNonNegative(opening.widthM),
+            heightM: asNonNegative(opening.heightM),
+            count: Math.max(1, Math.floor(asNonNegative(opening.count, 1))),
+            deduct: opening.deduct !== false,
+            finishSlopes: opening.finishSlopes === true,
+            slopeSides: opening.slopeSides === 4 ? 4 as const : 3 as const,
+          }))
+        : [],
+    })),
+  }
+}
+
+function parseAppliedWallScenario(raw: unknown): EstimateZone['wallScenario'] {
+  if (!isRecord(raw) || !isRecord(raw.application) || typeof raw.measureSignature !== 'string') return undefined
+  const application = raw.application
+  const states = ['from-scratch', 'after-demolition', 'prefinish', 'demolition-only', 'local-leveling', 'finish-only']
+  const finishes = ['none', 'wallpaper', 'paint']
+  if (!states.includes(String(application.state)) || !finishes.includes(String(application.finishTarget))) return undefined
+  const parseApplication = (value: Record<string, unknown>): WallScenarioApplication => ({
+    state: value.state as WallScenarioApplication['state'],
+    finishTarget: value.finishTarget as WallScenarioApplication['finishTarget'],
+    demolitionCovering: asString(value.demolitionCovering, 'wallpaper') as WallDemolitionCoveringOption,
+    demolitionBeforeWork: value.demolitionBeforeWork === true,
+    wallpaperType: asString(value.wallpaperType, 'flizelin') as WallWallpaperTypeOption,
+    paintLayers: asString(value.paintLayers, 'paint-2') as WallPaintLayersOption,
+    slopesWork: asString(value.slopesWork, 'none') as WallSlopesWorkOption,
+    substrate: ['absorbent', 'dense', 'plastered', 'drywall', 'unknown'].includes(String(value.substrate))
+      ? value.substrate as WallSubstrateOption : undefined,
+    leveling: ['full', 'local', 'none'].includes(String(value.leveling))
+      ? value.leveling as WallLevelingOption : undefined,
+    moisture: ['normal', 'wet'].includes(String(value.moisture))
+      ? value.moisture as WallMoistureOption : undefined,
+    quality: ['q2', 'q3', 'q4'].includes(String(value.quality))
+      ? value.quality as WallQualityOption : undefined,
+    reinforce: value.reinforce === true,
+    baseCondition: ['unknown', 'sound', 'loose'].includes(String(value.baseCondition))
+      ? value.baseCondition as WallBaseConditionOption : undefined,
+  })
+  return {
+    measureSignature: raw.measureSignature,
+    application: parseApplication(application),
+    applications: Array.isArray(raw.applications)
+      ? raw.applications.filter((item): item is Record<string, unknown> => isRecord(item) &&
+        states.includes(String(item.state)) && finishes.includes(String(item.finishTarget)))
+        .slice(0, 20).map(parseApplication)
+      : undefined,
+  }
+}
+
 function parsePersistedZone(raw: unknown): EstimateZone | null {
   if (!isRecord(raw)) return null
   const id = asString(raw.id).trim()
@@ -404,6 +496,8 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
     screedArea: asNonNegative(raw.screedArea),
     wetArea: asNonNegative(raw.wetArea),
     wallArea: asNonNegative(raw.wallArea),
+    wallMeasurements: parseWallMeasurements(raw.wallMeasurements),
+    wallScenario: parseAppliedWallScenario(raw.wallScenario),
     demolitionWallArea: asNonNegative(raw.demolitionWallArea),
     plasterArea: asNonNegative(raw.plasterArea),
     puttyArea: asNonNegative(raw.puttyArea),
@@ -494,6 +588,7 @@ function parsePersistedLine(raw: unknown): PersistedEstimateLine | null {
   if (typeof raw.kind === 'string') line.kind = raw.kind as EstimateLine['kind']
   if (typeof raw.sectionId === 'string') line.sectionId = raw.sectionId
   if (raw.priceEdited === true) line.priceEdited = true
+  if (raw.scenarioManaged === true) line.scenarioManaged = true
 
   return line
 }
@@ -616,6 +711,7 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.wallScenarios.demolitionCovering,
         DEFAULT_WALL_SCENARIOS.demolitionCovering,
       ) as WallDemolitionCoveringOption,
+      demolitionBeforeWork: raw.wallScenarios.demolitionBeforeWork === true,
       wallpaperType: asString(
         raw.wallScenarios.wallpaperType,
         DEFAULT_WALL_SCENARIOS.wallpaperType,
@@ -624,6 +720,20 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.wallScenarios.paintLayers,
         DEFAULT_WALL_SCENARIOS.paintLayers,
       ) as WallPaintLayersOption,
+      slopesWork: asString(
+        raw.wallScenarios.slopesWork,
+        DEFAULT_WALL_SCENARIOS.slopesWork,
+      ) as WallSlopesWorkOption,
+      substrate: ['absorbent', 'dense', 'plastered', 'drywall', 'unknown'].includes(String(raw.wallScenarios.substrate))
+        ? raw.wallScenarios.substrate as WallSubstrateOption : DEFAULT_WALL_SCENARIOS.substrate,
+      leveling: ['full', 'local', 'none'].includes(String(raw.wallScenarios.leveling))
+        ? raw.wallScenarios.leveling as WallLevelingOption : DEFAULT_WALL_SCENARIOS.leveling,
+      moisture: raw.wallScenarios.moisture === 'wet' ? 'wet' : 'normal',
+      quality: ['q2', 'q3', 'q4'].includes(String(raw.wallScenarios.quality))
+        ? raw.wallScenarios.quality as WallQualityOption : DEFAULT_WALL_SCENARIOS.quality,
+      reinforce: raw.wallScenarios.reinforce === true,
+      baseCondition: ['unknown', 'sound', 'loose'].includes(String(raw.wallScenarios.baseCondition))
+        ? raw.wallScenarios.baseCondition as WallBaseConditionOption : DEFAULT_WALL_SCENARIOS.baseCondition,
     }
   }
 
@@ -702,6 +812,7 @@ export function serializeEstimateLine(line: EstimateLine): PersistedEstimateLine
   if (line.zoneId) persisted.zoneId = line.zoneId
   if (line.zoneName) persisted.zoneName = line.zoneName
   if (line.priceEdited) persisted.priceEdited = true
+  if (line.scenarioManaged) persisted.scenarioManaged = true
   return persisted
 }
 
@@ -715,6 +826,8 @@ export function serializeEstimateZone(zone: EstimateZone): EstimateZone {
     screedArea: zone.screedArea,
     wetArea: zone.wetArea,
     wallArea: zone.wallArea,
+    wallMeasurements: zone.wallMeasurements,
+    wallScenario: zone.wallScenario,
     demolitionWallArea: zone.demolitionWallArea,
     plasterArea: zone.plasterArea,
     puttyArea: zone.puttyArea,
@@ -917,6 +1030,7 @@ function applyPersistedPatches(
         frontendCategorySlug: mapping?.frontendCategorySlug,
         note: mapping?.note,
         priceEdited: patch.priceEdited === true || unknownOriginEdit ? true : undefined,
+        scenarioManaged: patch.scenarioManaged === true,
       })
       continue
     }

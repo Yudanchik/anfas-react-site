@@ -20,6 +20,7 @@ import {
   formatUnavailableScenarioMessage,
   getUnavailableMappingKeys,
   resolveWallScenarioKeys,
+  wallScenarioForZone,
   syncNewLinesFromMapping,
   updateEstimateLine,
   removeRemovableEstimateLine,
@@ -30,6 +31,7 @@ import {
   type WallEstimateInput,
   type WallPriceMappingItem,
   type WallScenarioApplication,
+  type WallScenarioApplyMode,
 } from '@/entities/estimate'
 
 import {
@@ -137,9 +139,12 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
   function applyScenario(
     application: WallScenarioApplication,
     target?: { zone?: EstimateZone },
+    mode: WallScenarioApplyMode = 'add',
   ): { label: string; addedCount: number; zoneName?: string; error?: string } {
     const zone = target?.zone
     const keys = resolveWallScenarioKeys(application)
+    if (keys.length === 0) return { label: '', addedCount: 0,
+      error: 'По этим ответам нельзя безопасно подобрать работы. Проверьте состояние основания и финиш.' }
     const unavailable = getUnavailableMappingKeys(keys, mapping)
     if (unavailable.length > 0) {
       return {
@@ -150,11 +155,11 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
     }
 
     let result = zone
-      ? applyWallScenarioToZone(lines, zone, application)
+      ? applyWallScenarioToZone(lines, zone, application, mode)
       : applyWallScenario(lines, input, application)
     setLines((prev) => {
       result = zone
-        ? applyWallScenarioToZone(prev, zone, application)
+        ? applyWallScenarioToZone(prev, zone, application, mode)
         : applyWallScenario(prev, input, application)
       return syncNewLinesFromMapping(prev, result.lines, WALL_SECTION_ID, mapping)
     })
@@ -163,6 +168,30 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
       addedCount: result.addedCount,
       zoneName: zone?.name,
     }
+  }
+
+  function applyScenarioToZones(
+    application: WallScenarioApplication,
+    targetZones: readonly EstimateZone[],
+    mode: WallScenarioApplyMode = 'add',
+  ): { addedCount: number; error?: string } {
+    const scenarios = targetZones.map((zone) => ({ zone, application: wallScenarioForZone(application, zone) }))
+    if (scenarios.some(({ application: effective }) => resolveWallScenarioKeys(effective).length === 0)) {
+      return { addedCount: 0, error: 'Для одного из помещений не удалось подобрать безопасный сценарий.' }
+    }
+    const keys = scenarios.flatMap(({ application: effective }) => resolveWallScenarioKeys(effective))
+    const unavailable = getUnavailableMappingKeys([...new Set(keys)], mapping)
+    if (unavailable.length > 0) {
+      return { addedCount: 0, error: formatUnavailableScenarioMessage(unavailable) }
+    }
+    setLines((prev) => {
+      let next = prev
+      for (const scenario of scenarios) {
+        next = applyWallScenarioToZone(next, scenario.zone, scenario.application, mode).lines
+      }
+      return syncNewLinesFromMapping(prev, next, WALL_SECTION_ID, mapping)
+    })
+    return { addedCount: keys.length }
   }
 
   function addManualLine(params: {
@@ -243,6 +272,7 @@ export function useWallEstimateEditor(initial: WallEstimateEditorInitial = {}) {
     applyFinishArea,
     applyLinearMeters,
     applyScenario,
+    applyScenarioToZones,
     addManualLine,
     removeManualLine,
     addZonedLine,

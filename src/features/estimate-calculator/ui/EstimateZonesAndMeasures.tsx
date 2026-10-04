@@ -2,12 +2,15 @@ import { useState } from 'react'
 
 import {
   createEstimateZone,
+  formatWallScenarioLabel,
+  getWallScenarioProgress,
   ESTIMATE_ZONE_TEMPLATES,
   ESTIMATE_ZONE_TYPE_OPTIONS,
   updateEstimateZone,
   type CeilingEstimateInput,
   type ElectricEstimateInput,
   type EstimateZone,
+  type EstimateLine,
   type EstimateZoneType,
   type FloorEstimateInput,
   type PlumbingEstimateInput,
@@ -20,6 +23,7 @@ import { EstimateClearableInput } from './EstimateClearableInput'
 import { EstimateConfirmDialog } from './EstimateConfirmDialog'
 import { EstimateNumberInput } from './EstimateNumberInput'
 import { EstimateSelect } from './EstimateSelect'
+import { WallMeasurementEditor } from './WallMeasurementEditor'
 import styles from './EstimateZonesAndMeasures.module.scss'
 
 type EstimateZonesAndMeasuresProps =
@@ -38,6 +42,7 @@ type EstimateZonesAndMeasuresProps =
       onDeleteZone: (zoneId: string) => void
       generalInput: WallEstimateInput
       onGeneralChange: (patch: Partial<WallEstimateInput>) => void
+      wallLines: readonly EstimateLine[]
     }
   | {
       section: 'ceilings'
@@ -146,7 +151,7 @@ function sectionLead(section: EstimateZonesAndMeasuresProps['section']): string 
     case 'floors':
       return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев полов.'
     case 'walls':
-      return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев стен.'
+      return 'Добавьте помещение, укажите размеры стен и проёмов. Ниже выберите отделку — сценарий возьмёт замеры выбранной комнаты.'
     case 'ceilings':
       return 'Общие замеры раздела — для работ без зоны. Ниже — площади выбранных зон для сценариев потолков.'
     case 'tile':
@@ -198,7 +203,7 @@ function zoneSummary(
 export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
   const { zones, onZonesChange, onDeleteZone, section } = props
   const [draftName, setDraftName] = useState('')
-  const [expandedId, setExpandedId] = useState<string | 'general' | null>('general')
+  const [expandedId, setExpandedId] = useState<string | 'general' | null>(section === 'walls' ? null : 'general')
   const [error, setError] = useState<string | null>(null)
   const [pendingDelete, setPendingDelete] = useState<EstimateZone | null>(null)
 
@@ -235,13 +240,13 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
     <section className={styles.wrap} aria-labelledby={titleId}>
       <div className={styles.head}>
         <h2 className={styles.title} id={titleId}>
-          Зоны и замеры
+          {section === 'walls' ? 'Помещения и замеры' : 'Зоны и замеры'}
         </h2>
         <p className={styles.lead}>{sectionLead(section)}</p>
       </div>
 
       <ul className={styles.list}>
-        <li className={styles.item} data-kind="general">
+        {section !== 'walls' ? <li className={styles.item} data-kind="general">
           <div
             className={styles.itemHead}
             data-open={expandedId === 'general' ? 'true' : 'false'}
@@ -271,11 +276,6 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                   input={props.generalInput}
                   onChange={props.onGeneralChange}
                 />
-              ) : section === 'walls' ? (
-                <WallGeneralFields
-                  input={props.generalInput}
-                  onChange={props.onGeneralChange}
-                />
               ) : section === 'ceilings' ? (
                 <CeilingGeneralFields
                   input={props.generalInput}
@@ -299,10 +299,12 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
               )}
             </div>
           ) : null}
-        </li>
+        </li> : null}
 
         {zones.map((zone) => {
           const open = expandedId === zone.id
+          const scenarioProgress = section === 'walls'
+            ? getWallScenarioProgress(zone, props.wallLines) : null
           return (
             <li key={zone.id} className={styles.item}>
               <div className={styles.itemHead} data-open={open ? 'true' : 'false'}>
@@ -321,6 +323,12 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                   <span className={styles.itemCopy}>
                     <span className={styles.itemName}>{zone.name}</span>
                     <span className={styles.itemMeta}>{zoneSummary(section, zone)}</span>
+                    {scenarioProgress ? <span className={styles.scenarioBadge} data-state={scenarioProgress}>
+                      {scenarioProgress === 'pending' ? 'Работы по стенам ещё не добавлены'
+                        : scenarioProgress === 'unknown' ? 'Работы есть · сценарий не отмечен'
+                          : scenarioProgress === 'review' ? 'Сценарий стен · проверить изменения'
+                            : `Сценарий стен: ${formatWallScenarioLabel(zone.wallScenario!.application)}`}
+                    </span> : null}
                   </span>
                 </button>
                 <button
@@ -339,7 +347,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                     savedName={zone.name}
                     onCommit={(name) => patchZone(zone.id, { name })}
                   />
-                  <div className={styles.field}>
+                  {section !== 'walls' ? <div className={styles.field}>
                     <span className={styles.label}>Тип зоны</span>
                     <EstimateSelect
                       value={zone.zoneType}
@@ -349,11 +357,18 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
                         patchZone(zone.id, { zoneType: next as EstimateZoneType })
                       }
                     />
-                  </div>
+                  </div> : null}
                   {section === 'floors' ? (
                     <FloorZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
                   ) : section === 'walls' ? (
-                    <WallZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
+                    <>
+                      <WallMeasurementEditor zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
+                      <details className={styles.details}>
+                        <summary>Уточнить объёмы отдельных работ{zone.demolitionWallArea || zone.plasterArea || zone.puttyArea || zone.finishArea || zone.cornersLength ? ' · задано' : ''}</summary>
+                        <p className={styles.advancedHint}>Эти поля меняют количество работы, но сами не добавляют строку в смету. Например, 12 м² в «Демонтаж стен» подставятся в сценарий «Только демонтаж». В сценарии «После демонтажа» демонтаж уже считается выполненным и не добавляется. Если площадь демонтажа, штукатурки, шпаклёвки или финиша равна нулю, сценарий берёт общую площадь стен. Откосы и углы задаются отдельно в погонных метрах.</p>
+                        <WallZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
+                      </details>
+                    </>
                   ) : section === 'ceilings' ? (
                     <CeilingZoneFields zone={zone} onPatch={(patch) => patchZone(zone.id, patch)} />
                   ) : section === 'tile' ? (
@@ -395,7 +410,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
         <div className={styles.addRow}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor={`${titleId}-new-zone`}>
-              Новая зона
+              {section === 'walls' ? 'Новое помещение' : 'Новая зона'}
             </label>
             <EstimateClearableInput
               id={`${titleId}-new-zone`}
@@ -410,7 +425,7 @@ export function EstimateZonesAndMeasures(props: EstimateZonesAndMeasuresProps) {
             />
           </div>
           <button type="button" className={styles.addBtn} onClick={() => addZone(draftName)}>
-            Добавить зону
+            {section === 'walls' ? 'Добавить помещение' : 'Добавить зону'}
           </button>
         </div>
         {error ? (
@@ -544,76 +559,6 @@ function FloorGeneralFields(props: {
   )
 }
 
-function WallGeneralFields(props: {
-  input: WallEstimateInput
-  onChange: (patch: Partial<WallEstimateInput>) => void
-}) {
-  const { input, onChange } = props
-  return (
-    <>
-      <div className={styles.grid}>
-        <NumberField
-          label="Площадь стен"
-          unit="м²"
-          value={input.totalWallArea}
-          onChange={(totalWallArea) => onChange({ totalWallArea })}
-        />
-        <NumberField
-          label="Демонтаж стен"
-          unit="м²"
-          value={input.demolitionArea}
-          onChange={(demolitionArea) => onChange({ demolitionArea })}
-        />
-        <NumberField
-          label="Штукатурка"
-          unit="м²"
-          value={input.plasterArea}
-          onChange={(plasterArea) => onChange({ plasterArea })}
-        />
-        <NumberField
-          label="Шпаклёвка"
-          unit="м²"
-          value={input.puttyArea}
-          onChange={(puttyArea) => onChange({ puttyArea })}
-        />
-        <NumberField
-          label="Финиш"
-          unit="м²"
-          value={input.finishArea}
-          onChange={(finishArea) => onChange({ finishArea })}
-        />
-        <NumberField
-          label="Откосы"
-          unit="м. пог."
-          value={input.slopesLengthM}
-          onChange={(slopesLengthM) => onChange({ slopesLengthM })}
-        />
-        <NumberField
-          label="Углы"
-          unit="м. пог."
-          value={input.cornersLengthM}
-          onChange={(cornersLengthM) => onChange({ cornersLengthM })}
-        />
-        <NumberField
-          label="Высота"
-          unit="м"
-          value={input.wallHeightM}
-          onChange={(wallHeightM) => onChange({ wallHeightM })}
-        />
-      </div>
-      <details className={styles.details}>
-        <summary>Комментарий замерщика</summary>
-        <textarea
-          className={styles.comment}
-          rows={2}
-          value={input.surveyorComment ?? ''}
-          onChange={(event) => onChange({ surveyorComment: event.target.value })}
-        />
-      </details>
-    </>
-  )
-}
-
 function FloorZoneFields(props: {
   zone: EstimateZone
   onPatch: (patch: Partial<Omit<EstimateZone, 'id'>>) => void
@@ -657,13 +602,7 @@ function WallZoneFields(props: {
   return (
     <div className={styles.grid}>
       <NumberField
-        label="Площадь стен"
-        unit="м²"
-        value={zone.wallArea}
-        onChange={(wallArea) => onPatch({ wallArea })}
-      />
-      <NumberField
-        label="Демонтаж стен"
+        label="Площадь демонтажа стен"
         unit="м²"
         value={zone.demolitionWallArea}
         onChange={(demolitionWallArea) => onPatch({ demolitionWallArea })}

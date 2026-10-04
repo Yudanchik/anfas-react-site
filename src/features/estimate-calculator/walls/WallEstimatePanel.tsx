@@ -2,17 +2,20 @@ import { useMemo, useState } from 'react'
 
 import {
   groupWallEstimateLines,
+  wallScenarioMeasureSignature,
+  wallScenarioForZone,
   type EstimateLine,
   type EstimateZone,
   type WallPriceMappingItem,
+  type WallScenarioApplication,
+  type WallScenarioApplyMode,
 } from '@/entities/estimate'
 
-import type { WallScenarioDraftState } from '../model/estimate-calculator-persistence'
+import { restoreWallScenarioDraft, type WallScenarioDraftState } from '../model/estimate-calculator-persistence'
 import { EstimateGroupedTable } from '../ui/EstimateGroupedTable'
 import { EstimateManualLine } from '../ui/EstimateManualLine'
 import { EstimateSectionLines } from '../ui/EstimateSectionLines'
 import { EstimateZonesAndMeasures } from '../ui/EstimateZonesAndMeasures'
-import { WallEstimateHelpers } from './WallEstimateHelpers'
 import { WallEstimateScenarios } from './WallEstimateScenarios'
 import { WallZoneWorkAdd } from './WallZoneWorkAdd'
 import type { WallEstimateEditor } from './use-wall-estimate-editor'
@@ -30,6 +33,17 @@ type WallEstimatePanelProps = {
   mapping?: readonly WallPriceMappingItem[]
 }
 
+function nextScenarioApplications(zone: EstimateZone, application: WallScenarioApplication, mode: WallScenarioApplyMode) {
+  if (mode === 'replace' || !zone.wallScenario) return [application]
+  const previous = zone.wallScenario.applications ?? [zone.wallScenario.application]
+  const signature = (value: WallScenarioApplication) => JSON.stringify(
+    Object.entries(value).filter(([, answer]) => answer !== undefined)
+      .sort(([left], [right]) => left.localeCompare(right)),
+  )
+  return previous.some((item) => signature(item) === signature(application))
+    ? previous : [...previous, application].slice(-20)
+}
+
 export function WallEstimatePanel({
   editor,
   zones,
@@ -37,17 +51,94 @@ export function WallEstimatePanel({
   onDeleteZone,
   scenarioDraft,
   onScenarioDraftChange,
-  onResetSection,
   globalFeedbackEpoch,
   mapping,
 }: WallEstimatePanelProps) {
   const groups = useMemo(() => groupWallEstimateLines(editor.lines), [editor.lines])
   const [sectionFeedbackEpoch, setSectionFeedbackEpoch] = useState(0)
+  const [scenarioStep, setScenarioStep] = useState<1 | 2 | 3>(1)
+  const [scenarioTargetId, setScenarioTargetId] = useState(zones.at(-1)?.id ?? '')
   const feedbackEpoch = sectionFeedbackEpoch + (globalFeedbackEpoch ?? 0)
 
-  function handleReset() {
+  function handleZonesChange(nextZones: EstimateZone[]) {
+    const previousIds = new Set(zones.map((zone) => zone.id))
+    const added = nextZones.filter((zone) => !previousIds.has(zone.id)).at(-1)
+    if (added) {
+      setScenarioTargetId(added.id)
+      setScenarioStep(1)
+      onScenarioDraftChange(restoreWallScenarioDraft(null))
+      setSectionFeedbackEpoch((n) => n + 1)
+    }
+    onZonesChange(nextZones)
+  }
+
+  function handleScenarioTargetChange(targetId: string) {
+    setScenarioTargetId(targetId)
+    setScenarioStep(1)
     setSectionFeedbackEpoch((n) => n + 1)
-    onResetSection()
+    if (targetId === 'all') {
+      onScenarioDraftChange(restoreWallScenarioDraft(null))
+      return
+    }
+    const saved = zones.find((zone) => zone.id === targetId)?.wallScenario?.application
+    const defaults = restoreWallScenarioDraft(null)
+    onScenarioDraftChange(saved ? {
+      ...defaults,
+      state: saved.state,
+      finishTarget: saved.finishTarget,
+      demolitionCovering: saved.demolitionCovering ?? defaults.demolitionCovering,
+      demolitionBeforeWork: saved.demolitionBeforeWork ?? false,
+      wallpaperType: saved.wallpaperType ?? defaults.wallpaperType,
+      paintLayers: saved.paintLayers ?? defaults.paintLayers,
+      slopesWork: saved.slopesWork ?? defaults.slopesWork,
+      substrate: saved.substrate ?? defaults.substrate,
+      leveling: saved.leveling ?? defaults.leveling,
+      moisture: saved.moisture ?? defaults.moisture,
+      quality: saved.quality ?? defaults.quality,
+      reinforce: saved.reinforce ?? defaults.reinforce,
+      baseCondition: saved.baseCondition ?? defaults.baseCondition,
+    } : defaults)
+  }
+
+  function handleApplyScenario(application: WallScenarioApplication, target?: { zone?: EstimateZone }, mode: WallScenarioApplyMode = 'add') {
+    const effective = target?.zone ? wallScenarioForZone(application, target.zone) : application
+    const result = editor.applyScenario(effective, target, mode)
+    if (!result.error && target?.zone) {
+      onZonesChange(zones.map((zone) => zone.id === target.zone?.id
+        ? { ...zone, wallScenario: {
+          application: effective,
+          applications: nextScenarioApplications(zone, effective, mode),
+          measureSignature: wallScenarioMeasureSignature(zone),
+        } }
+        : zone))
+    }
+    return result
+  }
+
+  function handleApplyToZones(application: WallScenarioApplication, targetZones: readonly EstimateZone[], mode: WallScenarioApplyMode = 'add') {
+    const result = editor.applyScenarioToZones(application, targetZones, mode)
+    if (!result.error) {
+      const targetIds = new Set(targetZones.map((zone) => zone.id))
+      onZonesChange(zones.map((zone) => targetIds.has(zone.id)
+        ? { ...zone, wallScenario: {
+          application: wallScenarioForZone(application, zone),
+          applications: nextScenarioApplications(zone, wallScenarioForZone(application, zone), mode),
+          measureSignature: wallScenarioMeasureSignature(zone),
+        } }
+        : zone))
+      setScenarioStep(1)
+      onScenarioDraftChange(restoreWallScenarioDraft(null))
+    }
+    return result
+  }
+
+  function handleDeleteZone(zoneId: string) {
+    if (scenarioTargetId === zoneId) {
+      setScenarioTargetId(zones.find((zone) => zone.id !== zoneId)?.id ?? '')
+      setScenarioStep(1)
+      setSectionFeedbackEpoch((n) => n + 1)
+    }
+    onDeleteZone(zoneId)
   }
 
   return (
@@ -56,10 +147,11 @@ export function WallEstimatePanel({
         <EstimateZonesAndMeasures
           section="walls"
           zones={zones}
-          onZonesChange={onZonesChange}
-          onDeleteZone={onDeleteZone}
+          onZonesChange={handleZonesChange}
+          onDeleteZone={handleDeleteZone}
           generalInput={editor.input}
           onGeneralChange={editor.patchInput}
+          wallLines={editor.lines}
         />
       </div>
 
@@ -67,29 +159,17 @@ export function WallEstimatePanel({
         <WallEstimateScenarios
           draft={scenarioDraft}
           onDraftChange={onScenarioDraftChange}
+          step={scenarioStep}
+          onStepChange={setScenarioStep}
+          targetId={scenarioTargetId}
+          onTargetChange={handleScenarioTargetChange}
           zones={zones}
           generalInput={editor.input}
+          wallLines={editor.lines}
+          mapping={mapping}
           feedbackEpoch={feedbackEpoch}
-          onApplyScenario={editor.applyScenario}
-        />
-      </div>
-
-      <div className={styles.zone}>
-        <WallEstimateHelpers
-          totalWallArea={editor.input.totalWallArea}
-          demolitionArea={editor.input.demolitionArea}
-          plasterArea={editor.input.plasterArea}
-          puttyArea={editor.input.puttyArea}
-          finishArea={editor.input.finishArea}
-          slopesLengthM={editor.input.slopesLengthM}
-          cornersLengthM={editor.input.cornersLengthM}
-          onApplyTotalArea={editor.applyTotalArea}
-          onApplyDemolitionArea={editor.applyDemolitionArea}
-          onApplyPlasterArea={editor.applyPlasterArea}
-          onApplyPuttyArea={editor.applyPuttyArea}
-          onApplyFinishArea={editor.applyFinishArea}
-          onApplyLinearMeters={editor.applyLinearMeters}
-          onReset={handleReset}
+          onApplyScenario={handleApplyScenario}
+          onApplyToZones={handleApplyToZones}
         />
       </div>
 
@@ -100,7 +180,7 @@ export function WallEstimatePanel({
           pricePanel={
             <WallZoneWorkAdd
               zones={zones}
-              onZonesChange={onZonesChange}
+              onZonesChange={handleZonesChange}
               embedded
               feedbackEpoch={feedbackEpoch}
               mapping={mapping}

@@ -83,6 +83,8 @@ export {
   resolveEstimateZoneType,
 } from './shared/estimate-zone'
 export type { EstimateZone, EstimateZoneId, EstimateZoneType } from './shared/estimate-zone'
+export { calculateWallMeasurements, createRectangularWalls, EMPTY_WALL_MEASUREMENTS, relinkRectangularWalls, roomFootprintArea, syncRoomFootprintAreas, updateRoomDimensions } from './shared/wall-measurements'
+export type { WallMeasurements, MeasuredWall, WallOpening } from './shared/wall-measurements'
 export {
   partitionScenariosByZoneType,
   scenarioMatchesZoneType,
@@ -251,15 +253,27 @@ export {
   formatWallScenarioLabel,
   formatWallScenarioZoneFeedback,
   isWallFinishPriceKey,
+  resolveWallScenarioPlan,
   resolveWallScenarioKeys,
+  wallScenarioForZone,
   wallScenarioIncludesFinish,
 } from './walls/apply-wall-scenario'
+export { getWallScenarioProgress, wallScenarioMeasureSignature } from './walls/wall-scenario-progress'
+export type { WallScenarioProgress } from './walls/wall-scenario-progress'
 export type {
   ApplyWallScenarioResult,
   WallDemolitionCoveringOption,
   WallFinishTargetOption,
   WallPaintLayersOption,
+  WallSubstrateOption,
+  WallLevelingOption,
+  WallMoistureOption,
+  WallQualityOption,
+  WallScenarioApplyMode,
+  WallBaseConditionOption,
   WallScenarioApplication,
+  WallScenarioPlan,
+  WallSlopesWorkOption,
   WallStateOption,
   WallWallpaperTypeOption,
 } from './walls/apply-wall-scenario'
