@@ -17,6 +17,7 @@ import {
   noteManualLineIds,
   noteZonedLineIds,
   resolveEstimateZoneType,
+  roomFootprintArea,
   type CeilingDemolitionCoveringOption,
   type CeilingEstimateInput,
   type CeilingFinishTargetOption,
@@ -105,7 +106,8 @@ export type FloorPresetDraftState = {
   selfLevelingBase: 'inspect' | 'ready' | 'grind' | 'other'
   roomScreedBase: 'inspect' | 'bonded' | 'film' | 'floating'
   roomWaterproofing: WaterproofingLayersOption | 'none'
-  roomFinish: 'none' | 'laminate-floating' | 'quartz-floating' | 'quartz-glue'
+  roomFinish: 'none' | 'laminate-floating' | 'quartz-floating' | 'quartz-glue' |
+    'parquet-glue' | 'carpet-glue'
   roomPlinth: 'none' | 'plastic' | 'mdf' | 'duropolymer' | 'shadow'
   covering: DemolitionCoveringOption
   screedType: ScreedTypeOption
@@ -508,6 +510,14 @@ function parseWallMeasurements(raw: unknown): EstimateZone['wallMeasurements'] {
           yM: asNonNegative(point.yM),
         }))
       : undefined,
+    footprintAdjustment: isRecord(raw.footprintAdjustment) &&
+      (raw.footprintAdjustment.kind === 'cutout' || raw.footprintAdjustment.kind === 'extension')
+      ? {
+          kind: raw.footprintAdjustment.kind,
+          widthM: asNonNegative(raw.footprintAdjustment.widthM),
+          depthM: asNonNegative(raw.footprintAdjustment.depthM),
+        }
+      : undefined,
     walls: raw.walls
       .slice(0, 40)
       .filter(isRecord)
@@ -633,18 +643,23 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
   const id = asString(raw.id).trim()
   const name = asString(raw.name).trim()
   if (!id || !name) return null
+  const wallMeasurements = parseWallMeasurements(raw.wallMeasurements)
+  // В старых снимках пятая стена обнуляла автоматически рассчитанные пол и потолок.
+  const recoveredArea = wallMeasurements && wallMeasurements.autoFootprintArea === undefined
+    ? roomFootprintArea(wallMeasurements) : null
   return {
     id,
     name,
     zoneType: resolveEstimateZoneType({ name, zoneType: raw.zoneType }),
     plumbingPointsMode: raw.plumbingPointsMode === 'fixtures' ? 'fixtures' : 'manual',
-    floorArea: asNonNegative(raw.floorArea),
+    floorArea: asNonNegative(raw.floorArea) || recoveredArea || 0,
     demolitionFloorArea: asNonNegative(raw.demolitionFloorArea ?? raw.demolitionArea),
     screedArea: asNonNegative(raw.screedArea),
     wetArea: asNonNegative(raw.wetArea),
     wallArea: asNonNegative(raw.wallArea),
     gklWallSeamsLength: asNonNegative(raw.gklWallSeamsLength),
-    wallMeasurements: parseWallMeasurements(raw.wallMeasurements),
+    wallMeasurements: wallMeasurements && recoveredArea
+      ? { ...wallMeasurements, autoFootprintArea: recoveredArea } : wallMeasurements,
     wallScenario: parseAppliedWallScenario(raw.wallScenario),
     scenarioStatuses: parseScenarioStatuses(raw.scenarioStatuses),
     excludedSections: parseExcludedSections(raw.excludedSections),
@@ -676,7 +691,7 @@ function parsePersistedZone(raw: unknown): EstimateZone | null {
     finishArea: asNonNegative(raw.finishArea),
     slopesLength: asNonNegative(raw.slopesLength),
     cornersLength: asNonNegative(raw.cornersLength),
-    ceilingArea: asNonNegative(raw.ceilingArea),
+    ceilingArea: asNonNegative(raw.ceilingArea) || recoveredArea || 0,
     gklCeilingSeamsLength: asNonNegative(raw.gklCeilingSeamsLength),
     demolitionCeilingArea: asNonNegative(raw.demolitionCeilingArea),
     plasterCeilingArea: asNonNegative(raw.plasterCeilingArea),
@@ -903,7 +918,7 @@ export function parseEstimateCalculatorSnapshot(raw: unknown): EstimateCalculato
         raw.floorPresets.roomWaterproofing,
         'none',
       ) as FloorPresetDraftState['roomWaterproofing'],
-      roomFinish: (['none', 'laminate-floating', 'quartz-floating', 'quartz-glue'].includes(String(raw.floorPresets.roomFinish))
+      roomFinish: (['none', 'laminate-floating', 'quartz-floating', 'quartz-glue', 'parquet-glue', 'carpet-glue'].includes(String(raw.floorPresets.roomFinish))
         ? raw.floorPresets.roomFinish : 'none') as FloorPresetDraftState['roomFinish'],
       roomPlinth: (['none', 'plastic', 'mdf', 'duropolymer', 'shadow'].includes(String(raw.floorPresets.roomPlinth))
         ? raw.floorPresets.roomPlinth : 'none') as FloorPresetDraftState['roomPlinth'],

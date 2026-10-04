@@ -44,6 +44,12 @@ test('покрытие и плинтус получают разные объё�
   assert.equal(changed.find((line) => line.priceKey === 'finish-plinth-plastic')?.enabled, false)
   assert.equal(changed.find((line) => line.priceKey === 'finish-underlay-laminate-lock-quartz')?.enabled, false)
   assert.equal(changed.find((line) => line.priceKey === 'finish-plinth-mdf-glue')?.enabled, true)
+  const parquet = applyFloorPresetToZone(changed, zone, { ...app, finish: 'parquet-glue', plinth: 'none' }).lines
+  assert.equal(parquet.find((line) => line.priceKey === 'finish-engineered-parquet-glue')?.quantity, 12)
+  assert.equal(parquet.find((line) => line.priceKey === 'finish-quartz-glue')?.enabled, false)
+  const carpet = applyFloorPresetToZone(parquet, zone, { ...app, finish: 'carpet-glue', plinth: 'none' }).lines
+  assert.equal(carpet.find((line) => line.priceKey === 'finish-carpet-glue')?.quantity, 12)
+  assert.equal(carpet.find((line) => line.priceKey === 'finish-engineered-parquet-glue')?.enabled, false)
 })
 const { useRoomScenarioBatch } = await moduleFrom(
   'src/features/estimate-calculator/model/use-room-scenario-batch.ts',
@@ -199,6 +205,33 @@ test('статусы переживают сохранение; старые и 
   assert.deepEqual(parseEstimateCalculatorSnapshot(snapshot).zones[0].scenarioStatuses, {})
   delete snapshot.zones[0].scenarioStatuses
   assert.equal(parseEstimateCalculatorSnapshot(snapshot).zones[0].scenarioStatuses, undefined)
+})
+
+test('старый снимок с шестью стенами восстанавливает площадь по введённым габаритам', () => {
+  const walls = [4, 3, 4, 3, 1, 1].map((lengthM, index) => ({
+    id: `w${index}`, name: `Стена ${index + 1}`, lengthM, heightM: 2.7, openings: [],
+  }))
+  const zone = createEstimateZone({ name: 'Кухня', fields: { floorArea: 0, ceilingArea: 0,
+    wallMeasurements: { roomLengthM: 4, roomWidthM: 3, roomHeightM: 2.7, walls } } })
+  const restored = parseEstimateCalculatorSnapshot({ version: 2, activeTab: 'walls',
+    zones: [serializeEstimateZone(zone)], floors: { input: {}, lines: [] },
+    walls: { input: {}, lines: [] } }).zones[0]
+  assert.equal(restored.floorArea, 12)
+  assert.equal(restored.ceilingArea, 12)
+  assert.equal(restored.wallMeasurements.autoFootprintArea, 12)
+})
+
+test('ниша в плане пола и новый финиш переживают сохранение сметы', () => {
+  const zone = createEstimateZone({ name: 'Комната', fields: { floorArea: 11,
+    wallMeasurements: { roomLengthM: 4, roomWidthM: 3, roomHeightM: 2.7,
+      autoFootprintArea: 11, footprintAdjustment: { kind: 'cutout', widthM: 1, depthM: 1 }, walls: [] } } })
+  const restored = parseEstimateCalculatorSnapshot({ version: 2, activeTab: 'floors',
+    zones: [serializeEstimateZone(zone)], floors: { input: {}, lines: [] },
+    walls: { input: {}, lines: [] }, floorPresets: { roomFinish: 'carpet-glue' } })
+  assert.deepEqual(restored.zones[0].wallMeasurements.footprintAdjustment,
+    { kind: 'cutout', widthM: 1, depthM: 1 })
+  assert.equal(restored.zones[0].floorArea, 11)
+  assert.equal(restored.floorPresets.roomFinish, 'carpet-glue')
 })
 
 test('ответы о подготовке пола и плитки восстанавливаются; старые снимки сохраняют прежний маршрут', () => {

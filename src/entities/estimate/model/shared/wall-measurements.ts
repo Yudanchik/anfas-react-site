@@ -28,6 +28,8 @@ export type WallMeasurements = {
   autoFootprintArea?: number
   /** Точки контура пола по порядку обхода; последняя соединяется с первой. */
   footprintVertices?: { id: string; xM: number; yM: number }[]
+  /** Один прямоугольный вырез или выступ относительно габаритов комнаты. */
+  footprintAdjustment?: { kind: 'cutout' | 'extension'; widthM: number; depthM: number }
   walls: MeasuredWall[]
 }
 
@@ -60,9 +62,16 @@ export function roomFootprintArea(measurements: WallMeasurements): number | null
     }, 0)
     return Math.abs(twiceArea) > 0.000001 ? roundArea(Math.abs(twiceArea) / 2) : null
   }
-  if (measurements.walls.length > 4) return null
-  return valid(measurements.roomLengthM) && valid(measurements.roomWidthM)
-    ? roundArea(measurements.roomLengthM * measurements.roomWidthM) : null
+  if (!valid(measurements.roomLengthM) || !valid(measurements.roomWidthM)) return null
+  const base = measurements.roomLengthM * measurements.roomWidthM
+  const adjustment = measurements.footprintAdjustment
+  if (!adjustment) return roundArea(base)
+  if (!valid(adjustment.widthM) || !valid(adjustment.depthM) ||
+      (adjustment.kind === 'cutout' &&
+        (adjustment.widthM >= measurements.roomLengthM || adjustment.depthM >= measurements.roomWidthM)))
+    return null
+  const area = base + (adjustment.kind === 'extension' ? 1 : -1) * adjustment.widthM * adjustment.depthM
+  return area > 0 ? roundArea(area) : null
 }
 
 export function roomFootprintPerimeter(measurements: WallMeasurements): number | null {
@@ -74,9 +83,10 @@ export function roomFootprintPerimeter(measurements: WallMeasurements): number |
       return sum + Math.hypot(next.xM - point.xM, next.yM - point.yM)
     }, 0))
   }
-  if (measurements.walls.length > 4) return null
-  return valid(measurements.roomLengthM) && valid(measurements.roomWidthM)
-    ? roundArea(2 * (measurements.roomLengthM + measurements.roomWidthM)) : null
+  if (roomFootprintArea(measurements) === null) return null
+  // Для одного прямоугольного выреза/выступа на стороне контура появляются две стороны глубины.
+  return roundArea(2 * (measurements.roomLengthM + measurements.roomWidthM) +
+    2 * (measurements.footprintAdjustment?.depthM ?? 0))
 }
 
 function footprintHasIntersections(points: NonNullable<WallMeasurements['footprintVertices']>): boolean {
@@ -111,7 +121,7 @@ export function syncRoomFootprintAreas(
   const area = roomFootprintArea(next)
   const lastAuto = previous.autoFootprintArea ?? roomFootprintArea(previous) ?? 0
   if (area === null) {
-    if (next.walls.length > 4 || next.footprintVertices?.length) return {
+    if (next.footprintAdjustment || next.footprintVertices?.length) return {
       measurements: { ...next, autoFootprintArea: undefined },
       ...(floorArea === lastAuto ? { floorArea: 0 } : {}),
       ...(ceilingArea === lastAuto ? { ceilingArea: 0 } : {}),

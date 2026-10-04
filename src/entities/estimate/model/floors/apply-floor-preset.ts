@@ -17,7 +17,9 @@ export type ScreedTypeOption =
 export type WaterproofingLayersOption = 'acrylic-1' | 'acrylic-2'
 
 export type WasteTripOption = 'gazelle-6' | 'gazelle-12' | 'carry-out'
-export type FloorFinishOption = 'none' | 'laminate-floating' | 'quartz-floating' | 'quartz-glue'
+export type FloorFinishOption =
+  'none' | 'laminate-floating' | 'quartz-floating' | 'quartz-glue' |
+  'parquet-glue' | 'carpet-glue'
 export type FloorPlinthOption = 'none' | 'plastic' | 'mdf' | 'duropolymer' | 'shadow'
 
 export type FloorPresetId =
@@ -110,6 +112,8 @@ const FINISH_KEYS: Record<Exclude<FloorFinishOption, 'none'>, readonly string[]>
   'laminate-floating': ['finish-underlay-laminate-lock-quartz', 'finish-laminate-quartz-floating'],
   'quartz-floating': ['finish-underlay-laminate-lock-quartz', 'finish-laminate-quartz-floating'],
   'quartz-glue': ['finish-quartz-glue'],
+  'parquet-glue': ['finish-engineered-parquet-glue'],
+  'carpet-glue': ['finish-carpet-glue'],
 }
 
 const PLINTH_KEYS: Record<Exclude<FloorPlinthOption, 'none'>, string> = {

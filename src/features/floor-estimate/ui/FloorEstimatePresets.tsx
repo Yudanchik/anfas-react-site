@@ -319,8 +319,15 @@ export function FloorEstimatePresets({
                     { value: 'laminate-floating', label: 'Ламинат плавающим способом с подложкой' },
                     { value: 'quartz-floating', label: 'Замковый кварцвинил с подложкой' },
                     { value: 'quartz-glue', label: 'Клеевой кварцвинил' },
+                    { value: 'parquet-glue', label: 'Инженерная / паркетная доска на клей' },
+                    { value: 'carpet-glue', label: 'Ковровое покрытие на клей' },
                   ]}
                   onChange={(next) => patchDraft({ roomFinish: next as FloorFinishOption })} />
+                <p className={styles.applyHint}>
+                  Плитка рассчитывается на своей вкладке. Монтажа линолеума в текущем прайсе нет:
+                  добавьте его ручной строкой с согласованной ценой. Сложную раскладку паркета и
+                  кварцвинила можно выбрать отдельно из прайса.
+                </p>
               </div>
               <div className={styles.field}>
                 <span>Какой плинтус монтируем?</span>

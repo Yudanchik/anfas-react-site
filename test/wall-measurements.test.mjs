@@ -99,13 +99,23 @@ test('самопересекающийся контур не сохраняет 
   assert.equal(syncRoomFootprintAreas(initial, shape, 12, 12).floorArea, 0)
 })
 
-test('пятая стена без контура сбрасывает только прежнюю автоматическую площадь прямоугольника', () => {
+test('дополнительные стены не сбрасывают площадь по габаритам; одна ниша или выступ уточняет её', () => {
   const initial = { roomLengthM: 4, roomWidthM: 3, roomHeightM: 2.7,
     autoFootprintArea: 12, walls: createRectangularWalls(4, 3, 2.7) }
   const next = { ...initial, walls: [...initial.walls, { ...initial.walls[0], id: 'fifth' }] }
-  assert.equal(roomFootprintArea(next), null)
-  assert.equal(roomFootprintPerimeter(next), null)
+  assert.equal(roomFootprintArea(next), 12)
+  assert.equal(roomFootprintPerimeter(next), 14)
   const result = syncRoomFootprintAreas(initial, next, 12, 10)
-  assert.equal(result.floorArea, 0)
+  assert.equal(result.floorArea, 12)
   assert.equal(result.ceilingArea, undefined)
+  const cutout = { ...next, footprintAdjustment: { kind: 'cutout', widthM: 1, depthM: 1 } }
+  assert.equal(roomFootprintArea(cutout), 11)
+  assert.equal(roomFootprintPerimeter(cutout), 16)
+  const cutoutResult = syncRoomFootprintAreas(next, cutout, 12, 12)
+  assert.equal(cutoutResult.floorArea, 11)
+  const extension = { ...next, footprintAdjustment: { kind: 'extension', widthM: 1, depthM: 1 } }
+  assert.equal(roomFootprintArea(extension), 13)
+  assert.equal(roomFootprintPerimeter(extension), 16)
+  assert.equal(syncRoomFootprintAreas(cutoutResult.measurements, extension, 11, 10).floorArea, 13)
+  assert.equal(roomFootprintArea({ ...next, footprintAdjustment: { kind: 'cutout', widthM: 4, depthM: 1 } }), null)
 })

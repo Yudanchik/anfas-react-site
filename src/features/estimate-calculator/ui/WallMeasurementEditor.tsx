@@ -35,6 +35,8 @@ export function WallMeasurementEditor({ zone, onPatch }: Props) {
   const [expandedWallId, setExpandedWallId] = useState<string | null>(null)
   const contour = measurements.footprintVertices
   const contourArea = contour?.length ? roomFootprintArea(measurements) : null
+  const footprintArea = roomFootprintArea(measurements)
+  const adjustment = measurements.footprintAdjustment
   function save(next: WallMeasurements) {
     const result = calculateWallMeasurements(next)
     const footprint = syncRoomFootprintAreas(measurements, next, zone.floorArea, zone.ceilingArea)
@@ -151,8 +153,46 @@ export function WallMeasurementEditor({ zone, onPatch }: Props) {
           Создать 4 стены
         </button>
       </div>
+      <div className={styles.floorShape}>
+        <strong>Площадь пола и потолка</strong>
+        <p className={styles.hint}>
+          По умолчанию считаем длина × ширина, даже если стен больше четырёх. Если есть одна
+          прямоугольная ниша или выступ, укажите его размеры: площадь вычтем или прибавим.
+          Для произвольной формы можно ввести готовую площадь на вкладке «Полы».
+        </p>
+        <label className={styles.kind}>
+          Форма пола
+          <select value={contour?.length ? 'contour' : adjustment?.kind ?? 'rectangle'}
+            onChange={(event) => {
+              const kind = event.target.value
+              save({ ...measurements, footprintVertices: undefined,
+                footprintAdjustment: kind === 'cutout' || kind === 'extension'
+                  ? { kind, widthM: 0, depthM: 0 } : undefined })
+            }}>
+            <option value="rectangle">Прямоугольная — длина × ширина</option>
+            <option value="cutout">Есть ниша — вычесть площадь</option>
+            <option value="extension">Есть выступ — прибавить площадь</option>
+            {contour?.length ? <option value="contour">Точный контур</option> : null}
+          </select>
+        </label>
+        {adjustment && !contour?.length ? (
+          <div className={styles.adjustmentFields}>
+            <Measure label="Ширина ниши / выступа" value={adjustment.widthM}
+              onChange={(widthM) => save({ ...measurements,
+                footprintAdjustment: { ...adjustment, widthM } })} />
+            <Measure label="Глубина ниши / выступа" value={adjustment.depthM}
+              onChange={(depthM) => save({ ...measurements,
+                footprintAdjustment: { ...adjustment, depthM } })} />
+          </div>
+        ) : null}
+        <p className={styles.hint} role="status">
+          {footprintArea === null
+            ? 'Площадь пока не определена: проверьте размеры комнаты и ниши.'
+            : `Расчётная площадь пола и потолка: ${format(footprintArea)} м²${measurements.walls.length > 4 && !adjustment && !contour?.length ? ' по прямоугольным габаритам; проверьте, нет ли ниши или выступа' : ''}.`}
+        </p>
+      </div>
       <details className={styles.contour}>
-        <summary>Контур пола сложной формы</summary>
+        <summary>Точный контур, если одной ниши недостаточно</summary>
         <p className={styles.hint}>
           Если комната не прямоугольная, отметьте углы по порядку обхода. X и Y — расстояния
           от выбранного угла комнаты в метрах. Одних длин 5–7 стен недостаточно для определения
@@ -161,6 +201,7 @@ export function WallMeasurementEditor({ zone, onPatch }: Props) {
         {!contour?.length ? (
           <button type="button" className={styles.secondary} onClick={() => save({
             ...measurements,
+            footprintAdjustment: undefined,
             footprintVertices: [
               { id: newId(), xM: 0, yM: 0 },
               { id: newId(), xM: measurements.roomLengthM, yM: 0 },
@@ -212,8 +253,8 @@ export function WallMeasurementEditor({ zone, onPatch }: Props) {
       {measurements.walls.length > 0 ? (
         <p className={styles.hint}>
           Размеры связанных стен обновляются вместе с комнатой. Для прямоугольной комнаты площадь
-          пола и потолка берётся из длины и ширины. При пяти и более стенах задайте контур ниже:
-          по одним длинам стен площадь определить нельзя.
+          пола и потолка берётся из длины и ширины. Число стен само по себе не задаёт форму пола:
+          проверьте расчёт выше, если у комнаты есть ниши или выступы.
         </p>
       ) : null}
 
