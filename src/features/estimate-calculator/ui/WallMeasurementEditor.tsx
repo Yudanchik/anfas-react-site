@@ -4,7 +4,6 @@ import {
   calculateWallMeasurements,
   createRectangularWalls,
   EMPTY_WALL_MEASUREMENTS,
-  roomFootprintArea,
   syncRoomFootprintAreas,
   updateRoomDimensions,
   type EstimateZone,
@@ -13,6 +12,7 @@ import {
   type WallOpening,
 } from '@/entities/estimate'
 
+import { FloorShapeEditor } from './FloorShapeEditor'
 import { EstimateNumberInput } from './EstimateNumberInput'
 import { EstimateFieldHint } from './EstimateFieldHint'
 import { MEASURE_FIELD_HINTS } from '../model/measure-field-hints'
@@ -33,10 +33,6 @@ export function WallMeasurementEditor({ zone, onPatch }: Props) {
     measurements.roomLengthM > 0 && measurements.roomWidthM > 0 && measurements.roomHeightM > 0
   const [expandedOpeningId, setExpandedOpeningId] = useState<string | null>(null)
   const [expandedWallId, setExpandedWallId] = useState<string | null>(null)
-  const contour = measurements.footprintVertices
-  const contourArea = contour?.length ? roomFootprintArea(measurements) : null
-  const footprintArea = roomFootprintArea(measurements)
-  const adjustment = measurements.footprintAdjustment
   function save(next: WallMeasurements) {
     const result = calculateWallMeasurements(next)
     const footprint = syncRoomFootprintAreas(measurements, next, zone.floorArea, zone.ceilingArea)
@@ -153,103 +149,7 @@ export function WallMeasurementEditor({ zone, onPatch }: Props) {
           Создать 4 стены
         </button>
       </div>
-      <div className={styles.floorShape}>
-        <strong>Площадь пола и потолка</strong>
-        <p className={styles.hint}>
-          По умолчанию считаем длина × ширина, даже если стен больше четырёх. Если есть одна
-          прямоугольная ниша или выступ, укажите его размеры: площадь вычтем или прибавим.
-          Для произвольной формы можно ввести готовую площадь на вкладке «Полы».
-        </p>
-        <label className={styles.kind}>
-          Форма пола
-          <select value={contour?.length ? 'contour' : adjustment?.kind ?? 'rectangle'}
-            onChange={(event) => {
-              const kind = event.target.value
-              save({ ...measurements, footprintVertices: undefined,
-                footprintAdjustment: kind === 'cutout' || kind === 'extension'
-                  ? { kind, widthM: 0, depthM: 0 } : undefined })
-            }}>
-            <option value="rectangle">Прямоугольная — длина × ширина</option>
-            <option value="cutout">Есть ниша — вычесть площадь</option>
-            <option value="extension">Есть выступ — прибавить площадь</option>
-            {contour?.length ? <option value="contour">Точный контур</option> : null}
-          </select>
-        </label>
-        {adjustment && !contour?.length ? (
-          <div className={styles.adjustmentFields}>
-            <Measure label="Ширина ниши / выступа" value={adjustment.widthM}
-              onChange={(widthM) => save({ ...measurements,
-                footprintAdjustment: { ...adjustment, widthM } })} />
-            <Measure label="Глубина ниши / выступа" value={adjustment.depthM}
-              onChange={(depthM) => save({ ...measurements,
-                footprintAdjustment: { ...adjustment, depthM } })} />
-          </div>
-        ) : null}
-        <p className={styles.hint} role="status">
-          {footprintArea === null
-            ? 'Площадь пока не определена: проверьте размеры комнаты и ниши.'
-            : `Расчётная площадь пола и потолка: ${format(footprintArea)} м²${measurements.walls.length > 4 && !adjustment && !contour?.length ? ' по прямоугольным габаритам; проверьте, нет ли ниши или выступа' : ''}.`}
-        </p>
-      </div>
-      <details className={styles.contour}>
-        <summary>Точный контур, если одной ниши недостаточно</summary>
-        <p className={styles.hint}>
-          Если комната не прямоугольная, отметьте углы по порядку обхода. X и Y — расстояния
-          от выбранного угла комнаты в метрах. Одних длин 5–7 стен недостаточно для определения
-          площади: нужна форма контура. Последняя точка соединяется с первой автоматически.
-        </p>
-        {!contour?.length ? (
-          <button type="button" className={styles.secondary} onClick={() => save({
-            ...measurements,
-            footprintAdjustment: undefined,
-            footprintVertices: [
-              { id: newId(), xM: 0, yM: 0 },
-              { id: newId(), xM: measurements.roomLengthM, yM: 0 },
-              { id: newId(), xM: measurements.roomLengthM, yM: measurements.roomWidthM },
-              { id: newId(), xM: 0, yM: measurements.roomWidthM },
-            ],
-          })}>
-            Начать с 4 углов
-          </button>
-        ) : (
-          <>
-            {contour.map((point, index) => (
-              <div className={styles.contourRow} key={point.id}>
-                <strong>Угол {index + 1}</strong>
-                <Measure label={`X угла ${index + 1}`} value={point.xM} onChange={(xM) => save({
-                  ...measurements,
-                  footprintVertices: contour.map((entry) => entry.id === point.id ? { ...entry, xM } : entry),
-                })} />
-                <Measure label={`Y угла ${index + 1}`} value={point.yM} onChange={(yM) => save({
-                  ...measurements,
-                  footprintVertices: contour.map((entry) => entry.id === point.id ? { ...entry, yM } : entry),
-                })} />
-                <button type="button" className={styles.deleteBtn} disabled={contour.length <= 3}
-                  onClick={() => save({ ...measurements, footprintVertices: contour.filter((entry) => entry.id !== point.id) })}>
-                  Удалить
-                </button>
-              </div>
-            ))}
-            <div className={styles.commands}>
-              <button type="button" className={styles.secondary} disabled={contour.length >= 40}
-                onClick={() => save({ ...measurements, footprintVertices: [
-                  ...contour, { id: newId(), xM: 0, yM: 0 },
-                ] })}>
-                + Добавить угол
-              </button>
-              <button type="button" className={styles.secondary}
-                onClick={() => save({ ...measurements, footprintVertices: undefined })}>
-                Вернуть прямоугольный расчёт
-              </button>
-            </div>
-            <p className={styles.hint} role="status">
-              {contourArea === null
-                ? 'Контур пока не замкнут корректно: проверьте координаты, пересечения и повторяющиеся углы.'
-                : `Площадь пола и потолка по контуру: ${format(contourArea)} м². Ручную правку площадей не перезаписываем.`}
-            </p>
-          </>
-        )}
-      </details>
+      <FloorShapeEditor measurements={measurements} onChange={save} />
       {measurements.walls.length > 0 ? (
         <p className={styles.hint}>
           Размеры связанных стен обновляются вместе с комнатой. Для прямоугольной комнаты площадь

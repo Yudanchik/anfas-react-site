@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { calculateWallMeasurements, createRectangularWalls, relinkRectangularWalls, roomFootprintArea, roomFootprintPerimeter, syncRoomFootprintAreas, updateRoomDimensions } from '../src/entities/estimate/model/shared/wall-measurements.ts'
+import { Buffer } from 'node:buffer'
+import { build } from 'esbuild'
+import { resolveRoomFootprintSketch } from '../src/entities/estimate/model/shared/room-footprint-sketch.ts'
+
+const bundle = await build({ entryPoints: ['src/entities/estimate/model/shared/wall-measurements.ts'],
+  bundle: true, platform: 'node', format: 'esm', write: false })
+const { calculateWallMeasurements, createRectangularWalls, relinkRectangularWalls, roomFootprintArea, roomFootprintPerimeter, syncRoomFootprintAreas, updateRoomDimensions } =
+  await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`)
 
 test('четыре стены и проёмы дают проверяемую площадь и отдельные откосы', () => {
   const walls = createRectangularWalls(4, 3, 2.7)
@@ -110,12 +117,102 @@ test('дополнительные стены не сбрасывают площ
   assert.equal(result.ceilingArea, undefined)
   const cutout = { ...next, footprintAdjustment: { kind: 'cutout', widthM: 1, depthM: 1 } }
   assert.equal(roomFootprintArea(cutout), 11)
-  assert.equal(roomFootprintPerimeter(cutout), 16)
+  assert.equal(roomFootprintPerimeter(cutout), 18)
   const cutoutResult = syncRoomFootprintAreas(next, cutout, 12, 12)
   assert.equal(cutoutResult.floorArea, 11)
   const extension = { ...next, footprintAdjustment: { kind: 'extension', widthM: 1, depthM: 1 } }
   assert.equal(roomFootprintArea(extension), 13)
-  assert.equal(roomFootprintPerimeter(extension), 16)
+  assert.equal(roomFootprintPerimeter(extension), 18)
   assert.equal(syncRoomFootprintAreas(cutoutResult.measurements, extension, 11, 10).floorArea, 13)
   assert.equal(roomFootprintArea({ ...next, footprintAdjustment: { kind: 'cutout', widthM: 4, depthM: 1 } }), null)
+})
+
+test('скошенный угол и несколько простых частей дают площадь без координат; периметр берётся из стен', () => {
+  const initial = { roomLengthM: 8, roomWidthM: 4, roomHeightM: 2.7,
+    walls: [8, 4, 5, Math.hypot(3, 2.5), 1.5].map((lengthM, index) => ({
+      id: String(index), name: 'Стена', lengthM, heightM: 2.7, openings: [],
+    })) }
+  const clipped = { ...initial, footprintParts: [
+    { id: 'a', shape: 'triangle', operation: 'subtract', widthM: 3, heightM: 2.5 },
+  ] }
+  assert.equal(roomFootprintArea(clipped), 28.25)
+  assert.equal(roomFootprintPerimeter(clipped), 22.41)
+  const extended = { ...clipped, footprintParts: [...clipped.footprintParts,
+    { id: 'b', shape: 'rectangle', operation: 'add', widthM: 2, heightM: 1 },
+    { id: 'c', shape: 'rectangle', operation: 'subtract', widthM: 1, heightM: 1 },
+  ] }
+  assert.equal(roomFootprintArea(extended), 29.25)
+  assert.equal(roomFootprintArea({ ...clipped, footprintParts: [
+    { id: 'a', shape: 'rectangle', operation: 'subtract', widthM: 8, heightM: 4 },
+  ] }), null)
+  assert.equal(roomFootprintArea({ ...clipped, footprintKnownArea: 30 }), 30)
+  assert.equal(roomFootprintArea({ ...clipped, footprintKnownArea: 0 }), null)
+  assert.equal(roomFootprintPerimeter({ ...clipped, walls: [] }), null)
+})
+
+const sketchRoom = { roomLengthM: 8, roomWidthM: 4, roomHeightM: 2.7, walls: [] }
+const sketchPart = (patch = {}) => ({ id: 'part', shape: 'rectangle', operation: 'subtract',
+  widthM: 1, heightM: 1, position: 'top-left', offsetM: 0, ...patch })
+
+test('схема скошенного угла соответствует виду сверху и площади', () => {
+  const measurements = { ...sketchRoom, footprintParts: [sketchPart({ shape: 'triangle', widthM: 3, heightM: 2.5 })] }
+  const sketch = resolveRoomFootprintSketch(measurements)
+  assert.deepEqual(sketch.parts[0].points, [{ x: 0, y: 0 }, { x: 3, y: 0 }, { x: 0, y: 2.5 }])
+  assert.deepEqual(sketch.errors, [])
+  assert.deepEqual(sketch.pending, [])
+  assert.equal(roomFootprintArea(measurements), 28.25)
+})
+
+test('части можно сдвигать вдоль стороны; выступы и вырезы проверяются по габаритам', () => {
+  const measurements = { ...sketchRoom, footprintParts: [sketchPart({ operation: 'add', position: 'bottom',
+    offsetM: 2, widthM: 3, heightM: 2 })] }
+  assert.deepEqual(resolveRoomFootprintSketch(measurements).parts[0].points,
+    [{ x: 2, y: 4 }, { x: 5, y: 4 }, { x: 5, y: 6 }, { x: 2, y: 6 }])
+  assert.equal(roomFootprintArea(measurements), 38)
+  for (const patch of [
+    { operation: 'add', position: 'bottom', offsetM: 7, widthM: 2 },
+    { position: 'right', offsetM: 4, heightM: 2 },
+    { widthM: 9 }, { offsetM: -1 },
+  ]) {
+    const invalid = { ...sketchRoom, footprintParts: [sketchPart(patch)] }
+    assert.ok(resolveRoomFootprintSketch(invalid).errors.length)
+    assert.equal(roomFootprintArea(invalid), null)
+  }
+})
+
+test('перекрытие частей не удваивает площадь; касание допустимо', () => {
+  const measurements = { ...sketchRoom, footprintParts: [sketchPart({ widthM: 3, heightM: 2 }),
+    sketchPart({ id: 'second', position: 'top', offsetM: 2, widthM: 2 })] }
+  assert.match(resolveRoomFootprintSketch(measurements).errors.join(' '), /перекрываются/)
+  assert.equal(roomFootprintArea(measurements), null)
+  assert.equal(syncRoomFootprintAreas(sketchRoom, measurements, 32, 32).floorArea, 0)
+  assert.equal(syncRoomFootprintAreas(sketchRoom, measurements, 31, 32).floorArea, undefined)
+  measurements.footprintParts[1].offsetM = 3
+  assert.deepEqual(resolveRoomFootprintSketch(measurements).errors, [])
+  assert.equal(roomFootprintArea(measurements), 24)
+})
+
+test('старые части без расположения сохраняют площадь и просят уточнить схему', () => {
+  const measurements = { ...sketchRoom, footprintParts: [sketchPart({ position: undefined })] }
+  assert.equal(roomFootprintArea(measurements), 31)
+  assert.deepEqual(resolveRoomFootprintSketch(measurements).parts, [])
+  assert.match(resolveRoomFootprintSketch(measurements).pending.join(' '), /расположение/)
+})
+
+test('все четыре скошенных угла и боковые выступы ориентированы правильно', () => {
+  for (const [position, expected] of [
+    ['top-left', [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 0, y: 1 }]],
+    ['top-right', [{ x: 8, y: 0 }, { x: 6, y: 0 }, { x: 8, y: 1 }]],
+    ['bottom-left', [{ x: 0, y: 4 }, { x: 2, y: 4 }, { x: 0, y: 3 }]],
+    ['bottom-right', [{ x: 8, y: 4 }, { x: 6, y: 4 }, { x: 8, y: 3 }]],
+  ]) {
+    const measurements = { ...sketchRoom, footprintParts: [sketchPart({ shape: 'triangle', widthM: 2, position })] }
+    assert.deepEqual(resolveRoomFootprintSketch(measurements).parts[0].points, expected)
+    assert.equal(roomFootprintArea(measurements), 31)
+  }
+  for (const position of ['top', 'bottom', 'left', 'right']) {
+    const measurements = { ...sketchRoom, footprintParts: [sketchPart({ operation: 'add', position, offsetM: 1 })] }
+    assert.deepEqual(resolveRoomFootprintSketch(measurements).errors, [])
+    assert.equal(roomFootprintArea(measurements), 33)
+  }
 })

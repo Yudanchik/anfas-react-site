@@ -234,6 +234,18 @@ test('ниша в плане пола и новый финиш пережива�
   assert.equal(restored.floorPresets.roomFinish, 'carpet-glue')
 })
 
+test('простые части и известная площадь переживают сохранение сметы', () => {
+  const measurements = { roomLengthM: 8, roomWidthM: 4, roomHeightM: 2.7, walls: [],
+    footprintParts: [{ id: 'corner', shape: 'triangle', operation: 'subtract', widthM: 3, heightM: 2.5,
+      position: 'top-left', offsetM: 0 }],
+    footprintKnownArea: 28.25 }
+  const zone = createEstimateZone({ name: 'Комната', fields: { wallMeasurements: measurements } })
+  const restored = parseEstimateCalculatorSnapshot({ version: 2, activeTab: 'walls',
+    zones: [serializeEstimateZone(zone)], floors: { input: {}, lines: [] }, walls: { input: {}, lines: [] } }).zones[0]
+  assert.deepEqual(restored.wallMeasurements.footprintParts, measurements.footprintParts)
+  assert.equal(restored.wallMeasurements.footprintKnownArea, 28.25)
+})
+
 test('ответы о подготовке пола и плитки восстанавливаются; старые снимки сохраняют прежний маршрут', () => {
   const snapshot = {
     version: 2, activeTab: 'floors', zones: [],

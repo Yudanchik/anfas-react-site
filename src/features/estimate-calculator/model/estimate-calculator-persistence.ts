@@ -47,6 +47,7 @@ import {
   type TileStateOption,
   type WallDemolitionCoveringOption,
   type WallEstimateInput,
+  type WallMeasurements,
   type WallFinishTargetOption,
   type WallPaintLayersOption,
   type WallSubstrateOption,
@@ -503,6 +504,8 @@ function parseWallMeasurements(raw: unknown): EstimateZone['wallMeasurements'] {
     roomHeightM: asNonNegative(raw.roomHeightM),
     autoFootprintArea:
       typeof raw.autoFootprintArea === 'number' ? asNonNegative(raw.autoFootprintArea) : undefined,
+    footprintKnownArea: typeof raw.footprintKnownArea === 'number'
+      ? asNonNegative(raw.footprintKnownArea) : undefined,
     footprintVertices: Array.isArray(raw.footprintVertices)
       ? raw.footprintVertices.slice(0, 40).filter(isRecord).map((point, index) => ({
           id: asString(point.id) || `point-${index + 1}`,
@@ -518,6 +521,17 @@ function parseWallMeasurements(raw: unknown): EstimateZone['wallMeasurements'] {
           depthM: asNonNegative(raw.footprintAdjustment.depthM),
         }
       : undefined,
+    footprintParts: Array.isArray(raw.footprintParts)
+      ? raw.footprintParts.slice(0, 20).filter(isRecord).map((part, index) => ({
+          id: asString(part.id) || `part-${index + 1}`,
+          shape: part.shape === 'triangle' ? 'triangle' as const : 'rectangle' as const,
+          operation: part.operation === 'subtract' ? 'subtract' as const : 'add' as const,
+          widthM: asNonNegative(part.widthM),
+          heightM: asNonNegative(part.heightM),
+          position: ['top-left', 'top-right', 'bottom-left', 'bottom-right', 'top', 'bottom', 'left', 'right'].includes(asString(part.position))
+            ? part.position as NonNullable<WallMeasurements['footprintParts']>[number]['position'] : undefined,
+          offsetM: asNonNegative(part.offsetM),
+        })) : undefined,
     walls: raw.walls
       .slice(0, 40)
       .filter(isRecord)

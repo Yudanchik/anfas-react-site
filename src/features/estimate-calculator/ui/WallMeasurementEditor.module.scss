@@ -56,13 +56,105 @@
 }
 
 .floorShape {
-  display: grid;
-  gap: 8px;
   padding: 10px;
   border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
   border-radius: var(--radius-sm);
 
+  summary {
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: var(--weight-semibold);
+  }
+}
+
+.floorShapeContent {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.floorPreview {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  background: color-mix(in srgb, var(--amber) 5%, var(--paper));
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: var(--radius-sm);
+
   strong { font-size: 12px; }
+
+  svg {
+    display: block;
+    width: 100%;
+    max-width: 560px;
+    justify-self: center;
+    color: var(--ink);
+    font: inherit;
+    font-size: 12px;
+  }
+
+  text { fill: currentcolor; }
+}
+
+.floorParts {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.floorShapeWorkspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+
+  > .floorPreview {
+    position: sticky;
+    top: 12px;
+  }
+
+  @include mq.media(tablet) {
+    grid-template-columns: 1fr;
+
+    > .floorPreview {
+      grid-row: 1;
+      position: static;
+    }
+  }
+}
+
+.previewFill {
+  fill: color-mix(in srgb, var(--amber) 35%, var(--paper));
+}
+
+.previewBase,
+.previewCutout,
+.previewAddition {
+  fill: none;
+  stroke-width: 1.5px;
+}
+
+.previewBase {
+  stroke: color-mix(in srgb, var(--ink) 50%, transparent);
+  stroke-dasharray: 5 4;
+}
+
+.previewCutout { stroke: #a34b42; }
+.previewAddition { stroke: #397a58; }
+
+.shapeExample {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  svg {
+    width: 130px;
+    flex-shrink: 0;
+  }
+
+  @include mq.media(phone) { flex-direction: column; align-items: flex-start; }
 }
 
 .adjustmentFields {

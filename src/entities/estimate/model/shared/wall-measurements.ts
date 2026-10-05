@@ -1,3 +1,5 @@
+import { resolveRoomFootprintSketch } from './room-footprint-sketch'
+
 /** Исходные замеры сохраняются отдельно от утверждённых объёмов работ. Размеры — метры. */
 export type WallOpening = {
   id: string
@@ -30,6 +32,12 @@ export type WallMeasurements = {
   footprintVertices?: { id: string; xM: number; yM: number }[]
   /** Один прямоугольный вырез или выступ относительно габаритов комнаты. */
   footprintAdjustment?: { kind: 'cutout' | 'extension'; widthM: number; depthM: number }
+  footprintParts?: {
+    id: string; shape: 'rectangle' | 'triangle'; operation: 'add' | 'subtract'; widthM: number; heightM: number
+    position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top' | 'bottom' | 'left' | 'right'
+    offsetM?: number
+  }[]
+  footprintKnownArea?: number
   walls: MeasuredWall[]
 }
 
@@ -52,6 +60,8 @@ const roundArea = (value: number) => Math.round(value * 100) / 100
 const valid = (value: number) => Number.isFinite(value) && value > 0
 
 export function roomFootprintArea(measurements: WallMeasurements): number | null {
+  if (measurements.footprintKnownArea !== undefined)
+    return valid(measurements.footprintKnownArea) ? roundArea(measurements.footprintKnownArea) : null
   if (measurements.footprintVertices?.length) {
     const points = measurements.footprintVertices
     if (points.length < 3 || points.some((point) => !Number.isFinite(point.xM) || !Number.isFinite(point.yM))) return null
@@ -64,6 +74,14 @@ export function roomFootprintArea(measurements: WallMeasurements): number | null
   }
   if (!valid(measurements.roomLengthM) || !valid(measurements.roomWidthM)) return null
   const base = measurements.roomLengthM * measurements.roomWidthM
+  if (measurements.footprintParts?.length) {
+    if (measurements.footprintParts.some((part) => !valid(part.widthM) || !valid(part.heightM))) return null
+    if (resolveRoomFootprintSketch(measurements).errors.length) return null
+    const area = measurements.footprintParts.reduce((sum, part) => sum +
+      (part.operation === 'add' ? 1 : -1) * part.widthM * part.heightM /
+      (part.shape === 'triangle' ? 2 : 1), base)
+    return area > 0 ? roundArea(area) : null
+  }
   const adjustment = measurements.footprintAdjustment
   if (!adjustment) return roundArea(base)
   if (!valid(adjustment.widthM) || !valid(adjustment.depthM) ||
@@ -84,9 +102,11 @@ export function roomFootprintPerimeter(measurements: WallMeasurements): number |
     }, 0))
   }
   if (roomFootprintArea(measurements) === null) return null
-  // Для одного прямоугольного выреза/выступа на стороне контура появляются две стороны глубины.
-  return roundArea(2 * (measurements.roomLengthM + measurements.roomWidthM) +
-    2 * (measurements.footprintAdjustment?.depthM ?? 0))
+  if (measurements.footprintKnownArea !== undefined || measurements.footprintParts?.length || measurements.footprintAdjustment) {
+    return measurements.walls.length >= 3 && measurements.walls.every((wall) => valid(wall.lengthM))
+      ? roundArea(measurements.walls.reduce((sum, wall) => sum + wall.lengthM, 0)) : null
+  }
+  return roundArea(2 * (measurements.roomLengthM + measurements.roomWidthM))
 }
 
 function footprintHasIntersections(points: NonNullable<WallMeasurements['footprintVertices']>): boolean {
@@ -121,7 +141,7 @@ export function syncRoomFootprintAreas(
   const area = roomFootprintArea(next)
   const lastAuto = previous.autoFootprintArea ?? roomFootprintArea(previous) ?? 0
   if (area === null) {
-    if (next.footprintAdjustment || next.footprintVertices?.length) return {
+    if (next.footprintKnownArea !== undefined || next.footprintAdjustment || next.footprintVertices?.length || next.footprintParts?.length) return {
       measurements: { ...next, autoFootprintArea: undefined },
       ...(floorArea === lastAuto ? { floorArea: 0 } : {}),
       ...(ceilingArea === lastAuto ? { ceilingArea: 0 } : {}),

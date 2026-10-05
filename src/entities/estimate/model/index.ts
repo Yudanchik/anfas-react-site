@@ -94,6 +94,7 @@ export {
   updateRoomDimensions,
 } from './shared/wall-measurements'
 export type { WallMeasurements, MeasuredWall, WallOpening } from './shared/wall-measurements'
+export { resolveRoomFootprintSketch } from './shared/room-footprint-sketch'
 export {
   partitionScenariosByZoneType,
   scenarioMatchesZoneType,
