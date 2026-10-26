@@ -1,6 +1,7 @@
 import type { CalculatorLeadContext } from '../model/calculator-lead-context'
 import { captureLeadAttribution } from '@/shared/lib/lead-attribution'
 import { reachGoal } from '@/shared/lib/yandex-metrika/reach-goal'
+import { automaticAcquisitionParams } from '@/shared/lib/yandex-metrika/acquisition'
 
 import { briefServiceOptions, type BriefService } from '../model/brief.form'
 import type { BriefFormValues } from '../model/brief.schema'
@@ -74,6 +75,7 @@ export async function submitLead(payload: SubmitLeadPayload): Promise<SubmitLead
     }
 
     reachGoal('lead_form_success', {
+      ...automaticAcquisitionParams(captureLeadAttribution()),
       service: payload.service,
       form_source: payload.source ?? 'site',
       source_self_reported: payload.sourceSelfReported ?? '',
