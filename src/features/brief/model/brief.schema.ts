@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { sourceAnswers } from '@/shared/lib/lead-attribution'
 import { normalizePhoneDigits } from './brief.form'
 
 export const briefSchema = z.object({
@@ -12,12 +13,13 @@ export const briefSchema = z.object({
     .trim()
     .min(1, 'Укажите телефон')
     .refine((value) => normalizePhoneDigits(value).length === 11, 'Введите телефон полностью'),
-  service: z.enum(['general', 'individual', 'package'], {
+  service: z.enum(['general', 'individual', 'package', 'design'], {
     error: 'Выберите услугу',
   }),
   wishes: z.string().trim().max(600, 'Сократите текст до 600 символов').optional(),
   email: z.string().trim().max(120, 'Слишком длинный email').optional(),
   company: z.string().optional(),
+  sourceSelfReported: z.enum(sourceAnswers).optional(),
 })
 
 /** Используется только для intent="price-list": ссылка на прайс отправляется на email. */

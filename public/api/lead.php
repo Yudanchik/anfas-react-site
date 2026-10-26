@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/lead-attribution.php';
+
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
@@ -78,6 +80,7 @@ $allowedServices = [
   'general' => 'Консультация',
   'individual' => 'Индивидуальный ремонт',
   'package' => 'Пакетный ремонт',
+  'design' => 'Дизайн-проект квартиры',
 ];
 
 if (!isset($allowedServices[$service])) {
@@ -110,7 +113,8 @@ if ($isPriceList) {
 
 $serviceLabel = $allowedServices[$service];
 $when = (new DateTimeImmutable('now', new DateTimeZone('Europe/Moscow')))->format('d.m.Y H:i');
-$page = trim((string) ($data['page'] ?? ''));
+$page = anfasLeadPage($data['page'] ?? '');
+$attributionLines = anfasLeadAttributionLines($data);
 $calculatorLines = formatCalculatorLines($data['calculator'] ?? null);
 
 $subject = $isPriceList
@@ -127,6 +131,7 @@ $bodyText = implode("\n", array_filter([
   $wishes !== '' ? 'Пожелания: ' . $wishes : null,
   $calculatorLines !== '' ? $calculatorLines : null,
   $source !== '' ? 'Источник формы: ' . $source : null,
+  $attributionLines !== '' ? $attributionLines : null,
   $page !== '' ? 'Страница: ' . $page : null,
   'Время (МСК): ' . $when,
 ]));

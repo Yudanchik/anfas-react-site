@@ -1,4 +1,6 @@
 import type { CalculatorLeadContext } from '../model/calculator-lead-context'
+import { captureLeadAttribution } from '@/shared/lib/lead-attribution'
+import { reachGoal } from '@/shared/lib/yandex-metrika/reach-goal'
 
 import { briefServiceOptions, type BriefService } from '../model/brief.form'
 import type { BriefFormValues } from '../model/brief.schema'
@@ -52,7 +54,9 @@ export async function submitLead(payload: SubmitLeadPayload): Promise<SubmitLead
         email: payload.email ?? '',
         intent: payload.intent ?? '',
         source: payload.source ?? 'site',
-        page: payload.page ?? (typeof window !== 'undefined' ? window.location.href : ''),
+        page: payload.page ?? (typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : ''),
+        attribution: captureLeadAttribution(),
+        sourceSelfReported: payload.sourceSelfReported ?? '',
         company: payload.company ?? '',
         startedAt: payload.startedAt ?? 0,
         calculator: payload.calculator ?? null,
@@ -69,6 +73,11 @@ export async function submitLead(payload: SubmitLeadPayload): Promise<SubmitLead
       }
     }
 
+    reachGoal('lead_form_success', {
+      service: payload.service,
+      form_source: payload.source ?? 'site',
+      source_self_reported: payload.sourceSelfReported ?? '',
+    })
     return { ok: true }
   } catch {
     return {
