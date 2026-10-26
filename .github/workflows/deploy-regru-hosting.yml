@@ -43,6 +43,8 @@ jobs:
         run: pnpm check
 
       - name: Build static site
+        env:
+          VITE_PROJECT_CONTENT_PREVIEW: ${{ github.ref == 'refs/heads/dev' && 'true' || 'false' }}
         run: PUBLIC_PATH=/ pnpm build
 
       - name: Upload build artifact
