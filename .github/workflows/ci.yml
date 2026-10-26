@@ -67,3 +67,10 @@ jobs:
 
       - name: Production build
         run: pnpm build
+
+      - name: Lead source checks (no outbound requests or email)
+        run: |
+          node --test test/lead-attribution.test.mjs
+          php -l public/api/lead.php
+          php -l public/api/lead-attribution.php
+          php test/lead-attribution.test.php

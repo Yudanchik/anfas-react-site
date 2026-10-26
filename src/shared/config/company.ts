@@ -22,6 +22,7 @@ export const company = {
   youtubeHref: 'https://www.youtube.com/@anfas_remont',
   instagramHref: 'https://www.instagram.com/anfas_remont/',
   foundedYear: '2012',
+  warranty: { finishingMonths: 24, engineeringMonths: 36 },
   legalOwner: 'ООО «АНФАС»',
   legalInn: '7838108397',
   legalKpp: '783801001',

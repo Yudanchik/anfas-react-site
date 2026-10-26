@@ -56,6 +56,7 @@ export default {
     '/projects/id-kudrovo',
     '/projects/grand-house',
     '/services',
+    '/services/design',
     '/services/individual',
     '/services/package',
   ],

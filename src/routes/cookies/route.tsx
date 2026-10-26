@@ -7,7 +7,7 @@ import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './CookiesRoute.module.scss'
 
-const REVISION_DATE = '26 июля 2026 года'
+const REVISION_DATE = '26 октября 2026 года'
 
 const cookieSummary = [
   { label: 'Оператор', value: company.legalOwner },

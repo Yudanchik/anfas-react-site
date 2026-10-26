@@ -2,6 +2,7 @@ import painsBudget from '@/assets/images/pains/pains-budget.webp'
 import painsDeadlines from '@/assets/images/pains/pains-deadlines.webp'
 import painsMaterials from '@/assets/images/pains/pains-materials.webp'
 import painsQuality from '@/assets/images/pains/pains-quality.webp'
+import { company } from '@/shared/config/company'
 
 export const pains = {
   eyebrow: 'Основные боли',
@@ -53,7 +54,7 @@ export const pains = {
       solveText:
         'Проверяем узлы и отделку по стандарту, а не на глаз. Если что-то проявится позже, возвращаемся и исправляем за свой счёт.',
       stats: [
-        { value: '36 мес', label: 'гарантия на инженерку' },
+        { value: `${company.warranty.engineeringMonths} мес`, label: 'гарантия на инженерные работы' },
         { value: '3', label: 'уровня контроля качества' },
       ],
       image: painsQuality,

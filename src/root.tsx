@@ -1,11 +1,12 @@
 import { Links, Meta, Outlet, Scripts, useLocation } from 'react-router'
-import { lazy, Suspense, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, type ReactNode } from 'react'
 
 import { AppProviders } from '@/app/providers/AppProviders'
 import { LeadModalProvider, useLeadModal } from '@/features/brief/model/LeadModalContext'
 import { YANDEX_METRIKA_ID } from '@/shared/config/analytics'
 import { company } from '@/shared/config/company'
 import { absoluteUrl } from '@/shared/config/seo'
+import { captureLeadAttribution } from '@/shared/lib/lead-attribution'
 import { useRouteScrollRestoration } from '@/shared/hooks/useRouteScrollRestoration'
 import { useScrollEffects } from '@/shared/hooks/useScrollEffects'
 import {
@@ -116,6 +117,8 @@ function LazyLeadModalMount() {
 
 export default function Root() {
   const { pathname } = useLocation()
+
+  useEffect(() => { captureLeadAttribution() }, [])
 
   useRouteScrollRestoration()
   useScrollEffects(pathname)

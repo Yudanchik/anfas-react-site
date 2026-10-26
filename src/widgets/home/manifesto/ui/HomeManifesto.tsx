@@ -1,4 +1,5 @@
 import { PageWrapper } from '@/shared/ui/page-wrapper'
+import { company } from '@/shared/config/company'
 
 import { BuildingIcon, ColumnIcon, RubleIcon, ShieldIcon } from './HomeManifestoIcons'
 
@@ -6,8 +7,8 @@ import styles from './HomeManifesto.module.scss'
 
 const manifestoStats = [
   {
-    value: '5',
-    label: 'лет на рынке',
+    value: company.foundedYear,
+    label: 'год начала работы',
     description: 'Опыт сложных проектов',
     Icon: ColumnIcon,
   },
@@ -18,9 +19,9 @@ const manifestoStats = [
     Icon: BuildingIcon,
   },
   {
-    value: '24 мес',
+    value: `${company.warranty.finishingMonths} мес`,
     label: 'гарантия',
-    description: 'На инженерные работы',
+    description: 'На отделочные работы',
     Icon: ShieldIcon,
   },
   {

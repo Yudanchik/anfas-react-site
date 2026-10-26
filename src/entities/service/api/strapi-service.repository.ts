@@ -1,4 +1,5 @@
 import type { ServiceRepository } from '@/entities/service/api/service.repository'
+import { services } from '@/entities/service/model/services.data'
 import { adaptStrapiService } from '@/entities/service/api/strapi-service.adapter'
 import {
   strapiServiceDtoSchema,
@@ -41,7 +42,7 @@ async function fetchAllFromStrapi() {
   return parsed.data
     .map((dto) => adaptStrapiService(strapiServiceDtoSchema.parse(dto)))
     .sort((a, b) => {
-      const order = { individual: 0, package: 1 } as const
+      const order = { individual: 0, package: 1, design: 2 } as const
       return order[a.id] - order[b.id]
     })
 }
@@ -49,7 +50,9 @@ async function fetchAllFromStrapi() {
 export const strapiServiceRepository: ServiceRepository = {
   async getAll() {
     try {
-      return await fetchAllFromStrapi()
+      const remote = await fetchAllFromStrapi()
+      // Design is maintained locally until the CMS schema supports this service.
+      return [...remote, ...services.filter((service) => service.id === 'design')]
     } catch (error) {
       console.warn('[services] Strapi unavailable, request failed:', error)
       throw error
@@ -57,6 +60,7 @@ export const strapiServiceRepository: ServiceRepository = {
   },
 
   async getBySlug(slug: string) {
+    if (slug === 'design') return services.find((service) => service.id === 'design') ?? null
     try {
       const options = getStrapiOptions()
       const json = await strapiFetch<{ data: unknown[] }>(

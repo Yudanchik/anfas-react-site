@@ -11,6 +11,7 @@ import { formatPhoneValue, sanitizeNameValue } from '../model/brief.form'
 import { briefSchema, priceListBriefSchema, type BriefFormValues } from '../model/brief.schema'
 import { useLeadModal } from '../model/LeadModalContext'
 import styles from './BriefModal.module.scss'
+import { SourceQuestion } from './SourceQuestion'
 
 const PRICE_LIST_FORM_SUBMIT_GOAL = 'prices_form_submit'
 const PRICE_LIST_FORM_SUCCESS_GOAL = 'prices_form_success'
@@ -58,6 +59,7 @@ function BriefModalContent() {
       wishes: '',
       email: '',
       company: '',
+      sourceSelfReported: '',
     },
     resolver: zodResolver(isPriceList ? priceListBriefSchema : briefSchema),
   })
@@ -138,6 +140,7 @@ function BriefModalContent() {
       source: modalState.source || 'brief-modal',
       startedAt,
       calculator: modalState.calculatorContext,
+      sourceSelfReported: values.sourceSelfReported,
     })
 
     if (!result.ok) {
@@ -302,6 +305,8 @@ function BriefModalContent() {
                     )}
                   </label>
                 )}
+
+                <SourceQuestion field={register('sourceSelfReported')} />
 
                 {submitError ? (
                   <small className={styles.briefModal__error} role="alert">
