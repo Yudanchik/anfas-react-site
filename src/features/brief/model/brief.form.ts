@@ -2,6 +2,7 @@ export const briefServiceOptions = [
   { value: 'general', label: 'Нужна консультация' },
   { value: 'individual', label: 'Индивидуальный ремонт' },
   { value: 'package', label: 'Пакетный ремонт' },
+  { value: 'design', label: 'Дизайн-проект' },
 ] as const
 
 export type BriefService = (typeof briefServiceOptions)[number]['value']
@@ -18,6 +19,15 @@ export const briefServiceCopy: Record<
     successLead: string
   }
 > = {
+  design: {
+    eyebrow: 'Дизайн квартиры',
+    title: 'Обсудим дизайн-проект',
+    lead: 'Дизайн можно заказать отдельно от ремонта. Состав проекта и сроки уточним при знакомстве.',
+    serviceNote: 'Дизайн-проект квартиры без обязательного заказа ремонта.',
+    submitLabel: 'Обсудить дизайн-проект',
+    successTitle: 'Заявка на дизайн принята',
+    successLead: 'Мы свяжемся с вами и обсудим задачи дизайн-проекта.',
+  },
   general: {
     eyebrow: 'Начнём знакомство',
     title: 'Обсудим ваш ремонт',
