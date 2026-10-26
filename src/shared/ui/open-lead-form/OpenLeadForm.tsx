@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { useForm, useWatch } from 'react-hook-form'
 
 import { submitLead } from '@/features/brief/api/submitLead'
+import { SourceQuestion } from '@/features/brief/ui/SourceQuestion'
 import {
   briefServiceOptions,
   formatPhoneValue,
@@ -38,6 +39,7 @@ const serviceIcons = {
   general: ConsultationIcon,
   individual: HomeIcon,
   package: PackageIcon,
+  design: HomeIcon,
 } satisfies Record<BriefService, typeof ConsultationIcon>
 
 export function OpenLeadForm({
@@ -68,6 +70,7 @@ export function OpenLeadForm({
       phone: '',
       service: defaultService,
       company: '',
+      sourceSelfReported: '',
     },
     resolver: zodResolver(briefSchema),
   })
@@ -83,6 +86,7 @@ export function OpenLeadForm({
       service: values.service,
       company: values.company,
       source: 'open-lead-form',
+      sourceSelfReported: values.sourceSelfReported,
     })
 
     if (!result.ok) {
@@ -96,6 +100,7 @@ export function OpenLeadForm({
       phone: '',
       service: activeService,
       company: '',
+      sourceSelfReported: '',
     })
   }
 
@@ -207,6 +212,8 @@ export function OpenLeadForm({
             ) : null}
           </div>
         </div>
+
+        <SourceQuestion field={register('sourceSelfReported')} />
 
         <div className={styles.openLeadForm__footer}>
           {submitError ? (

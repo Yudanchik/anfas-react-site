@@ -65,7 +65,7 @@ export default function ServiceRoute() {
           name: 'Санкт-Петербург',
         },
         provider: { '@id': absoluteUrl('/#organization') },
-        offers: {
+        ...(service.id === 'design' ? {} : { offers: {
           '@type': 'Offer',
           priceCurrency: 'RUB',
           priceSpecification: {
@@ -77,7 +77,7 @@ export default function ServiceRoute() {
           },
           description: `${service.price}; срок ${service.duration}`,
           url: serviceUrl,
-        },
+        } }),
       },
       {
         '@type': 'BreadcrumbList',
@@ -165,9 +165,9 @@ export default function ServiceRoute() {
 
       {service.id === 'individual' ? (
         <HomeStoryIndividual service={service} />
-      ) : (
+      ) : service.id === 'package' ? (
         <HomeStoryPackage service={service} tone="dark" />
-      )}
+      ) : null}
 
       <section className={styles.servicePage__surfaceLight}>
         <PageWrapper>
@@ -181,12 +181,16 @@ export default function ServiceRoute() {
                   line="Обсудим индивидуальный"
                   accent="проект вашей квартиры"
                 />
+              ) : service.id === 'design' ? (
+                <SplitTitle line="Обсудим дизайн-проект" accent="вашей квартиры" />
               ) : (
                 <SplitTitle line="Рассчитаем пакетный" accent="ремонт под вашу площадь" />
               )
             }
             lead={
-              service.id === 'individual'
+              service.id === 'design'
+                ? 'Оставьте имя и телефон — обсудим вашу квартиру, состав проекта, стоимость и сроки.'
+                : service.id === 'individual'
                 ? 'Оставьте имя и телефон — разберём задачу, площадь и подскажем, с чего начать дизайн-проект.'
                 : 'Оставьте имя и телефон — уточним площадь, подберём эстетику и назовём фиксированную рамку бюджета.'
             }

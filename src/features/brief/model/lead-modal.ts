@@ -6,6 +6,7 @@ export type ModalIntent =
   | 'consultation'
   | 'individual'
   | 'package'
+  | 'design'
   | 'calculation'
   | 'brief'
   | 'custom'
@@ -34,6 +35,17 @@ export type LeadModalOpenOptions = {
 }
 
 export const leadModalPresets: Record<ModalIntent, LeadModalPreset> = {
+  design: {
+    eyebrow: 'Дизайн квартиры',
+    title: 'Обсудим дизайн-проект',
+    description: 'Дизайн-проект можно заказать отдельно от ремонта. Начнём с задачи и состава проекта.',
+    selectedLabel: 'Дизайн-проект квартиры',
+    selectedDescription: 'Отдельная услуга без обязательного заказа ремонта.',
+    submitLabel: 'Обсудить дизайн-проект',
+    requestType: 'design',
+    successTitle: 'Заявка на дизайн принята',
+    successDescription: 'Мы свяжемся с вами и обсудим задачи дизайн-проекта.',
+  },
   consultation: {
     eyebrow: 'Начнём знакомство',
     title: 'Обсудим ваш ремонт',
