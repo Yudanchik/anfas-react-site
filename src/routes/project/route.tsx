@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
-import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
+import { useLoaderData, useLocation, type LoaderFunctionArgs } from 'react-router'
 
 import { projectRepository } from '@/entities/project/api'
 import { ProjectReview } from '@/entities/project/ui/project-review'
+import { ProjectWorkDetails } from '@/entities/project/ui/project-work-details/ProjectWorkDetails'
+import { ProjectContentPreview } from '@/entities/project/ui/project-content-preview/ProjectContentPreview'
+import { isProjectContentPreview } from '@/shared/config/project-content-preview'
 import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { tieRussianShortWords, tieRussianShortWordsInNode } from '@/shared/lib/tie-russian-short-words'
@@ -38,7 +41,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return { project }
 }
 
-export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
+export function meta({ data, location }: {
+  data?: Awaited<ReturnType<typeof loader>>
+  location?: { search: string }
+}) {
   if (!data) {
     return createSeoMeta({
       title: 'Проект не найден — Анфас',
@@ -54,6 +60,7 @@ export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
     path: `/projects/${data.project.slug}`,
     image: `/${data.project.image}`,
     type: 'article',
+    robots: isProjectContentPreview(location?.search ?? '') ? 'noindex, nofollow' : undefined,
   })
 }
 
@@ -63,6 +70,8 @@ export function ErrorBoundary() {
 
 export default function ProjectRoute() {
   const { project } = useLoaderData<typeof loader>()
+  const { search } = useLocation()
+  const contentPreview = isProjectContentPreview(search)
   const projectUrl = absoluteUrl(`/projects/${project.slug}`)
   const structuredData = {
     '@context': 'https://schema.org',
@@ -257,7 +266,7 @@ export default function ProjectRoute() {
                 <dd>{project.term}</dd>
               </div>
               <div>
-                <dt>Бюджет работ</dt>
+                <dt>Бюджет</dt>
                 <dd>{project.price}</dd>
               </div>
             </dl>
@@ -283,13 +292,6 @@ export default function ProjectRoute() {
 
             <aside className={styles.projectDetailIntroAside}>
               <p className={styles.projectDetailIntroEyebrow}>Ключевые параметры</p>
-              <strong className={styles.projectDetailIntroAsideTitle}>
-                Реализация с фиксированным бюджетом и согласованным графиком.
-              </strong>
-              <p className={styles.projectDetailIntroAsideText}>
-                Планировку, отделку и организацию работ вели в одной связке — чтобы проект оставался управляемым, а
-                результат выглядел цельно.
-              </p>
               <dl className={styles.projectDetailIntroMeta}>
                 <div>
                   <dt>Площадь</dt>
@@ -306,6 +308,10 @@ export default function ProjectRoute() {
               </dl>
             </aside>
           </div>
+
+          <ProjectWorkDetails details={project.details} />
+
+          {contentPreview ? <ProjectContentPreview project={project} /> : null}
 
           {visibleGallery.length > 0 ? (
             <div className={styles.projectDetailGallery} aria-label={`Галерея проекта ${project.title}`}>
