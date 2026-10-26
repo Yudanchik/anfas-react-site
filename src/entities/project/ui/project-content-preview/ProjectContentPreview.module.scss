@@ -1,0 +1,136 @@
+@use 'media' as mq;
+
+.preview {
+  display: grid;
+  gap: var(--space-40);
+  margin: var(--space-56) 0;
+  padding: var(--space-32);
+  border: 2px dashed #9b701c;
+  border-radius: var(--radius-card);
+  background: #fff9eb;
+
+  @include mq.media(phone) {
+    padding: var(--space-16);
+  }
+
+  h2,
+  h3,
+  h4,
+  p {
+    margin: 0;
+  }
+
+  h2 {
+    margin: var(--space-12) 0;
+    font-size: var(--type-heading-lg);
+    line-height: var(--leading-heading-compact);
+  }
+
+  h3 {
+    margin-bottom: var(--space-20);
+    font-size: var(--type-heading-sm);
+  }
+
+  h4 {
+    margin: var(--space-16) 0 var(--space-8);
+    font-size: var(--type-body-md);
+  }
+
+  p {
+    font-size: var(--type-body-sm);
+    line-height: var(--leading-body);
+  }
+}
+
+.eyebrow {
+  color: #785312;
+  font-size: var(--type-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.banner {
+  padding-bottom: var(--space-24);
+  border-bottom: 1px solid #d6bd89;
+}
+
+.section {
+  min-width: 0;
+}
+
+.preview .caption {
+  margin-bottom: var(--space-20);
+  color: rgb(22 23 19 / 72%);
+}
+
+.stageGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-20);
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.placeholder {
+  min-width: 0;
+  padding: var(--space-20);
+  border: 1px dashed #b18a46;
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 65%);
+
+  p {
+    margin-top: var(--space-12);
+  }
+}
+
+.photoSlot {
+  display: grid;
+  place-content: center;
+  gap: var(--space-8);
+  min-height: 160px;
+  text-align: center;
+  color: #785312;
+  border: 1px dashed #b18a46;
+  border-radius: var(--radius-md);
+  background: #f4ead5;
+
+  span:first-child {
+    font-size: var(--type-heading-lg);
+  }
+
+  span:last-child {
+    font-size: var(--type-caption);
+  }
+}
+
+.budget {
+  margin-bottom: var(--space-20);
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--type-body-sm);
+  }
+
+  caption {
+    padding-bottom: var(--space-16);
+    text-align: left;
+    font-weight: var(--weight-semibold);
+  }
+
+  td,
+  th {
+    padding: var(--space-16);
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid #d6bd89;
+  }
+
+  td {
+    color: #785312;
+  }
+}
