@@ -1,5 +1,6 @@
 import individualFormatImage from '@/assets/images/formats/individual-format.webp'
 import packageFormatImage from '@/assets/images/formats/package-format.webp'
+import { designPrices, designPriceRange, formatDesignPrice } from './design-prices'
 
 export type ServiceIncludedGroup = {
   number: string
@@ -117,7 +118,7 @@ export type ServicePackage = ServiceBase & {
   story: ServiceStoryPackage
 }
 
-export type ServiceDesign = ServiceBase & { id: 'design' }
+export type ServiceDesign = ServiceBase & { id: 'design'; prices: typeof designPrices }
 
 export type Service = ServiceIndividual | ServicePackage | ServiceDesign
 
@@ -493,6 +494,7 @@ export const services: readonly Service[] = [
   },
   {
     id: 'design',
+    prices: designPrices,
     slug: 'design',
     number: '03',
     title: 'Дизайн-проект квартиры',
@@ -510,7 +512,7 @@ export const services: readonly Service[] = [
       lead: 'Дизайн-проект можно заказать отдельно, без обязательного ремонта у Анфас. Обсудим планировку, привычки, хранение и образ будущего интерьера.',
       stats: [
         { label: 'Формат', value: 'отдельно от ремонта' },
-        { label: 'Стоимость', value: 'после обсуждения задачи' },
+        { label: 'Стоимость', value: designPriceRange },
         { label: 'Срок', value: 'согласуем по составу проекта' },
       ],
       aside: {
@@ -521,7 +523,7 @@ export const services: readonly Service[] = [
     },
     bullets: ['Отдельная услуга', 'Согласованный состав проекта', 'Возможность дальнейшей реализации'],
     metrics: [{ value: '1', label: 'команда для обсуждения проекта и реализации' }],
-    price: 'Стоимость по задаче',
+    price: `от ${formatDesignPrice(designPrices[0].price)}`,
     duration: 'Срок согласуем до старта',
     ctaLabel: 'Обсудить дизайн-проект',
     included: {
@@ -561,7 +563,7 @@ export const services: readonly Service[] = [
     },
     seo: {
       title: 'Дизайн-проект квартиры в Санкт-Петербурге — отдельно от ремонта | Анфас',
-      description: 'Дизайн-проект квартиры в Санкт-Петербурге как отдельная услуга Анфас. Обсудим планировку, состав проекта, стоимость и сроки. Ремонт можно заказать отдельно.',
+      description: `Дизайн квартиры в Санкт-Петербурге отдельно от ремонта. ${designPrices.map((rate) => `${rate.title} — ${formatDesignPrice(rate.price)}`).join('; ')}. Состав и сроки согласуем до старта.`,
       keywords: 'дизайн-проект квартиры Санкт-Петербург, дизайн интерьера квартиры, дизайн отдельно от ремонта',
     },
   },

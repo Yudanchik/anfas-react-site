@@ -166,17 +166,19 @@ test('submits source with the enquiry and records success only after a successfu
       name: 'Тест',
       phone: '+7 (999) 000-00-00',
       service: 'design',
-      sourceSelfReported: 'chatgpt',
+      sourceSelfReported: 'other',
     }
     assert.equal((await submitLead(payload)).ok, false)
     assert.equal(goals.length, 0)
     response = new Response(JSON.stringify({ ok: true }))
     assert.equal((await submitLead(payload)).ok, true)
     assert.equal(request.service, 'design')
-    assert.equal(request.sourceSelfReported, 'chatgpt')
+    assert.equal(request.sourceSelfReported, 'other')
     assert.equal(request.attribution.firstTouch.referrerHost, 'chatgpt.com')
     assert.equal(request.page, 'https://anfas-remont.ru/services/design')
     assert.equal(goals[0][2], 'lead_form_success')
+    assert.equal(goals[0][3].acquisition.chatgpt_first_touch, 'referrer_and_utm')
+    assert.equal(goals[0][3].source_self_reported, 'other')
     assert.doesNotMatch(JSON.stringify(goals), /999|Тест|secret|private/)
     globalThis.fetch = async () => {
       throw new Error('offline')
@@ -187,5 +189,49 @@ test('submits source with the enquiry and records success only after a successfu
     globalThis.window = savedWindow
     globalThis.document = savedDocument
     globalThis.fetch = savedFetch
+  }
+})
+
+test('automatic acquisition distinguishes referrer and UTM without treating a form answer as proof', async () => {
+  const { automaticAcquisitionParams } = await load('src/shared/lib/yandex-metrika/acquisition.ts')
+  const visit = (referrerHost, utmSource = '') => ({
+    landingPath: '/', referrerHost, utmSource, utmMedium: '', utmCampaign: '',
+  })
+  for (const [host, utm, expected] of [
+    ['chatgpt.com', '', 'referrer'],
+    ['chat.openai.com', '', 'referrer'],
+    ['search.chatgpt.com', '', 'referrer'],
+    ['', 'ChatGPT.com', 'utm'],
+    ['chatgpt.com', 'chatgpt', 'referrer_and_utm'],
+    ['chatgpt.com.evil.test', '', 'not_detected'],
+    ['notchatgpt.com', '', 'not_detected'],
+    ['', '', 'not_detected'],
+  ]) {
+    const params = automaticAcquisitionParams({ firstTouch: visit(host, utm), lastTouch: visit('yandex.ru'), sourceSelfReported: 'chatgpt' })
+    assert.equal(params.acquisition.chatgpt_first_touch, expected)
+    assert.equal(params.acquisition.chatgpt_last_touch, 'not_detected')
+    assert.doesNotMatch(JSON.stringify(params), /yandex|landingPath|referrerHost|utmSource|sourceSelfReported/)
+  }
+  assert.equal(automaticAcquisitionParams().acquisition.chatgpt_first_touch, 'not_detected')
+})
+
+test('visit reporting survives unavailable analytics, queues one params update and creates no goal', async () => {
+  const savedWindow = globalThis.window
+  try {
+    const { reportAcquisition } = await load('src/shared/lib/yandex-metrika/acquisition.ts')
+    const attribution = attributionForVisit('https://anfas-remont.ru/', 'https://chatgpt.com/')
+    globalThis.window = {}
+    assert.doesNotThrow(() => reportAcquisition(attribution))
+    globalThis.window.ym = () => { throw new Error('blocked') }
+    assert.doesNotThrow(() => reportAcquisition(attribution))
+    const calls = []
+    globalThis.window.ym = (...args) => calls.push(args)
+    reportAcquisition(attribution)
+    reportAcquisition(attribution)
+    assert.equal(calls.length, 1)
+    assert.equal(calls[0][1], 'params')
+    assert.equal(calls[0][2].acquisition.chatgpt_first_touch, 'referrer')
+  } finally {
+    globalThis.window = savedWindow
   }
 })

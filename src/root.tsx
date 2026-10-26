@@ -6,7 +6,7 @@ import { LeadModalProvider, useLeadModal } from '@/features/brief/model/LeadModa
 import { YANDEX_METRIKA_ID } from '@/shared/config/analytics'
 import { company } from '@/shared/config/company'
 import { absoluteUrl } from '@/shared/config/seo'
-import { captureLeadAttribution } from '@/shared/lib/lead-attribution'
+import { reportAcquisition } from '@/shared/lib/yandex-metrika/acquisition'
 import { useRouteScrollRestoration } from '@/shared/hooks/useRouteScrollRestoration'
 import { useScrollEffects } from '@/shared/hooks/useScrollEffects'
 import { YandexMetrikaHit, yandexMetrikaInlineScript } from '@/shared/lib/yandex-metrika/YandexMetrika'
@@ -111,7 +111,7 @@ function LazyLeadModalMount() {
 export default function Root() {
   const { pathname } = useLocation()
 
-  useEffect(() => { captureLeadAttribution() }, [])
+  useEffect(() => { reportAcquisition() }, [])
 
   useRouteScrollRestoration()
   useScrollEffects(pathname)

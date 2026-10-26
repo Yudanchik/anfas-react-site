@@ -3,6 +3,7 @@ import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
 import { ModalTriggerButton } from '@/features/brief/ui/ModalTriggerButton'
 import { serviceRepository } from '@/entities/service/api'
 import { getServiceHref } from '@/entities/service/model/services.data'
+import { formatDesignPrice } from '@/entities/service/model/design-prices'
 import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { NotFoundState } from '@/shared/ui/not-found-state'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
@@ -65,7 +66,19 @@ export default function ServiceRoute() {
           name: 'Санкт-Петербург',
         },
         provider: { '@id': absoluteUrl('/#organization') },
-        ...(service.id === 'design' ? {} : { offers: {
+        offers: service.id === 'design' ? service.prices.map((rate) => ({
+          '@type': 'Offer',
+          name: rate.title,
+          priceCurrency: 'RUB',
+          priceSpecification: {
+            '@type': 'UnitPriceSpecification',
+            price: rate.price,
+            priceCurrency: 'RUB',
+            unitCode: 'MTK',
+            unitText: 'м²',
+          },
+          url: serviceUrl,
+        })) : {
           '@type': 'Offer',
           priceCurrency: 'RUB',
           priceSpecification: {
@@ -77,7 +90,7 @@ export default function ServiceRoute() {
           },
           description: `${service.price}; срок ${service.duration}`,
           url: serviceUrl,
-        } }),
+        },
       },
       {
         '@type': 'BreadcrumbList',
@@ -160,6 +173,23 @@ export default function ServiceRoute() {
           </aside>
         </PageWrapper>
       </section>
+
+      {service.id === 'design' ? (
+        <section className={styles.servicePage__surfaceLight} aria-labelledby="design-prices-title">
+          <PageWrapper>
+            <h2 id="design-prices-title" className={styles.servicePage__pricesTitle}>Стоимость дизайн-проекта</h2>
+            <dl className={styles.servicePage__prices}>
+              {service.prices.map((rate) => (
+                <div key={rate.id}>
+                  <dt>{rate.title}</dt>
+                  <dd>{formatDesignPrice(rate.price)}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className={styles.servicePage__pricesNote}>Состав выбранного проекта и сроки согласуем до начала работы. Комплектацию, сопровождение и ремонт обсуждаем отдельно.</p>
+          </PageWrapper>
+        </section>
+      ) : null}
 
       <ServiceIncluded included={service.included} />
 
