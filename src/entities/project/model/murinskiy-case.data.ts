@@ -1,6 +1,28 @@
 // Owner-supplied project facts; documentary photo correction only. Dev build only.
 export type CasePhoto = { src: string; caption: string; publicCaption?: string }
 export type CaseStage = { id: string; title: string; description: string; photos: CasePhoto[] }
+
+// Confirmed by the owner on 23 November 2026. Estimated rows are intentionally separate.
+export const murinskiyBudget = [
+  { title: 'Ремонтные работы', amountRub: 1961103, estimated: false },
+  { title: 'Дизайн-проект', amountRub: 206500, estimated: false },
+  { title: 'Черновые материалы', amountRub: 1264707, estimated: false },
+  { title: 'Чистовые материалы и бытовая техника', amountRub: 1450000, estimated: true },
+  { title: 'Мебель', amountRub: 970000, estimated: true },
+] as const
+
+export const murinskiyBudgetTotalRub = murinskiyBudget.reduce((sum, row) => sum + row.amountRub, 0)
+export const murinskiyBudgetRecordedRub = murinskiyBudget
+  .filter((row) => !row.estimated)
+  .reduce((sum, row) => sum + row.amountRub, 0)
+export const murinskiyBudgetLabel = `Около ${new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 }).format(murinskiyBudgetTotalRub / 1000000)} млн ₽`
+
+export const murinskiyHandover = [
+  'Хранение мебели на складе Анфас',
+  'Уборка и клининг квартиры',
+  'Проверка и подключение всей бытовой техники',
+  'Расстановка мебели',
+] as const
 export const murinskiyStages: CaseStage[] = [
   {
     id: 'after_demolition',
@@ -171,11 +193,12 @@ export const planPhotos: CasePhoto[] = [
   {
     src: 'images/projects/2-murinskiy-37/story/plan-design.webp',
     caption:
-      'План расстановки мебели из полного РД, лист 3.5. Требуется подтверждение реализованной версии.',
-    publicCaption: 'Проектная планировка с расстановкой мебели.',
+      'Реализованная планировка из полного дизайн-проекта, лист 3.5. Версия подтверждена владельцем.',
+    publicCaption: 'Реализованная планировка с расстановкой мебели.',
   },
   {
     src: 'images/projects/2-murinskiy-37/story/plan-alternative.webp',
-    caption: 'Отдельный вариант планировки на согласование. Отличается от версии в полном РД.',
+    caption:
+      'Ранний вариант планировки на согласование. Реализована версия из полного дизайн-проекта.',
   },
 ]

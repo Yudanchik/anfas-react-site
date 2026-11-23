@@ -13,6 +13,10 @@ import {
   murinskiyStages,
   resultPhotos,
   planPhotos,
+  murinskiyBudget,
+  murinskiyBudgetLabel,
+  murinskiyBudgetRecordedRub,
+  murinskiyHandover,
   type CasePhoto,
 } from '@/entities/project/model/murinskiy-case.data'
 import type { Project } from '@/entities/project/model/project.types'
@@ -24,19 +28,14 @@ import { PageWrapper } from '@/shared/ui/page-wrapper'
 
 import styles from './MurinskiyCaseDraft.module.scss'
 
-const budgetRows = [
-  'Дизайн-проект',
-  'Ремонтные работы',
-  'Черновые материалы',
-  'Чистовые материалы',
-  'Мебель, техника и комплектация',
-]
+const roubles = (amount: number) => `${new Intl.NumberFormat('ru-RU').format(amount)} ₽`
 const scope = [
   'Полный демонтаж',
   'Дизайн-проект',
   'Комплектация',
   'Ремонт',
   'Организация монтажа мебели',
+  'Подготовка квартиры к проживанию',
 ]
 
 const projectUrl = absoluteUrl('/projects/2-murinskiy-37')
@@ -210,12 +209,12 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
                   <dd>59 м²</dd>
                 </div>
                 <div>
-                  <dt>Начало работ</dt>
-                  <dd>Апрель 2023</dd>
+                  <dt>До готовности к проживанию</dt>
+                  <dd>8 месяцев</dd>
                 </div>
                 <div>
-                  <dt>Участие Анфас</dt>
-                  <dd>Дизайн, ремонт, комплектация</dd>
+                  <dt>Бюджет проекта</dt>
+                  <dd>{murinskiyBudgetLabel}</dd>
                 </div>
               </dl>
               <a className={styles.heroLink} href="#case-work">
@@ -256,7 +255,7 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
           <a href="#case-plan">Планировка</a>
           <a href="#case-work">Этапы работ</a>
           <a href="#case-result">Результат</a>
-          {showNotes ? <a href="#case-budget">Сроки и бюджет</a> : null}
+          <a href="#case-budget">Сроки и бюджет</a>
         </nav>
 
         <section className={styles.split} id="case-task">
@@ -310,11 +309,11 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
             </details>
           ) : null}
           {showNotes ? (
-            <Pending title="Какая версия планировки реализована?">
-              Обмерный план показывает раскрытое пространство и пока не подписан как исходная
-              двухкомнатная квартира. План из полного проекта отличается от отдельного варианта на
-              согласование. Нужно подтвердить реализованную версию и основу площади 59 м².
-            </Pending>
+            <p className={styles.intro}>
+              Владелец подтвердил реализацию листа 3.5 полного дизайн-проекта. Обмерный план
+              показывает раскрытое пространство; его не подписываем как исходную двухкомнатную
+              планировку до первого демонтажа.
+            </p>
           ) : null}
         </section>
 
@@ -366,50 +365,81 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
             В гардеробной разместили системы хранения, стиральную и сушильную машины.
           </p>
           <div className={styles.photoGrid}>{resultPhotos.map(photo)}</div>
-          {showNotes ? (
-            <Pending title="Что входило в «полное заселение»?">
-              Уточнить, где заканчивалась работа Анфас: комплектация, координация монтажа мебели,
-              уборка, подготовка квартиры к передаче или другие услуги.
-            </Pending>
-          ) : null}
+          <div className={styles.handover}>
+            <h3>Подготовили квартиру к проживанию</h3>
+            <p>
+              Через 8 месяцев от начала работ заказчик получил полностью готовую для жилья квартиру.
+              Помимо ремонта и организации монтажа мебели, Анфас выполнил:
+            </p>
+            <ul>
+              {murinskiyHandover.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
         </section>
 
-        {showNotes ? (
-          <section className={styles.section} id="case-budget">
-            <p className={styles.eyebrow}>05 / Сроки и стоимость</p>
-            <h2>Из чего сложился проект</h2>
-            <div className={styles.pendingGrid}>
-              <div className={styles.factCard}>
-                <span>Подтверждено</span>
-                <h3>Начало — апрель 2023</h3>
-                <p>Дату завершения и фактическую продолжительность добавим после уточнения.</p>
-              </div>
-              <Pending title="Бюджет и год цен">
-                Нужна стоимость для заказчика, состав суммы и расходы вне неё. Прежние цифры сайта
-                пока не используем как подтверждённые.
-              </Pending>
+        <section className={styles.section} id="case-budget">
+          <p className={styles.eyebrow}>05 / Сроки и стоимость</p>
+          <h2>Из чего сложился проект</h2>
+          <div className={styles.pendingGrid}>
+            <div className={styles.factCard}>
+              <span>Срок работ</span>
+              <h3>8 месяцев</h3>
+              <p>Начали в апреле 2023. Срок указан до готовности квартиры к проживанию.</p>
             </div>
-            <div className={styles.budget}>
-              <table>
-                <caption>Место для подтверждённой разбивки бюджета</caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Раздел</th>
-                    <th scope="col">Сумма и состав</th>
+            <div className={styles.factCard}>
+              <span>Бюджет проекта</span>
+              <h3>{murinskiyBudgetLabel}</h3>
+              <p>
+                Работы, дизайн-проект, материалы, бытовая техника и мебель. Две статьи ниже указаны
+                приблизительно.
+              </p>
+            </div>
+          </div>
+          <div className={styles.budget}>
+            <table>
+              <caption>Расходы на реализованный проект</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Раздел</th>
+                  <th scope="col">Сумма</th>
+                  <th scope="col">Точность суммы</th>
+                </tr>
+              </thead>
+              <tbody>
+                {murinskiyBudget.map((row) => (
+                  <tr key={row.title}>
+                    <th scope="row">{row.title}</th>
+                    <td>
+                      {row.estimated ? '≈ ' : ''}
+                      {roubles(row.amountRub)}
+                      <span className={styles.mobileBudgetStatus}>
+                        {row.estimated ? 'Приблизительно' : 'Зафиксировано'}
+                      </span>
+                    </td>
+                    <td>{row.estimated ? 'Приблизительная оценка' : 'Зафиксированная сумма'}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {budgetRows.map((row) => (
-                    <tr key={row}>
-                      <th scope="row">{row}</th>
-                      <td>Уточнить</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        ) : null}
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row">Зафиксированные суммы</th>
+                  <td>
+                    {roubles(murinskiyBudgetRecordedRub)}
+                    <span className={styles.mobileBudgetStatus}>Без оценочных статей</span>
+                  </td>
+                  <td>Без двух оценочных статей</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <p className={styles.budgetNote}>
+            Точные расходы на чистовые материалы, технику и мебель не сохранились — эти две статьи
+            восстановлены приблизительно. Поэтому общий бюджет округлён. Это бюджет конкретного
+            реализованного проекта; стоимость нового ремонта рассчитываем отдельно.
+          </p>
+        </section>
 
         {showNotes ? (
           <section className={styles.section}>
