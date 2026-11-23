@@ -1,5 +1,5 @@
 // Owner-supplied project facts; documentary photo correction only. Dev build only.
-export type CasePhoto = { src: string; caption: string }
+export type CasePhoto = { src: string; caption: string; publicCaption?: string }
 export type CaseStage = { id: string; title: string; description: string; photos: CasePhoto[] }
 export const murinskiyStages: CaseStage[] = [
   {
@@ -62,7 +62,7 @@ export const murinskiyStages: CaseStage[] = [
       },
       {
         src: 'images/projects/2-murinskiy-37/story/partitions-original-04.webp',
-        caption: 'Перегородки санузлов; применение ПГП подтверждено владельцем.',
+        caption: 'Перегородки санузлов из ПГП-блоков.',
       },
     ],
   },
@@ -106,7 +106,7 @@ export const murinskiyStages: CaseStage[] = [
     id: 'electrical_installation',
     title: 'Новая электрика',
     description:
-      'Смонтировали новую электрику. На фотографиях — щит, кабельные трассы и коробки по потолку до закрытия конструкций. Технические характеристики и результаты проверок ещё уточняются.',
+      'Смонтировали новую электрику: щит, кабельные трассы и коробки по потолку. На снимках разводка показана до закрытия конструкций.',
     photos: [
       {
         src: 'images/projects/2-murinskiy-37/story/electrical-original-01.webp',
@@ -166,11 +166,13 @@ export const planPhotos: CasePhoto[] = [
     src: 'images/projects/2-murinskiy-37/story/plan-measured.webp',
     caption:
       'Обмерный план из РД: раскрытое пространство. Исходная двухкомнатная планировка ещё не подтверждена.',
+    publicCaption: 'Обмерный план: раскрытое пространство квартиры.',
   },
   {
     src: 'images/projects/2-murinskiy-37/story/plan-design.webp',
     caption:
       'План расстановки мебели из полного РД, лист 3.5. Требуется подтверждение реализованной версии.',
+    publicCaption: 'Проектная планировка с расстановкой мебели.',
   },
   {
     src: 'images/projects/2-murinskiy-37/story/plan-alternative.webp',
