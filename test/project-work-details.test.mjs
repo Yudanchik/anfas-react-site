@@ -49,3 +49,13 @@ test('development preview is opt-in and does not accept other query values', asy
   assert.equal(isProjectContentPreview('?content-preview=0'), false)
   assert.equal(isProjectContentPreview('?content-preview=1'), true)
 })
+
+test('assembled Murinskiy case is isolated to dev and this one project', async () => {
+  for (const env of [{ DEV: false }, { DEV: false, VITE_PROJECT_CONTENT_PREVIEW: 'false' }]) {
+    const { isProjectCaseDraft } = await load('src/shared/config/project-content-preview.ts', env)
+    assert.equal(isProjectCaseDraft('2-murinskiy-37'), false)
+  }
+  const { isProjectCaseDraft } = await load('src/shared/config/project-content-preview.ts', { DEV: false, VITE_PROJECT_CONTENT_PREVIEW: 'true' })
+  assert.equal(isProjectCaseDraft('2-murinskiy-37'), true)
+  assert.equal(isProjectCaseDraft('zhk-grafika'), false)
+})
