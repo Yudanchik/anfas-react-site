@@ -13,7 +13,10 @@ import {
   type GrafikaPhoto,
 } from '@/entities/project/model/grafika-case.data'
 import { grafikaStructuredData } from '@/entities/project/model/grafika-case.seo'
-import { isProjectContentPreview } from '@/shared/config/project-content-preview'
+import {
+  isProjectContentPreview,
+  canPreviewProjectContent,
+} from '@/shared/config/project-content-preview'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
@@ -118,11 +121,12 @@ export function GrafikaCaseDraft() {
           loading="lazy"
           width={item.width ?? 960}
           height={item.height ?? 720}
-          style={
-            item.width && item.height
-              ? { aspectRatio: `${item.width} / ${item.height}` }
-              : undefined
-          }
+          style={{
+            aspectRatio:
+              item.previewAspectRatio ??
+              (item.width && item.height ? `${item.width} / ${item.height}` : undefined),
+            objectPosition: item.previewObjectPosition,
+          }}
         />
         <span className={styles.enlarge} aria-hidden="true">
           ↗
@@ -192,16 +196,21 @@ export function GrafikaCaseDraft() {
         </PageWrapper>
       </header>
       <PageWrapper>
-        <aside className={styles.notice}>
-          <div className={styles.previewBar}>
-            <strong>
-              {showNotes ? 'Проверка содержания кейса' : 'Предпросмотр страницы на dev'}
-            </strong>
-            <Link to={{ search: noteSearch.toString() ? `?${noteSearch}` : '' }} preventScrollReset>
-              {showNotes ? 'Посмотреть как клиент' : 'Показать редакторские пометки'}
-            </Link>
-          </div>
-        </aside>
+        {canPreviewProjectContent() ? (
+          <aside className={styles.notice}>
+            <div className={styles.previewBar}>
+              <strong>
+                {showNotes ? 'Проверка содержания кейса' : 'Предпросмотр страницы на dev'}
+              </strong>
+              <Link
+                to={{ search: noteSearch.toString() ? `?${noteSearch}` : '' }}
+                preventScrollReset
+              >
+                {showNotes ? 'Посмотреть как клиент' : 'Показать редакторские пометки'}
+              </Link>
+            </div>
+          </aside>
+        ) : null}
         <nav className={styles.contents} aria-label="Содержание кейса">
           <a href="#grafika-task">Задача</a>
           <a href="#grafika-plans">Планировка</a>
@@ -274,9 +283,7 @@ export function GrafikaCaseDraft() {
                   <p>{stage.description}</p>
                 </div>
               </div>
-              <div
-                className={`${styles.photoGrid} ${extra.workPhotos} ${stage.photos.length === 3 ? extra.electricalGrid : ''}`}
-              >
+              <div className={`${styles.photoGrid} ${extra.workPhotos}`}>
                 {stage.photos.map(photo)}
               </div>
             </article>

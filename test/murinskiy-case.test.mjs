@@ -21,7 +21,7 @@ test('published case is available in production while editorial controls stay di
   const config = await load('src/shared/config/project-content-preview.ts', { DEV: false })
   assert.equal(config.hasDetailedProjectCase('2-murinskiy-37'), true)
   assert.equal(config.hasDetailedProjectCase('zhk-grafika'), false)
-  assert.equal(config.hasGrafikaCasePreview('zhk-grafika'), false)
+  assert.equal(config.hasGrafikaProjectCase('zhk-grafika'), true)
   assert.equal(config.canPreviewProjectContent(), false)
   assert.equal(config.isProjectContentPreview('?content-preview=1'), false)
 })
@@ -35,15 +35,12 @@ test('editorial notes require the development flag and exact opt-in query', asyn
   assert.equal(config.isProjectContentPreview(''), false)
   assert.equal(config.isProjectContentPreview('?content-preview=1'), true)
   assert.equal(config.isProjectContentPreview('?content-preview=0'), false)
-  assert.equal(config.hasGrafikaCasePreview('zhk-grafika'), true)
-  assert.equal(config.hasGrafikaCasePreview('verkhnekamenskaya'), false)
+  assert.equal(config.hasGrafikaProjectCase('zhk-grafika'), true)
+  assert.equal(config.hasGrafikaProjectCase('verkhnekamenskaya'), false)
 })
 
-test('Grafika preview replaces the old mock review, price and term consistently', async () => {
-  const { projectRepository } = await load('src/entities/project/api/index.ts', {
-    DEV: false,
-    VITE_PROJECT_CONTENT_PREVIEW: 'true',
-  })
+test('published Grafika case replaces the old mock review, price and term consistently', async () => {
+  const { projectRepository } = await load('src/entities/project/api/index.ts', { DEV: false })
   const project = await projectRepository.getBySlug('zhk-grafika')
   assert.equal(project.term, '7 месяцев')
   assert.equal(project.price, '≈ 3,68 млн ₽')
@@ -67,6 +64,17 @@ test('Grafika media and location describe the actual project without a mock rati
   const seo = await load('src/entities/project/model/grafika-case.seo.ts')
   const work = seo.grafikaStructuredData['@graph'].find((item) => item['@type'] === 'CreativeWork')
   assert.equal(work.url, 'https://anfas-remont.ru/projects/zhk-grafika/')
+  const { createSeoMeta } = await load('src/shared/config/seo.ts')
+  const metadata = createSeoMeta({
+    title: seo.grafikaCaseTitle,
+    path: seo.grafikaCasePath,
+    image: seo.grafikaShareImageUrl,
+  })
+  assert.equal(
+    metadata.find((item) => item.property === 'og:image').content,
+    'https://anfas-remont.ru/images/projects/zhk-grafika/share/grafika-1200x630.jpg',
+  )
+
   assert.match(work.locationCreated.name, /Мурино/)
   assert.equal(work.associatedMedia.length, 49)
   assert.equal(new Set(work.associatedMedia.map((item) => item.contentUrl)).size, 49)
