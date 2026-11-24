@@ -8,6 +8,10 @@ type SeoMetaOptions = {
   path: string
   keywords?: string
   image?: string
+  imageAlt?: string
+  imageWidth?: number
+  imageHeight?: number
+  imageType?: string
   robots?: string
   type?: 'website' | 'article'
 }
@@ -24,6 +28,10 @@ export function createSeoMeta({
   path,
   keywords,
   image = defaultSeoImage,
+  imageAlt = title,
+  imageWidth,
+  imageHeight,
+  imageType,
   robots = 'index, follow',
   type = 'website',
 }: SeoMetaOptions) {
@@ -38,13 +46,17 @@ export function createSeoMeta({
     { property: 'og:type', content: type },
     { property: 'og:url', content: canonical },
     { property: 'og:image', content: imageUrl },
-    { property: 'og:image:alt', content: title },
+    { property: 'og:image:alt', content: imageAlt },
     { property: 'og:locale', content: 'ru_RU' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: title },
     { name: 'twitter:image', content: imageUrl },
-    { name: 'twitter:image:alt', content: title },
+    { name: 'twitter:image:alt', content: imageAlt },
   ]
+
+  if (imageWidth) meta.push({ property: 'og:image:width', content: String(imageWidth) })
+  if (imageHeight) meta.push({ property: 'og:image:height', content: String(imageHeight) })
+  if (imageType) meta.push({ property: 'og:image:type', content: imageType })
 
   if (description) {
     meta.splice(1, 0, { name: 'description', content: description })
