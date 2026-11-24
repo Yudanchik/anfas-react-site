@@ -15,14 +15,16 @@ import {
   planPhotos,
   murinskiyBudget,
   murinskiyBudgetLabel,
-  murinskiyBudgetRecordedRub,
   murinskiyHandover,
   murinskiySolutions,
   type CasePhoto,
 } from '@/entities/project/model/murinskiy-case.data'
 import type { Project } from '@/entities/project/model/project.types'
-import { isProjectContentPreview } from '@/shared/config/project-content-preview'
-import { absoluteUrl } from '@/shared/config/seo'
+import {
+  isProjectContentPreview,
+  canPreviewProjectContent,
+} from '@/shared/config/project-content-preview'
+import { murinskiyCaseStructuredData } from '@/entities/project/model/murinskiy-case.seo'
 import { assetUrl } from '@/shared/lib/asset-url'
 import { OpenLeadForm } from '@/shared/ui/open-lead-form'
 import { PageWrapper } from '@/shared/ui/page-wrapper'
@@ -38,31 +40,6 @@ const scope = [
   'Организация монтажа мебели',
   'Подготовка квартиры к проживанию',
 ]
-
-const projectUrl = absoluteUrl('/projects/2-murinskiy-37')
-const caseStructuredData = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'CreativeWork',
-      '@id': `${projectUrl}#project`,
-      name: '2-й Муринский, 37 — восстановление квартиры после пожара',
-      description:
-        'Квартира 59 м² в Санкт-Петербурге: восстановление после пожара, новая планировка с тремя комнатами, гардеробом и постирочной. Дизайн-проект, ремонт и комплектация — Анфас.',
-      url: projectUrl,
-      creator: { '@id': absoluteUrl('/#organization') },
-      locationCreated: { '@type': 'Place', name: '2-й Муринский, 37, Санкт-Петербург' },
-    },
-    {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Главная', item: absoluteUrl('/') },
-        { '@type': 'ListItem', position: 2, name: 'Проекты', item: absoluteUrl('/projects') },
-        { '@type': 'ListItem', position: 3, name: '2-й Муринский, 37', item: projectUrl },
-      ],
-    },
-  ],
-}
 
 function Pending({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -189,7 +166,7 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
     <main className={styles.case} data-project-case-draft="2-murinskiy-37">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(caseStructuredData) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(murinskiyCaseStructuredData) }}
       />
       <header className={styles.hero}>
         <PageWrapper>
@@ -197,8 +174,9 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
             <div className={styles.heroCopy}>
               <p className={styles.eyebrow}>Санкт-Петербург · 2-й Муринский, 37</p>
               <h1>
-                После пожара —<br />
-                <em>новая жизнь квартиры</em>
+                Восстановление квартиры
+                <br />
+                <em>после пожара</em>
               </h1>
               <p className={styles.lead}>
                 Восстановление 59 м² и новая планировка: из двухкомнатной квартиры — пространство с
@@ -218,9 +196,14 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
                   <dd>{murinskiyBudgetLabel}</dd>
                 </div>
               </dl>
-              <a className={styles.heroLink} href="#case-work">
-                Посмотреть этапы работ ↓
-              </a>
+              <div className={styles.heroActions}>
+                <a className={styles.heroContact} href="#case-contact">
+                  Обсудить свою квартиру
+                </a>
+                <a className={styles.heroLink} href="#case-work">
+                  Посмотреть этапы работ
+                </a>
+              </div>
             </div>
             <div className={styles.heroImage}>
               <img
@@ -235,22 +218,27 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
       </header>
 
       <PageWrapper>
-        <aside className={styles.notice}>
-          <div className={styles.previewBar}>
-            <strong>
-              {showNotes ? 'Проверка содержания страницы' : 'Предпросмотр страницы на dev'}
-            </strong>
-            <Link to={{ search: noteSearch.toString() ? `?${noteSearch}` : '' }} preventScrollReset>
-              {showNotes ? 'Посмотреть как клиент' : 'Показать редакторские пометки'}
-            </Link>
-          </div>
-          {showNotes ? (
-            <p>
-              Пунктиром отмечены недостающие сведения. Фотографии обработаны без дорисовки; для
-              вертикальных кадров сохранена вся высота.
-            </p>
-          ) : null}
-        </aside>
+        {canPreviewProjectContent() ? (
+          <aside className={styles.notice}>
+            <div className={styles.previewBar}>
+              <strong>
+                {showNotes ? 'Проверка содержания страницы' : 'Предпросмотр страницы на dev'}
+              </strong>
+              <Link
+                to={{ search: noteSearch.toString() ? `?${noteSearch}` : '' }}
+                preventScrollReset
+              >
+                {showNotes ? 'Посмотреть как клиент' : 'Показать редакторские пометки'}
+              </Link>
+            </div>
+            {showNotes ? (
+              <p>
+                Пунктиром отмечены недостающие сведения. Фотографии обработаны без дорисовки; для
+                вертикальных кадров сохранена вся высота.
+              </p>
+            ) : null}
+          </aside>
+        ) : null}
         <nav className={styles.contents} aria-label="Разделы кейса">
           <a href="#case-task">Задача</a>
           <a href="#case-plan">Планировка</a>
@@ -442,16 +430,6 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
                   </tr>
                 ))}
               </tbody>
-              <tfoot>
-                <tr>
-                  <th scope="row">Зафиксированные суммы</th>
-                  <td>
-                    {roubles(murinskiyBudgetRecordedRub)}
-                    <span className={styles.mobileBudgetStatus}>Без оценочных статей</span>
-                  </td>
-                  <td>Без двух оценочных статей</td>
-                </tr>
-              </tfoot>
             </table>
           </div>
           <p className={styles.budgetNote}>
@@ -477,7 +455,7 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
             </div>
           </section>
         ) : null}
-        <div className={styles.form}>
+        <div className={styles.form} id="case-contact">
           <OpenLeadForm
             defaultService="individual"
             title={

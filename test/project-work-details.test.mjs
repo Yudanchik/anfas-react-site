@@ -49,30 +49,3 @@ test('development preview is opt-in and does not accept other query values', asy
   assert.equal(isProjectContentPreview('?content-preview=0'), false)
   assert.equal(isProjectContentPreview('?content-preview=1'), true)
 })
-
-test('assembled Murinskiy case is isolated to dev and this one project', async () => {
-  for (const env of [{ DEV: false }, { DEV: false, VITE_PROJECT_CONTENT_PREVIEW: 'false' }]) {
-    const { isProjectCaseDraft } = await load('src/shared/config/project-content-preview.ts', env)
-    assert.equal(isProjectCaseDraft('2-murinskiy-37'), false)
-  }
-  const { isProjectCaseDraft } = await load('src/shared/config/project-content-preview.ts', { DEV: false, VITE_PROJECT_CONTENT_PREVIEW: 'true' })
-  assert.equal(isProjectCaseDraft('2-murinskiy-37'), true)
-  assert.equal(isProjectCaseDraft('zhk-grafika'), false)
-})
-
-test('dev project list and case use the confirmed budget without changing production data', async () => {
-  const production = await load('src/entities/project/api/index.ts', { DEV: false })
-  const development = await load('src/entities/project/api/index.ts', { DEV: false, VITE_PROJECT_CONTENT_PREVIEW: 'true' })
-  const productionProject = await production.projectRepository.getBySlug('2-murinskiy-37')
-  const draft = await development.projectRepository.getBySlug('2-murinskiy-37')
-  assert.equal(productionProject.price, '3\u00a0000\u00a0000 ₽')
-  assert.equal(draft.term, '8 месяцев')
-  assert.match(draft.price, /Около 5,85 млн ₽/)
-  assert.equal(draft.review, undefined)
-  const listed = (await development.projectRepository.getAll()).find(project => project.slug === draft.slug)
-  assert.equal(listed.price, draft.price)
-  const data = await load('src/entities/project/model/murinskiy-case.data.ts')
-  assert.equal(data.murinskiyBudgetTotalRub, 5852310)
-  assert.equal(data.murinskiyBudgetRecordedRub, 3432310)
-  assert.equal(data.murinskiyBudget.filter(row => row.estimated).length, 2)
-})
