@@ -71,6 +71,7 @@ jobs:
       - name: Lead source checks (no outbound requests or email)
         run: |
           node --test test/lead-attribution.test.mjs
+          node --test test/murinskiy-case.test.mjs
           php -l public/api/lead.php
           php -l public/api/lead-attribution.php
           php test/lead-attribution.test.php
