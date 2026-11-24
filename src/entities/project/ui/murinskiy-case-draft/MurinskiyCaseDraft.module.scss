@@ -101,6 +101,25 @@
   text-underline-offset: 6px;
 }
 
+.heroActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.heroContact {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  background: var(--amber);
+  color: var(--ink);
+  font-size: 16px;
+  text-decoration: none;
+}
+
 .heroImage {
   position: relative;
   min-height: 540px;
@@ -476,6 +495,7 @@
 }
 
 .form {
+  scroll-margin-top: 110px;
   padding-bottom: 64px;
 }
 

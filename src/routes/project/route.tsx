@@ -5,8 +5,18 @@ import { projectRepository } from '@/entities/project/api'
 import { ProjectReview } from '@/entities/project/ui/project-review'
 import { ProjectWorkDetails } from '@/entities/project/ui/project-work-details/ProjectWorkDetails'
 import { ProjectContentPreview } from '@/entities/project/ui/project-content-preview/ProjectContentPreview'
-import { isProjectCaseDraft, isProjectContentPreview } from '@/shared/config/project-content-preview'
+import {
+  hasDetailedProjectCase,
+  isProjectContentPreview,
+  canPreviewProjectContent,
+} from '@/shared/config/project-content-preview'
 import { MurinskiyCaseDraft } from '@/entities/project/ui/murinskiy-case-draft/MurinskiyCaseDraft'
+import {
+  murinskiyCaseTitle,
+  murinskiyCaseDescription,
+  murinskiyCasePath,
+  murinskiyCaseImage,
+} from '@/entities/project/model/murinskiy-case.seo'
 import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
 import {
@@ -45,7 +55,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return { project }
 }
 
-export function meta({ data, location }: {
+export function meta({
+  data,
+  location,
+}: {
   data?: Awaited<ReturnType<typeof loader>>
   location?: { search: string }
 }) {
@@ -57,14 +70,14 @@ export function meta({ data, location }: {
     })
   }
 
-  if (isProjectCaseDraft(data.project.slug)) {
+  if (hasDetailedProjectCase(data.project.slug)) {
     return createSeoMeta({
-      title: '2-й Муринский, 37 — восстановление после пожара | Анфас',
-      description: 'Кейс квартиры 59 м²: задача заказчика, новая планировка, демонтаж, перегородки, штукатурка, стяжка и новая электрика. Начало работ — апрель 2023.',
-      path: `/projects/${data.project.slug}`,
-      image: assetUrl(data.project.image),
+      title: murinskiyCaseTitle,
+      description: murinskiyCaseDescription,
+      path: murinskiyCasePath,
+      image: assetUrl(murinskiyCaseImage),
       type: 'article',
-      robots: 'noindex, nofollow',
+      robots: canPreviewProjectContent() ? 'noindex, nofollow' : 'index, follow',
     })
   }
 
@@ -259,7 +272,7 @@ export default function ProjectRoute() {
     showPreviousImage()
   }
 
-  if (isProjectCaseDraft(project.slug)) {
+  if (hasDetailedProjectCase(project.slug)) {
     return <MurinskiyCaseDraft project={project} />
   }
 

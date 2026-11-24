@@ -72,6 +72,7 @@ jobs:
         run: |
           node --test test/lead-attribution.test.mjs
           node --test test/project-work-details.test.mjs
+          node --test test/murinskiy-case.test.mjs
           php -l public/api/lead.php
           php -l public/api/lead-attribution.php
           php test/lead-attribution.test.php
