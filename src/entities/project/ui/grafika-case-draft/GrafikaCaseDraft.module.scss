@@ -5,15 +5,42 @@
   font-size: 15px;
 }
 
-.portrait img {
-  aspect-ratio: 2 / 3;
+.plans img {
+  aspect-ratio: auto;
 }
 
-.electricalGrid figure:first-child {
-  grid-row: span 2;
+.planLink {
+  display: inline-block;
+  margin-top: 10px;
+  color: inherit;
+  font-size: 14px;
+  text-underline-offset: 4px;
+}
+
+.workPhotos {
+  align-items: start;
+}
+
+.workPhotos img {
+  aspect-ratio: auto;
+}
+
+.workPhotos figure:only-child {
+  grid-column: 1 / -1;
+}
+
+.mediaNote {
+  margin-bottom: 24px !important;
+  color: #696a60;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.electricalGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
   @include mq.media(phone) {
-    grid-row: auto;
+    grid-template-columns: 1fr;
   }
 }
 

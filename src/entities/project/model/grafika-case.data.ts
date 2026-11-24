@@ -1,3 +1,12 @@
+export type GrafikaPhoto = {
+  id: number
+  src: string
+  thumbnailSrc: string
+  caption: string
+  width?: number
+  height?: number
+}
+
 export const grafikaBudget = [
   { title: 'Ремонтные работы', amountRub: 1285772, estimated: false },
   { title: 'Черновые материалы', amountRub: 646679, estimated: false },
@@ -9,6 +18,25 @@ export const grafikaBudget = [
 
 export const grafikaBudgetLabel = '≈ 3,68 млн ₽'
 export const grafikaCover = 'images/projects/zhk-grafika/story/finished/28.webp'
+
+export const grafikaPlanPhotos = [
+  {
+    id: -20,
+    src: 'images/projects/zhk-grafika/story/plans/obmerny-plan-3-2.webp',
+    thumbnailSrc: 'images/projects/zhk-grafika/story/plans/obmerny-plan-3-2.webp',
+    caption: 'Обмерный план до демонтажа — лист 3.2',
+    width: 3030,
+    height: 1943,
+  },
+  {
+    id: -21,
+    src: 'images/projects/zhk-grafika/story/plans/planirovochnoe-reshenie-3-8.webp',
+    thumbnailSrc: 'images/projects/zhk-grafika/story/plans/planirovochnoe-reshenie-3-8.webp',
+    caption: 'Планировочное решение: расстановка мебели — лист 3.8',
+    width: 3030,
+    height: 1943,
+  },
+] as const
 
 const captions = [
   'Освещение кухни-гостиной: встроенные светильники и чёрный трек',
@@ -67,6 +95,17 @@ export const grafikaPhotos = [
   }
 })
 
+const stageSizes: Record<string, readonly [number, number]> = {
+  'protection-window': [1086, 1448],
+  'protection-door': [941, 1672],
+  'demolition-room': [1448, 1086],
+  'demolition-kitchen': [1672, 941],
+  'pocket-frame-insulation': [1280, 720],
+  'electrical-panel': [1026, 1600],
+  'electrical-kitchen': [1536, 2730],
+  'electrical-room': [1536, 2730],
+}
+
 const stageCaptions = [
   ['protection-window', 'Защита окон плёнкой и лентой перед основными работами'],
   ['protection-door', 'Защита входной двери и фурнитуры на время ремонта'],
@@ -80,9 +119,11 @@ const stageCaptions = [
 
 export const grafikaStagePhotos = stageCaptions.map(([name, caption], index) => ({
   id: -index - 1,
-  src: `images/projects/zhk-grafika/story/stages/${name}.webp`,
-  thumbnailSrc: `images/projects/zhk-grafika/story/thumbnails/${name}.webp`,
+  src: `images/projects/zhk-grafika/story/stages/ai/${name}.webp`,
+  thumbnailSrc: `images/projects/zhk-grafika/story/stages/ai/${name}.webp`,
   caption,
+  width: stageSizes[name][0],
+  height: stageSizes[name][1],
 }))
 
 export const grafikaStages = [
@@ -115,7 +156,7 @@ export const grafikaStages = [
 export const grafikaSolutions = [
   {
     title: 'Отдельная спальня',
-    text: 'Спальную зону отделили от кухни-гостиной раздвижной дверью-пеналом. Дверь не требует места для распахивания, а кровать находится в отдельной комнате.',
+    text: 'Для отдельной спальни установили раздвижную дверь-пенал вместо распашной двери. Она не требует места для распахивания между спальней и кухней-гостиной.',
     photoId: 34,
   },
   {

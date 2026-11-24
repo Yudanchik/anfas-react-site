@@ -49,6 +49,8 @@ test('Grafika preview replaces the old mock review, price and term consistently'
   assert.equal(project.price, '≈ 3,68 млн ₽')
   assert.equal(project.review, undefined)
   assert.equal(project.gallery.length, 39)
+  assert.ok(project.details.some((text) => text.includes('Защита поверхностей')))
+  assert.ok(project.details.every((text) => !/студи/iu.test(text)))
   assert.equal(
     (await projectRepository.getAll()).find((item) => item.slug === project.slug).price,
     project.price,
@@ -66,8 +68,8 @@ test('Grafika media and location describe the actual project without a mock rati
   const work = seo.grafikaStructuredData['@graph'].find((item) => item['@type'] === 'CreativeWork')
   assert.equal(work.url, 'https://anfas-remont.ru/projects/zhk-grafika/')
   assert.match(work.locationCreated.name, /Мурино/)
-  assert.equal(work.associatedMedia.length, 47)
-  assert.equal(new Set(work.associatedMedia.map((item) => item.contentUrl)).size, 47)
+  assert.equal(work.associatedMedia.length, 49)
+  assert.equal(new Set(work.associatedMedia.map((item) => item.contentUrl)).size, 49)
   assert.ok(
     work.associatedMedia.every((item) => item.caption.length > 20 && !/фото \d/.test(item.caption)),
   )

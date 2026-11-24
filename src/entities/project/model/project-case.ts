@@ -3,7 +3,13 @@ import {
   hasDetailedProjectCase,
   hasGrafikaCasePreview,
 } from '@/shared/config/project-content-preview'
-import { grafikaBudgetLabel, grafikaCover, grafikaPhotos } from './grafika-case.data'
+import {
+  grafikaBudgetLabel,
+  grafikaCover,
+  grafikaPhotos,
+  grafikaStages,
+  grafikaSolutions,
+} from './grafika-case.data'
 import {
   murinskiyBudgetLabel,
   murinskiyStages,
@@ -22,10 +28,14 @@ export function applyProjectCase(project: Project): Project {
       typeAccent: 'под аренду',
       location: 'Мурино, ЖК «Графика»',
       description:
-        'Студия 29,2 м² с отдельной спальней и рабочим местом на лоджии. Реализация в 2024 году за 7 месяцев; аренда — 80 000 ₽ в месяц по данным команды «Анфас».',
+        'Реновация квартиры 29,2 м² с отдельной спальней и рабочим местом на лоджии. Реализация в 2024 году за 7 месяцев; аренда — 80 000 ₽ в месяц по данным команды «Анфас».',
       term: '7 месяцев',
       price: grafikaBudgetLabel,
       review: undefined,
+      details: [
+        ...grafikaStages.map((stage) => `${stage.title}: ${stage.description}`),
+        ...grafikaSolutions.map((solution) => `${solution.title}: ${solution.text}`),
+      ],
     }
   }
   if (!hasDetailedProjectCase(project.slug)) return project
