@@ -72,6 +72,13 @@ test('Grafika media and location describe the actual project without a mock rati
     work.associatedMedia.every((item) => item.caption.length > 20 && !/фото \d/.test(item.caption)),
   )
   assert.ok(!('review' in work) && !('aggregateRating' in work))
+  const preview = await load('src/entities/project/model/grafika-case.seo.ts', {
+    VITE_PROJECT_CONTENT_PREVIEW: 'true',
+  })
+  assert.equal(
+    preview.grafikaShareImageUrl,
+    'https://dev.anfas-remont.ru/images/projects/zhk-grafika/share/grafika-1200x630.jpg',
+  )
 })
 
 test('public project list and case agree on the owner-confirmed approximate budget and work', async () => {

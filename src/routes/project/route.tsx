@@ -17,7 +17,7 @@ import {
   grafikaCaseTitle,
   grafikaCaseDescription,
   grafikaCasePath,
-  grafikaShareImage,
+  grafikaShareImageUrl,
   grafikaShareImageAlt,
 } from '@/entities/project/model/grafika-case.seo'
 import {
@@ -100,7 +100,7 @@ export function meta({
       title: grafikaCaseTitle,
       description: grafikaCaseDescription,
       path: grafikaCasePath,
-      image: assetUrl(grafikaShareImage),
+      image: grafikaShareImageUrl,
       imageAlt: grafikaShareImageAlt,
       imageWidth: 1200,
       imageHeight: 630,
