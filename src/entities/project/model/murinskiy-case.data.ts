@@ -1,5 +1,10 @@
-// Owner-supplied project facts; documentary photo correction only. Dev build only.
-export type CasePhoto = { src: string; caption: string; publicCaption?: string }
+// Owner-supplied project facts; documentary photo correction only.
+export type CasePhoto = {
+  src: string
+  thumbnailSrc?: string
+  caption: string
+  publicCaption?: string
+}
 export type CaseStage = { id: string; title: string; description: string; photos: CasePhoto[] }
 
 // Confirmed by the owner on 23 November 2026. Estimated rows are intentionally separate.
@@ -65,6 +70,7 @@ export const murinskiyStages: CaseStage[] = [
       },
       {
         src: 'images/projects/2-murinskiy-37/story/demolition-original-03.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/demolition-original-03.webp',
         caption: 'Остатки разобранных перегородок: вертикальный ракурс.',
       },
       {
@@ -97,18 +103,22 @@ export const murinskiyStages: CaseStage[] = [
     photos: [
       {
         src: 'images/projects/2-murinskiy-37/story/partitions-original-01.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/partitions-original-01.webp',
         caption: 'Общий вид новых перегородок и сформированных проёмов.',
       },
       {
         src: 'images/projects/2-murinskiy-37/story/partitions-original-02.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/partitions-original-02.webp',
         caption: 'Новая планировка: перегородки и дверные проёмы.',
       },
       {
         src: 'images/projects/2-murinskiy-37/story/partitions-original-03.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/partitions-original-03.webp',
         caption: 'Газобетонная перегородка с дверным проёмом.',
       },
       {
         src: 'images/projects/2-murinskiy-37/story/partitions-original-04.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/partitions-original-04.webp',
         caption: 'Перегородки санузлов из ПГП-блоков.',
       },
     ],
@@ -125,6 +135,7 @@ export const murinskiyStages: CaseStage[] = [
       },
       {
         src: 'images/projects/2-murinskiy-37/story/plaster-original-02.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/plaster-original-02.webp',
         caption: 'Стены и перегородки после оштукатуривания.',
       },
       {
@@ -141,10 +152,12 @@ export const murinskiyStages: CaseStage[] = [
     photos: [
       {
         src: 'images/projects/2-murinskiy-37/story/screed-original-01.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/screed-original-01.webp',
         caption: 'Стяжка пола в коридоре и смежном помещении.',
       },
       {
         src: 'images/projects/2-murinskiy-37/story/screed-original-02.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/screed-original-02.webp',
         caption: 'Стяжка пола: на переднем плане затирочная машина.',
       },
     ],
@@ -157,18 +170,22 @@ export const murinskiyStages: CaseStage[] = [
     photos: [
       {
         src: 'images/projects/2-murinskiy-37/story/electrical-original-01.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/electrical-original-01.webp',
         caption: 'Электрощит и отдельный шкаф с кабелями.',
       },
       {
         src: 'images/projects/2-murinskiy-37/story/electrical-original-02.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/electrical-original-02.webp',
         caption: 'Кабельные трассы по потолку рядом со щитами.',
       },
       {
         src: 'images/projects/2-murinskiy-37/story/electrical-original-03.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/electrical-original-03.webp',
         caption: 'Новая электрика: трассы и коробки до закрытия потолка.',
       },
       {
         src: 'images/projects/2-murinskiy-37/story/electrical-original-04.webp',
+        thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/electrical-original-04.webp',
         caption: 'Разводка электрики по потолку: дополнительный ракурс.',
       },
     ],
@@ -177,34 +194,42 @@ export const murinskiyStages: CaseStage[] = [
 export const resultPhotos: CasePhoto[] = [
   {
     src: 'images/projects/2-murinskiy-37/story/result-36.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-36.webp',
     caption: 'Кухня-гостиная: общий вид готового интерьера.',
   },
   {
     src: 'images/projects/2-murinskiy-37/story/result-38.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-38.webp',
     caption: 'Кухня и обеденная зона у окна.',
   },
   {
     src: 'images/projects/2-murinskiy-37/story/result-23.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-23.webp',
     caption: 'Спальня в готовом интерьере.',
   },
   {
     src: 'images/projects/2-murinskiy-37/story/result-35.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-35.webp',
     caption: 'Комната со спальным местом и встроенным хранением.',
   },
   {
     src: 'images/projects/2-murinskiy-37/story/result-20.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-20.webp',
     caption: 'Ванная комната после отделки.',
   },
   {
     src: 'images/projects/2-murinskiy-37/story/result-39.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-39.webp',
     caption: 'Отдельный санузел.',
   },
   {
     src: 'images/projects/2-murinskiy-37/story/result-27.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-27.webp',
     caption: 'Гардеробная с открытой системой хранения.',
   },
   {
     src: 'images/projects/2-murinskiy-37/story/result-28.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-28.webp',
     caption: 'Стиральная и сушильная машины в зоне хранения.',
   },
 ]

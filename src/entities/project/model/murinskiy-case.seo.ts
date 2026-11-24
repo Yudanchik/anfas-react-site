@@ -6,6 +6,10 @@ export const murinskiyCaseTitle = 'Ремонт после пожара на 2-�
 export const murinskiyCaseDescription =
   'Кейс Анфас в Санкт-Петербурге: восстановление квартиры 59 м² после пожара за 8 месяцев. Планировка, инженерия, этапы ремонта, фото результата и бюджет.'
 export const murinskiyCaseImage = 'images/projects/2-murinskiy-37/story/result-36.webp'
+export const murinskiyCaseShareImage =
+  'images/projects/2-murinskiy-37/share/design-cover-1200x630.jpg'
+export const murinskiyCaseShareImageAlt =
+  'Гостиная с синим диваном — визуализация с обложки дизайн-проекта квартиры на 2-м Муринском'
 
 const projectUrl = absoluteUrl(murinskiyCasePath)
 const photos = [

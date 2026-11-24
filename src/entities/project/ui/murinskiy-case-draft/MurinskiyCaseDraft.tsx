@@ -148,7 +148,7 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
         aria-label={`Увеличить: ${caption(item)}`}
       >
         <img
-          src={assetUrl(item.src)}
+          src={assetUrl(item.thumbnailSrc ?? item.src)}
           alt={caption(item)}
           loading="lazy"
           width={1448}

@@ -12,7 +12,8 @@ import {
   murinskiyCaseTitle,
   murinskiyCaseDescription,
   murinskiyCasePath,
-  murinskiyCaseImage,
+  murinskiyCaseShareImage,
+  murinskiyCaseShareImageAlt,
 } from '@/entities/project/model/murinskiy-case.seo'
 import { absoluteUrl, createSeoMeta } from '@/shared/config/seo'
 import { assetUrl } from '@/shared/lib/asset-url'
@@ -66,7 +67,11 @@ export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
       title: murinskiyCaseTitle,
       description: murinskiyCaseDescription,
       path: murinskiyCasePath,
-      image: assetUrl(murinskiyCaseImage),
+      image: assetUrl(murinskiyCaseShareImage),
+      imageAlt: murinskiyCaseShareImageAlt,
+      imageWidth: 1200,
+      imageHeight: 630,
+      imageType: 'image/jpeg',
       type: 'article',
       robots: canPreviewProjectContent() ? 'noindex, nofollow' : 'index, follow',
     })
