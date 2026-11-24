@@ -19,14 +19,14 @@ export const grafikaBudget = [
 ] as const
 
 export const grafikaBudgetLabel = '≈ 3,68 млн ₽'
-export const grafikaCover = 'images/projects/zhk-grafika/story/finished/28.webp'
+export const grafikaCover = 'images/projects/zhk-grafika/story/finished/20.webp'
 
 export const grafikaPlanPhotos = [
   {
     id: -20,
     src: 'images/projects/zhk-grafika/story/plans/obmerny-plan-3-2.webp',
     thumbnailSrc: 'images/projects/zhk-grafika/story/plans/obmerny-plan-3-2.webp',
-    caption: 'Обмерный план до демонтажа — лист 3.2',
+    caption: 'План квартиры до демонтажа',
     width: 3030,
     height: 1943,
   },
@@ -34,7 +34,7 @@ export const grafikaPlanPhotos = [
     id: -21,
     src: 'images/projects/zhk-grafika/story/plans/planirovochnoe-reshenie-3-8.webp',
     thumbnailSrc: 'images/projects/zhk-grafika/story/plans/planirovochnoe-reshenie-3-8.webp',
-    caption: 'Планировочное решение: расстановка мебели — лист 3.8',
+    caption: 'Планировочное решение квартиры',
     width: 3030,
     height: 1943,
   },
@@ -82,20 +82,23 @@ const captions = [
   'Телевизор и подвесная тумба в спальне',
 ] as const
 
-// Start with complete views of each zone, then offer every original photograph.
-const order = [28, 29, 25, 34, 35, 23, 31, 3, 10, 16, 19, 17]
+// The owner-selected cover leads the gallery; excluded detail shots stay unpublished.
+const excludedPhotoIds = new Set([5, 9, 10, 11, 13])
+const order = [20, 28, 29, 25, 34, 35, 23, 31, 3, 16, 19, 17]
 export const grafikaPhotos = [
   ...order,
   ...captions.map((_, index) => index + 1).filter((number) => !order.includes(number)),
-].map((number) => {
-  const id = String(number).padStart(2, '0')
-  return {
-    id: number,
-    src: `images/projects/zhk-grafika/story/finished/${id}.webp`,
-    thumbnailSrc: `images/projects/zhk-grafika/story/thumbnails/${id}.webp`,
-    caption: captions[number - 1],
-  }
-})
+]
+  .filter((number) => !excludedPhotoIds.has(number))
+  .map((number) => {
+    const id = String(number).padStart(2, '0')
+    return {
+      id: number,
+      src: `images/projects/zhk-grafika/story/finished/${id}.webp`,
+      thumbnailSrc: `images/projects/zhk-grafika/story/thumbnails/${id}.webp`,
+      caption: captions[number - 1],
+    }
+  })
 
 const stageSizes: Record<string, readonly [number, number]> = {
   'protection-window': [1086, 1448],

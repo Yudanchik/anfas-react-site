@@ -12,15 +12,15 @@ export const grafikaCaseTitle =
   'Реновация квартиры 29,2 м² под аренду в ЖК «Графика», Мурино | Анфас'
 export const grafikaCaseDescription =
   'Полная реновация инвестиционной квартиры в Мурино: отдельная спальня, рабочее место на лоджии и умный свет. Этапы работ и результат: 2024 год, 7 месяцев, бюджет ≈ 3,68 млн ₽ и аренда 80 000 ₽ в месяц.'
-export const grafikaShareImage = 'images/projects/zhk-grafika/share/grafika-1200x630.jpg'
+export const grafikaShareImage =
+  'images/projects/zhk-grafika/share/grafika-headboard-20-1200x630.jpg'
 const mediaUrl = (path: string) =>
   new URL(
     `/${path}`,
     canPreviewProjectContent() ? 'https://dev.anfas-remont.ru' : absoluteUrl('/'),
   ).toString()
 export const grafikaShareImageUrl = mediaUrl(grafikaShareImage)
-export const grafikaShareImageAlt =
-  'Готовая кухня в ЖК «Графика»: деревянные фасады, техника и подсветка столешницы'
+export const grafikaShareImageAlt = 'Изголовье кровати с подсветкой и картинами в ЖК «Графика»'
 
 const url = absoluteUrl(grafikaCasePath)
 export const grafikaStructuredData = {

@@ -169,6 +169,12 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(murinskiyCaseStructuredData) }}
       />
       <header className={styles.hero}>
+        <img
+          className={styles.heroImage}
+          src={assetUrl(project.image)}
+          alt="Готовая гостиная на 2-м Муринском: встроенные шкафы и стеклянная перегородка"
+          fetchPriority="high"
+        />
         <PageWrapper>
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
@@ -204,14 +210,6 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
                   Посмотреть этапы работ
                 </a>
               </div>
-            </div>
-            <div className={styles.heroImage}>
-              <img
-                src={assetUrl(project.image)}
-                alt="Готовая гостиная на 2-м Муринском: встроенные шкафы и стеклянная перегородка"
-                fetchPriority="high"
-              />
-              <span>Готовый интерьер · фотография реализованного ремонта</span>
             </div>
           </div>
         </PageWrapper>
