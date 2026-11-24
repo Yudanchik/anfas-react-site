@@ -5,6 +5,8 @@ export type GrafikaPhoto = {
   caption: string
   width?: number
   height?: number
+  previewAspectRatio?: string
+  previewObjectPosition?: string
 }
 
 export const grafikaBudget = [
@@ -124,6 +126,18 @@ export const grafikaStagePhotos = stageCaptions.map(([name, caption], index) => 
   caption,
   width: stageSizes[name][0],
   height: stageSizes[name][1],
+  previewAspectRatio:
+    name.startsWith('protection-') || name.startsWith('electrical-')
+      ? '9 / 16'
+      : name === 'pocket-frame-insulation'
+        ? '16 / 9'
+        : '4 / 3',
+  previewObjectPosition:
+    name === 'protection-window'
+      ? '25% 50%'
+      : name === 'demolition-kitchen'
+        ? '40% 50%'
+        : '50% 50%',
 }))
 
 export const grafikaStages = [

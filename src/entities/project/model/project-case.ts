@@ -1,7 +1,7 @@
 import type { Project } from './project.types'
 import {
   hasDetailedProjectCase,
-  hasGrafikaCasePreview,
+  hasGrafikaProjectCase,
 } from '@/shared/config/project-content-preview'
 import {
   grafikaBudgetLabel,
@@ -19,7 +19,7 @@ import {
 } from './murinskiy-case.data'
 
 export function applyProjectCase(project: Project): Project {
-  if (hasGrafikaCasePreview(project.slug)) {
+  if (hasGrafikaProjectCase(project.slug)) {
     return {
       ...project,
       image: grafikaCover,

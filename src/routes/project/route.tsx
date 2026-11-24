@@ -7,7 +7,7 @@ import { ProjectWorkDetails } from '@/entities/project/ui/project-work-details/P
 import { ProjectContentPreview } from '@/entities/project/ui/project-content-preview/ProjectContentPreview'
 import {
   hasDetailedProjectCase,
-  hasGrafikaCasePreview,
+  hasGrafikaProjectCase,
   isProjectContentPreview,
   canPreviewProjectContent,
 } from '@/shared/config/project-content-preview'
@@ -95,7 +95,7 @@ export function meta({
     })
   }
 
-  if (hasGrafikaCasePreview(data.project.slug)) {
+  if (hasGrafikaProjectCase(data.project.slug)) {
     return createSeoMeta({
       title: grafikaCaseTitle,
       description: grafikaCaseDescription,
@@ -106,7 +106,7 @@ export function meta({
       imageHeight: 630,
       imageType: 'image/jpeg',
       type: 'article',
-      robots: 'noindex, nofollow',
+      robots: canPreviewProjectContent() ? 'noindex, nofollow' : 'index, follow',
     })
   }
 
@@ -174,13 +174,14 @@ export default function ProjectRoute() {
   const lastGalleryTriggerRef = useRef<HTMLButtonElement | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement | null>(null)
   const swipeStartRef = useRef<{ x: number; y: number; pointerId: number } | null>(null)
-  const [galleryCount, setGalleryCount] = useState(() => {
-    if (typeof window === 'undefined') {
-      return 6
-    }
-
-    return window.matchMedia('(width <= 768px)').matches ? 3 : 6
-  })
+  // Match the prerendered gallery on the first client render.
+  const [galleryCount, setGalleryCount] = useState(6)
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      setGalleryCount(window.matchMedia('(width <= 768px)').matches ? 3 : 6)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [project.slug])
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null)
 
   const openLightbox = (index: number, trigger: HTMLButtonElement) => {
@@ -305,7 +306,7 @@ export default function ProjectRoute() {
     return <MurinskiyCaseDraft project={project} />
   }
 
-  if (hasGrafikaCasePreview(project.slug)) {
+  if (hasGrafikaProjectCase(project.slug)) {
     return <GrafikaCaseDraft />
   }
 
