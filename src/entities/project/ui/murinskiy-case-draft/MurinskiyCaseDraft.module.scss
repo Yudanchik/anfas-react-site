@@ -386,6 +386,35 @@
   border-radius: 10px;
 }
 
+.solutions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+
+  article {
+    min-width: 0;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+
+  h3 {
+    margin-bottom: 16px;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
 .handover h3 {
   margin-bottom: 16px;
   font-size: 24px;

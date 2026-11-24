@@ -23,6 +23,31 @@ export const murinskiyHandover = [
   'Проверка и подключение всей бытовой техники',
   'Расстановка мебели',
 ] as const
+
+// Engineering and finishes explicitly confirmed by the owner on 24 November 2026.
+export const murinskiySolutions = [
+  {
+    id: 'finishes',
+    title: 'Пол, стены, потолки и двери',
+    text: 'На пол уложили кварцвинил, стены подготовили и окрасили. Установили натяжные потолки и двери скрытого монтажа.',
+  },
+  {
+    id: 'windows-and-air',
+    title: 'Новые окна и приток свежего воздуха',
+    text: 'Заменили окна и установили бризеры для притока свежего воздуха в квартиру.',
+  },
+  {
+    id: 'laundry-drainage',
+    title: 'Постирочная с насосом SoloLift',
+    text: 'Для отвода воды из постирочной установили насос SoloLift. В гардеробной разместили стиральную и сушильную машины.',
+  },
+  {
+    id: 'ventilation',
+    title: 'Вентиляция кухни, санузла и гардеробной',
+    text: 'Организовали вентиляцию гардеробной, санузла и кухни. Вентиляторы установили скрыто.',
+  },
+] as const
+
 export const murinskiyStages: CaseStage[] = [
   {
     id: 'after_demolition',
