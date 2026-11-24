@@ -105,10 +105,21 @@ export function GrafikaCaseDraft() {
   }
 
   const photo = (item: GrafikaPhoto) => (
-    <figure className={styles.figure} key={item.src}>
+    <figure
+      className={`${styles.figure} ${extra.mediaFigure}`}
+      key={item.src}
+      style={{
+        width: `min(100%, calc(var(--photo-height) * ${
+          item.previewAspectRatio === '9 / 16' ? 9 / 16 : item.id <= -20 ? 3030 / 1943 : 4 / 3
+        }))`,
+      }}
+    >
       <button
         type="button"
-        className={styles.photoButton}
+        className={`${styles.photoButton} ${item.id < 0 ? extra.documentPhoto : ''}`}
+        style={{
+          aspectRatio: item.previewAspectRatio ?? (item.id <= -20 ? '3030 / 1943' : '4 / 3'),
+        }}
         onClick={(event) => {
           trigger.current = event.currentTarget
           setActiveIndex(gallery.indexOf(item))
@@ -132,7 +143,7 @@ export function GrafikaCaseDraft() {
           ↗
         </span>
       </button>
-      <figcaption>{item.caption}</figcaption>
+      {item.id > -20 ? <figcaption>{item.caption}</figcaption> : null}
       {item.id <= -20 ? (
         <a className={extra.planLink} href={assetUrl(item.src)} target="_blank" rel="noreferrer">
           Открыть план в полном размере
@@ -142,12 +153,18 @@ export function GrafikaCaseDraft() {
   )
 
   return (
-    <main className={styles.case} data-project-case-draft="zhk-grafika">
+    <main className={`${styles.case} ${extra.case}`} data-project-case-draft="zhk-grafika">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(grafikaStructuredData) }}
       />
       <header className={styles.hero}>
+        <img
+          className={styles.heroImage}
+          src={assetUrl(grafikaCover)}
+          alt="Изголовье кровати с подсветкой и картинами в ЖК «Графика»"
+          fetchPriority="high"
+        />
         <PageWrapper>
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
@@ -181,16 +198,6 @@ export function GrafikaCaseDraft() {
                   Смотреть результат
                 </a>
               </div>
-            </div>
-            <div className={styles.heroImage}>
-              <img
-                src={assetUrl(grafikaCover)}
-                alt="Готовая кухня в ЖК «Графика»: деревянные фасады, техника и подсветка"
-                fetchPriority="high"
-                width={1152}
-                height={1536}
-              />
-              <span>Фотография реализованного интерьера</span>
             </div>
           </div>
         </PageWrapper>
@@ -273,7 +280,6 @@ export function GrafikaCaseDraft() {
             Фотографии с объекта: подготовка, демонтаж, монтаж конструкций и новая электрика до
             чистовой отделки.
           </p>
-          <p className={extra.mediaNote}>Фотографии этапов обработаны с использованием ИИ.</p>
           {grafikaStages.map((stage, index) => (
             <article className={styles.stage} key={stage.title}>
               <div className={styles.stageHeading}>
@@ -283,7 +289,9 @@ export function GrafikaCaseDraft() {
                   <p>{stage.description}</p>
                 </div>
               </div>
-              <div className={`${styles.photoGrid} ${extra.workPhotos}`}>
+              <div
+                className={`${styles.photoGrid} ${extra.workPhotos} ${stage.photos[0].previewAspectRatio === '9 / 16' ? extra.portraitPhotos : ''}`}
+              >
                 {stage.photos.map(photo)}
               </div>
             </article>
@@ -327,12 +335,12 @@ export function GrafikaCaseDraft() {
           <h2>Квартира после ремонта</h2>
           <p className={styles.intro}>
             Кухня-гостиная, спальня, рабочее место, прихожая и ванная. Нажмите на фотографию, чтобы
-            открыть обработанный кадр крупнее; в просмотре доступны 39 фотографий результата и
-            снимки этапов.
+            открыть кадр крупнее; в просмотре доступны {grafikaPhotos.length} фотографии результата
+            и снимки этапов.
           </p>
           <div className={styles.photoGrid}>{grafikaPhotos.slice(0, 12).map(photo)}</div>
           <details className={styles.more}>
-            <summary>Ещё 27 фотографий готовой квартиры</summary>
+            <summary>Ещё {grafikaPhotos.length - 12} фотографии готовой квартиры</summary>
             <div className={styles.photoGrid}>{grafikaPhotos.slice(12).map(photo)}</div>
           </details>
         </section>
