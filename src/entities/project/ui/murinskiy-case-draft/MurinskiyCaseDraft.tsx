@@ -148,7 +148,7 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
         aria-label={`Увеличить: ${caption(item)}`}
       >
         <img
-          src={assetUrl(item.src)}
+          src={assetUrl(item.thumbnailSrc ?? item.src)}
           alt={caption(item)}
           loading="lazy"
           width={1448}
@@ -208,10 +208,10 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
             <div className={styles.heroImage}>
               <img
                 src={assetUrl(project.image)}
-                alt="Готовая кухня-гостиная квартиры на 2-м Муринском"
+                alt="Готовая гостиная на 2-м Муринском: встроенные шкафы и стеклянная перегородка"
                 fetchPriority="high"
               />
-              <span>Готовый интерьер · фото из портфолио проекта</span>
+              <span>Готовый интерьер · фотография реализованного ремонта</span>
             </div>
           </div>
         </PageWrapper>
