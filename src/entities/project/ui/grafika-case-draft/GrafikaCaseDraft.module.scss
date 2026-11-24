@@ -5,8 +5,29 @@
   font-size: 15px;
 }
 
-.plans img {
-  aspect-ratio: auto;
+.case {
+  --photo-height: min(640px, calc(100svh - 220px));
+}
+
+.mediaFigure {
+  justify-self: center;
+
+  button img {
+    height: 100%;
+  }
+}
+
+.documentPhoto {
+  background: #e8e5de;
+
+  img {
+    object-fit: contain;
+  }
+}
+
+.portraitPhotos {
+  width: min(100%, calc(var(--photo-height) * 1.125 + 24px));
+  margin-inline: auto;
 }
 
 .planLink {
@@ -23,13 +44,6 @@
 
 .workPhotos figure:only-child {
   grid-column: 1 / -1;
-}
-
-.mediaNote {
-  margin-bottom: 24px !important;
-  color: #696a60;
-  font-size: 13px;
-  line-height: 1.5;
 }
 
 .solutions {
@@ -66,6 +80,28 @@
 
     &:nth-child(even) figure {
       order: 0;
+    }
+  }
+}
+
+@media (height <= 600px) {
+  .portraitPhotos {
+    width: 100%;
+
+    .mediaFigure {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      width: 100% !important;
+    }
+
+    button {
+      width: calc(var(--photo-height) * 0.5625);
+    }
+
+    figcaption {
+      margin-top: 0;
     }
   }
 }
