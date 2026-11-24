@@ -7,10 +7,19 @@ import { ProjectWorkDetails } from '@/entities/project/ui/project-work-details/P
 import { ProjectContentPreview } from '@/entities/project/ui/project-content-preview/ProjectContentPreview'
 import {
   hasDetailedProjectCase,
+  hasGrafikaCasePreview,
   isProjectContentPreview,
   canPreviewProjectContent,
 } from '@/shared/config/project-content-preview'
 import { MurinskiyCaseDraft } from '@/entities/project/ui/murinskiy-case-draft/MurinskiyCaseDraft'
+import { GrafikaCaseDraft } from '@/entities/project/ui/grafika-case-draft/GrafikaCaseDraft'
+import {
+  grafikaCaseTitle,
+  grafikaCaseDescription,
+  grafikaCasePath,
+  grafikaShareImage,
+  grafikaShareImageAlt,
+} from '@/entities/project/model/grafika-case.seo'
 import {
   murinskiyCaseTitle,
   murinskiyCaseDescription,
@@ -83,6 +92,21 @@ export function meta({
       imageType: 'image/jpeg',
       type: 'article',
       robots: canPreviewProjectContent() ? 'noindex, nofollow' : 'index, follow',
+    })
+  }
+
+  if (hasGrafikaCasePreview(data.project.slug)) {
+    return createSeoMeta({
+      title: grafikaCaseTitle,
+      description: grafikaCaseDescription,
+      path: grafikaCasePath,
+      image: assetUrl(grafikaShareImage),
+      imageAlt: grafikaShareImageAlt,
+      imageWidth: 1200,
+      imageHeight: 630,
+      imageType: 'image/jpeg',
+      type: 'article',
+      robots: 'noindex, nofollow',
     })
   }
 
@@ -279,6 +303,10 @@ export default function ProjectRoute() {
 
   if (hasDetailedProjectCase(project.slug)) {
     return <MurinskiyCaseDraft project={project} />
+  }
+
+  if (hasGrafikaCasePreview(project.slug)) {
+    return <GrafikaCaseDraft />
   }
 
   return (
