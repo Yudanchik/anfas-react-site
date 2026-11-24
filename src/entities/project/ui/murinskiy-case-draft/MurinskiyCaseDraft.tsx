@@ -17,6 +17,7 @@ import {
   murinskiyBudgetLabel,
   murinskiyBudgetRecordedRub,
   murinskiyHandover,
+  murinskiySolutions,
   type CasePhoto,
 } from '@/entities/project/model/murinskiy-case.data'
 import type { Project } from '@/entities/project/model/project.types'
@@ -254,6 +255,7 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
           <a href="#case-task">Задача</a>
           <a href="#case-plan">Планировка</a>
           <a href="#case-work">Этапы работ</a>
+          <a href="#case-solutions">Инженерия и отделка</a>
           <a href="#case-result">Результат</a>
           <a href="#case-budget">Сроки и бюджет</a>
         </nav>
@@ -349,12 +351,30 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
                 Уточнить состав и толщину стяжки, материал штукатурки и толщину перегородок. Пока
                 эти параметры не указаны как факты.
               </Pending>
-              <Pending title="Инженерия и контроль">
-                Дополнить текст по сантехнике, вентиляции и гидроизоляции. Для электрики — какие
-                решения применили и какие проверки провели. Фото не заменяют результаты испытаний.
+              <Pending title="Дополнительные подтверждения контроля">
+                Если добавляем блок о проверках и скрытых работах, нужны реальные результаты
+                испытаний электрики и материалы по гидроизоляции. Описание выполненных решений по
+                инженерии и отделке уже подтверждено владельцем.
               </Pending>
             </div>
           ) : null}
+        </section>
+
+        <section
+          className={styles.section}
+          id="case-solutions"
+          aria-labelledby="case-solutions-title"
+        >
+          <p className={styles.eyebrow}>Решения для повседневной жизни</p>
+          <h2 id="case-solutions-title">Инженерия и чистовая отделка</h2>
+          <div className={styles.solutions}>
+            {murinskiySolutions.map((solution) => (
+              <article key={solution.id} data-case-solution={solution.id}>
+                <h3>{solution.title}</h3>
+                <p>{solution.text}</p>
+              </article>
+            ))}
+          </div>
         </section>
 
         <section className={styles.section} id="case-result">
@@ -435,7 +455,7 @@ export function MurinskiyCaseDraft({ project }: { project: Project }) {
             </table>
           </div>
           <p className={styles.budgetNote}>
-            Точные расходы на чистовые материалы, технику и мебель не сохранились — эти две статьи
+            Точные расходы на чистовые материалы, технику и мебель не зафиксированы — эти две статьи
             восстановлены приблизительно. Поэтому общий бюджет округлён. Это бюджет конкретного
             реализованного проекта; стоимость нового ремонта рассчитываем отдельно.
           </p>

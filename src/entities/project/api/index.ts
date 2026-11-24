@@ -2,7 +2,11 @@ import { localProjectRepository } from './local-project.repository'
 import { strapiProjectRepository } from './strapi-project.repository'
 import type { ProjectRepository } from './project.repository'
 import type { Project } from '../model/project.types'
-import { murinskiyBudgetLabel, murinskiyStages } from '../model/murinskiy-case.data'
+import {
+  murinskiyBudgetLabel,
+  murinskiyStages,
+  murinskiySolutions,
+} from '../model/murinskiy-case.data'
 import { isProjectCaseDraft } from '@/shared/config/project-content-preview'
 
 const sourceRepository =
@@ -21,7 +25,10 @@ function applyCaseContent(project: Project): Project {
     term: '8 месяцев',
     price: murinskiyBudgetLabel,
     review: undefined,
-    details: murinskiyStages.map((stage) => `${stage.title}: ${stage.description}`),
+    details: [
+      ...murinskiyStages.map((stage) => `${stage.title}: ${stage.description}`),
+      ...murinskiySolutions.map((solution) => `${solution.title}: ${solution.text}`),
+    ],
   }
 }
 
