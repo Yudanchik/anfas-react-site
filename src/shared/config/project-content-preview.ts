@@ -13,3 +13,8 @@ export function isProjectContentPreview(search: string) {
 export function hasDetailedProjectCase(slug: string) {
   return slug === '2-murinskiy-37'
 }
+
+/** Owner-approved Grafika case is available in production and development. */
+export function hasGrafikaProjectCase(slug: string) {
+  return slug === 'zhk-grafika'
+}
