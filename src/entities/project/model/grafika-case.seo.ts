@@ -1,9 +1,15 @@
 import { absoluteUrl } from '@/shared/config/seo'
 import { canPreviewProjectContent } from '@/shared/config/project-content-preview'
-import { grafikaCover, grafikaPhotos, grafikaStagePhotos } from './grafika-case.data'
+import {
+  grafikaCover,
+  grafikaPhotos,
+  grafikaStagePhotos,
+  grafikaPlanPhotos,
+} from './grafika-case.data'
 
 export const grafikaCasePath = '/projects/zhk-grafika/'
-export const grafikaCaseTitle = 'Ремонт студии 29,2 м² под аренду в ЖК «Графика», Мурино | Анфас'
+export const grafikaCaseTitle =
+  'Реновация квартиры 29,2 м² под аренду в ЖК «Графика», Мурино | Анфас'
 export const grafikaCaseDescription =
   'Полная реновация инвестиционной квартиры в Мурино: отдельная спальня, рабочее место на лоджии и умный свет. Этапы работ и результат: 2024 год, 7 месяцев, бюджет ≈ 3,68 млн ₽ и аренда 80 000 ₽ в месяц.'
 export const grafikaShareImage = 'images/projects/zhk-grafika/share/grafika-1200x630.jpg'
@@ -35,11 +41,13 @@ export const grafikaStructuredData = {
         '@type': 'Place',
         name: 'ЖК «Графика», Мурино, ул. Екатерининская, 16, корпус 5',
       },
-      associatedMedia: [...grafikaStagePhotos, ...grafikaPhotos].map((photo) => ({
-        '@type': 'ImageObject',
-        contentUrl: mediaUrl(photo.src),
-        caption: photo.caption,
-      })),
+      associatedMedia: [...grafikaPlanPhotos, ...grafikaStagePhotos, ...grafikaPhotos].map(
+        (photo) => ({
+          '@type': 'ImageObject',
+          contentUrl: mediaUrl(photo.src),
+          caption: photo.caption,
+        }),
+      ),
     },
     {
       '@type': 'BreadcrumbList',

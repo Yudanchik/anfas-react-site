@@ -10,6 +10,21 @@ export const grafikaBudget = [
 export const grafikaBudgetLabel = '≈ 3,68 млн ₽'
 export const grafikaCover = 'images/projects/zhk-grafika/story/finished/28.webp'
 
+export const grafikaPlanPhotos = [
+  {
+    id: -20,
+    src: 'images/projects/zhk-grafika/story/plans/obmerny-plan-3-2.webp',
+    thumbnailSrc: 'images/projects/zhk-grafika/story/plans/obmerny-plan-3-2.webp',
+    caption: 'Обмерный план до демонтажа — лист 3.2',
+  },
+  {
+    id: -21,
+    src: 'images/projects/zhk-grafika/story/plans/planirovochnoe-reshenie-3-8.webp',
+    thumbnailSrc: 'images/projects/zhk-grafika/story/plans/planirovochnoe-reshenie-3-8.webp',
+    caption: 'Планировочное решение: расстановка мебели — лист 3.8',
+  },
+] as const
+
 const captions = [
   'Освещение кухни-гостиной: встроенные светильники и чёрный трек',
   'Кухня-гостиная с диваном, обеденным столом и угловой кухней',
@@ -115,7 +130,7 @@ export const grafikaStages = [
 export const grafikaSolutions = [
   {
     title: 'Отдельная спальня',
-    text: 'Спальную зону отделили от кухни-гостиной раздвижной дверью-пеналом. Дверь не требует места для распахивания, а кровать находится в отдельной комнате.',
+    text: 'Для отдельной спальни установили раздвижную дверь-пенал вместо распашной двери. Она не требует места для распахивания между спальней и кухней-гостиной.',
     photoId: 34,
   },
   {

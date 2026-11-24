@@ -9,6 +9,7 @@ import {
   grafikaSolutions,
   grafikaStagePhotos,
   grafikaStages,
+  grafikaPlanPhotos,
 } from '@/entities/project/model/grafika-case.data'
 import { grafikaStructuredData } from '@/entities/project/model/grafika-case.seo'
 import { isProjectContentPreview } from '@/shared/config/project-content-preview'
@@ -19,7 +20,7 @@ import { PageWrapper } from '@/shared/ui/page-wrapper'
 import styles from '../murinskiy-case-draft/MurinskiyCaseDraft.module.scss'
 import extra from './GrafikaCaseDraft.module.scss'
 
-const gallery = [...grafikaPhotos, ...grafikaStagePhotos]
+const gallery = [...grafikaPhotos, ...grafikaStagePhotos, ...grafikaPlanPhotos]
 const roubles = (amount: number) => `${new Intl.NumberFormat('ru-RU').format(amount)} ₽`
 
 export function GrafikaCaseDraft() {
@@ -110,14 +111,19 @@ export function GrafikaCaseDraft() {
           src={assetUrl(item.id === -6 ? item.src : item.thumbnailSrc)}
           alt={item.caption}
           loading="lazy"
-          width={960}
-          height={720}
+          width={item.id <= -20 ? 3030 : 960}
+          height={item.id <= -20 ? 1943 : 720}
         />
         <span className={styles.enlarge} aria-hidden="true">
           ↗
         </span>
       </button>
       <figcaption>{item.caption}</figcaption>
+      {item.id <= -20 ? (
+        <a className={extra.planLink} href={assetUrl(item.src)} target="_blank" rel="noreferrer">
+          Открыть план в полном размере
+        </a>
+      ) : null}
     </figure>
   )
 
@@ -133,7 +139,7 @@ export function GrafikaCaseDraft() {
             <div className={styles.heroCopy}>
               <p className={styles.eyebrow}>Мурино · ЖК «Графика» · 2024</p>
               <h1>
-                Из студии — квартира <em>под дорогую аренду</em>
+                Полная реновация квартиры <em>под дорогую аренду</em>
               </h1>
               <p className={styles.lead}>
                 Инвестиционная квартира 29,2 м²: отдельная спальня, кухня-гостиная и рабочее место
@@ -188,6 +194,7 @@ export function GrafikaCaseDraft() {
         </aside>
         <nav className={styles.contents} aria-label="Содержание кейса">
           <a href="#grafika-task">Задача</a>
+          <a href="#grafika-plans">Планировка</a>
           <a href="#grafika-work">Этапы работ</a>
           <a href="#grafika-solutions">Решения</a>
           <a href="#grafika-result">Фотографии</a>
@@ -230,6 +237,15 @@ export function GrafikaCaseDraft() {
               <li>Мебель и техника</li>
             </ul>
           </div>
+        </section>
+        <section className={styles.section} id="grafika-plans">
+          <p className={styles.eyebrow}>Планировка / До и после</p>
+          <h2>От обмеров к расстановке мебели</h2>
+          <p className={styles.intro}>
+            Обмерный план до демонтажа и планировочное решение из дизайн-проекта Арины Сафроновой.
+            На втором плане показаны дверь-пенал, мебель и рабочее место на лоджии.
+          </p>
+          <div className={`${styles.photoGrid} ${extra.plans}`}>{grafikaPlanPhotos.map(photo)}</div>
         </section>
         <section className={styles.section} id="grafika-work">
           <p className={styles.eyebrow}>02 / Ход реновации</p>
@@ -276,14 +292,6 @@ export function GrafikaCaseDraft() {
           </div>
           {showNotes ? (
             <div className={styles.pendingGrid}>
-              <aside className={styles.pending}>
-                <span>Добавить подтверждение</span>
-                <h3>Планировка до и после</h3>
-                <p>
-                  Нужны два разрешённых к публикации плана: исходная студия и реализованная
-                  планировка с размерами.
-                </p>
-              </aside>
               <aside className={styles.pending}>
                 <span>Добавить подтверждение</span>
                 <h3>Проверки инженерных систем</h3>
