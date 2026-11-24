@@ -1,0 +1,201 @@
+export type GrafikaPhoto = {
+  id: number
+  src: string
+  thumbnailSrc: string
+  caption: string
+  width?: number
+  height?: number
+  previewAspectRatio?: string
+  previewObjectPosition?: string
+}
+
+export const grafikaBudget = [
+  { title: 'Ремонтные работы', amountRub: 1285772, estimated: false },
+  { title: 'Черновые материалы', amountRub: 646679, estimated: false },
+  { title: 'Вывоз мусора', amountRub: 61000, estimated: false },
+  { title: 'Чистовые материалы', amountRub: 650000, estimated: true },
+  { title: 'Мебель и техника', amountRub: 900000, estimated: true },
+  { title: 'Дизайн-проект', amountRub: 135000, estimated: false },
+] as const
+
+export const grafikaBudgetLabel = '≈ 3,68 млн ₽'
+export const grafikaCover = 'images/projects/zhk-grafika/story/finished/28.webp'
+
+export const grafikaPlanPhotos = [
+  {
+    id: -20,
+    src: 'images/projects/zhk-grafika/story/plans/obmerny-plan-3-2.webp',
+    thumbnailSrc: 'images/projects/zhk-grafika/story/plans/obmerny-plan-3-2.webp',
+    caption: 'Обмерный план до демонтажа — лист 3.2',
+    width: 3030,
+    height: 1943,
+  },
+  {
+    id: -21,
+    src: 'images/projects/zhk-grafika/story/plans/planirovochnoe-reshenie-3-8.webp',
+    thumbnailSrc: 'images/projects/zhk-grafika/story/plans/planirovochnoe-reshenie-3-8.webp',
+    caption: 'Планировочное решение: расстановка мебели — лист 3.8',
+    width: 3030,
+    height: 1943,
+  },
+] as const
+
+const captions = [
+  'Освещение кухни-гостиной: встроенные светильники и чёрный трек',
+  'Кухня-гостиная с диваном, обеденным столом и угловой кухней',
+  'Встроенные шкафы и зеркало в прихожей',
+  'Шкаф в прихожей с открытой секцией для хранения',
+  'Потолочное освещение в кухне-гостиной',
+  'Освещение и оформление оконной зоны',
+  'Раздвижная дверь между кухней-гостиной и спальней',
+  'Вид из кухни-гостиной в отдельную спальню',
+  'Плитка в зоне входа, тумба и банкетка',
+  'Тумба с открытыми полками в прихожей',
+  'Проход из прихожей к кухне-гостиной',
+  'Прихожая с зеркалом и проходом к окну',
+  'Электрический щит и панели управления в прихожей',
+  'Входная дверь, зеркало и тумба в прихожей',
+  'Дверь скрытого монтажа рядом со входом',
+  'Стиральная машина под столешницей в ванной комнате',
+  'Подвесной унитаз и гигиенический душ в санузле',
+  'Ниша с подсвеченными полками в ванной комнате',
+  'Ванная, раковина и чёрная сантехника',
+  'Изголовье кровати с подсветкой и картинами',
+  'Угловая кухня с техникой и подсветкой столешницы',
+  'Кухонная зона рядом с диваном',
+  'Рабочее место на лоджии у окна',
+  'Письменный стол и встроенные шкафы на лоджии',
+  'Диван и обеденный стол у окна в кухне-гостиной',
+  'Зеркало и встроенная мебель в прихожей',
+  'Кухня-гостиная с круглым обеденным столом',
+  'Угловая кухня с деревянными фасадами и встроенной техникой',
+  'Общий вид кухни-гостиной со стороны окна',
+  'Рабочий стол, розетки и хранение на лоджии',
+  'Рабочая зона на лоджии с панорамным окном',
+  'Проход в прихожую и встроенные шкафы',
+  'Зеркало и подвесная консоль в спальне',
+  'Отдельная спальня с двуспальной кроватью',
+  'Кровать и открытый стеллаж в спальне',
+  'Зона отдыха с диваном и обеденным столом',
+  'Раздвижная дверь и проход между комнатами',
+  'Подсветка изголовья и стеллаж рядом с кроватью',
+  'Телевизор и подвесная тумба в спальне',
+] as const
+
+// Start with complete views of each zone, then offer every original photograph.
+const order = [28, 29, 25, 34, 35, 23, 31, 3, 10, 16, 19, 17]
+export const grafikaPhotos = [
+  ...order,
+  ...captions.map((_, index) => index + 1).filter((number) => !order.includes(number)),
+].map((number) => {
+  const id = String(number).padStart(2, '0')
+  return {
+    id: number,
+    src: `images/projects/zhk-grafika/story/finished/${id}.webp`,
+    thumbnailSrc: `images/projects/zhk-grafika/story/thumbnails/${id}.webp`,
+    caption: captions[number - 1],
+  }
+})
+
+const stageSizes: Record<string, readonly [number, number]> = {
+  'protection-window': [1086, 1448],
+  'protection-door': [941, 1672],
+  'demolition-room': [1448, 1086],
+  'demolition-kitchen': [1672, 941],
+  'pocket-frame-insulation': [1280, 720],
+  'electrical-panel': [1026, 1600],
+  'electrical-kitchen': [1536, 2730],
+  'electrical-room': [1536, 2730],
+}
+
+const stageCaptions = [
+  ['protection-window', 'Защита окон плёнкой и лентой перед основными работами'],
+  ['protection-door', 'Защита входной двери и фурнитуры на время ремонта'],
+  ['demolition-room', 'Комната после демонтажа прежней отделки'],
+  ['demolition-kitchen', 'Кухонная зона после демонтажа, подготовка к новому ремонту'],
+  ['pocket-frame-insulation', 'Каркас двери-пенала и утеплённая лоджия на этапе монтажа'],
+  ['electrical-panel', 'Новый электрический щит квартиры на этапе сборки'],
+  ['electrical-kitchen', 'Новые электрические трассы в кухонной зоне до отделки'],
+  ['electrical-room', 'Разводка электрики по потолку и выводы в комнате'],
+] as const
+
+export const grafikaStagePhotos = stageCaptions.map(([name, caption], index) => ({
+  id: -index - 1,
+  src: `images/projects/zhk-grafika/story/stages/ai/${name}.webp`,
+  thumbnailSrc: `images/projects/zhk-grafika/story/stages/ai/${name}.webp`,
+  caption,
+  width: stageSizes[name][0],
+  height: stageSizes[name][1],
+  previewAspectRatio:
+    name.startsWith('protection-') || name.startsWith('electrical-')
+      ? '9 / 16'
+      : name === 'pocket-frame-insulation'
+        ? '16 / 9'
+        : '4 / 3',
+  previewObjectPosition:
+    name === 'protection-window'
+      ? '25% 50%'
+      : name === 'demolition-kitchen'
+        ? '40% 50%'
+        : '50% 50%',
+}))
+
+export const grafikaStages = [
+  {
+    title: 'Защита поверхностей',
+    description:
+      'Квартира была с готовым ремонтом. Реновацию начали с защиты сохраняемых поверхностей: закрыли окна и входную дверь, защитили фурнитуру.',
+    photos: grafikaStagePhotos.slice(0, 2),
+  },
+  {
+    title: 'Демонтаж прежней отделки',
+    description:
+      'Сняли прежнюю отделку и подготовили помещения к полной реновации. На фотографиях — состояние квартиры после демонтажа, до новой отделки и оснащения.',
+    photos: grafikaStagePhotos.slice(2, 4),
+  },
+  {
+    title: 'Лоджия и дверь-пенал',
+    description:
+      'Утеплили лоджию для рабочего места и смонтировали каркас двери-пенала. Раздвижная дверь отделяет будущую спальню от кухни-гостиной.',
+    photos: grafikaStagePhotos.slice(4, 5),
+  },
+  {
+    title: 'Новая электрика',
+    description:
+      'Выполнили новую разводку электрики и собрали электрический щит. Трассы, выводы и щит показаны до закрытия конструкций и чистовой отделки.',
+    photos: grafikaStagePhotos.slice(5),
+  },
+] as const
+
+export const grafikaSolutions = [
+  {
+    title: 'Отдельная спальня',
+    text: 'Для отдельной спальни установили раздвижную дверь-пенал вместо распашной двери. Она не требует места для распахивания между спальней и кухней-гостиной.',
+    photoId: 34,
+  },
+  {
+    title: 'Рабочее место на лоджии',
+    text: 'На утеплённой лоджии разместили письменный стол и встроенное хранение. Для утепления использовали Руспанель, для дополнительного обогрева — тёплый пол.',
+    photoId: 23,
+  },
+  {
+    title: 'Свет и управление через Алису',
+    text: 'В интерьер включили несколько сценариев освещения: общий свет, подсветку кухни и изголовья. Хаб Яндекс и умные реле позволяют управлять светом и включением тёплого пола через Алису.',
+    photoId: 38,
+  },
+  {
+    title: 'Износостойкие материалы',
+    text: 'Для квартиры под аренду выбрали износостойкую отделку: у входа уложили плитку, в жилых зонах — кварцвинил. Покрытия состыковали в одном уровне, с герметичным примыканием. В прихожей разместили встроенные шкафы и тумбу.',
+    photoId: 3,
+  },
+  {
+    title: 'Ванная с местом для стирки',
+    text: 'Ванная комната облицована плиткой. Стиральную машину разместили под столешницей, а для хранения предусмотрели нишу с подсвеченными полками.',
+    photoId: 16,
+  },
+  {
+    title: 'Кухня, мебель и техника',
+    text: 'В кухне-гостиной разместили угловую кухню с техникой, диван и круглый стол. Мебель и оборудование вошли в бюджет подготовки инвестиционной квартиры.',
+    photoId: 29,
+  },
+] as const

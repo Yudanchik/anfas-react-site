@@ -4,8 +4,17 @@ import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
 import { projectRepository } from '@/entities/project/api'
 import { ProjectReview } from '@/entities/project/ui/project-review'
 import { MurinskiyCaseDraft } from '@/entities/project/ui/murinskiy-case-draft/MurinskiyCaseDraft'
+import { GrafikaCaseDraft } from '@/entities/project/ui/grafika-case-draft/GrafikaCaseDraft'
+import {
+  grafikaCaseTitle,
+  grafikaCaseDescription,
+  grafikaCasePath,
+  grafikaShareImageUrl,
+  grafikaShareImageAlt,
+} from '@/entities/project/model/grafika-case.seo'
 import {
   hasDetailedProjectCase,
+  hasGrafikaProjectCase,
   canPreviewProjectContent,
 } from '@/shared/config/project-content-preview'
 import {
@@ -77,6 +86,21 @@ export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
     })
   }
 
+  if (hasGrafikaProjectCase(data.project.slug)) {
+    return createSeoMeta({
+      title: grafikaCaseTitle,
+      description: grafikaCaseDescription,
+      path: grafikaCasePath,
+      image: grafikaShareImageUrl,
+      imageAlt: grafikaShareImageAlt,
+      imageWidth: 1200,
+      imageHeight: 630,
+      imageType: 'image/jpeg',
+      type: 'article',
+      robots: canPreviewProjectContent() ? 'noindex, nofollow' : 'index, follow',
+    })
+  }
+
   return createSeoMeta({
     title: `${data.project.title} — ${data.project.type} | Анфас`,
     description: `${data.project.description} Площадь ${data.project.area}, срок ${data.project.term}, бюджет ${data.project.price}. Реализованный проект в Санкт-Петербурге.`,
@@ -138,13 +162,14 @@ export default function ProjectRoute() {
   const lastGalleryTriggerRef = useRef<HTMLButtonElement | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement | null>(null)
   const swipeStartRef = useRef<{ x: number; y: number; pointerId: number } | null>(null)
-  const [galleryCount, setGalleryCount] = useState(() => {
-    if (typeof window === 'undefined') {
-      return 6
-    }
-
-    return window.matchMedia('(width <= 768px)').matches ? 3 : 6
-  })
+  // Match the prerendered gallery on the first client render.
+  const [galleryCount, setGalleryCount] = useState(6)
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      setGalleryCount(window.matchMedia('(width <= 768px)').matches ? 3 : 6)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [project.slug])
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null)
 
   const openLightbox = (index: number, trigger: HTMLButtonElement) => {
@@ -266,6 +291,8 @@ export default function ProjectRoute() {
   }
 
   if (hasDetailedProjectCase(project.slug)) return <MurinskiyCaseDraft project={project} />
+
+  if (hasGrafikaProjectCase(project.slug)) return <GrafikaCaseDraft />
 
   return (
     <main className={styles.projectDetail}>

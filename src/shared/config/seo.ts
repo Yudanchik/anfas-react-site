@@ -17,6 +17,7 @@ type SeoMetaOptions = {
 }
 
 export function absoluteUrl(path = '/') {
+  if (/^https?:\/\//.test(path)) return new URL(path).toString()
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
   return new URL(normalizedPath, siteUrl).toString()
 }
