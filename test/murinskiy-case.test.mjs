@@ -45,7 +45,7 @@ test('published Grafika case replaces the old mock review, price and term consis
   assert.equal(project.term, '7 месяцев')
   assert.equal(project.price, '≈ 3,68 млн ₽')
   assert.equal(project.review, undefined)
-  assert.equal(project.gallery.length, 39)
+  assert.equal(project.gallery.length, 34)
   assert.ok(project.details.some((text) => text.includes('Защита поверхностей')))
   assert.ok(project.details.every((text) => !/студи/iu.test(text)))
   assert.equal(
@@ -58,6 +58,11 @@ test('published Grafika case replaces the old mock review, price and term consis
     3678451,
   )
   assert.equal(data.grafikaBudget.filter((row) => row.estimated).length, 2)
+  assert.equal(project.image, data.grafikaCover)
+  assert.match(project.image, /finished\/20\.webp$/)
+  assert.equal(data.grafikaPhotos[0].id, 20)
+  assert.ok(data.grafikaPhotos.every((photo) => ![5, 9, 10, 11, 13].includes(photo.id)))
+  assert.ok(data.grafikaStagePhotos.some((photo) => photo.id === -6))
 })
 
 test('Grafika media and location describe the actual project without a mock rating', async () => {
@@ -72,12 +77,12 @@ test('Grafika media and location describe the actual project without a mock rati
   })
   assert.equal(
     metadata.find((item) => item.property === 'og:image').content,
-    'https://anfas-remont.ru/images/projects/zhk-grafika/share/grafika-1200x630.jpg',
+    'https://anfas-remont.ru/images/projects/zhk-grafika/share/grafika-headboard-20-1200x630.jpg',
   )
 
   assert.match(work.locationCreated.name, /Мурино/)
-  assert.equal(work.associatedMedia.length, 49)
-  assert.equal(new Set(work.associatedMedia.map((item) => item.contentUrl)).size, 49)
+  assert.equal(work.associatedMedia.length, 44)
+  assert.equal(new Set(work.associatedMedia.map((item) => item.contentUrl)).size, 44)
   assert.ok(
     work.associatedMedia.every((item) => item.caption.length > 20 && !/фото \d/.test(item.caption)),
   )
@@ -87,7 +92,7 @@ test('Grafika media and location describe the actual project without a mock rati
   })
   assert.equal(
     preview.grafikaShareImageUrl,
-    'https://dev.anfas-remont.ru/images/projects/zhk-grafika/share/grafika-1200x630.jpg',
+    'https://dev.anfas-remont.ru/images/projects/zhk-grafika/share/grafika-headboard-20-1200x630.jpg',
   )
 })
 
