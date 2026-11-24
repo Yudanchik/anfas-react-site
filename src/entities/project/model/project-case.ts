@@ -1,5 +1,9 @@
 import type { Project } from './project.types'
-import { hasDetailedProjectCase } from '@/shared/config/project-content-preview'
+import {
+  hasDetailedProjectCase,
+  hasGrafikaCasePreview,
+} from '@/shared/config/project-content-preview'
+import { grafikaBudgetLabel, grafikaCover, grafikaPhotos } from './grafika-case.data'
 import {
   murinskiyBudgetLabel,
   murinskiyStages,
@@ -9,6 +13,21 @@ import {
 } from './murinskiy-case.data'
 
 export function applyProjectCase(project: Project): Project {
+  if (hasGrafikaCasePreview(project.slug)) {
+    return {
+      ...project,
+      image: grafikaCover,
+      gallery: grafikaPhotos.map((photo) => photo.src),
+      type: 'Инвестиционная квартира под аренду',
+      typeAccent: 'под аренду',
+      location: 'Мурино, ЖК «Графика»',
+      description:
+        'Студия 29,2 м² с отдельной спальней и рабочим местом на лоджии. Реализация в 2024 году за 7 месяцев; аренда — 80 000 ₽ в месяц по данным команды «Анфас».',
+      term: '7 месяцев',
+      price: grafikaBudgetLabel,
+      review: undefined,
+    }
+  }
   if (!hasDetailedProjectCase(project.slug)) return project
   return {
     ...project,

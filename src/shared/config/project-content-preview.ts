@@ -13,3 +13,8 @@ export function isProjectContentPreview(search: string) {
 export function hasDetailedProjectCase(slug: string) {
   return slug === '2-murinskiy-37'
 }
+
+/** The Grafika rewrite is staged on dev until the case is approved for the main site. */
+export function hasGrafikaCasePreview(slug: string) {
+  return enabled && slug === 'zhk-grafika'
+}

@@ -1,0 +1,56 @@
+@use 'media' as mq;
+
+.credit {
+  color: #696a60;
+  font-size: 15px;
+}
+
+.portrait img {
+  aspect-ratio: 2 / 3;
+}
+
+.electricalGrid figure:first-child {
+  grid-row: span 2;
+
+  @include mq.media(phone) {
+    grid-row: auto;
+  }
+}
+
+.solutions {
+  display: grid;
+  gap: 40px;
+}
+
+.solution {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+
+  h3 {
+    margin-bottom: 16px;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  p {
+    max-width: 58ch;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  &:nth-child(even) figure {
+    order: 1;
+  }
+
+  @include mq.media(phone, tablet) {
+    grid-template-columns: 1fr;
+    gap: 24px;
+
+    &:nth-child(even) figure {
+      order: 0;
+    }
+  }
+}
