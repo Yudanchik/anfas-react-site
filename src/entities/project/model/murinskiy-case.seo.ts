@@ -1,11 +1,20 @@
 import { absoluteUrl } from '@/shared/config/seo'
-import { murinskiyStages, resultPhotos, planPhotos } from './murinskiy-case.data'
+import {
+  murinskiyStages,
+  resultPhotos,
+  planPhotos,
+  murinskiyCoverImage,
+} from './murinskiy-case.data'
 
 export const murinskiyCasePath = '/projects/2-murinskiy-37/'
 export const murinskiyCaseTitle = 'Ремонт после пожара на 2-м Муринском, 59 м² | Анфас, СПб'
 export const murinskiyCaseDescription =
   'Кейс Анфас в Санкт-Петербурге: восстановление квартиры 59 м² после пожара за 8 месяцев. Планировка, инженерия, этапы ремонта, фото результата и бюджет.'
-export const murinskiyCaseImage = 'images/projects/2-murinskiy-37/story/result-36.webp'
+export const murinskiyCaseImage = murinskiyCoverImage
+export const murinskiyCaseShareImage =
+  'images/projects/2-murinskiy-37/share/finished-0749-1200x630.jpg'
+export const murinskiyCaseShareImageAlt =
+  'Готовая гостиная на 2-м Муринском: встроенные шкафы со стеклянными фасадами и перегородка'
 
 const projectUrl = absoluteUrl(murinskiyCasePath)
 const photos = [

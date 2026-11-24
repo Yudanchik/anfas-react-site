@@ -258,7 +258,7 @@
   width: 100%;
   height: auto;
   aspect-ratio: 4 / 3;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .planGrid .photoButton {
@@ -267,6 +267,7 @@
 
 .planGrid img {
   background: #fff;
+  object-fit: contain;
 }
 
 .figure figcaption {

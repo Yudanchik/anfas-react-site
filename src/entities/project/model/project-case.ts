@@ -1,11 +1,19 @@
 import type { Project } from './project.types'
 import { hasDetailedProjectCase } from '@/shared/config/project-content-preview'
-import { murinskiyBudgetLabel, murinskiyStages, murinskiySolutions } from './murinskiy-case.data'
+import {
+  murinskiyBudgetLabel,
+  murinskiyStages,
+  murinskiySolutions,
+  murinskiyCoverImage,
+  resultPhotos,
+} from './murinskiy-case.data'
 
 export function applyProjectCase(project: Project): Project {
   if (!hasDetailedProjectCase(project.slug)) return project
   return {
     ...project,
+    image: murinskiyCoverImage,
+    gallery: resultPhotos.map((photo) => photo.src),
     type: 'Восстановление квартиры после пожара',
     typeAccent: 'после пожара',
     description:
