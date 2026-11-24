@@ -35,7 +35,7 @@ export const grafikaStructuredData = {
       mainEntityOfPage: url,
       image: mediaUrl(grafikaCover),
       creator: { '@id': absoluteUrl('/#organization') },
-      creditText: 'Дизайн-проект — Арина Сафронова. Реализация ремонта — Анфас.',
+      creditText: 'Ремонт по дизайн-проекту.',
       dateCreated: '2024',
       locationCreated: {
         '@type': 'Place',

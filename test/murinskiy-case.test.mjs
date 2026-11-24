@@ -49,6 +49,8 @@ test('Grafika preview replaces the old mock review, price and term consistently'
   assert.equal(project.price, '≈ 3,68 млн ₽')
   assert.equal(project.review, undefined)
   assert.equal(project.gallery.length, 39)
+  assert.ok(project.details.some((text) => text.includes('Защита поверхностей')))
+  assert.ok(project.details.every((text) => !/студи/iu.test(text)))
   assert.equal(
     (await projectRepository.getAll()).find((item) => item.slug === project.slug).price,
     project.price,

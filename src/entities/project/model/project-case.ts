@@ -3,7 +3,13 @@ import {
   hasDetailedProjectCase,
   hasGrafikaCasePreview,
 } from '@/shared/config/project-content-preview'
-import { grafikaBudgetLabel, grafikaCover, grafikaPhotos } from './grafika-case.data'
+import {
+  grafikaBudgetLabel,
+  grafikaCover,
+  grafikaPhotos,
+  grafikaStages,
+  grafikaSolutions,
+} from './grafika-case.data'
 import {
   murinskiyBudgetLabel,
   murinskiyStages,
@@ -26,6 +32,10 @@ export function applyProjectCase(project: Project): Project {
       term: '7 месяцев',
       price: grafikaBudgetLabel,
       review: undefined,
+      details: [
+        ...grafikaStages.map((stage) => `${stage.title}: ${stage.description}`),
+        ...grafikaSolutions.map((solution) => `${solution.title}: ${solution.text}`),
+      ],
     }
   }
   if (!hasDetailedProjectCase(project.slug)) return project

@@ -10,6 +10,7 @@ import {
   grafikaStagePhotos,
   grafikaStages,
   grafikaPlanPhotos,
+  type GrafikaPhoto,
 } from '@/entities/project/model/grafika-case.data'
 import { grafikaStructuredData } from '@/entities/project/model/grafika-case.seo'
 import { isProjectContentPreview } from '@/shared/config/project-content-preview'
@@ -20,7 +21,11 @@ import { PageWrapper } from '@/shared/ui/page-wrapper'
 import styles from '../murinskiy-case-draft/MurinskiyCaseDraft.module.scss'
 import extra from './GrafikaCaseDraft.module.scss'
 
-const gallery = [...grafikaPhotos, ...grafikaStagePhotos, ...grafikaPlanPhotos]
+const gallery: readonly GrafikaPhoto[] = [
+  ...grafikaPhotos,
+  ...grafikaStagePhotos,
+  ...grafikaPlanPhotos,
+]
 const roubles = (amount: number) => `${new Intl.NumberFormat('ru-RU').format(amount)} ₽`
 
 export function GrafikaCaseDraft() {
@@ -96,8 +101,8 @@ export function GrafikaCaseDraft() {
     else previousPhoto()
   }
 
-  const photo = (item: (typeof gallery)[number]) => (
-    <figure className={`${styles.figure} ${item.id === -6 ? extra.portrait : ''}`} key={item.src}>
+  const photo = (item: GrafikaPhoto) => (
+    <figure className={styles.figure} key={item.src}>
       <button
         type="button"
         className={styles.photoButton}
@@ -108,11 +113,16 @@ export function GrafikaCaseDraft() {
         aria-label={`Увеличить: ${item.caption}`}
       >
         <img
-          src={assetUrl(item.id === -6 ? item.src : item.thumbnailSrc)}
+          src={assetUrl(item.thumbnailSrc)}
           alt={item.caption}
           loading="lazy"
-          width={item.id <= -20 ? 3030 : 960}
-          height={item.id <= -20 ? 1943 : 720}
+          width={item.width ?? 960}
+          height={item.height ?? 720}
+          style={
+            item.width && item.height
+              ? { aspectRatio: `${item.width} / ${item.height}` }
+              : undefined
+          }
         />
         <span className={styles.enlarge} aria-hidden="true">
           ↗
@@ -228,7 +238,7 @@ export function GrafikaCaseDraft() {
             <p className={extra.credit}>
               Мурино, ул. Екатерининская, 16, корпус 5.
               <br />
-              Автор дизайн-проекта — Арина Сафронова. Реализация ремонта — «Анфас».
+              Ремонт по дизайн-проекту.
             </p>
             <ul className={styles.scope}>
               <li>Планировка</li>
@@ -242,8 +252,8 @@ export function GrafikaCaseDraft() {
           <p className={styles.eyebrow}>Планировка / До и после</p>
           <h2>От обмеров к расстановке мебели</h2>
           <p className={styles.intro}>
-            Обмерный план до демонтажа и планировочное решение из дизайн-проекта Арины Сафроновой.
-            На втором плане показаны дверь-пенал, мебель и рабочее место на лоджии.
+            Обмерный план до демонтажа и планировочное решение из дизайн-проекта. На втором плане
+            показаны дверь-пенал, мебель и рабочее место на лоджии.
           </p>
           <div className={`${styles.photoGrid} ${extra.plans}`}>{grafikaPlanPhotos.map(photo)}</div>
         </section>
@@ -254,6 +264,7 @@ export function GrafikaCaseDraft() {
             Фотографии с объекта: подготовка, демонтаж, монтаж конструкций и новая электрика до
             чистовой отделки.
           </p>
+          <p className={extra.mediaNote}>Фотографии этапов обработаны с использованием ИИ.</p>
           {grafikaStages.map((stage, index) => (
             <article className={styles.stage} key={stage.title}>
               <div className={styles.stageHeading}>
@@ -264,7 +275,7 @@ export function GrafikaCaseDraft() {
                 </div>
               </div>
               <div
-                className={`${styles.photoGrid} ${stage.photos.length === 3 ? extra.electricalGrid : ''}`}
+                className={`${styles.photoGrid} ${extra.workPhotos} ${stage.photos.length === 3 ? extra.electricalGrid : ''}`}
               >
                 {stage.photos.map(photo)}
               </div>
