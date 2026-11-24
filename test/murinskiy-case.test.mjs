@@ -42,6 +42,9 @@ test('public project list and case agree on the owner-confirmed approximate budg
   assert.equal(project.term, '8 месяцев')
   assert.match(project.price, /Около 5,85 млн ₽/)
   assert.equal(project.review, undefined)
+  assert.equal(project.image, 'images/projects/2-murinskiy-37/finished/cover-0749.webp')
+  assert.equal(project.gallery.length, 12)
+  assert.ok(project.gallery.every((src) => src.includes('/finished/')))
   assert.ok(project.details.some((text) => text.includes('SoloLift')))
   assert.equal(
     (await projectRepository.getAll()).find((item) => item.slug === project.slug).price,
@@ -60,7 +63,7 @@ test('case metadata links its canonical page, images and organization without a 
   )
   assert.equal(work.url, 'https://anfas-remont.ru/projects/2-murinskiy-37/')
   assert.equal(work.creator['@id'], 'https://anfas-remont.ru/#organization')
-  assert.equal(work.associatedMedia.length, 31)
+  assert.equal(work.associatedMedia.length, 35)
   assert.ok(
     work.associatedMedia.every(
       (item) =>

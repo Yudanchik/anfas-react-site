@@ -191,46 +191,68 @@ export const murinskiyStages: CaseStage[] = [
     ],
   },
 ]
+export const murinskiyCoverImage = 'images/projects/2-murinskiy-37/finished/cover-0749.webp'
+
 export const resultPhotos: CasePhoto[] = [
   {
-    src: 'images/projects/2-murinskiy-37/story/result-36.webp',
-    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-36.webp',
-    caption: 'Кухня-гостиная: общий вид готового интерьера.',
+    src: 'images/projects/2-murinskiy-37/finished/living-storage-0749.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/living-storage-0749.webp',
+    caption: 'Кухня-гостиная: встроенные шкафы со стеклянными фасадами и перегородка.',
   },
   {
-    src: 'images/projects/2-murinskiy-37/story/result-38.webp',
-    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-38.webp',
-    caption: 'Кухня и обеденная зона у окна.',
+    src: 'images/projects/2-murinskiy-37/finished/living-room-0700.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/living-room-0700.webp',
+    caption: 'Гостиная после ремонта: диван, обеденная зона у окна и потолочное освещение.',
   },
   {
-    src: 'images/projects/2-murinskiy-37/story/result-23.webp',
-    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-23.webp',
-    caption: 'Спальня в готовом интерьере.',
+    src: 'images/projects/2-murinskiy-37/finished/living-window-0746.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/living-window-0746.webp',
+    caption: 'Гостиная: обеденная зона у окна, диван и декоративные рейки.',
   },
   {
-    src: 'images/projects/2-murinskiy-37/story/result-35.webp',
-    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-35.webp',
-    caption: 'Комната со спальным местом и встроенным хранением.',
+    src: 'images/projects/2-murinskiy-37/finished/living-partition-0741.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/living-partition-0741.webp',
+    caption: 'Стеклянная перегородка и диван в готовой гостиной.',
   },
   {
-    src: 'images/projects/2-murinskiy-37/story/result-20.webp',
-    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-20.webp',
-    caption: 'Ванная комната после отделки.',
+    src: 'images/projects/2-murinskiy-37/finished/kitchen-0698.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/kitchen-0698.webp',
+    caption: 'Кухня после ремонта: встроенная техника, мойка и рабочая поверхность.',
   },
   {
-    src: 'images/projects/2-murinskiy-37/story/result-39.webp',
-    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-39.webp',
-    caption: 'Отдельный санузел.',
+    src: 'images/projects/2-murinskiy-37/finished/hallway-0697.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/hallway-0697.webp',
+    caption: 'Коридор: двери скрытого монтажа, встроенные шкафы и линейное освещение.',
   },
   {
-    src: 'images/projects/2-murinskiy-37/story/result-27.webp',
-    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-27.webp',
-    caption: 'Гардеробная с открытой системой хранения.',
+    src: 'images/projects/2-murinskiy-37/finished/hallway-cat-wall-0714.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/hallway-cat-wall-0714.webp',
+    caption: 'Коридор с настенным комплексом для кошки и дверями скрытого монтажа.',
   },
   {
-    src: 'images/projects/2-murinskiy-37/story/result-28.webp',
-    thumbnailSrc: 'images/projects/2-murinskiy-37/story/thumbnails/result-28.webp',
-    caption: 'Стиральная и сушильная машины в зоне хранения.',
+    src: 'images/projects/2-murinskiy-37/finished/bedroom-wall-0720.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/bedroom-wall-0720.webp',
+    caption: 'Комната после ремонта: стена под дерево, спортивный турник и дверной проём.',
+  },
+  {
+    src: 'images/projects/2-murinskiy-37/finished/bedroom-workspace-0722.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/bedroom-workspace-0722.webp',
+    caption: 'Спальня: рабочая поверхность вдоль окна, кровать и системы хранения.',
+  },
+  {
+    src: 'images/projects/2-murinskiy-37/finished/bedroom-window-0721.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/bedroom-window-0721.webp',
+    caption: 'Рабочее место у окна в спальне после ремонта.',
+  },
+  {
+    src: 'images/projects/2-murinskiy-37/finished/bathroom-0731.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/bathroom-0731.webp',
+    caption: 'Ванная комната: ванна, раковина, чёрная сантехника и синие стены.',
+  },
+  {
+    src: 'images/projects/2-murinskiy-37/finished/toilet-0728.webp',
+    thumbnailSrc: 'images/projects/2-murinskiy-37/finished/thumbnails/toilet-0728.webp',
+    caption: 'Отдельный санузел: подвесной унитаз, встроенный шкаф и узорчатая плитка.',
   },
 ]
 export const planPhotos: CasePhoto[] = [
