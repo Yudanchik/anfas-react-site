@@ -132,3 +132,22 @@ test('case metadata links its canonical page, images and organization without a 
   )
   assert.ok(!('review' in work) && !('aggregateRating' in work))
 })
+
+test('Verkhnekamenskaya uses the owner-confirmed budget and selected completed photos', async () => {
+  const data = await load('src/entities/project/model/verkhnekamenskaya-case.data.ts')
+  const { projectRepository } = await load('src/entities/project/api/index.ts', { DEV: false })
+  const project = await projectRepository.getBySlug('verkhnekamenskaya')
+  assert.equal(data.verkhnekamenskayaBudget[0].amountRub, 1090730)
+  assert.equal(data.verkhnekamenskayaBudgetTotal, 1937412)
+  assert.equal(project.price, '1 937 412 ₽')
+  assert.equal(project.review, undefined)
+  assert.equal(project.image, data.verkhnekamenskayaCover)
+  assert.equal(project.gallery.length, 8)
+  assert.equal(data.verkhnekamenskayaStages.length, 4)
+  assert.ok(data.verkhnekamenskayaStages.every((stage) => stage.photos.length === 2))
+  assert.equal(new Set(data.verkhnekamenskayaMedia.map((photo) => photo.src)).size, 16)
+  assert.equal(
+    (await projectRepository.getAll()).find((item) => item.slug === project.slug).price,
+    project.price,
+  )
+})

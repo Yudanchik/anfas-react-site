@@ -18,7 +18,26 @@ import {
   resultPhotos,
 } from './murinskiy-case.data'
 
+import {
+  verkhnekamenskayaBudgetLabel,
+  verkhnekamenskayaCover,
+  verkhnekamenskayaPhotos,
+  verkhnekamenskayaStages,
+} from './verkhnekamenskaya-case.data'
+
 export function applyProjectCase(project: Project): Project {
+  if (project.slug === 'verkhnekamenskaya') {
+    return {
+      ...project,
+      image: verkhnekamenskayaCover,
+      gallery: verkhnekamenskayaPhotos.map((photo) => photo.src),
+      price: verkhnekamenskayaBudgetLabel,
+      description:
+        'Ремонт кофейни и магазина на Верхнекаменской: каркасные стены с закладными и ГКЛ, малярные работы, новая электрика и освещение, эпоксидный наливной пол.',
+      review: undefined,
+      details: verkhnekamenskayaStages.map((stage) => `${stage.title}: ${stage.description}`),
+    }
+  }
   if (hasGrafikaProjectCase(project.slug)) {
     return {
       ...project,

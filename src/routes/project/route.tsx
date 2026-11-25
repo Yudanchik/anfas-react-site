@@ -1,3 +1,11 @@
+import { VerkhnekamenskayaCase } from '@/entities/project/ui/verkhnekamenskaya-case/VerkhnekamenskayaCase'
+import {
+  verkhnekamenskayaCaseTitle,
+  verkhnekamenskayaCaseDescription,
+  verkhnekamenskayaCasePath,
+  verkhnekamenskayaShareImageUrl,
+  verkhnekamenskayaShareImageAlt,
+} from '@/entities/project/model/verkhnekamenskaya-case.seo'
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
 
@@ -68,6 +76,21 @@ export function meta({ data }: { data?: Awaited<ReturnType<typeof loader>> }) {
       title: 'Проект не найден — Анфас',
       path: '/projects',
       robots: 'noindex, nofollow',
+    })
+  }
+
+  if (data.project.slug === 'verkhnekamenskaya') {
+    return createSeoMeta({
+      title: verkhnekamenskayaCaseTitle,
+      description: verkhnekamenskayaCaseDescription,
+      path: verkhnekamenskayaCasePath,
+      image: verkhnekamenskayaShareImageUrl,
+      imageAlt: verkhnekamenskayaShareImageAlt,
+      imageWidth: 1200,
+      imageHeight: 630,
+      imageType: 'image/jpeg',
+      type: 'article',
+      robots: canPreviewProjectContent() ? 'noindex, nofollow' : 'index, follow',
     })
   }
 
@@ -293,6 +316,8 @@ export default function ProjectRoute() {
   if (hasDetailedProjectCase(project.slug)) return <MurinskiyCaseDraft project={project} />
 
   if (hasGrafikaProjectCase(project.slug)) return <GrafikaCaseDraft />
+
+  if (project.slug === 'verkhnekamenskaya') return <VerkhnekamenskayaCase project={project} />
 
   return (
     <main className={styles.projectDetail}>
